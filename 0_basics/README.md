@@ -11,6 +11,13 @@ Read through [the Cargo Book][Cargo Book] and become familiar with [Cargo] and i
 
 After completing these steps, you should be able to answer (and understand why) the following questions:
 - What memory model does [Rust] have? Is it single-threaded or multiple-threaded? Is it synchronous or asynchronous?
+```text
+текст
+
+текст2
+
+текст3
+```
 - What runtime does [Rust] have? Does it use a GC (garbage collector)?
 - What does static typing mean? What is a benefit of using it?
 - What are generics and parametric polymorphism? Which problems do they solve?
