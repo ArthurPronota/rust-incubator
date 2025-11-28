@@ -11,7 +11,7 @@ Read through [the Cargo Book][Cargo Book] and become familiar with [Cargo] and i
 
 After completing these steps, you should be able to answer (and understand why) the following questions:
 
-- What memory model does [Rust] have? Is it single-threaded or multiple-threaded? Is it synchronous or asynchronous?
+- What memory model does [Rust] have?  Is it synchronous or asynchronous?
 
 Модель памяти rust определяется строгими правилами за соблюдением которых отвечает компилятор.
 1. Владение: у каждого фрагмента данных есть один владелец. Когда владелец выходит из области действия, память освобождается (RAII).
@@ -20,10 +20,14 @@ After completing these steps, you should be able to answer (and understand why) 
 
 Эта модель предотвращает такие распространенные ошибки, как гонки данных, ошибки использования памяти после освобождения и разыменование нулевого указателя.
 
-<hr>
-текст2
+- Is it single-threaded or multiple-threaded?
 
-текст3
+Rust поддерживает как однопоточную так и многопоточную моделию.
+
+1. Однопоточная: вы можете написать однопоточное приложение, используя стандартные типы, такие как Rc<T> и RefCell<T>.
+2. Многопоточная: Rust славится своим «бесстрашным многопоточным выполнением». Компилятор использует свою систему типов для предотвращения гонок данных во время компиляции. Для доступа к общей памяти между потоками требуются специальные потокобезопасные интеллектуальные указатели, такие как Arc<T> (атомарный счётчик ссылок) и Mutex<T> (взаимное исключение). Компилятор предотвратит случайное совместное использование потоков небезопасных типов.
+
+<hr>
 
 - What runtime does [Rust] have? Does it use a GC (garbage collector)?
 - What does static typing mean? What is a benefit of using it?
