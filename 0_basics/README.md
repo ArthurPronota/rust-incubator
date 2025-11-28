@@ -207,7 +207,7 @@ Vec<Box<dyn Drow>>
 ```
 , используя объект-характеристику
 ```rust
-    Box<dyn Trait>
+Box<dyn Trait>
 //or
 &dyn Trait
 ```
