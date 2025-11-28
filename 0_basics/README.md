@@ -201,7 +201,17 @@ let post = Post { title: String::from("Rust Intro"), author: String::from("User"
 notify(&post); // Works because Post implements Summary
 ```
 3. Объекты-характеристики (динамическая диспетчеризация)
-Вы можете хранить различные типы, реализующие один и тот же тип, вместе ( Vec<Box<dyn Drow>>), используя объект-характеристику (Box<dyn Trait> или &dyn Trait). Это обеспечивает динамическую диспетчеризацию во время выполнения.
+Вы можете хранить различные типы, реализующие один и тот же тип, вместе
+```rust
+Vec<Box<dyn Drow>>
+```
+, используя объект-характеристику
+```rust
+    Box<dyn Trait>
+//or
+&dyn Trait
+```
+. Это обеспечивает динамическую диспетчеризацию во время выполнения.
 
 
 <h3>How do they compare to interfaces?</h3>
