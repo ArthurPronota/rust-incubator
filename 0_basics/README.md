@@ -170,6 +170,34 @@ pub trait Summary {
     fn summarize(&self) -> String;
 }
 ```
+Трейты используются тремя основными способами: для реализации поведения, в качестве ограничений трейта и для обобщённого программирования.
+1. Реализация поведения для типов
+Блок impl используется для того, чтобы определённый тип соответствовал контракту трейта:
+```rust
+struct Post {
+    title: String,
+    author: String,
+}
+
+// Implement the Summary trait for the Post struct
+impl Summary for Post {
+    fn summarize(&self) -> String {
+        format!("{} by {}", self.title, self.author)
+    }
+}
+```
+2. Как ограничения типажа для обобщённых типов
+Вы ограничиваете параметры обобщённых типов, чтобы они принимали только типы, реализующие определенный тип, используя синтаксис <T: Trait>.
+```rust
+// This function accepts any type T that implements the Summary trait
+pub fn notify<T: Summary>(item: &T) {
+    println!("Breaking news! {}", item.summarize());
+}
+
+let post = Post { title: String::from("Rust Intro"), author: String::from("User") };
+notify(&post); // Works because Post implements Summary
+```
+
 
 - How are they used? 
 - How do they compare to interfaces? 
