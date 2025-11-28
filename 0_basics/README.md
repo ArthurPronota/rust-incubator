@@ -154,11 +154,30 @@ let result = largest(&char_list); // T becomes char
 fn largest_i32(list: &[i32]) -> i32 { /* ... */ }
 fn largest_char(list: &[char]) -> char { /* ... */ }
 ```
-<li>Преимущество: такой подход означает, что использование дженериков не требует никаких затрат во время выполнения. Ваш финальный исполняемый файл выполняется так же быстро, как если бы вы написали каждую функцию вручную, в отличие от языков с динамической диспетчеризацией или объектными типами, которые иногда приводят к снижению производительности при использовании дженериков.</li>
+<ul>Преимущество: такой подход означает, что использование дженериков не требует никаких затрат во время выполнения. Ваш финальный исполняемый файл выполняется так же быстро, как если бы вы написали каждую функцию вручную, в отличие от языков с динамической диспетчеризацией или объектными типами, которые иногда приводят к снижению производительности при использовании дженериков.</ul>
 
 <hr>
 
-- What are traits? How are they used? How do they compare to interfaces? What are auto traits and blanket impls? What is a marker trait?
+- What are traits? 
+
+Трейты — это основной механизм Rust для абстрактного определения общего поведения. Они играют основополагающую роль в системе типов Rust и обеспечивают полиморфизм и повторное использование кода.
+
+Трейт определяет набор методов, которые должны реализовывать другие типы. По своей концепции они аналогичны интерфейсам в объектно-ориентированных языках, но более гибкие.
+Контракт, определяемый трейтом, реализуется конкретными типами. Это позволяет универсальным функциям работать с любым типом, удовлетворяющим контракту трейта.
+```rust
+// A simple trait definition
+pub trait Summary {
+    fn summarize(&self) -> String;
+}
+```
+
+- How are they used? 
+- How do they compare to interfaces? 
+- What are auto traits and blanket impls? 
+- What is a marker trait?
+
+<hr>
+
 - What are static and dynamic dispatch? Which should you use, and when?
 - What is a crate and what is a module in [Rust]? How do they differ? How are they used?
 - What are move semantics? What are borrowing rules? What is the benefit of using them?
