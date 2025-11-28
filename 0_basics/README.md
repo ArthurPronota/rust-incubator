@@ -11,7 +11,7 @@ Read through [the Cargo Book][Cargo Book] and become familiar with [Cargo] and i
 
 After completing these steps, you should be able to answer (and understand why) the following questions:
 - What memory model does [Rust] have? Is it single-threaded or multiple-threaded? Is it synchronous or asynchronous?
-```text
+
 Модель памяти rust определяется строгими правилами за соблюдением которых отвечает компилятор.
 1. Владение: у каждого фрагмента данных есть один владелец. Когда владелец выходит из области действия, память освобождается (RAII).
 2. Правила заимствования: в любой момент времени вы можете иметь либо одну изменяемую ссылку, либо любое количество неизменяемых ссылок на фрагмент данных.
@@ -20,7 +20,7 @@ After completing these steps, you should be able to answer (and understand why) 
 текст2
 
 текст3
-```
+
 - What runtime does [Rust] have? Does it use a GC (garbage collector)?
 - What does static typing mean? What is a benefit of using it?
 - What are generics and parametric polymorphism? Which problems do they solve?
