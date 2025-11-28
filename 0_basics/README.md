@@ -12,7 +12,7 @@ Read through [the Cargo Book][Cargo Book] and become familiar with [Cargo] and i
 After completing these steps, you should be able to answer (and understand why) the following questions:
 - What memory model does [Rust] have? Is it single-threaded or multiple-threaded? Is it synchronous or asynchronous?
 ```text
-текст
+Модель памяти rust определяется строгими правилами за соблюдением которых отвечает компилятор.
 
 текст2
 
