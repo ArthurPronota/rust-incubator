@@ -11,7 +11,7 @@ Read through [the Cargo Book][Cargo Book] and become familiar with [Cargo] and i
 
 After completing these steps, you should be able to answer (and understand why) the following questions:
 
-<h3>What memory model does [Rust] have?</h3>
+<h3>What memory model does Rust have?</h3>
 
 Модель памяти rust определяется строгими правилами за соблюдением которых отвечает компилятор.
 1. Владение: у каждого фрагмента данных есть один владелец. Когда владелец выходит из области действия, память освобождается (RAII - (Resource Acquisition Is Initialization)).
