@@ -10,14 +10,17 @@ Polish your familiarity by completing [Rust By Example] and [Rustlings][rustling
 Read through [the Cargo Book][Cargo Book] and become familiar with [Cargo] and its workspaces.
 
 After completing these steps, you should be able to answer (and understand why) the following questions:
+
 - What memory model does [Rust] have? Is it single-threaded or multiple-threaded? Is it synchronous or asynchronous?
 
 Модель памяти rust определяется строгими правилами за соблюдением которых отвечает компилятор.
 1. Владение: у каждого фрагмента данных есть один владелец. Когда владелец выходит из области действия, память освобождается (RAII).
 2. Правила заимствования: в любой момент времени вы можете иметь либо одну изменяемую ссылку, либо любое количество неизменяемых ссылок на фрагмент данных.
 3. Время жизни: компилятор отслеживает длительность действия ссылок, чтобы предотвратить появление висячих указателей.
+
 Эта модель предотвращает такие распространенные ошибки, как гонки данных, ошибки использования памяти после освобождения и разыменование нулевого указателя.
 
+<hr>
 текст2
 
 текст3
