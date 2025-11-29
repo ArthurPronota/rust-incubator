@@ -600,6 +600,20 @@ RAII реализован в Rust с использованием типажа D
 2. Система области действия и владения
 Компилятор отвечает за автоматический вызов метода drop() в тот момент, когда владелец ресурса выходит из области действия. Это происходит детерминированно, в соответствии с ходом выполнения программы, а не фоновым процессом.
 
+```rust
+use std::fs::File; // File is a resource owner that implements Drop
+
+fn scope_example() {
+    // 1. Resource Acquisition (RAII applied):
+    // A file handle is opened and owned by the 'file' variable.
+    let file = File::open("data.txt").expect("Could not open file");
+    
+    // The 'file' is used within this scope...
+
+} // 2. The 'file' variable goes out of scope here. 
+  //    Rust automatically calls the 'File' type's 'drop' implementation, 
+  //    which closes the file handle safely.
+```
 
 <h3>How is it implemented in Rust?</h3>
 
