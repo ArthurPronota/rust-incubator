@@ -569,7 +569,8 @@ println!("x: {}, y: {}", x, y); // Both x and y are valid
 
 | Черта | Cloning |	Copying |
 | ----- | ------- | ------- |
-| Инициация | Explicit method call (.clone()) | Implicit (assignment, function calls) |
+| Инициация | Явный вызов метода (.clone()) | Неявный (присваивание, вызовы функций) |
+
 
 
 <hr>
