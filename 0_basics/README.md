@@ -635,7 +635,42 @@ RAII усиливает модель владения, давая разрабо
 
 <hr>
 
-- What is an iterator? What is a collection? How do they differ? How are they used?
+В Rust итераторы и коллекции — это разные концепции, которые работают рука об руку. Коллекция — это структура данных, владеющая данными, а итератор — это механизм для эффективного доступа к этим данным без получения права собственности или копирования.
+
+<h3>What is an iterator?</h3>
+
+Итератор — это объект (или реализация типажа), который обеспечивает обход элементов коллекции или любой другой последовательности значений, по одному элементу за раз. Он реализует тип Iterator стандартной библиотеки.
+
+Основой типажа Iterator является метод next():
+
+```rust
+pub trait Iterator {
+    // Associated type that the iterator produces upon each call to next()
+    type Item;
+
+    // The method that produces the next item, wrapped in an Option
+    fn next(&mut self) -> Option<Self::Item>;
+
+    // The Iterator trait also provides many adapter methods like map, filter, etc.
+}
+```
+
+<h3>What is a collection?</h3>
+
+Коллекция — это структура данных (например, Vec, HashMap или String), которая хранит данные в памяти. Она управляет распределением, владением и организацией нескольких элементов.
+
+Примеры стандартных коллекций Rust:
+
+- Vec<T> (массив/вектор динамического размера)
+- HashMap<K, V> (хеш-карта/словарь)
+- String (растущий текст UTF-8)
+
+<h3>How do they differ?</h3>
+
+<h3>How are they used?</h3>
+
+<hr>
+
 - What are macros? Which problems do they solve? What is the difference between declarative and procedural macros?
 - How is code tested in [Rust]? Where should you put tests and why?
 - Why does [Rust] have `&str` and `String` types? How do they differ? When should you use them?
