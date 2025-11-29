@@ -354,6 +354,50 @@ fn notify_dynamic(item: &dyn Summary) {
 
 <h3>How are they used?</h3>
 
+Используемые контейнеры:
+
+Взаимодействие с контейнерами осуществляется в основном через файл конфигурации проекта Cargo.toml. В нём вы объявляете зависимости, которые становятся внешними контейнерами, которые можно импортировать в проект.
+
+```rust
+// main.rs
+// Bringing an external crate (e.g., 'rand') into scope
+use rand::Rng; 
+
+fn main() {
+    let secret_number = rand::thread_rng().gen_range(1..=100);
+}
+```
+
+Используемые модули:
+
+Вы определяете и используете модули с помощью ключевого слова mod и управляете видимостью с помощью pub.
+
+```rust
+// main.rs or lib.rs
+
+// Declare a new module named 'network'
+mod network {
+    // Items inside are private by default
+
+    pub fn connect() {
+        // ... implementation ...
+    }
+
+    fn internal_helper() {
+        // ... implementation ...
+    }
+}
+
+fn main() {
+    // We can call 'connect' because it is public
+    network::connect(); 
+
+    // We cannot call 'internal_helper' because it is private
+    // network::internal_helper(); // Error!
+}
+
+```
+
 <hr>
 
 - What are move semantics? What are borrowing rules? What is the benefit of using them?
