@@ -679,6 +679,40 @@ pub trait Iterator {
 
 <h3>How are they used?</h3>
 
+Итераторы предоставляют мощный функциональный интерфейс для работы с коллекциями, используя шаблон, называемый ленивым вычислением и адаптерами итераторов.
+
+Коллекции в использовании:
+
+```rust
+// The collection is created eagerly and holds the data in memory immediately
+let numbers = vec![1, 2, 3, 4];
+```
+
+Итераторы в использовании:
+
+Итераторы извлекаются из коллекции с помощью таких методов, как .iter(), .iter_mut() или .into_iter().
+
+```rust
+let numbers = vec![1, 2, 3, 4];
+
+// Get an iterator over immutable references (&i32)
+let mut number_iterator = numbers.iter();
+
+// Manually using the iterator:
+assert_eq!(number_iterator.next(), Some(&1));
+assert_eq!(number_iterator.next(), Some(&2));
+
+// Iterators also use 'adapters' that transform the sequence without running yet:
+let mapped = numbers.iter().map(|x| x + 1); // Lazy: nothing happens yet
+
+// Iterators use 'consumers' to finalize the operation and get the results:
+let result: Vec<_> = mapped.collect(); // Consumer: runs the map operation
+assert_eq!(result, vec![2, 3, 4, 5]);
+```
+
+Итераторы Rust имеют решающее значение для производительности, поскольку компилятор часто оптимизирует цепочки итераторов в эффективный циклический код, который имеет нулевую стоимость выполнения по сравнению с написанными вручную сборными циклами.
+
+
 <hr>
 
 - What are macros? Which problems do they solve? What is the difference between declarative and procedural macros?
