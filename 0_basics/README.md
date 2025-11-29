@@ -579,7 +579,24 @@ println!("x: {}, y: {}", x, y); // Both x and y are valid
 
 <hr>
 
-- What is RAII? How is it implemented in [Rust]? What is the benefit of using it?
+RAII (Resource Acquisition Is Initialization) расшифровывается как «Получение ресурсов — это инициализация». Это идиома программирования, в которой управление ресурсами (получение и освобождение памяти, файлов, блокировок или сетевых подключений) напрямую связано с жизненным циклом объекта.
+
+Rust использует RAII в качестве основного механизма управления памятью и её очистки, что делает его краеугольным камнем гарантий безопасности языка.
+
+
+<h3>What is RAII?</h3>
+
+In Rust's context, RAII means:
+1. Acquisition: When you create a variable or an object (initialize it), you simultaneously acquire the necessary resources it needs (e.g., allocating memory for a String, opening a File handle).
+2. Initialization: The object is created in a valid, initialized state.
+3. Release (Crucial Part): When the variable goes out of scope, the compiler automatically calls a special cleanup method, releasing the resource deterministically.
+
+<h3>How is it implemented in Rust?</h3>
+
+<h3>What is the benefit of using it?</h3>
+
+<hr>
+
 - What is an iterator? What is a collection? How do they differ? How are they used?
 - What are macros? Which problems do they solve? What is the difference between declarative and procedural macros?
 - How is code tested in [Rust]? Where should you put tests and why?
