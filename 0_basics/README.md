@@ -438,6 +438,21 @@ println!("{}", s2);            // ✅ Works! s2 now owns the data.
 
 2. Ссылки всегда должны быть корректными: ссылка не должна существовать дольше данных, на которые она указывает (чтобы избежать появления висячих указателей).
 
+```rust
+let mut data = vec!;
+
+{
+    let b1 = &data;      // Immutable borrow 1 
+    let b2 = &data;      // Immutable borrow 2 (fine)
+
+    // let b3 = &mut data; // ❌ COMPILE ERROR! 
+    // Cannot start a mutable borrow while immutable borrows b1 and b2 are active.
+} // b1 and b2 go out of scope here
+
+// Now it's fine to borrow mutably because the count is zero:
+let b4 = &mut data; 
+b4.push(10);
+```
 
 <h3>What is the benefit of using them?</h3>
 
