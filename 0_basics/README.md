@@ -586,10 +586,10 @@ Rust использует RAII в качестве основного механ
 
 <h3>What is RAII?</h3>
 
-In Rust's context, RAII means:
-1. Acquisition: When you create a variable or an object (initialize it), you simultaneously acquire the necessary resources it needs (e.g., allocating memory for a String, opening a File handle).
-2. Initialization: The object is created in a valid, initialized state.
-3. Release (Crucial Part): When the variable goes out of scope, the compiler automatically calls a special cleanup method, releasing the resource deterministically.
+В контексте Rust RAII означает:
+1. Получение: когда вы создаёте переменную или объект (инициализируете его), вы одновременно получаете необходимые ресурсы (например, выделяете память для строки, открываете дескриптор файла).
+2. Инициализация: объект создаётся в допустимом, инициализированном состоянии.
+3. Освобождение (важная часть): когда переменная выходит из области видимости, компилятор автоматически вызывает специальный метод очистки, детерминированно освобождая ресурс.
 
 <h3>How is it implemented in Rust?</h3>
 
