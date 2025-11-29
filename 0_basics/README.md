@@ -593,6 +593,8 @@ Rust использует RAII в качестве основного механ
 
 Эта детерминированная очистка происходит без сборщика мусора (GC), что гарантирует быструю и правильную обработку ресурсов.
 
+<h3>How is it implemented in Rust?</h3>
+
 RAII реализован в Rust с использованием типажа Drop и системы владения, основанной на области действия:
 1. Тип Drop
 Любой тип, которому требуется выполнять логику очистки, реализует тип std::ops::Drop. Этот тип требует одного метода drop(&mut self), содержащего необходимый код очистки.
@@ -614,8 +616,6 @@ fn scope_example() {
   //    Rust automatically calls the 'File' type's 'drop' implementation, 
   //    which closes the file handle safely.
 ```
-
-<h3>How is it implemented in Rust?</h3>
 
 <h3>What is the benefit of using it?</h3>
 
