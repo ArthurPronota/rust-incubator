@@ -400,7 +400,38 @@ fn main() {
 
 <hr>
 
-- What are move semantics? What are borrowing rules? What is the benefit of using them?
+Семантика перемещения и правила заимствования являются основными столпами системы владения Rust, уникального подхода к управлению памятью, который гарантирует безопасность памяти без сборщика мусора (GC).
+
+<h3>What are move semantics?</h3>
+
+Семантика перемещения по умолчанию определяет, как данные передаются между переменными.
+
+В Rust при присвоении значения новой переменной или передаче значения функции владелец исходной переменной обычно перемещается, а не копируется.
+
+Механизм перемещения:
+
+При перемещении Rust гарантирует, что только один владелец может управлять ресурсом (например, определённым блоком памяти в куче) одновременно. Предыдущий владелец становится недействительным.
+
+```rust
+let s1 = String::from("hello"); // s1 owns the "hello" data
+let s2 = s1;                   // Ownership of "hello" moves from s1 to s2
+
+// println!("{}", s1);          // ❌ COMPILE ERROR!
+// The compiler prevents this because s1 is no longer valid.
+// If it were allowed, both s1 and s2 would try to free the same memory
+// when they go out of scope, causing a "double free" error.
+
+println!("{}", s2);            // ✅ Works! s2 now owns the data.
+```
+
+Примечание: примитивные типы, такие как целые числа (i32), логические значения (bool) и символьные, автоматически реализуют свойство Copy, поэтому по умолчанию они копируются, а не перемещаются. Семантика перемещения применяется к типам, владеющим ресурсами, таким как String, Vec<T> или Box<T>.
+
+<h3>What are borrowing rules?</h3>
+
+<h3>What is the benefit of using them?</h3>
+
+<hr>
+
 - What is immutability? What is the benefit of using it?
 - What is cloning? What is copying? How do they compare?
 - What is RAII? How is it implemented in [Rust]? What is the benefit of using it?
