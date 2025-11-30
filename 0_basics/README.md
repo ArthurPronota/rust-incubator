@@ -763,7 +763,11 @@ assert_eq!(result, vec![2, 3, 4, 5]);
 
 <hr>
 
-- How is code tested in [Rust]? Where should you put tests and why?
+How is code tested in Rust?
+Where should you put tests and why?
+
+<hr>
+
 - Why does [Rust] have `&str` and `String` types? How do they differ? When should you use them?
 - What are lifetimes? Which problems do they solve? Which benefits do they give?
 - Is [Rust] an OOP language? Is it possible to use SOLID/GRASP? Does it have inheritance?
