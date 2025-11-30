@@ -868,6 +868,28 @@ Rust рекомендует использовать два основных м�
 
 Аннотации времени жизни обычно выглядят как 'a, 'b и т. д. и используются в качестве общих параметров:
 
+```rust
+// The lifetime annotation <'a> specifies that 
+// the input references and the returned reference all live for the same duration 'a
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}
+
+// Example usage:
+let string1 = String::from("abcd");
+{
+    let string2 = String::from("xyz");
+    let result = longest(&string1, &string2); 
+    // Both string1 and string2 are valid within this inner scope, so it compiles
+    println!("The longest string is {}", result);
+}
+// string2 goes out of scope here.
+// string1 is still valid.
+```
 
 <h3>Which problems do they solve?</h3>
 
