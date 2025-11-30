@@ -12,6 +12,7 @@ Read through [the Cargo Book][Cargo Book] and become familiar with [Cargo] and i
 After completing these steps, you should be able to answer (and understand why) the following questions:
 
 [Какая модель памяти у Rust? Он однопоточный или многопоточный? Синхронный или асинхронный?](#user-content-какая-модель-памяти-у-rust)
+
 [Какая среда выполнения у Rust? Использует ли он GC (сборщик мусора)?](#user-content-какая-среда-выполнения-у-rust)
 
 <hr>
