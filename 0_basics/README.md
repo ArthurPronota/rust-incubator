@@ -19,7 +19,6 @@ After completing these steps, you should be able to answer (and understand why) 
 
 [Что такое дженерики и параметрический полиморфизм? Какие проблемы они решают?](#user-content-что-такое-дженерики-и-параметрический-полиморфизм")
 
-
 <hr>
 
 <h3>Какая модель памяти у Rust?</h3>
