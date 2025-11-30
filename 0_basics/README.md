@@ -15,7 +15,7 @@ After completing these steps, you should be able to answer (and understand why) 
 
 [Какая среда выполнения у Rust? Использует ли он GC (сборщик мусора)?](#user-content-какая-среда-выполнения-у-rust)
 
-[Что означает статическая типизация? В чем преимущество его использования?](#user-content-what-does-static-typing-mean)
+[Что означает статическая типизация? В чем преимущество его использования?](#user-content-что-означает-статическая-типизация)
 
 <hr>
 
