@@ -31,7 +31,7 @@ After completing these steps, you should be able to answer (and understand why) 
 
 [Что такое клонирование? Что такое копирование? Как их можно сравнить?](#user-content-что-такое-клонирование)
 
-[Что такое RAII? Как это реализовано в Rust? В чем польза его использования?](#)
+[Что такое RAII? Как это реализовано в Rust? В чем польза его использования?](#user-content-что-такое-raii)
 
 
 <hr>
