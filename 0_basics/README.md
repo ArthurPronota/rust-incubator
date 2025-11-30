@@ -17,6 +17,8 @@ After completing these steps, you should be able to answer (and understand why) 
 
 [Что означает статическая типизация? В чем преимущество его использования?](#user-content-что-означает-статическая-типизация)
 
+[Что такое дженерики и параметрический полиморфизм? Какие проблемы они решают?](#id="user-content-what-are-generics-and-parametric-polymorphism")
+
 <hr>
 
 <h3>Какая модель памяти у Rust?</h3>
@@ -93,7 +95,7 @@ Rust изначально является языком со статическ�
 
 <hr>
 
-<h3>What are generics and parametric polymorphism?</h3>
+<h3>Что такое дженерики и параметрический полиморфизм?</h3>
 
 В Rust дженерики являются основным механизмом, используемым для достижения параметрического полиморфизма.
 
@@ -142,7 +144,7 @@ let char_list = vec!['y', 'm', 'a', 'q'];
 let result = largest(&char_list); // T becomes char
 ```
 
-<h3>Which problems do they solve?</h3>
+<h3>Какие проблемы они решают?</h3>
 
 Дженерик (обобщённый тип) решает проблему дублирования кода, сохраняя при этом типобезопасность и производительность.
 
