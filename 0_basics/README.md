@@ -39,7 +39,7 @@ After completing these steps, you should be able to answer (and understand why) 
 
 [Как тестируется код в Rust? Где следует проводить тесты и почему?](#user-content-как-тестируется-код-в-rust)
 
-[Почему в Rust есть типы `&str` и `String`? Чем они отличаются? Когда следует их использовать?](#)
+[Почему в Rust есть типы `&str` и `String`? Чем они отличаются? Когда следует их использовать?](#user-content-почему-в-rust-есть-типы-str-и-string)
 
 <hr>
 
