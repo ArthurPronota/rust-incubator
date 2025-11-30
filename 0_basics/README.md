@@ -763,8 +763,40 @@ assert_eq!(result, vec![2, 3, 4, 5]);
 
 <hr>
 
-How is code tested in Rust?
-Where should you put tests and why?
+В Rust тестирование — неотъемлемая часть синтаксиса языка и инструмента сборки Cargo. Методология тестирования делает акцент на надёжном модульном и интеграционном тестировании.
+
+<h3>How is code tested in Rust?</h3>
+
+В Rust тестирование — неотъемлемая часть синтаксиса языка и инструмента сборки Cargo. Методология тестирования делает акцент на надёжном модульном и интеграционном тестировании. Rust использует модульные и интеграционные тесты, определяемые атрибутом #[test] внутри функций. Команда Cargo Test — стандартный способ запуска всех тестов в проекте.
+
+Вот базовая структура теста:
+
+```rust
+pub fn add(left: usize, right: usize) -> usize {
+    left + right
+}
+
+#[cfg(test)] // Tells compiler to only compile this module when running tests
+mod tests {
+    use super::*; // Bring parent items into scope
+
+    #[test] // Marks this function as a test
+    fn it_works() {
+        let result = add(2, 2);
+        assert_eq!(result, 4); // Standard assertion macro
+    }
+
+    #[test]
+    #[should_panic(expected = "slice index out of bounds")]
+    fn test_panics() {
+        let v = vec![1];
+        v[2]; 
+    }
+}
+```
+
+
+<h3>Where should you put tests and why?</h3>
 
 <hr>
 
