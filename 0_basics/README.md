@@ -893,6 +893,21 @@ let string1 = String::from("abcd");
 
 <h3>Which problems do they solve?</h3>
 
+Времена жизни решают проблему висячих ссылок и ошибок использования после освобождения.
+
+В таких языках, как C или C++, часто случается случайное возвращение указателя на уже освобожденную память, что приводит к сбоям или уязвимостям безопасности. Система времени жизни Rust полностью предотвращает это.
+
+Рассмотрим следующий недопустимый код C++ (и подобная логика предотвращается в Rust):
+
+```c++
+// C++ example of the problem Rust solves
+char* dangerous_function() {
+    char greeting[] = "Hello"; // 'greeting' is on the stack
+    return greeting;           // Returns pointer to 'greeting'
+} // 'greeting' is destroyed/freed here
+// The returned pointer is now "dangling" and invalid!
+```
+
 <h3>Which benefits do they give?</h3>
 
 <hr>
