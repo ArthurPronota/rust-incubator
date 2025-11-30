@@ -822,11 +822,14 @@ Rust рекомендует использовать два основных м�
 | Единичный | Встроенные модудьные тесты в src/**/*.rs | 	Private and Public | cargo test |
 | Интеграционный | Файлы в tests/*.rs directory | Public API Only | cargo test
 
+<hr>
 
+Why does Rust have `&str` and `String` types?
+How do they differ?
+When should you use them?
 
 <hr>
 
-- Why does [Rust] have `&str` and `String` types? How do they differ? When should you use them?
 - What are lifetimes? Which problems do they solve? Which benefits do they give?
 - Is [Rust] an OOP language? Is it possible to use SOLID/GRASP? Does it have inheritance?
 
