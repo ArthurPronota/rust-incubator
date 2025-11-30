@@ -899,7 +899,7 @@ let string1 = String::from("abcd");
 
 Рассмотрим следующий недопустимый код C (и подобная логика предотвращается в Rust):
 
-```c
+```C++
 // C++ example of the problem Rust solves
 char* dangerous_function() {
     char greeting[] = "Hello"; // 'greeting' is on the stack
