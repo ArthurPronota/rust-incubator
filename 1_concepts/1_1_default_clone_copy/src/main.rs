@@ -1,5 +1,7 @@
 //use std::intrinsics::const_eval_select;
 
+use std::{error::Error, fmt::Display};
+
 fn main() {
     println!("Implement me!");
 
@@ -248,4 +250,354 @@ fn main() {
                 Number2::Three as i32,
             ) ;
 
+    // ---------------------
+
+    /*
+    enum List2 {
+        Cons(u32, Box<List2>),
+        Nil,
+    }
+
+    use List2::* ;
+
+    impl List2 {
+        fn new() ->List2 {
+            List2::Nil
+        }
+
+        fn prepend(self, elem: u32) -> List2 {
+            Cons(elem, Box::new(self))
+        }
+
+        fn len(&self) ->u32 {
+            match *self {
+                Cons(_, ref tile) => 1 + tile.len(),
+                Nil => 0,
+            }
+        }
+
+        fn stringify(&self) ->String {
+            match *self {
+                Cons(head, ref title) => {
+                    format!("{}, {}", head, title.stringify())
+                },
+                Nil => format!("Nil"),
+            }
+        }
+    }
+
+    let mut list = List2::new() ;
+    list = list.prepend(1) ;
+    list = list.prepend(2) ;
+    list = list.prepend(3) ;
+
+    println!("len: {}",list.len()) ;
+
+    println!("{}", list.stringify()) ;
+     */
+
+    enum List2 {
+        Cons(u32, Box<List2>),
+        Nil,
+    }
+
+    use List2::* ;
+
+    impl List2 {
+        fn new() ->List2 {
+            Nil
+        }
+        
+        fn prepend(self, num: u32) ->List2 {
+            Cons(num, Box::new(self))
+        }
+
+        fn len(&self) ->u32 {
+            match *self {
+                Cons(_, ref tile) => 1 + tile.len(),
+                Nil => 0,
+            }
+        }
+
+        fn stringify(&self) ->String {
+            match *self {
+                Cons(head, ref title ) => format!("{}, {}", head, title.stringify()),
+                Nil => format!("Nil"),
+            }
+        }
+    }
+
+    let mut list = List2::new() ;
+
+    list = list.prepend(1) ;
+    list = list.prepend(2) ;
+    list = list.prepend(3) ;
+
+    println!("len of list: {}", list.len()) ;
+    println!("strigify: {}", list.stringify()) ;
+
+    // ------------------
+
+    static MYSTAT: &str = "m" ;
+    static mut MYSTAT_MUT: &str = "a" ;
+
+    const MYCONST: i64 = 10 ;
+
+    println!("{}, {}", MYSTAT, MYCONST) ;
+
+    unsafe {
+        MYSTAT_MUT = "a1" ;
+    }
+
+    // -----------------------
+
+    let mut mutable_int = 10u64 ;
+    {
+        let mutable_int_2 = mutable_int ;
+
+        // https://doc.rust-lang.org/stable/rust-by-example/variable_bindings/freeze.html
+        mutable_int = 50 ;  // mutable_int isn't frozen
+    }
+
+    // ------------------------
+
+    println!("{}, {}", -1i8 as u8, -100.00 as i8) ;
+
+    unsafe {
+        println!("{}", 300.1f32.to_int_unchecked::<u8>()) ;
+        println!("nan as u8 is: {}", f32::NAN.to_int_unchecked::<u8>()) ;
+    }
+
+    // ---------------------
+
+    let f = 1.4f64 ;
+
+    println!("size of f is: {}", std::mem::size_of_val(&f)) ;
+
+    // -----------------------
+
+    #[derive(Debug)]
+    struct Number3 {
+        value: i32
+    }
+
+    impl From<i32> for Number3 {
+        fn from(num: i32) ->Self {
+            Self { value: num }
+        }
+    }
+
+    let numb = Number3::from(10) ;
+    println!("numb: {:?}", numb) ;
+
+    // -------------------
+
+    #[derive(Debug)]
+    struct Number4 {
+        value: i32
+    }
+
+    impl Into<Number4> for i32 {
+        fn into(self) -> Number4 {
+            Number4 { value: self }
+        }
+    }
+
+    let numb: Number4 = 10.into() ;
+
+    println!("numb: {:?}", numb) ;
+
+    // --------------------
+
+    use std::convert::{TryFrom, TryInto} ;
+
+    #[derive(Debug)]
+    struct EvenNumber(i32) ;
+
+    impl TryFrom<i32> for EvenNumber {
+        type Error = () ;
+
+        fn try_from(value: i32) -> Result<Self, Self::Error> {
+
+            if value % 2 == 0 {
+                Ok(EvenNumber(value))
+            } else {
+                Err(())
+            }
+        }
+    }
+
+    impl TryInto<EvenNumber> for f32 {
+        type Error = () ;
+
+        fn try_into(self) -> Result<EvenNumber, Self::Error> {
+            if (self as i32) % 2 == 0 {
+                Ok(EvenNumber(self as i32))
+            } else {
+                Err(())
+            }
+        }
+    }
+
+    let mut result = EvenNumber::try_from(10) ;
+    println!("result: {:?}", result) ;
+
+    result = EvenNumber::try_from(3) ;
+    println!("result: {:?}", result) ;
+
+    let mut result2: Result<EvenNumber, ()>  = (10.5f32).try_into() ;
+    println!("result2: {:?}", result2) ;
+
+    result2 = (9.0f32).try_into() ;
+    println!("result2: {:?}", result2) ;
+
+    // -------------------------------
+
+    //use std::fmt ;
+
+    struct Circle {
+        radius: i32
+    }
+
+    impl Display for Circle {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(f, "Circle of radius: {}", self.radius)
+        }
+    }
+
+    let circle = Circle{radius: 10} ;
+    println!("circle: {}", circle) ;
+
+    let parsed: u32 = "5"
+                        .parse()
+                        .unwrap()
+                        ;
+    println!("parsed: {}", parsed) ;
+
+    use std::num::ParseIntError ;
+    use std::str::FromStr ;
+
+    impl FromStr for Circle {
+        type Err = ParseIntError ;
+        fn from_str(s: &str) -> Result<Self, Self::Err> {
+            match s.trim().parse() {
+                Ok(num) => Ok(Circle{radius: num}),
+                Err(e) => Err(e),
+            }
+        }
+    }
+
+    let circle = "    5 ".parse::<Circle>()
+                                    .unwrap() ;
+    println!("circle: {}", circle) ;
+
+    let circle: Circle = "    6 ".parse().unwrap() ;
+    println!("circle: {}", circle) ;
+    
+    // -----------------------
+
+    let names = vec!["1", "2", "3"] ;
+
+    for name in names
+                        .iter()
+                         {
+        match name {
+            &"3" => println!("It's: {}", name),
+            _ => println!("{}", name),
+        }
+    }
+
+    for name in names.into_iter() {
+        match name {
+            "3" => println!("It's: 3"),
+            _ => println!("{}", name),
+        }
+    }
+
+    //println!("{:?}", names) ; // Error: borrow of moved value: `names`
+
+    let mut names = vec!["1", "2", "3"] ;
+
+    for name in names.iter_mut() {
+        *name = match name {
+            &mut "3" => "30",
+            _ => name,
+        }
+    }
+
+    println!("{:?}", names) ;
+
+    // ---------------------
+
+    let array = [10, 1, 2, 3] ;
+
+    match array {
+        [10, tail @ .., last] => println!("{:?}, {}",
+                tail, last
+            ),
+        [1, second, tail @ ..] => println!("{}, {:?}", 
+                second, tail),
+        _ => println!("Other."),
+    }
+
+    // ------------------------
+
+    let refrence = &5 ;
+
+    match refrence {
+        &v => println!("v value: {}", v),
+    }
+
+    match *refrence {
+        v => println!("v value: {}", v),
+    }
+
+    let not_a_refrence = 4 ;
+    let ref a_refrence = 4 ;
+
+    let val = 5 ;
+
+    match val {
+        ref v => println!("is refrence: {:?}", v),
+    }
+
+    let mut mut_val = 6 ;
+
+    match mut_val {
+        ref mut v => {
+            *v += 10 ;
+            println!("m: {}", v) ;
+        }
+    }
+
+    // ---------------------------
+
+    struct Foo {
+        x:  (u32, u32),
+        y:  u32,
+    }
+
+    let foo = Foo {x: (1, 2), y: 3} ;
+
+    match foo {
+        Foo { x: (1, b), y } => println!("b: {}, y: {}", b, y),
+        Foo { y: 2, x: i } => println!("i: {:?}", i),
+        Foo { y, .. } => println!("y: {}", y),
+    }
+
+    let Foo { x: x0, y: y0 } = foo;
+    println!("x0: {:?}, y0: {}", x0, y0) ;
+
+    struct Bar {
+        foo: Foo,
+    }
+
+    let bar = Bar {foo: foo} ;
+
+    let Bar { foo: Foo { x: nested_x, y: nested_y } } = bar;
+    println!("nested_x: {:?}, nested_y: {}", nested_x, nested_y) ;
+
+    // ------------------------
+
+    
 }
