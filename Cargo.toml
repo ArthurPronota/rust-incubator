@@ -8,4 +8,5 @@ members = [
     "3_ecosystem/3_*",
     "4_backend",
     "4_backend/4_*",
+    "rust_by_examples",
 ]
