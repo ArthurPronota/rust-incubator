@@ -28,6 +28,7 @@ trpl::Receiver специально ожидает получения сообщ
 
 Имя файла: src/main.rs
 
+```rust
         let values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         let iter = values.iter().map(|n| n * 2);
         let mut stream = trpl::stream_from_iter(iter);
@@ -35,6 +36,7 @@ trpl::Receiver специально ожидает получения сообщ
         while let Some(value) = stream.next().await {
             println!("The value was: {value}");
         }
+```
 
 Листинг 17-30: Создание потока из итератора и вывод его значений
 
@@ -47,6 +49,7 @@ while let.
 К сожалению, когда мы пытаемся запустить код, он не компилируется, а 
 вместо этого сообщает, что нет доступного метода next:
 
+```text
 error[E0599]: no method named `next` found for struct `Iter` in the current scope
   --> src/main.rs:10:40
    |
@@ -70,6 +73,7 @@ help: there is a method `try_next` with a similar name
    |
 10 |         while let Some(value) = stream.try_next().await {
    |                                        ~~~~~~~~
+```
 
 Как поясняет этот вывод, причина ошибки компиляции заключается в том, что
 для использования следующего метода нам нужен правильный трейт в области
@@ -92,6 +96,7 @@ trpl::StreamExt, как в листинге 17-31.
 
 Имя файла: src/main.rs
 
+```rust
 use trpl::StreamExt;
 
 fn main() {
@@ -105,6 +110,7 @@ fn main() {
         }
     });
 }
+```
 
 Листинг 17-31: Успешное использование итератора в качестве основы для 
                 потока
@@ -117,6 +123,7 @@ fn main() {
 
 Имя файла: src/main.rs
 
+```rust
 use trpl::StreamExt;
 
 fn main() {
@@ -133,6 +140,7 @@ fn main() {
         }
     });
 }
+```
 
 Листинг 17-32: Фильтрация потока с помощью метода StreamExt::filter
 
@@ -158,6 +166,7 @@ fn main() {
 
 Имя файла: src/main.rs
 
+```rust
 use trpl::{ReceiverStream, Stream, StreamExt};
 
 fn main() {
@@ -180,11 +189,12 @@ fn get_messages() -> impl Stream<Item = String> {
 
     ReceiverStream::new(rx)
 }
+```
 
 Листинг 17-33: Использование приемника rx в качестве ReceiverStream
 
 Сначала мы создаём функцию get_messages, которая возвращает 
-impl Stream<Item = String>. Для её реализации мы создаём асинхронный 
+`impl Stream<Item = String>`. Для её реализации мы создаём асинхронный 
 канал, циклически перебираем первые 10 букв английского алфавита и 
 отправляем их по каналу.
 
@@ -195,6 +205,7 @@ impl Stream<Item = String>. Для её реализации мы создаём
 При запуске этого кода мы получаем именно те результаты, которые и 
 ожидали:
 
+```text
 Message: 'a'
 Message: 'b'
 Message: 'c'
@@ -205,6 +216,7 @@ Message: 'g'
 Message: 'h'
 Message: 'i'
 Message: 'j'
+```
 
 Опять же, мы могли бы сделать это с помощью обычного API приемника или
 даже обычного API итератора, поэтому давайте добавим функцию, требующую
@@ -212,6 +224,7 @@ Message: 'j'
 и задержку для элементов, которые мы выпускаем, как показано в 
 листинге 17-34.
 
+```rust
 use std::{pin::pin, time::Duration};
 use trpl::{ReceiverStream, Stream, StreamExt};
 
@@ -228,6 +241,7 @@ fn main() {
         }
     })
 }
+```
 
 Листинг 17-34: Использование метода StreamExt::timeout для установки 
                ограничения по времени для элементов в потоке
@@ -249,6 +263,7 @@ while let, поскольку поток теперь возвращает Resul
 
 Имя файла: src/main.rs
 
+```rust
 fn get_messages() -> impl Stream<Item = String> {
     let (tx, rx) = trpl::channel();
 
@@ -264,6 +279,7 @@ fn get_messages() -> impl Stream<Item = String> {
 
     ReceiverStream::new(rx)
 }
+```
 
 Листинг 17-35: Отправка сообщений через tx с асинхронной задержкой без 
                создания асинхронной функции get_messages
@@ -279,7 +295,7 @@ messages, чтобы получить индекс каждого отправл
 Чтобы заснуть между сообщениями в функции get_messages без блокировки, нам
 нужно использовать async. Однако мы не можем сделать get_messages самой 
 асинхронной функцией, потому что тогда мы вернем 
-Future<Output = Stream<Item = String>> вместо Stream<Item = String>>. 
+`Future<Output = Stream<Item = String>>` вместо `Stream<Item = String>>`. 
 Вызывающему пришлось бы ожидать сам get_messages, чтобы получить доступ к
 потоку. Но помните: все в данном future происходит линейно; параллелизм 
 происходит между futures. Ожидание get_messages потребовало бы от него
@@ -303,6 +319,7 @@ Future<Output = Stream<Item = String>> вместо Stream<Item = String>>.
 Теперь наш код даёт гораздо более интересный результат. Между каждой парой
 сообщений — ошибка «Problem: Elapsed(())».
 
+```text
 Message: 'a'
 Problem: Elapsed(())
 Message: 'b'
@@ -318,6 +335,7 @@ Message: 'h'
 Message: 'i'
 Problem: Elapsed(())
 Message: 'j'
+```
 
 Тайм-аут не препятствует доставке сообщений в конце. Мы всё равно получаем
 все исходные сообщения, поскольку наш канал неограничен: он может хранить
@@ -330,7 +348,7 @@ Message: 'j'
 один из них на практике, объединив поток временных интервалов с этим 
 потоком сообщений.
 
-                           Объединение потоков
+<h4>Объединение потоков</h4>
 Для начала создадим ещё один поток, который будет отправлять элемент 
 каждую миллисекунду, если мы запустим его напрямую. Для простоты мы можем
 использовать функцию sleep для отправки сообщения с задержкой и объединить
@@ -342,6 +360,7 @@ get_intervals (см. листинг 17-36).
 
 Имя файла: src/main.rs
 
+```rust
 fn get_intervals() -> impl Stream<Item = u32> {
     let (tx, rx) = trpl::channel();
 
@@ -356,6 +375,7 @@ fn get_intervals() -> impl Stream<Item = u32> {
 
     ReceiverStream::new(rx)
 }
+```
 
 Листинг 17-36: Создание потока со счетчиком, который будет отправляться 
                каждую миллисекунду
@@ -380,11 +400,13 @@ spawn_task, всё это, включая бесконечный цикл, бу�
 
 Имя файла: src/main.rs
 
+```rust
         let messages = get_messages().timeout(Duration::from_millis(200));
         let intervals = get_intervals();
         let merged = messages.merge(intervals);
 
         while let Some(result) = merged.next().await {
+```
 
 Листинг 17-37: Попытка объединить потоки сообщений и интервалов
 
@@ -399,15 +421,16 @@ spawn_task, всё это, включая бесконечный цикл, бу�
 Однако этот вызов merge не компилируется! (Как и следующий вызов в цикле 
 while let, но мы еще вернемся к этому.) Это происходит потому, что два 
 потока имеют разные типы. Поток messages имеет тип 
-Timeout<impl Stream<Item = String>>, где Timeout — это тип, который 
+`Timeout<impl Stream<Item = String>>`, где Timeout — это тип, который 
 реализует Stream для вызова тайм-аута. Поток intervals имеет тип 
-impl Stream<Item = u32>. Чтобы объединить эти два потока, нам нужно 
+`impl Stream<Item = u32>`. Чтобы объединить эти два потока, нам нужно 
 преобразовать один из них в соответствии с другим. Мы переработаем поток 
 intervals, потому что messages уже находится в базовом формате, который 
 нам нужен, и должен обрабатывать ошибки тайм-аута (см. листинг 17-38).
 
 Имя файла: src/main.rs
 
+```rust
         let messages = get_messages().timeout(Duration::from_millis(200));
         let intervals = get_intervals()
             .map(|count| format!("Interval: {count}"))
@@ -416,6 +439,7 @@ intervals, потому что messages уже находится в базов�
         let mut stream = pin!(merged);
 
         while let Some(result) = stream.next().await {
+```
 
 Листинг 17-38: Выравнивание типа потока интервалов с типом потока 
                сообщений
@@ -433,6 +457,7 @@ intervals, потому что messages уже находится в базов�
 будет остановить его с помощью Ctrl+C. Во-вторых, сообщения с английскими
 буквами будут погребены среди всех сообщений счётчика интервалов:
 
+```text
 --snip--
 Interval: 38
 Interval: 39
@@ -442,11 +467,13 @@ Interval: 41
 Interval: 42
 Interval: 43
 --snip--
+```
 
 В листинге 17-39 показан один из способов решения последних двух проблем.
 
 Имя файла: src/main.rs
 
+```rust
         let messages = get_messages().timeout(Duration::from_millis(200));
         let intervals = get_intervals()
             .map(|count| format!("Interval: {count}"))
@@ -454,7 +481,7 @@ Interval: 43
             .timeout(Duration::from_secs(10));
         let merged = messages.merge(intervals).take(20);
         let mut stream = pin!(merged);
-
+```
 
 Листинг 17-39: Использование throttle и take для управления объединенными
                потоками
@@ -483,6 +510,7 @@ Interval: 43
 «лень» фьючерсов Rust, позволяющая нам выбирать характеристики 
 производительности.
 
+```text
 Interval: 1
 Message: 'a'
 Interval: 2
@@ -503,6 +531,7 @@ Interval: 10
 Interval: 11
 Problem: Elapsed(())
 Interval: 12
+```
 
 Осталось ещё кое-что обработать: ошибки! В обоих этих потоках, основанных
 на каналах, вызовы send могут завершиться ошибкой при закрытии канала на 
@@ -514,6 +543,7 @@ Interval: 12
 стратегия обработки ошибок: вывести сообщение о проблеме и затем выйти из
 цикла.
 
+```rust
 fn get_messages() -> impl Stream<Item = String> {
     let (tx, rx) = trpl::channel();
 
@@ -552,6 +582,7 @@ fn get_intervals() -> impl Stream<Item = u32> {
 
     ReceiverStream::new(rx)
 }
+```
 
 Листинг 17-40: Обработка ошибок и завершение циклов
 
