@@ -9,4 +9,6 @@ members = [
     "4_backend",
     "4_backend/4_*",
     "rust_by_examples",
+    "asynchronous_programming",
+    "asynchronous_programming/hello-async",
 ]
