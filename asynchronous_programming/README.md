@@ -1,7 +1,7 @@
 Перевод главы отсутствующей на русском языке [Основы асинхронного программирования: Async, Await, Futures и Streams](https://doc.rust-lang.org/stable/book/ch17-00-async-await.html)
 =============================================
 
-[<h3>Фьючерсы и асинхронный синтаксис</h3>](https://github.com/ArthurPronota/rust-incubator/tree/main/asynchronous_programming/hello-async)
+[<h2>Фьючерсы и асинхронный синтаксис</h2>](https://github.com/ArthurPronota/rust-incubator/tree/main/asynchronous_programming/hello-async)
 
 [Применение конкуренции с Async](https://github.com/ArthurPronota/rust-incubator/tree/main/asynchronous_programming/concurrency-with-async)
 
