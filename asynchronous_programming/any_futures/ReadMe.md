@@ -93,11 +93,12 @@ https://doc.rust-lang.org/stable/book/ch08-01-vectors.html#using-an-enum-to-stor
 
 Имя файла: src/main.rs
 
+```rust
         let futures =
             vec![Box::new(tx1_fut), Box::new(rx_fut), Box::new(tx_fut)];
 
         trpl::join_all(futures).await;
-
+```
 
 Листинг 17-16: Использование Box::new для выравнивания типов будущих 
                объектов в Vec
