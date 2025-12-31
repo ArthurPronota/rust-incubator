@@ -189,7 +189,7 @@ c) Как многопоточность и асинхронность обес�
 
 -------------------------------------------------------------------------
 
-(Futures и асинхронный синтаксис)[https://doc.rust-lang.org/stable/book/ch17-01-futures-and-syntax.html]
+[Futures и асинхронный синтаксис](https://doc.rust-lang.org/stable/book/ch17-01-futures-and-syntax.html)
 
 Ключевыми элементами асинхронного программирования в Rust являются 
 futures и ключевые слова Rust async и await.
