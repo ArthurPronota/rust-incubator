@@ -11,3 +11,4 @@
 
 [Более пристальный взгляд на Traits для Async](https://github.com/ArthurPronota/rust-incubator/tree/main/asynchronous_programming/mix_async)
 
+[Соединяя Все Это Воедино: Futures, Tasks и Threads](https://github.com/ArthurPronota/rust-incubator/tree/main/asynchronous_programming/all_together_async)
