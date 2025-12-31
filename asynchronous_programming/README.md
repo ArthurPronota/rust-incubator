@@ -8,3 +8,6 @@
 [Работа с любым количеством Futures](https://github.com/ArthurPronota/rust-incubator/tree/main/asynchronous_programming/any_futures)
 
 [Потоки: Futures в последовательностях](https://github.com/ArthurPronota/rust-incubator/tree/main/asynchronous_programming/futures_sequence)
+
+[Более пристальный взгляд на Traits для Async](https://github.com/ArthurPronota/rust-incubator/tree/main/asynchronous_programming/mix_async)
+
