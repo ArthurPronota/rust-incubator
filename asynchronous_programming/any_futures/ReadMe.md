@@ -1,6 +1,6 @@
-https://doc.rust-lang.org/stable/book/ch17-03-more-futures.html
 
-                Работа с любым количеством фьючерсов
+[Работа с любым количеством фьючерсов)(https://doc.rust-lang.org/stable/book/ch17-03-more-futures.html)
+
 Когда в предыдущем разделе мы перешли с двух фьючерсов на три, нам также 
 пришлось перейти от join к join3. Было бы неприятно вызывать отдельную 
 функцию каждый раз, когда мы меняли количество фьючерсов, которые хотели 
@@ -11,7 +11,9 @@ https://doc.rust-lang.org/stable/book/ch17-03-more-futures.html
 
 Имя файла: src/main.rs
 
+```rust
         trpl::join!(tx1_fut, tx_fut, rx_fut);
+```
 
 Листинг 17-14: Использование join! для ожидания нескольких будущих событий
 
@@ -30,15 +32,18 @@ https://doc.rust-lang.org/stable/book/ch13-02-iterators.html#the-iterator-trait-
 будущие элементы в вектор и заменить join! на join_all, как показано в 
 листинге 17-15.
 
+```rust
         let futures = vec![tx1_fut, rx_fut, tx_fut];
 
         trpl::join_all(futures).await;
+```
 
 Листинг 17-15: Сохранение анонимных futures в векторе и вызов join_all
 
 К сожалению, этот код не компилируется. Вместо этого мы получаем такую 
 ​​ошибку:
 
+```text
 error[E0308]: mismatched types
   --> src/main.rs:45:37
    |
@@ -55,10 +60,11 @@ error[E0308]: mismatched types
               found `async` block `{async block@src/main.rs:24:22: 24:27}`
    = note: no two async blocks, even if identical, have the same type
    = help: consider pinning your async block and casting it to a trait object
+```
 
 Это может показаться удивительным. В конце концов, ни один из асинхронных 
 блоков ничего не возвращает, поэтому каждый из них создаёт 
-Future<Output = ()>. Однако помните, что Future — это трейт, и компилятор 
+`Future<Output = ()>`. Однако помните, что Future — это трейт, и компилятор 
 создаёт уникальное перечисление для каждого асинхронного блока. В Vec 
 нельзя поместить две разные структуры, написанные вручную, и то же правило
 применяется к разным перечислениям, сгенерированным компилятором.
