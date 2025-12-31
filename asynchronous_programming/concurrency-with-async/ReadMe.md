@@ -12,7 +12,8 @@
 выглядят похожими, они часто ведут себя по-разному, и почти всегда имеют 
 разные характеристики производительности.
 
-                Создание новой задачи с помощью spawn_task
+<h4>Создание новой задачи с помощью spawn_task</h4>
+
 Первая операция, которую мы рассмотрели в разделе 
 «Создание нового потока с помощью Spawn»
 https://doc.rust-lang.org/stable/book/ch16-01-threads.html#creating-a-new-thread-with-spawn
@@ -24,6 +25,7 @@ https://doc.rust-lang.org/stable/book/ch16-01-threads.html#creating-a-new-thread
 
 Имя файла: src/main.rs
 
+```rust
 use std::time::Duration;
 
 fn main() {
@@ -41,6 +43,7 @@ fn main() {
         }
     });
 }
+```
 
 Листинг 17-6: Создание новой задачи для печати одной вещи, пока 
               основная задача печатает что-то другое
@@ -62,6 +65,7 @@ trpl::spawn_task, а другой — в цикл for верхнего уров�
 факт, что при запуске вы можете увидеть сообщения в другом порядке на 
 своем терминале:
 
+```text
 hi number 1 from the second task!
 hi number 1 from the first task!
 hi number 2 from the first task!
@@ -71,6 +75,7 @@ hi number 3 from the second task!
 hi number 4 from the first task!
 hi number 4 from the second task!
 hi number 5 from the first task!
+```
 
 Эта версия останавливается сразу после завершения цикла for в теле 
 основного асинхронного блока, поскольку задача, порождённая функцией 
@@ -84,6 +89,7 @@ spawn_task, завершается по завершении основной ф
 
 Имя файла: src/main.rs
 
+```rust
         let handle = trpl::spawn_task(async {
             for i in 1..10 {
                 println!("hi number {i} from the first task!");
@@ -97,6 +103,7 @@ spawn_task, завершается по завершении основной ф
         }
 
         handle.await.unwrap();
+```
 
 Листинг 17-7: Использование await с join обработчиком для выполнения 
               задачи до завершения
