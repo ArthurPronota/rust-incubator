@@ -1,6 +1,6 @@
-https://doc.rust-lang.org/stable/book/ch17-06-futures-tasks-threads.html
 
-                Собираем все вместе: фьючерсы, задачи и потоки
+[Собираем все вместе: фьючерсы, задачи и потоки](https://doc.rust-lang.org/stable/book/ch17-06-futures-tasks-threads.html)
+
 Как мы видели в главе 16
 http://localhost:3000/ch16-00-concurrency.html
 , потоки предоставляют один из подходов к параллельной обработке. В этой
