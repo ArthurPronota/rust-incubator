@@ -11,4 +11,5 @@ members = [
     "rust_by_examples",
     "asynchronous_programming",
     "asynchronous_programming/hello-async",
+    "asynchronous_programming/concurrency-with-async",
 ]
