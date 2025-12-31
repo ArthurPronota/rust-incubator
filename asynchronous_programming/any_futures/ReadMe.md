@@ -1,5 +1,5 @@
 
-[Работа с любым количеством фьючерсов)(https://doc.rust-lang.org/stable/book/ch17-03-more-futures.html)
+[Работа с любым количеством фьючерсов](https://doc.rust-lang.org/stable/book/ch17-03-more-futures.html)
 
 Когда в предыдущем разделе мы перешли с двух фьючерсов на три, нам также 
 пришлось перейти от join к join3. Было бы неприятно вызывать отдельную 
