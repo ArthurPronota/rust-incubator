@@ -3,4 +3,4 @@
 
 [Фьючерсы и асинхронный синтаксис](https://github.com/ArthurPronota/rust-incubator/tree/main/asynchronous_programming/hello-async)
 
-
+[Применение конкуренции с Async](https://github.com/ArthurPronota/rust-incubator/tree/main/asynchronous_programming/concurrency-with-async)
