@@ -1,4 +1,4 @@
-<h3>[Основы асинхронного программирования: Async, Await, Futures и Streams](https://doc.rust-lang.org/stable/book/ch17-00-async-await.html)</h3>
+[Основы асинхронного программирования: Async, Await, Futures и Streams](https://doc.rust-lang.org/stable/book/ch17-00-async-await.html)
 
 <h3>Основы асинхронного программирования: Async, Await, Futures и Streams</h3>
 
