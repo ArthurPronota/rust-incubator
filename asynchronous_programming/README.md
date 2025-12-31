@@ -1,4 +1,6 @@
-All examples from the book [Rust by Example]
+Перевод главы отсутствующей на русском языке [Основы асинхронного программирования: Async, Await, Futures и Streams](https://doc.rust-lang.org/stable/book/ch17-00-async-await.html)
 =============================================
 
-[Rust by Example]: https://doc.rust-lang.org/stable/rust-by-example/
+[Фьючерсы и асинхронный синтаксис](https://github.com/ArthurPronota/rust-incubator/tree/main/asynchronous_programming/hello-async)
+
+
