@@ -12,4 +12,5 @@ members = [
     "asynchronous_programming",
     "asynchronous_programming/hello-async",
     "asynchronous_programming/concurrency-with-async",
+    "asynchronous_programming/any_futures"
 ]
