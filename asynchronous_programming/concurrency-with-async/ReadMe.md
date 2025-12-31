@@ -110,6 +110,7 @@ spawn_task, завершается по завершении основной ф
 
 Эта обновленная версия работает до тех пор, пока не завершатся оба цикла.
 
+```text
 hi number 1 from the second task!
 hi number 1 from the first task!
 hi number 2 from the first task!
@@ -123,6 +124,7 @@ hi number 6 from the first task!
 hi number 7 from the first task!
 hi number 8 from the first task!
 hi number 9 from the first task!
+```
 
 На данный момент похоже, что async и threads дают нам одинаковые базовые
 результаты, просто с разным синтаксисом: использование await вместо 
@@ -149,6 +151,7 @@ unit значений.
 
 Имя файла: src/main.rs
 
+```rust
         let fut1 = async {
             for i in 1..10 {
                 println!("hi number {i} from the first task!");
@@ -164,12 +167,14 @@ unit значений.
         };
 
         trpl::join(fut1, fut2).await;
+```
 
 Листинг 17-8: Использование trpl::join для ожидания двух анонимных 
               будущих событий
 
 При запуске мы видим, что оба будущих варианта выполняются до завершения:
 
+```text
 hi number 1 from the first task!
 hi number 1 from the second task!
 hi number 2 from the first task!
@@ -183,6 +188,7 @@ hi number 6 from the first task!
 hi number 7 from the first task!
 hi number 8 from the first task!
 hi number 9 from the first task!
+```
 
 Теперь вы будете видеть один и тот же порядок каждый раз, что сильно 
 отличается от того, что мы видели с потоками. Это связано с тем, что 
@@ -209,7 +215,8 @@ c) Оберните только первый цикл в асинхронный
 Для дополнительной сложности попробуйте определить, какой будет вывод в 
 каждом случае, прежде чем запускать код!
 
-            Подсчет двух задач с использованием передачи сообщений
+<h4>Подсчет двух задач с использованием передачи сообщений</h4>
+
 Обмен данными между фьючерсами также будет вам знаком: мы снова 
 воспользуемся передачей сообщений, но на этот раз с асинхронными версиями
 типов и функций. Мы пойдём немного другим путём, чем в разделе 
@@ -222,6 +229,7 @@ https://doc.rust-lang.org/stable/book/ch16-02-message-passing.html
 
 Имя файла: src/main.rs
 
+```rust
         let (tx, mut rx) = trpl::channel();
 
         let val = String::from("hi");
@@ -229,6 +237,7 @@ https://doc.rust-lang.org/stable/book/ch16-02-message-passing.html
 
         let received = rx.recv().await.unwrap();
         println!("received '{received}'");
+```
 
 Листинг 17-9: Создание асинхронного канала и назначение двух его половин
               tx и rx
@@ -270,6 +279,7 @@ https://doc.rust-lang.org/stable/book/ch16-02-message-passing.html
 
 Имя файла: src/main.rs
 
+```rust
         let (tx, mut rx) = trpl::channel();
 
         let vals = vec![
@@ -287,6 +297,7 @@ https://doc.rust-lang.org/stable/book/ch16-02-message-passing.html
         while let Some(value) = rx.recv().await {
             println!("received '{value}'");
         }
+```
 
 Листинг 17-10: Отправка и получение нескольких сообщений по асинхронному 
                каналу и ожидание между каждым сообщением
@@ -352,6 +363,7 @@ tx.send выполняются вперемешку со всеми вызова
 
 Имя файла: src/main.rs
 
+```rust
         let tx_fut = async {
             let vals = vec![
                 String::from("hi"),
@@ -373,6 +385,7 @@ tx.send выполняются вперемешку со всеми вызова
         };
 
         trpl::join(tx_fut, rx_fut).await;
+```
 
 Листинг 17-11: Разделение отправки и получения на отдельные асинхронные 
                блоки и ожидание будущих событий для этих блоков
@@ -382,17 +395,25 @@ tx.send выполняются вперемешку со всеми вызова
 
 Однако программа по-прежнему никогда не завершается из-за того, как цикл 
 while let взаимодействует с trpl::join:
+
 a) Future, возвращаемый из trpl::join, завершается только после завершения
     обоих переданных ему future-объектов.
+
 b) Future tx завершается, как только оно завершает спящий режим после 
     отправки последнего сообщения в vals.
+
 c) Future rx не завершится, пока не закончится цикл while let.
+
 d) Цикл while let не завершится, пока ожидание rx.recv не вернет None.
+
 e) Ожидание rx.recv вернет None только после закрытия другого конца канала.
+
 f) Канал закроется только в том случае, если мы вызовем rx.close или 
     когда отправитель, tx, прервется.
+
 j) Мы нигде не вызываем rx.close, и tx не будет отброшен, пока не 
     завершится самый внешний асинхронный блок, переданный в trpl::run.
+
 k) Блок не может завершиться, поскольку он блокируется при завершении 
     trpl::join, что возвращает нас к началу этого списка.
 
@@ -421,6 +442,7 @@ async на async move. При запуске этой версии кода он
 
 Имя файла: src/main.rs
 
+```rust
         let (tx, mut rx) = trpl::channel();
 
         let tx_fut = async move {
@@ -444,6 +466,7 @@ async на async move. При запуске этой версии кода он
         };
 
         trpl::join(tx_fut, rx_fut).await;
+```
 
 Листинг 17-12: Пересмотр кода из листинга 17-11, который корректно 
                завершает работу после завершения.
@@ -455,6 +478,7 @@ async на async move. При запуске этой версии кода он
 
 Имя файла: src/main.rs
 
+```rust
         let (tx, mut rx) = trpl::channel();
 
         let tx1 = tx.clone();
@@ -494,6 +518,7 @@ async на async move. При запуске этой версии кода он
         };
 
         trpl::join3(tx1_fut, tx_fut, rx_fut).await;
+```
 
 Листинг 17-13: Использование нескольких производителей с асинхронными 
                блоками
@@ -516,6 +541,7 @@ async на async move. При запуске этой версии кода он
 отправляющие фьючерсы используют немного разные задержки после отправки,
 сообщения также принимаются с этими разными интервалами.
 
+```text
 received 'hi'
 received 'more'
 received 'from'
@@ -524,6 +550,7 @@ received 'messages'
 received 'future'
 received 'for'
 received 'you'
+```
 
 Это хорошее начало, но оно ограничивает нас всего несколькими фьючерсами:
 двумя с join или тремя с join3. Посмотрим, как мы можем работать с 
