@@ -1,6 +1,10 @@
 [Основы асинхронного программирования: Async, Await, Futures и Streams](https://doc.rust-lang.org/stable/book/ch17-00-async-await.html)
 
-aaa
+Запускать так:
+
+```bash
+cargo run -- https://utro.ru  https://www.rust-lang.org
+```
 
 Многие операции, которые мы запрашиваем у компьютера, могут занять 
 некоторое время. Было бы неплохо, если бы мы могли заниматься чем-то 
