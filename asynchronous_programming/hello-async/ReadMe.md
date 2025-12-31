@@ -79,8 +79,10 @@ https://doc.rust-lang.org/stable/book/ch17-00-async-await.html
 писать код в том же прямолинейном стиле, что и в блокирующем коде, 
 например:
 
+```rust
 let data = fetch_data_from(url).await;
 println!("{data}");
+```
 
 Именно это нам даёт абстракция Rust async (сокращение от asynchronous). 
 В этой главе вы узнаете всё об асинхронности, поскольку мы рассмотрим 
@@ -252,9 +254,11 @@ API, чтобы вы могли сосредоточиться на деталя
 Создайте новый двоичный проект с именем hello-async и добавьте контейнер 
 trpl в качестве зависимости:
 
+```bash
 $ cargo new hello-async
 $ cd hello-async
 $ cargo add trpl
+```
 
 Теперь мы можем использовать различные компоненты, предоставляемые trpl, 
 для написания нашей первой асинхронной программы. Мы создадим небольшой 
@@ -269,6 +273,7 @@ $ cargo add trpl
 
 Имя файла: src/main.rs
 
+```rust
 use trpl::Html;
 
 async fn page_title(url: &str) -> Option<String> {
@@ -278,6 +283,7 @@ async fn page_title(url: &str) -> Option<String> {
         .select_first("title")
         .map(|title| title.inner_html())
 }
+```
 
 Листинг 17-1: Определение асинхронной функции для получения элемента 
 заголовка с HTML-страницы
@@ -340,7 +346,9 @@ async в других языках, но в Rust оно значительно �
 
 Имя файла: src/main.rs
 
+```rust
     let response_text = trpl::get(url).await.text().await;
+```
 
 Листинг 17-2: Цепочка с ключевым словом await
 
@@ -361,6 +369,7 @@ Future. Когда Rust встречает функцию, помеченную 
 компилятора определение функции, такое как async fn page_title в листинге
 17-1, эквивалентно неасинхронной функции, определённой следующим образом:
 
+```rust
 use std::future::Future;
 use trpl::Html;
 
@@ -372,6 +381,7 @@ fn page_title(url: &str) -> impl Future<Output = Option<String>> {
             .map(|title| title.inner_html())
     }
 }
+```
 
 Давайте рассмотрим каждую часть преобразованной версии:
 
@@ -403,6 +413,7 @@ Option<String>, мы используем выражение сопоставл�
 
 Имя файла: src/main.rs
 
+```rust
 async fn main() {
     let args: Vec<String> = std::env::args().collect();
     let url = &args[1];
@@ -411,6 +422,7 @@ async fn main() {
         None => println!("{url} had no title"),
     }
 }
+```
 
 Листинг 17-3: Вызов функции page_title из main с аргументом, 
 предоставленным пользователем
@@ -454,6 +466,7 @@ trpl, которая принимает future в качестве аргуме�
 завершения сопоставить полученный Option<String>, как мы попытались 
 сделать в листинге 17-3. 
 
+```rust
 let res_single_title = trpl::block_on( // Запускает одиночный future до завершения на специально разработанном Tokio Runtime.
                                 page_title(url)
                             ) ;
@@ -462,6 +475,7 @@ match res_single_title {
     Some(title) => println!("0) The title of url: {} was: {}", url, title),
     None => print!("0) Url: {} had no title", url),
 }
+```
 
 Однако в большинстве примеров в этой главе 
 (и в большей части асинхронного кода в реальном мире) мы будем выполнять 
@@ -471,6 +485,7 @@ match res_single_title {
 
 Имя файла: src/main.rs
 
+```rust
 fn main() {
     let args: Vec<String> = std::env::args().collect();
 
@@ -482,16 +497,19 @@ fn main() {
         }
     })
 }
+```
 
 Листинг 17-4: Ожидание асинхронного блока с помощью trpl::run
 
 При запуске этого кода мы получаем ожидаемое изначально поведение:
 
+```bash
 $ cargo run -- https://utro.ru  https://www.rust-lang.org
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.10s
      Running `target\debug\hello-async.exe https://utro.ru https://www.rust-lang.org`
 url: https://utro.ru
 0) The title of url: https://utro.ru was: Новости России и мира – Утро.ру – последние новости на сегодня
+```
 
 Уф, наконец-то у нас есть работающий асинхронный код! Но прежде чем 
 добавить код для соревнования двух сайтов, давайте ненадолго вернёмся к 
@@ -506,13 +524,13 @@ url: https://utro.ru
 перечисление вроде этого для сохранения текущего состояния в каждой точке
 ожидания:
 
-"""
+```rust
 enum PageTitleFuture<'a> {
     Initial { url: &'a str },
     GetAwaitPoint { url: &'a str },
     TextAwaitPoint { response: trpl::Response },
 }
-"""
+```
 
 Однако написание кода для перехода между состояниями вручную было бы 
 утомительным и подверженным ошибкам, особенно если позже потребуется 
@@ -552,6 +570,7 @@ async fn main() { ... } в обычную функцию fn main, которая
 
 Имя файла: src/main.rs
 
+```rust
 use trpl::{Either, Html};
 
 fn main() {
@@ -582,6 +601,7 @@ async fn page_title(url: &str) -> (&str, Option<String>) {
         .map(|title| title.inner_html());
     (url, title)
 }
+```
 
 Листинг 17-5:
 
@@ -604,10 +624,12 @@ Result не имеет смысла. Вместо этого race возвращ
 встроенного понятия успеха или неудачи. Вместо этого он использует Left и
 Right для обозначения «одного или другого»:
 
+```rust
 enum Either<A, B> {
     Left(A),
     Right(B),
 }
+```
 
 Функция race возвращает Left с результатом первого аргумента future, 
 который она завершит первым, или Right с результатом второго аргумента 
