@@ -15,4 +15,5 @@ members = [
     "asynchronous_programming/any_futures",
     "asynchronous_programming/futures_sequence",
     "asynchronous_programming/mix_async",
+    "asynchronous_programming/all_together_async",
 ]
