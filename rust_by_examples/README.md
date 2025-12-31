@@ -1,4 +1,4 @@
-[Rust by Example]
+All examples from the book [Rust by Example]
 
 =============================================
 
