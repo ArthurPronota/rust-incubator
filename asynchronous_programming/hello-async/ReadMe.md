@@ -431,7 +431,7 @@ Option<String>, мы используем выражение сопоставл�
 Имя файла: src/main.rs
 
 ```rust
-fn main() {
+async fn main() {
     let args: Vec<String> = std::env::args().collect();
     let url = &args[1];
     match page_title(url).await {
