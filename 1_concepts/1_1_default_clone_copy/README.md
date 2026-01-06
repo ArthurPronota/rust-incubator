@@ -80,7 +80,7 @@ To better understand the topic, read through:
 After completing everything above, you should be able to answer (and understand why) the following questions:
 - [Какова функция трейта `Default` в Rust?](#какова-функция-трейта-default-в-rust)
 - [На что способна директива #[derive(Default)] из стандартной библиотеки? В чём её ошибка? Какие есть альтернативы?](#на-что-способна-директива-derivedefault-из-стандартной-библиотеки-в-чём-её-ошибка-какие-есть-альтернативы)
-- What does [`Clone`] mean semantically?
+- [Что означает слово `Clone` в семантическом смысле?]()
 - What does [`Copy`] mean semantically? How is it connected with [`Clone`]? Which limitations does it have and why?
 
 <hr>
@@ -183,6 +183,10 @@ struct MyBox<T> {
 4. educe
 
 Современная альтернатива, похожая на derivative, но с более современной реализацией процедурных макросов, часто используемая в критически важных с точки зрения производительности или очень универсальных библиотеках.
+
+<hr>
+
+<h3>Что означает слово `Clone` в семантическом смысле?</h3>
 
 <hr>
 
