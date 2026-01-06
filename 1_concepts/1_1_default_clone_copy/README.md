@@ -147,6 +147,45 @@ Default против new()
 
 <hr>
 
+Альтернативы:
+
+1. smart-default (The Logic Specialist)
+
+Крейт smart-default — самая популярная альтернатива для проектов, требующих пользовательских значений. Он позволяет задавать значения по умолчанию непосредственно в атрибутах.
+
+```rust
+#[derive(SmartDefault)]
+struct Config {
+    #[default = 8080]
+    port: u16,
+    #[default = "https://api.example.com"]
+    endpoint: String,
+}
+```
+
+2. derivative (The Flexibility Specialist)
+
+Крейт derivative позволяет более точно контролировать процесс вычисления значений по умолчанию (и других характеристик), в частности, решая проблему «ненужных общих ограничений».
+
+```rust
+#[derive(Derivative)]
+#[derivative(Default)]
+struct MyBox<T> {
+    #[derivative(Default(value="Box::new(None)"))]
+    content: Box<Option<T>>, // Works even if T is not Default
+}
+```
+
+3. Ручная реализация
+
+Когда логика зависит от переменных среды выполнения или сложных вычислений, ручная реализация по умолчанию остается наиболее прозрачным и эффективным методом.
+
+4. educe
+
+Современная альтернатива, похожая на derivative, но с более современной реализацией процедурных макросов, часто используемая в критически важных с точки зрения производительности или очень универсальных библиотеках.
+
+<hr>
+
 [`Clone`]: https://doc.rust-lang.org/std/clone/trait.Clone.html
 [`Copy`]: https://doc.rust-lang.org/std/marker/trait.Copy.html
 [`Default`]: https://doc.rust-lang.org/std/default/trait.Default.html
