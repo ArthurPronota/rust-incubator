@@ -80,7 +80,7 @@ To better understand the topic, read through:
 After completing everything above, you should be able to answer (and understand why) the following questions:
 - [Какова функция трейта `Default` в Rust?](#какова-функция-трейта-default-в-rust)
 - [На что способна директива #[derive(Default)] из стандартной библиотеки? В чём её ошибка? Какие есть альтернативы?](#на-что-способна-директива-derivedefault-из-стандартной-библиотеки-в-чём-её-ошибка-какие-есть-альтернативы)
-- [Что означает слово `Clone` в семантическом смысле?]()
+- [Что означает слово `Clone` в семантическом смысле?](#что-означает-слово-clone-в-семантическом-смысле)
 - What does [`Copy`] mean semantically? How is it connected with [`Clone`]? Which limitations does it have and why?
 
 <hr>
