@@ -1,4 +1,4 @@
-Step 1: Concepts
+Шаг 1: Концепции
 ================
 
 __Estimated time__: 2 days
