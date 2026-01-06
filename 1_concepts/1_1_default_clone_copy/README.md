@@ -93,6 +93,9 @@ After completing everything above, you should be able to answer (and understand 
 2. Обобщенное программирование: Это необходимо для обобщенных функций или контейнеров, которым необходимо создавать новые экземпляры типа T, не зная его конкретного конструктора (например, Option::unwrap_or_default()).
 3. Частичная инициализация: Она включает синтаксис обновления функциональной записи, где вы можете указать только те поля, которые хотите изменить, а остальные заполнить из экземпляра по умолчанию.
 
+```rust
+let options = SomeOptions { foo: 42, ..Default::default() };
+```
 
 [`Clone`]: https://doc.rust-lang.org/std/clone/trait.Clone.html
 [`Copy`]: https://doc.rust-lang.org/std/marker/trait.Copy.html
