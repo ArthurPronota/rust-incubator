@@ -97,6 +97,16 @@ After completing everything above, you should be able to answer (and understand 
 let options = SomeOptions { foo: 42, ..Default::default() };
 ```
 
+Типичные сценарии использования:
+
+- Структуры конфигурации: Полезно для больших структур, где пользователи могут захотеть изменить только один или два параметра.
+- Инициализация коллекции: Предоставление пустой начальной точки для таких типов, как Vec, HashMap или String.
+- Значения по умолчанию в стандартной библиотеке:
+    1. Числа: По умолчанию 0.
+    2. Логические значения: По умолчанию false.
+    3. Опция: По умолчанию None.
+
+
 [`Clone`]: https://doc.rust-lang.org/std/clone/trait.Clone.html
 [`Copy`]: https://doc.rust-lang.org/std/marker/trait.Copy.html
 [`Default`]: https://doc.rust-lang.org/std/default/trait.Default.html
