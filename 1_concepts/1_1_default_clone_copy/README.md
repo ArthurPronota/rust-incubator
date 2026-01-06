@@ -33,7 +33,7 @@ enum Foo {
 }
 ```
 
-A great thing is that with a [`Default`] implementation you can instantiate your `struct` with only the non-default values and have all other fields filled with default values:
+A great thing is that with a [`Default`] implementation you can instantiate your <h2>`struct`</h2 with only the non-default values and have all other fields filled with default values:
 ```rust
 let x = Foo { bar: baz, ..Default::default() };
 ```
