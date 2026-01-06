@@ -76,7 +76,7 @@ To better understand the topic, read through:
 ## Questions
 
 After completing everything above, you should be able to answer (and understand why) the following questions:
-- Какова функция трейта [`Default`] в [Rust]?
+[Какова функция трейта [`Default`] в [Rust]?](#какова-функция-трейта-default-в-rust)
 - What is `#[derive(Default)]` from `std` capable of? What does it wrong? Which are alternatives?
 - What does [`Clone`] mean semantically?
 - What does [`Copy`] mean semantically? How is it connected with [`Clone`]? Which limitations does it have and why?
