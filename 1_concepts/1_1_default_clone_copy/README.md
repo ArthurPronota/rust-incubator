@@ -33,7 +33,7 @@ enum Foo {
 }
 ```
 
-<h2>Только для struct</h2>
+<h2>Синтаксис только для struct</h2>
 
 A great thing is that with a [`Default`] implementation you can instantiate your `struct` with only the non-default values and have all other fields filled with default values:
 ```rust
