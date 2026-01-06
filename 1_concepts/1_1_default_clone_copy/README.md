@@ -229,8 +229,10 @@ struct MyBox<T> {
 | ------- | ----- | ---- |
 | Invocation | Explicit (.clone()) | Implicit (Assignment/Passing) |
 | Memory | Usually Heap (Deep) | Always Stack (Bitwise) |
-| Complexity | (O(n)) (Usually) | (O(1)) (Always) |
+| Complexity | O(n) (Usually) | O(1) (Always) |
 | Ownership	| Creates a new owner |	Duplicates the value |
+
+Вкратце: используйте клонирование, когда вам нужна новая, независимая версия ресурса, и вы готовы понести потери в производительности, связанные с её созданием.
 
 <hr>
 
