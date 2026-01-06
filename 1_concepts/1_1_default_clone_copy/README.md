@@ -81,7 +81,7 @@ After completing everything above, you should be able to answer (and understand 
 - [Какова функция трейта `Default` в Rust?](#какова-функция-трейта-default-в-rust)
 - [На что способна директива #[derive(Default)] из стандартной библиотеки? В чём её ошибка? Какие есть альтернативы?](#на-что-способна-директива-derivedefault-из-стандартной-библиотеки-в-чём-её-ошибка-какие-есть-альтернативы)
 - [Что означает слово `Clone` в семантическом смысле?](#что-означает-слово-clone-в-семантическом-смысле)
-- What does [`Copy`] mean semantically? How is it connected with [`Clone`]? Which limitations does it have and why?
+- [Что означает Copy в семантическом смысле? Как оно связано со словом Clone? Какие у него ограничения и почему?]()
 
 <hr>
 
@@ -235,6 +235,11 @@ struct MyBox<T> {
 Вкратце: используйте клонирование, когда вам нужна новая, независимая версия ресурса, и вы готовы понести потери в производительности, связанные с её созданием.
 
 <hr>
+
+<h3>Что означает Copy в семантическом смысле? Как оно связано со словом Clone? Какие у него ограничения и почему?</h3>
+
+
+
 
 [`Clone`]: https://doc.rust-lang.org/std/clone/trait.Clone.html
 [`Copy`]: https://doc.rust-lang.org/std/marker/trait.Copy.html
