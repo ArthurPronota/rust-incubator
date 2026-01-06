@@ -1,4 +1,4 @@
-Step 1.1: Default values, cloning and copying
+Шаг 1.1: Значения по умолчанию, клонирование и копирование
 =============================================
 
 __Estimated time__: 1 day
@@ -76,7 +76,7 @@ To better understand the topic, read through:
 ## Questions
 
 After completing everything above, you should be able to answer (and understand why) the following questions:
-- What purpose does the [`Default`] trait serve in [Rust]?
+- Какова функция трейта [`Default`] в [Rust]?
 - What is `#[derive(Default)]` from `std` capable of? What does it wrong? Which are alternatives?
 - What does [`Clone`] mean semantically?
 - What does [`Copy`] mean semantically? How is it connected with [`Clone`]? Which limitations does it have and why?
