@@ -81,6 +81,9 @@ After completing everything above, you should be able to answer (and understand 
 - What does [`Clone`] mean semantically?
 - What does [`Copy`] mean semantically? How is it connected with [`Clone`]? Which limitations does it have and why?
 
+<hr>
+
+<h3>Какова функция трейта Default в Rust?<h3>
 
 
 
