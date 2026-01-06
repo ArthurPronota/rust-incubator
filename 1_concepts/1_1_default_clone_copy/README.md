@@ -77,7 +77,7 @@ To better understand the topic, read through:
 
 After completing everything above, you should be able to answer (and understand why) the following questions:
 - [Какова функция трейта `Default` в Rust?](#какова-функция-трейта-default-в-rust)
-- What is `#[derive(Default)]` from `std` capable of? What does it wrong? Which are alternatives?
+- [На что способна директива #[derive(Default)] из стандартной библиотеки? В чём её ошибка? Какие есть альтернативы?]()
 - What does [`Clone`] mean semantically?
 - What does [`Copy`] mean semantically? How is it connected with [`Clone`]? Which limitations does it have and why?
 
@@ -113,6 +113,9 @@ Default против new()
 - new(): Общее соглашение об именовании основного конструктора типа; он может принимать несколько аргументов и иметь любое имя.
 - default(): Метод трейта, который не может принимать аргументы и необходим для использования типа в обобщенных контекстах, где конкретные конструкторы неизвестны.
 
+<hr>
+
+<h3>На что способна директива #[derive(Default)] из стандартной библиотеки? В чём её ошибка? Какие есть альтернативы?</h3>
 
 [`Clone`]: https://doc.rust-lang.org/std/clone/trait.Clone.html
 [`Copy`]: https://doc.rust-lang.org/std/marker/trait.Copy.html
