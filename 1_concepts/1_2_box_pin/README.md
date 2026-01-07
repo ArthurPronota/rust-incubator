@@ -52,8 +52,8 @@ To better understand [`Pin`]'s purpose, design, limitations, and use cases, read
 
 ## Task
 
-1. For the following types: `Box<T>`, `Rc<T>`, `Vec<T>`, `String`, `&[u8]`, `T`.  
-   Implement the following traits:
+1. Для следующих типов: `Box<T>`, `Rc<T>`, `Vec<T>`, `String`, `&[u8]`, `T`.  
+   Реализуйте следующие traits.:
    ```rust
    trait SayHi: fmt::Debug {
        fn say_hi(self: Pin<&Self>) {
@@ -64,38 +64,46 @@ To better understand [`Pin`]'s purpose, design, limitations, and use cases, read
    ```rust
    trait MutMeSomehow {
        fn mut_me_somehow(self: Pin<&mut Self>) {
-           // Implementation must be meaningful, and
-           // obviously call something requiring `&mut self`.
-           // The point here is to practice dealing with
-           // `Pin<&mut Self>` -> `&mut self` conversion
-           // in different contexts, without introducing 
-           // any `Unpin` trait bounds.
+        // Реализация должна быть осмысленной и
+        // очевидно вызывать что-то, требующее `&mut self`.
+        // Цель здесь — попрактиковаться в обработке
+        // преобразования `Pin<&mut Self>` -> `&mut self`
+        // в разных контекстах, без введения
+        // каких-либо ограничений трейта `Unpin`.
        }
    }
    ```
 
-2. For the following structure:
+2. Для следующей структуры:
    ```rust
    struct MeasurableFuture<Fut> {
        inner_future: Fut,
        started_at: Option<std::time::Instant>,
    }
    ```
-   Provide a [`Future`] trait implementation, transparently polling the `inner_future`, and printing its execution time in nanoseconds once it's ready. Using `Fut: Unpin` trait bound (or similar) is not allowed. 
 
+   Предоставьте реализацию трейта [`Future`], которая будет прозрачно опрашивать `inner_future` и выводить время её выполнения в наносекундах, как только она будет готова. Использование привязки трейта `Fut: Unpin` (или аналогичной) не допускается.
 
 
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны быть в состоянии ответить (и понять, почему) на следующие вопросы:
 - What does "boxing" mean in [Rust]? How is it useful? When and why is it required?
+- (Что означает "boxing" в [Rust]? В чём её польза? Когда и зачем она необходима?)[]
+
 - What is [`Pin`] and why is it required? What guarantees does it provide? How does it fulfill them?
 - How does [`Unpin`] affect the [`Pin`]? What does it mean?
 - Is it allowed to move pinned data after the [`Pin`] dies? Why?
 - What is structural pinning? When should it be used and why?
 - What is [`Pin`] projection? Why does it exist? How is it used?
 
+<hr>
+
+<h3>Что означает "boxing" в [Rust]? В чём её польза? Когда и зачем она необходима?</h3>
+
+В Rust «упаковка» (boxing) относится к действию обертывания значения в интеллектуальный указатель Box<T>.
+Это действие немедленно перемещает обернутые данные из стека в память кучи. Сам Box<T> представляет собой указатель фиксированного размера, который остается в стеке, управляя расположением данных в куче.
 
 
 
