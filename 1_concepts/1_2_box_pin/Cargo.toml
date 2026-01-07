@@ -3,3 +3,7 @@ name = "step_1_2"
 version = "0.1.0"
 edition = "2024"
 publish = false
+
+[dependencies]
+tokio = { version = "1.49.0", features = ["full"] }
+tokio-macros = { version = "0.2.0-alpha.6" }
