@@ -304,8 +304,6 @@ fn main() {
         use std::future::Future;
         use std::pin::Pin;
         use std::task::{Context, Poll};
-        //use std::time::Instant;
-        //use tokio::runtime::Runtime;
         use tokio ;
 
         struct MeasurableFuture<Fut> {
@@ -317,7 +315,7 @@ fn main() {
             pub fn new(inner_future: Fut) -> Self {
                 Self {
                     inner_future,
-                    started_at: None,   // Начальная инициализациятаймера
+                    started_at:     None,   // Начальная инициализация таймера
                 }
             }
         }
@@ -336,7 +334,7 @@ fn main() {
                     *started_at = Some(std::time::Instant::now()); // установка начального значения таймера
                 }
 
-                // конструируем новый Pin<&mut Fut>
+                // конструируем новый не проверенный Pin<&mut Fut>
                 let inner_pin = unsafe { Pin::new_unchecked(inner_future) };
 
                 match inner_pin
@@ -345,7 +343,7 @@ fn main() {
                     Poll::Ready(output) => { // значение готово
                         if let Some(start) = started_at {
                             let elapsed = start
-                                                    .elapsed()
+                                                    .elapsed() // Возвращает количество времени, прошедшего с этого Instant.
                                                     .as_nanos()
                                                     ;
                             println!("Future finished in {} ns", elapsed);
@@ -358,7 +356,7 @@ fn main() {
         }
 
         let rt = tokio::runtime::Runtime::new()
-                    .expect("runtime::Runtime::new() error.");
+                    .expect("tokio::runtime::Runtime::new() error.");
 
         rt.block_on(async {
             let my_async_task = async {
