@@ -89,7 +89,7 @@ To better understand [`Pin`]'s purpose, design, limitations, and use cases, read
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны быть в состоянии ответить (и понять, почему) на следующие вопросы:
-- [Что означает "boxing" в [Rust]? В чём её польза? Когда и зачем она необходима?](#что-означает-boxing-в-rust-в-чём-её-польза-когда-и-зачем-она-необходима)
+- [`Что означает "boxing" в [Rust]? В чём её польза? Когда и зачем она необходима?`](#что-означает-boxing-в-rust-в-чём-её-польза-когда-и-зачем-она-необходима)
 
 - What is [`Pin`] and why is it required? What guarantees does it provide? How does it fulfill them?
 - How does [`Unpin`] affect the [`Pin`]? What does it mean?
