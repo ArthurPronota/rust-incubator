@@ -1,4 +1,4 @@
-Step 1.2: Boxing and pinning
+Шаг 1.2: Boxing и pinning
 ============================
 
 __Estimated time__: 1 day
