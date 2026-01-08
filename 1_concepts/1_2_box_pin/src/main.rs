@@ -1,6 +1,7 @@
+
 use std::fmt ;
-use std::ops::Deref;
 use std::pin::Pin ;
+
 
 /*
 use std::pin::pin;
@@ -15,9 +16,10 @@ trait SayHi: fmt::Debug {
 let pinned_person = pin!(person) ;
  */
 
+
 #[derive(Debug)]
 struct Person {
-    name:   String
+    name:   String,
 }
 
 fn main() {
