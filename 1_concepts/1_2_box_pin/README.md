@@ -187,6 +187,7 @@ Pin предоставляет свою уникальную гарантию н
 
 
 | Feature |	T: Unpin (Normal Types)	| T: !Unpin (Self-referential)|
+|---------|-------------------------|-----------------------------|
 | Pin Restriction |	Lifts restrictions. Pin<&mut T> can be safely converted back to &mut T. |Enforces restrictions. You cannot safely get an &mut T from a Pin<&mut T>. |
 
 <hr>
