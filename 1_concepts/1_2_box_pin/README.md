@@ -185,9 +185,9 @@ Pin выполняет свой контракт, ограничивая спо�
 
 Pin предоставляет свою уникальную гарантию неподвижности только для типов, которые не являются Unpin. Если тип реализует Unpin, обертка Pin ведет себя как обычный указатель.
 
-+---------+-------------------------+-----------------------------+
+
 | Feature |	T: Unpin (Normal Types)	| T: !Unpin (Self-referential)|
-+---------+-------------------------+-----------------------------+
+| Pin Restriction |	Lifts restrictions. Pin<&mut T> can be safely converted back to &mut T. |Enforces restrictions. You cannot safely get an &mut T from a Pin<&mut T>. |
 
 <hr>
 
