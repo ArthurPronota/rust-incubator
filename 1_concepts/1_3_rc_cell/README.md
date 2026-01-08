@@ -1,4 +1,4 @@
-Step 1.3: Shared ownership and interior mutability
+Шаг 1.3: Разделяемое владение и внутренняя изменчивость
 ==================================================
 
 __Estimated time__: 1 day
@@ -155,22 +155,27 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 
 ## Task
 
-Write a `GlobalStack<T>` collection which represents a trivial unsized [stack] (may grow infinitely) and has the following semantics:
-- can be mutated through multiple shared references (`&GlobalStack<T>`);
-- cloning doesn't clone data, but only produces a pointer, so multiple owners mutate the same data.
+Напишите коллекцию `GlobalStack<T>`, которая представляет собой тривиальный стек без указания размера (может расти бесконечно) и имеет следующую семантику:
+- может изменяться через несколько разделяемых ссылок (`&GlobalStack<T>`);
+- клонирование не клонирует данные, а только создает указатель, поэтому несколько владельцев могут изменять одни и те же данные.
 
 
 
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны быть в состоянии ответить (и понять, почему) на следующие вопросы.:
 - What is shared ownership? Which problem does it solve? Which penalties does it have?
+- [`Что такое разделяемое? Какую проблему она решает? Какие у неё недостатки?`]()
+
 - What is interior mutability? Why is it required in [Rust]? In what price it comes?
 - Is it possible to write a custom type with interior mutability without using `std`? Why?
 - What is shared mutability? Which are its common use-cases?
 - How can we expose panic/deadlock-free API to users when using interior mutability?
 
+<hr>
+
+<h3>Что такое разделяемое? Какую проблему она решает? Какие у неё недостатки?</h3>
 
 
 
