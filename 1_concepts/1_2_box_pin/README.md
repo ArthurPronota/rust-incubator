@@ -95,7 +95,7 @@ To better understand [`Pin`]'s purpose, design, limitations, and use cases, read
 - [`Что такое [Pin] и зачем он нужен? Какие гарантии он предоставляет? Как он их обеспечивает?`](#что-такое-pin-и-зачем-он-нужен-какие-гарантии-он-предоставляет-как-он-их-обеспечивает)
 
 
-- [`Как [Unpin] влияет на [Pin]? Что это означает?`]()
+- [`Как [Unpin] влияет на [Pin]? Что это означает?`](#как-unpin-влияет-на-pin-что-это-означает)
 
 - Is it allowed to move pinned data after the [`Pin`] dies? Why?
 - What is structural pinning? When should it be used and why?
