@@ -169,6 +169,10 @@ Pin выполняет свой контракт, ограничивая спо�
 
 <hr>
 
+
+
+<hr>
+
 [`Box`]: https://doc.rust-lang.org/std/boxed/struct.Box.html
 [`Future`]: https://doc.rust-lang.org/std/future/trait.Future.html
 [`Pin`]: https://doc.rust-lang.org/std/pin/struct.Pin.html
