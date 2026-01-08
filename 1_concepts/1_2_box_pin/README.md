@@ -91,7 +91,9 @@ To better understand [`Pin`]'s purpose, design, limitations, and use cases, read
 После выполнения всех вышеперечисленных действий вы должны быть в состоянии ответить (и понять, почему) на следующие вопросы:
 - [`Что означает "boxing" в [Rust]? В чём её польза? Когда и зачем она необходима?`](#что-означает-boxing-в-rust-в-чём-её-польза-когда-и-зачем-она-необходима)
 
-- What is [`Pin`] and why is it required? What guarantees does it provide? How does it fulfill them?
+
+- [Что такое [`Pin`] и зачем он нужен? Какие гарантии он предоставляет? Как он их обеспечивает?](#aa)
+
 - How does [`Unpin`] affect the [`Pin`]? What does it mean?
 - Is it allowed to move pinned data after the [`Pin`] dies? Why?
 - What is structural pinning? When should it be used and why?
@@ -135,6 +137,10 @@ struct Node {
 2. Во избежание переполнения стека при работе с большими объемами данных
 
 Если вы работаете с массивом или структурой большого размера, вы можете использовать Box, чтобы предотвратить превышение стандартного размера стека, предоставляемого операционной системой.
+
+<hr>
+
+<h3>Что такое [`Pin`] и зачем он нужен? Какие гарантии он предоставляет? Как он их обеспечивает?</h3>
 
 
 [`Box`]: https://doc.rust-lang.org/std/boxed/struct.Box.html
