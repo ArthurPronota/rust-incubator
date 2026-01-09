@@ -170,7 +170,7 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 - [Что такое внутренняя изменяемость? Зачем она нужна в Rust? Какова её цена?](#что-такое-внутренняя-изменяемость-зачем-она-нужна-в-rust-какова-её-цена)
 
 - Is it possible to write a custom type with interior mutability without using `std`? Why?
-- [`Можно ли написать собственный тип с возможностью изменения внутри без использования std? Почему?`]()
+- [`Можно ли написать собственный тип с возможностью внутренней изменчивости без использования std? Почему?`]()
 
 
 - What is shared mutability? Which are its common use-cases?
@@ -267,7 +267,7 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 
 <hr>
 
-<h3>Можно ли написать собственный тип с возможностью изменения внутри без использования std? Почему?</h3>
+<h3>Можно ли написать собственный тип с возможностью внутренней изменчивости без использования std? Почему?</h3>
 
 
 <hr>
