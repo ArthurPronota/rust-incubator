@@ -41,4 +41,31 @@ fn main() {
             .unwrap()
     ) ;
 
+    // Пример из объяснения Cow
+    {
+        use std::borrow::Cow ;
+
+        #[derive(Debug)]
+        struct User<'a> {
+            username: Cow<'a, str>,
+        }
+
+        let raw_data = "aDmin";
+        
+        let mut user = User {
+            username: Cow::Borrowed(raw_data),
+        };
+
+        if user
+            .username
+            .chars()
+            .any(|c| c.is_uppercase()) {
+                user
+                    .username
+                    .to_mut()
+                    .make_ascii_lowercase();
+        }
+            
+        println!("user: {:?}", user) ;
+    }
 }
