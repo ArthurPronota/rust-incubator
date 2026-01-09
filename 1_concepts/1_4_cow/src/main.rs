@@ -65,7 +65,7 @@ fn main() {
                     .to_mut()
                     .make_ascii_lowercase();
         }
-            
+
         println!("user: {:?}", user) ;
     }
 }
