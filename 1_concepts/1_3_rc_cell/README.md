@@ -254,6 +254,7 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 Сводная таблица
 
 |Type|Threading|Mechanism|Penalty|
++----+---------+---------+-------|
 |Cell|Single|Bitwise overwrite|Minimal (Copy only)|
 
 <hr>
