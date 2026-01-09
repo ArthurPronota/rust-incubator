@@ -8,7 +8,8 @@ fn main() {
     let mut args = env::args()
                         .skip(1)
                         ;
-    let mut config_path: Option<Cow<'_, str>> = None ;
+    //let mut config_path: Option<Cow<'_, str>> = None ;
+    let mut config_path: Option<Cow<str>> = None ;
 
     while let Some(arg) = args.next() {
         if arg == "--conf" {
