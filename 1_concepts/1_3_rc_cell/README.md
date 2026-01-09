@@ -168,6 +168,8 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 - [`Что такое разделяемое? Какую проблему она решает? Какие у неё недостатки?`](#что-такое-разделяемое-какую-проблему-она-решает-какие-у-неё-недостатки)
 
 - What is interior mutability? Why is it required in [Rust]? In what price it comes?
+- [Что такое внутренняя изменяемость? Зачем она нужна в Rust? Какова её цена?]()
+
 - Is it possible to write a custom type with interior mutability without using `std`? Why?
 - What is shared mutability? Which are its common use-cases?
 - How can we expose panic/deadlock-free API to users when using interior mutability?
@@ -209,6 +211,11 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 
 <hr>
 
+
+<h3>Что такое внутренняя изменяемость? Зачем она нужна в Rust? Какова её цена?</h3>
+
+
+<hr>
 
 [`Arc`]: https://doc.rust-lang.org/std/sync/struct.Arc.html
 [`Cell`]: https://doc.rust-lang.org/std/cell/struct.Cell.html
