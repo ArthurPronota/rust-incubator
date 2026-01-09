@@ -251,6 +251,9 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 
 Каждая внутренняя оболочка изменяемости добавляет небольшой объем дополнительной памяти для отслеживания состояния заимствования (целое число для RefCell) или примитива уровня ОС (для Mutex).
 
+Сводная таблица
+
+|Type|Threading|Mechanism|Penalty|
 
 <hr>
 
