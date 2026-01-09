@@ -253,9 +253,11 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 
 Сводная таблица
 
-|Type|Threading|Mechanism|Penalty|
+|Тип|Многопотоковость|Механизм|Штраф|
 |----|---------|---------|-------|
 |Cell|Single|Bitwise overwrite|Minimal (Copy only)|
+|RefCell|Single|Runtime counter|Small (Check + potential Panic)|
+|Mutex|Multi|Thread blocking|High (Atomic locks + Waiting)|
 
 <hr>
 
