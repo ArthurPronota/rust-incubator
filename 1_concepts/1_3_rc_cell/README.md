@@ -259,6 +259,8 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 |RefCell|Single|Runtime counter|Small (Check + potential Panic)|
 |Mutex|Multi|Thread blocking|High (Atomic locks + Waiting)|
 
+Короче говоря, внутренняя изменяемость — это «лазейка», позволяющая использовать гибкие шаблоны, такие как совместно изменяемое состояние, но при этом она жертвует гарантированной стабильностью на этапе компиляции Rust ради проверок во время выполнения и снижения производительности.
+
 <hr>
 
 [`Arc`]: https://doc.rust-lang.org/std/sync/struct.Arc.html
