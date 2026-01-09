@@ -29,11 +29,15 @@ fn main() {
         }
     }
 
+    if config_path.is_none() {
+        config_path = Some(Cow::Borrowed(DEFAULT_PATH)) ;
+    }
+
     println!(
         "Path: {}",
         config_path
             .as_deref() 
-            .unwrap_or(DEFAULT_PATH)
+            .unwrap()
     ) ;
 
 }
