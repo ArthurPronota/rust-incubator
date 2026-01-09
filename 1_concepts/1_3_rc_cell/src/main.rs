@@ -43,6 +43,9 @@ fn main() {
         my_stack.push(n);    
     }
 
+    let mut my_stack_cloned = my_stack.clone() ;
+    println!("From cloned stack: {:?}", my_stack_cloned.pop()) ;
+
     println!("From stack: {:?}", my_stack.pop()) ;
     println!("From stack: {:?}", my_stack.pop()) ;
     println!("From stack: {:?}", my_stack.pop()) ;
