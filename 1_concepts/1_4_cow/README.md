@@ -76,6 +76,7 @@ Read implementation details and design insights in [its README][4].
 
 Если ни переменная окружения `APP_CONF`, ни аргумент командной строки `--conf` не указаны, то выделение памяти для определения пути не должно происходить.
 
+Пример запуска программы: `cargo run -- --conf c:\abc\file.txt`
 
 ## Questions
 
