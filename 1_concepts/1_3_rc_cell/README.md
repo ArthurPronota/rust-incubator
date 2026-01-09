@@ -452,10 +452,10 @@ fn main() {
     let counter = Arc::new(AtomicUsize::new(0));
     let mut handles = vec![];
 
+    // Создаем 10 потоков
     for _ in 0..10 {
         let counter_clone = Arc::clone(&counter);
         
-        // Создаем 10 потоков
         let handle = thread::spawn(move || {
             for _ in 0..1000 {
                 // Используем fetch_add для безопасного инкремента.
