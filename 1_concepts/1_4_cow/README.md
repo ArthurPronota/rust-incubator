@@ -82,10 +82,14 @@ Read implementation details and design insights in [its README][4].
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 
 - What is [`Cow`]? How it works?
+- [`Что такое Cow? Как это работает?`]()
 - When [`Cow`] is useful and why? Give some meaningful examples.
 
+<hr>
 
+<h3>Что такое Cow? Как это работает?</h3>
 
+<hr>
 
 [`beef`]: https://docs.rs/beef
 [`Cow`]: https://doc.rust-lang.org/std/borrow/enum.Cow.html
