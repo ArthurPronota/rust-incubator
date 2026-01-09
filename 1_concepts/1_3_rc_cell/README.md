@@ -170,6 +170,9 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 - [Что такое внутренняя изменяемость? Зачем она нужна в Rust? Какова её цена?](#что-такое-внутренняя-изменяемость-зачем-она-нужна-в-rust-какова-её-цена)
 
 - Is it possible to write a custom type with interior mutability without using `std`? Why?
+- [`Можно ли написать собственный тип с возможностью изменения внутри без использования std? Почему?`]()
+
+
 - What is shared mutability? Which are its common use-cases?
 - How can we expose panic/deadlock-free API to users when using interior mutability?
 
@@ -258,8 +261,14 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 |Cell|Single|Bitwise overwrite|Minimal (Copy only)|
 |RefCell|Single|Runtime counter|Small (Check + potential Panic)|
 |Mutex|Multi|Thread blocking|High (Atomic locks + Waiting)|
+|RwLock|Multi|Thread blocking|High (Atomic locks + Waiting)|
 
 Короче говоря, внутренняя изменяемость — это «лазейка», позволяющая использовать гибкие шаблоны, такие как совместно изменяемое состояние, но при этом она жертвует гарантированной стабильностью на этапе компиляции Rust ради проверок во время выполнения и снижения производительности.
+
+<hr>
+
+<h3>Можно ли написать собственный тип с возможностью изменения внутри без использования std? Почему?</h3>
+
 
 <hr>
 
