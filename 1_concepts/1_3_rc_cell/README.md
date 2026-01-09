@@ -211,7 +211,6 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 
 <hr>
 
-
 <h3>Что такое внутренняя изменяемость? Зачем она нужна в Rust? Какова её цена?</h3>
 
 
