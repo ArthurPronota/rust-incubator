@@ -67,14 +67,14 @@ Read implementation details and design insights in [its README][4].
 
 ## Task
 
-Write a simple program which prints out the path to its configuration file. The path should be detected with the following precedence:
-1. default path is `/etc/app/app.conf`;
-2. if `APP_CONF` env var is specified (and not empty) then use it with higher priority than default;
-3. if `--conf` command line argument is specified (error if empty) then use it with the highest priority.
+Напишите простую программу, которая выводит путь к файлу конфигурации. Путь должен определяться в следующем порядке приоритета:
+1. путь по умолчанию — `/etc/app/app.conf`;
 
-If neither `APP_CONF` env var nor `--conf` command line argument is specified, then no allocation should happen for path detection.
+2. если указана переменная окружения `APP_CONF` (и она не пуста), то использовать её с более высоким приоритетом, чем путь по умолчанию;
 
+3. если указан аргумент командной строки `--conf` (ошибка, если пуст), то использовать его с наивысшим приоритетом.
 
+Если ни переменная окружения `APP_CONF`, ни аргумент командной строки `--conf` не указаны, то выделение памяти для определения пути не должно происходить.
 
 
 ## Questions
