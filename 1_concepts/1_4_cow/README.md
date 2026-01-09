@@ -1,4 +1,4 @@
-Step 1.4: Clone-on-write
+Шаг 1.4: Клонирование при записи (Clone-on-write)
 ========================
 
 __Estimated time__: 1 day
