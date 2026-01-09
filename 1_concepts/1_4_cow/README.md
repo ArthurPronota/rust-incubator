@@ -82,7 +82,7 @@ Read implementation details and design insights in [its README][4].
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 
 - What is [`Cow`]? How it works?
-- [`Что такое Cow? Как это работает?`]()
+- [`Что такое Cow? Как это работает?`](#что-такое-cow-как-это-работает)
 - When [`Cow`] is useful and why? Give some meaningful examples.
 
 <hr>
