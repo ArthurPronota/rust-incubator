@@ -179,25 +179,44 @@ See also:
 
 ## Task
 
-Implement the following types:
-1. `EmailString` - a type, which value can be only a valid email address string.
-2. `Random<T>` - a smart pointer, which takes 3 values of the pointed-to type on creation and points to one of them randomly every time is used.
+Реализуйте следующие типы:
 
-Provide conversion and `Deref` implementations for these types on your choice, to make their usage and interoperability with `std` types easy and ergonomic.
+1. EmailString — тип, значением которого может быть только допустимая строка адреса электронной почты.
+2. Random<T> — интеллектуальный указатель, который при создании принимает 3 значения типа, на который он указывает, и каждый раз случайным образом указывает на одно из них.
 
-
+Предоставьте реализации преобразования и разыменования для этих типов по вашему выбору, чтобы упростить и сделать более удобным их использование и взаимодействие со стандартными типами.
 
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
+
 - How value-to-value conversion is represented in [Rust]? What is relation between fallible and infallible one?
+- [`Как в Rust представлено преобразование значений? Какова связь между ошибочным и безошибочным преобразованием?`]()
+
+
 - How reference-to-reference conversion is represented in [Rust]? How its traits differ? When and which one should be used?
 - How can inner-to-outer reference conversion be achieved in [Rust]? Which prerequisites does it have?
 - What is dereferencing in [Rust]? How it can be abused? Why it shouldn't be abused?
 - Why using [`as`] keyword is not a good practice in [Rust]? Why do we still use it?
 
+<hr>
 
+<h3>Как в Rust представлено преобразование значений? Какова связь между ошибочным и безошибочным преобразованием?</h3>
+
+В Rust преобразование значений реализовано через систему типажных соглашений (trait-based conventions), находящихся в модуле std::convert. Это делает код предсказуемым и идиоматичным.
+
+1. Безошибочное преобразование: From и Into
+
+Эти трейты используются, когда преобразование гарантированно завершится успешно.
+
+- From: Позволяет типу определить, как создать себя из другого типа.
+    - Пример: `String::from("hello")`.
+- Into: Автоматически реализуется для любого типа, который реализовал   From. Это «обратная сторона» медали.
+    - Зачем: Используется в аргументах функций, чтобы принимать любые типы, которые можно превратить в нужный (например, `fn open<P: Into<PathBuf>>(path: P)`).
+
+<hr>
 
 
 [`as`]: https://doc.rust-lang.org/std/keyword.as.html
