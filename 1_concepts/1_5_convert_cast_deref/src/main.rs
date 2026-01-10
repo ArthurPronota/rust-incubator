@@ -175,4 +175,30 @@ fn main() {
         println!("v2: {:?} / {:p}", 10_u8.as_ref(), 10_u8.as_ref()) ;
     }
 
+    {
+        struct Data {
+            value: String,
+        }
+
+        impl Data {
+            // Внешняя ссылка &'a str привязана к времени жизни &'a self
+            fn get_value<'a>(&'a self) -> &'a str {
+                &self.value
+            }
+
+            fn get_value2(&self) ->&str {
+                &self.value
+            }
+        }
+
+        let d = Data{value: "abc".to_owned()} ;
+
+        println!("d: {} / {}", d.get_value(), d.get_value2()) ;
+
+        fn make_static(s: String) -> &'static str {
+            Box::leak(s.into_boxed_str())
+        }
+        
+    }
+
 }
