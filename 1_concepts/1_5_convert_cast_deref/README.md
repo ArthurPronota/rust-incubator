@@ -195,10 +195,12 @@ See also:
 - [`Как в Rust представлено преобразование значений? Какова связь между ошибочным и безошибочным преобразованием?`](#как-в-rust-представлено-преобразование-значений-какова-связь-между-ошибочным-и-безошибочным-преобразованием)
 
 - How reference-to-reference conversion is represented in [Rust]? How its traits differ? When and which one should be used?
-- [Как в Rust представлено преобразование ссылок? Чем отличаются его трейты? Когда и какой из них следует использовать?]()
+- [Как в Rust представлено преобразование ссылок? Чем отличаются его трейты? Когда и какой из них следует использовать?](#как-в-rust-представлено-преобразование-ссылок-чем-отличаются-его-трейты-когда-и-какой-из-них-следует-использовать)
 
 
 - How can inner-to-outer reference conversion be achieved in [Rust]? Which prerequisites does it have?
+- [Как в Rust можно осуществить преобразование внутренних ссылок во внешние? Какие для этого необходимы условия?]()
+
 - What is dereferencing in [Rust]? How it can be abused? Why it shouldn't be abused?
 - Why using [`as`] keyword is not a good practice in [Rust]? Why do we still use it?
 
@@ -357,6 +359,9 @@ Borrow требует, чтобы реализации Eq, Ord и Hash для з
 
 Подробности можно найти в официальной документации std::convert и std::borrow.
 
+<hr>
+
+<h3>Как в Rust можно осуществить преобразование внутренних ссылок во внешние? Какие для этого необходимы условия?</h3>
 
 
 <hr>
