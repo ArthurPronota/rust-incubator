@@ -73,7 +73,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 - [ ] [1. Концепции][Step 1] (2 days, after all sub-steps)
     - [ ] [Шаг 1.1: Значения по умолчанию, клонирование и копирование][Step 1.1] (1 day)
     - [ ] [Шаг 1.2: Boxing и pinning][Step 1.2] (1 day)
-    - [ ] [Шаг 1.3: Разделяемое владение и внутренняя изменчивость Шаг 1.3: Разделяемое владение и внутренняя изменчивость + Atomic Types in Rust][Step 1.3] (1 day)
+    - [ ] [Шаг 1.3: Разделяемое владение и внутренняя изменчивость + Atomic Types in Rust][Step 1.3] (1 day)
     - [ ] [Шаг 1.4: Клонирование при записи (Clone-on-write)][Step 1.4] (1 day)
     - [ ] [1.5. Conversions, casting and dereferencing][Step 1.5] (1 day)
     - [ ] [1.6. Static and dynamic dispatch][Step 1.6] (1 day)
