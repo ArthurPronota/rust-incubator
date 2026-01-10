@@ -1,4 +1,4 @@
-Rust Incubator
+Rust Инкубатор
 ==============
 
 > It wasn’t always so clear, but the Rust programming language is fundamentally about _empowerment_: no matter what kind of code you are writing now, Rust empowers you to reach farther, to program with confidence in a wider variety of domains than you did before.
@@ -75,7 +75,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
     - [ ] [Шаг 1.2: Boxing и pinning][Step 1.2] (1 day)
     - [ ] [Шаг 1.3: Разделяемое владение и внутренняя изменчивость + Atomic Types in Rust][Step 1.3] (1 day)
     - [ ] [Шаг 1.4: Клонирование при записи (Clone-on-write)][Step 1.4] (1 day)
-    - [ ] [1.5. Conversions, casting and dereferencing][Step 1.5] (1 day)
+    - [ ] [Шаг 1.5: Преобразования, приведение типов и разыменование][Step 1.5] (1 day)
     - [ ] [1.6. Static and dynamic dispatch][Step 1.6] (1 day)
     - [ ] [1.7. `Sized` and `?Sized` types][Step 1.7] (1 day)
     - [ ] [1.8. Thread safety][Step 1.8] (1 day)

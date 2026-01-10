@@ -1,4 +1,4 @@
-Step 1.5: Conversions, casting and dereferencing
+Шаг 1.5: Преобразования, приведение типов и разыменование
 ================================================
 
 __Estimated time__: 1 day
