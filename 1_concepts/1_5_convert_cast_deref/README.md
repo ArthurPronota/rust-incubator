@@ -286,8 +286,13 @@ match u8::try_from(x) {
 |From / Into|Безопасное|T (значение)|Да (By value)|
 |TryFrom / TryInto|Опасное|Result<T, E>|Да (By value)|
 |AsRef / AsMut|Ссылка|&T (ссылка)|Нет (By reference)|
+
+Если вы пишете библиотеку, всегда предпочитайте реализацию From, так как она дает Into бесплатно и считается признаком хорошего тона в Rust.
+
 <hr>
 
+
+<hr>
 
 [`as`]: https://doc.rust-lang.org/std/keyword.as.html
 [`AsMut`]: https://doc.rust-lang.org/std/convert/trait.AsMut.html
