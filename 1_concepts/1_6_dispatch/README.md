@@ -177,15 +177,34 @@ struct User {
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - What is dispatch? When a function call represents a dispatch and when not?
+- [`Что такое диспетчеризация? Когда вызов функции представляет собой диспетчеризацию, а когда нет?`]()
+
 - How does static dispatch work?
 - How does dynamic dispatch work? Why is it required? Which limitations does it have in [Rust]? Why does it have them?
 - When dynamic dispatch can be replaced with static dispatch? When not? What are the trade-offs?
 - How can we reduce the size of compiler-generated code when using static dispatch?
 
+<ht>
+
+<h3>Что такое диспетчеризация? Когда вызов функции представляет собой диспетчеризацию, а когда нет?</h3>
+
+В Rust диспетчеризация — это процесс выбора конкретной реализации функции или метода, которая будет выполнена при вызове.
+
+Проще говоря: когда вы пишете object.do_something(), диспетчеризация — это механизм, который решает, какой именно машинный код должен запуститься.
+
+1. Когда вызов является диспетчеризацией?
+
+Вызов считается диспетчеризацией, когда существует неопределенность или выбор между несколькими возможными реализациями одного и того же имени метода.
+
+В Rust выделяют два вида диспетчеризации:
+
+А. Статическая диспетчеризация (Static Dispatch)
 
 
+
+<ht>
 
 [enum_dispatch]: https://docs.rs/enum_dispatch
 [momo]: https://github.com/llogiq/momo
