@@ -178,15 +178,15 @@ struct User {
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- What is dispatch? When a function call represents a dispatch and when not?
-- [`Что такое диспетчеризация? Когда вызов функции представляет собой диспетчеризацию, а когда нет?`]()
+
+- [`Что такое диспетчеризация? Когда вызов функции представляет собой диспетчеризацию, а когда нет?`](#что-такое-диспетчеризация-когда-вызов-функции-представляет-собой-диспетчеризацию-а-когда-нет)
 
 - How does static dispatch work?
 - How does dynamic dispatch work? Why is it required? Which limitations does it have in [Rust]? Why does it have them?
 - When dynamic dispatch can be replaced with static dispatch? When not? What are the trade-offs?
 - How can we reduce the size of compiler-generated code when using static dispatch?
 
-<ht>
+<hr>
 
 <h3>Что такое диспетчеризация? Когда вызов функции представляет собой диспетчеризацию, а когда нет?</h3>
 
