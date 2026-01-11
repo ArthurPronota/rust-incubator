@@ -182,6 +182,8 @@ struct User {
 - [`Что такое диспетчеризация? Когда вызов функции представляет собой диспетчеризацию, а когда нет?`](#что-такое-диспетчеризация-когда-вызов-функции-представляет-собой-диспетчеризацию-а-когда-нет)
 
 - How does static dispatch work?
+- [Как работает статическая диспетчеризация?]()
+
 - How does dynamic dispatch work? Why is it required? Which limitations does it have in [Rust]? Why does it have them?
 - When dynamic dispatch can be replaced with static dispatch? When not? What are the trade-offs?
 - How can we reduce the size of compiler-generated code when using static dispatch?
@@ -243,6 +245,12 @@ say_hello(); // Прямой вызов по конкретному адресу
 Резюме
 
 Вызов становится диспетчеризацией в тот момент, когда в коде появляется полиморфизм (возможность одного интерфейса работать с разными типами). Если функция «одна-единственная» — это просто прямой вызов. Если функций с таким именем много (для разных типов) — это диспетчеризация.
+
+<ht>
+
+<h3>Как работает статическая диспетчеризация?</h3>
+
+
 
 <ht>
 
