@@ -157,7 +157,6 @@ There is a handy [momo] crate, which generates this boilerplate automatically in
 
 ## Task
 
-Given the following `Storage` abstraction and `User` entity:
 Дайте следующую `Storage` абстракцию и `User` элемент:
 ```rust
 trait Storage<K, V> {
@@ -172,8 +171,6 @@ struct User {
     activated: bool,
 }
 ```
-
-Implement `UserRepository` type with injectable `Storage` implementation, which can get, add, update and remove `User` in the injected `Storage`. Make two different implementations: one should use [dynamic dispatch][2] for `Storage` injecting, and the other one should use [static dispatch][1].
 
 Реализуйте тип `UserRepository` с внедряемой реализацией `Storage`, которая может получать, добавлять, обновлять и удалять `User` во внедренном `Storage`. Создайте две разные реализации: одна должна использовать [динамическую диспетчеризацию][2] для внедрения `Storage`, а другая — [статическую диспетчеризацию][1].
 
