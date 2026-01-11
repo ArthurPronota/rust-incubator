@@ -181,7 +181,7 @@ struct User {
 
 - [`Что такое диспетчеризация? Когда вызов функции представляет собой диспетчеризацию, а когда нет?`](#что-такое-диспетчеризация-когда-вызов-функции-представляет-собой-диспетчеризацию-а-когда-нет)
 
-- [Как работает статическая диспетчеризация?](#как-работает-статическая-диспетчеризация)
+- [`Как работает статическая диспетчеризация?`](#как-работает-статическая-диспетчеризация)
 
 - How does dynamic dispatch work? Why is it required? Which limitations does it have in [Rust]? Why does it have them?
 - When dynamic dispatch can be replaced with static dispatch? When not? What are the trade-offs?
