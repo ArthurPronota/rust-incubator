@@ -252,7 +252,7 @@ say_hello(); // Прямой вызов по конкретному адресу
 
 
 
-<ht>
+<hr>
 
 [enum_dispatch]: https://docs.rs/enum_dispatch
 [momo]: https://github.com/llogiq/momo
