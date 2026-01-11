@@ -84,7 +84,7 @@ fn main() {
 
     let user = User {
         id: 42,
-        email: Cow::Borrowed("dev@example.com"),
+        email: Cow::Borrowed("m@n.c"),
         activated: true,
     };    
 
