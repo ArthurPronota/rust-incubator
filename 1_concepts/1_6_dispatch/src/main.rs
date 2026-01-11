@@ -1,4 +1,5 @@
 fn main() {
+    // Статическая диспетчеризация
     {
     use std::borrow::Cow ;
     use std::collections::HashMap ;
