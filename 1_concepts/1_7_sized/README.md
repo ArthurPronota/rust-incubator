@@ -52,6 +52,9 @@ Given the [`User` and `UserRepository` implementations from the previous task](.
 
 Provide tests for `CommandHandler<CreateUser>` implementation where `dyn UserRepository` is mocked with another hand-written type for testing purposes (you will need to transform the `UserRepository` type into a trait).
 
+[Используя реализации User и UserRepository из предыдущего задания](../1_6_dispatch#task), напишите фактический код для реализации CommandHandler<CreateUser>, описанной выше.
+
+Предоставьте тесты для реализации `CommandHandler<CreateUser>`, где `dyn UserRepository` будет заменен другим типом, написанным вручную, для целей тестирования (вам потребуется преобразовать тип UserRepository в трейт).
 
 
 
