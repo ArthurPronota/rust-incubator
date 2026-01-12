@@ -54,7 +54,7 @@ Provide tests for `CommandHandler<CreateUser>` implementation where `dyn UserRep
 
 [Используя реализации User и UserRepository из предыдущего задания](../1_6_dispatch#task), напишите фактический код для реализации CommandHandler<CreateUser>, описанной выше.
 
-Предоставьте тесты для реализации `CommandHandler<CreateUser>`, где `dyn UserRepository` будет заменен другим типом, написанным вручную, для целей тестирования (вам потребуется преобразовать тип UserRepository в трейт).
+Предоставьте тесты для реализации `CommandHandler<CreateUser>`, где `dyn UserRepository` будет имитирован другим типом, написанным вручную, для целей тестирования (вам потребуется преобразовать тип UserRepository в трейт).
 
 
 
