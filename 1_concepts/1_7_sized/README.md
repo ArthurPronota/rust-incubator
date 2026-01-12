@@ -59,8 +59,8 @@ Provide tests for `CommandHandler<CreateUser>` implementation where `dyn UserRep
 
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- What is [`Sized`] trait about? When [Rust] implies it? And when not?
-- [`Что означает свойство Sized? Когда Rust его подразумевает? А когда нет?`]()
+
+- [`Что означает свойство Sized? Когда Rust его подразумевает? А когда нет?`](#что-означает-свойство-sized-когда-rust-его-подразумевает-а-когда-нет)
 - Why `?Sized` trait bound is important? When should we use it and why?
 
 <hr>
