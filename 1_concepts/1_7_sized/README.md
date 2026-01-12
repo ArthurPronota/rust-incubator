@@ -160,6 +160,34 @@ struct HeaderWithData {
 
 <h4>Когда и почему следует использовать `?Sized?`</h4>
 
+1. Для работы со строками и срезами через ссылки
+
+Если ваша функция принимает ссылку на что-то обобщенное, почти всегда стоит добавить `?Sized`. Это позволит передавать в неё как `String (Sized), так и `str` (unsized).
+
+```rust
+// Без ?Sized этот код не примет &str
+fn print_wrapped<T: ?Sized + std::fmt::Display>(value: &T) {
+    println!("Value: {}", value);
+}
+
+fn main() {
+    let s: &str = "hello"; // !Sized
+    print_wrapped(s);      // Работает только благодаря ?Sized
+}
+```
+
+2. В умных указателях и контейнерах
+
+Если вы создаете свою обертку (например, `MySmartPointer<T>`), добавление `?Sized` позволяет этой обертке хранить типы вроде `dyn Trait`.
+
+```rust
+struct MyBox<T: ?Sized> {
+    inner: Box<T>,
+}
+```
+Без `?Sized` вы бы не смогли создать `MyBox<dyn SomeTrait>`.
+
+
 
 <hr>
 
