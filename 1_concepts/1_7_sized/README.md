@@ -1,4 +1,4 @@
-Step 1.7: `Sized` and `?Sized` types
+Шаг 1.7: `Sized` и `?Sized` типы
 ====================================
 
 __Estimated time__: 1 day
