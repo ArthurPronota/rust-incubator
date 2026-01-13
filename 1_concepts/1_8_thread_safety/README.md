@@ -34,7 +34,15 @@ All inner details of implementation are on your choice.
 Play with these types from multiple threads to see how compile time [fearless concurrency][2] works in practice.
 
 
+Реализуйте следующие типы, удовлетворяющие условиям:
+1. `OnlySync` is `Sync`, but `!Send`.
+2. `OnlySend` is `Send`, but `!Sync`.
+3. `SyncAndSend` is both `Sync` and `Send`.
+4. `NotSyncNotSend` is both `!Sync` and `!Send`.
 
+Все внутренние детали реализации — на ваш выбор.
+
+Поэкспериментируйте с этими типами в нескольких потоках, чтобы увидеть, как на практике работает [Потоковая безопасность][2] на этапе компиляции.
 
 ## Questions
 
