@@ -39,8 +39,8 @@ Play with these types from multiple threads to see how compile time [fearless co
 ## Questions
 
 After completing everything above, you should be able to answer (and understand why) the following questions:
-- What does "fearless concurrency" mean in [Rust]? With which mechanisms does [Rust] fulfill this guarantee exactly?
-- [`Что означает "безбоязненная конкурентность" в Rust? С помощью каких механизмов Rust точно выполняет эту гарантию?`]()
+
+- [`Что означает "безбоязненная конкурентность" в Rust? С помощью каких механизмов Rust точно выполняет эту гарантию?`](#что-означает-безбоязненная-конкурентность-в-rust-с-помощью-каких-механизмов-rust-точно-выполняет-эту-гарантию)
 
 - Why do [`Send`] and [`Sync`] exist at all? How is it related to interior mutability?
 
@@ -112,7 +112,7 @@ Rust предоставляет примитивы, которые инкапс�
 - <b>Arc (Atomic Reference Counted)</b>: Атомарный умный указатель, который позволяет нескольким потокам владеть данными. В отличие от Rc, он использует атомарные операции для счетчика, поэтому он Send и Sync. Документация Arc.
 - <b>Mutex и RwLock</b>: В Rust Mutex «владеет» данными. Чтобы получить доступ к данным, вы обязаны вызвать .lock(). Это возвращает MutexGuard, который гарантирует эксклюзивный доступ и автоматически освобождает замок, когда выходит из области видимости.
 
-Использование Mutex
+Использование Arc + Mutex
 ```rust
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -137,7 +137,7 @@ fn main() {
     println!("Result: {}", *counter.lock().unwrap());
 }
 ```
-Использование RwLock
+Использование Arc + RwLock
 ```rust
 use std::sync::{Arc, RwLock} ;
 use std::thread ;
