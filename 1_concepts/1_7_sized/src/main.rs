@@ -1,14 +1,5 @@
 use std::borrow::Cow;
-//use std::hash::Hash;
 use std::rc::Rc ;
-/*
-// трейт функционала для репозитария (хранилища) пользователей
-pub trait Storage<K, V> {
-    fn set(&mut self, key: K, val: V);
-    fn get(&self, key: &K) ->Option<&V>;
-    fn remove(&mut self, key: &K) ->Option<V>;
-}
- */
 
 // струткура пользователя
 #[derive(Debug, Clone, PartialEq)]
@@ -18,31 +9,30 @@ pub struct User {
     pub activated: bool,
 }
 
-// перечисление с ошибками
+// перечисление с ошибками работы с пользователями
 #[derive(Debug)]
 pub enum UserError {
     AlreadyExists,
     NotFound,
-    //StorageError,
 }
 
-// Команда создания пользователя
+// Структура с данными для создания пользователя
 pub struct CreateUser {
     pub id: u64,
     pub email: String,
 }
 
-// Команда получения данных по пользователю
+// Структура с данными для получения данных по пользователю
 pub struct GetUser {
     pub id: u64,
 }
 
-// Команда удаления данных по пользователю
+// Структура с данными для удаления пользователя
 pub struct DelUser {
     pub id: u64,
 }
 
-// трейт функционала любой команды
+// "Маркерный" трейт любой команды
 pub trait Command {}
 
 // реализация трейта команды для создания пользователя
@@ -54,12 +44,12 @@ impl Command for GetUser {}
 // реализация трейта команды для удаления данных по пользователю
 impl Command for DelUser {}
 
-// трейт функционала для пользовательского репозитария для Context
+// трейт функционала для пользовательского репозитария (Context)
 pub trait UserRepository {
-    fn add(&self, user: User) -> Result<(), UserError>;// {Ok(())}
-    fn get(&self, id: &u64) ->Option<User>; // {None}
-    fn remove(&self, id: &u64) ->Option<User>; // {None}
-    fn exists(&self, id: &u64) ->bool; // {false}
+    fn add(&self, user: User) -> Result<(), UserError>;
+    fn get(&self, id: &u64) ->Option<User>;
+    fn remove(&self, id: &u64) ->Option<User>;
+    fn exists(&self, id: &u64) ->bool;
 }
 
 // трейт обработчика команд
@@ -70,8 +60,9 @@ pub trait CommandHandler<C: Command> {
     fn handle_command(&self, cmd: &C, ctx: &Self::Context) -> Self::Result;
 }
 
+// реализация обработчика команды для создания пользователя
 impl CommandHandler<CreateUser> for User {
-    type Context = dyn UserRepository; // Используем трейт-объект для работы с разными типами
+    type Context = dyn UserRepository; // Используем трейт-объект для работы с разными типами репозитария
     type Result = Result<(), UserError>;
 
     fn handle_command(&self, cmd: &CreateUser, user_repo: &Self::Context) -> Self::Result {
@@ -90,8 +81,9 @@ impl CommandHandler<CreateUser> for User {
     }
 }
 
+// реализация обработчика команды для удаления пользователя
 impl CommandHandler<DelUser> for User {
-    type Context = dyn UserRepository; // Используем трейт-объект для работы с разными типами
+    type Context = dyn UserRepository; // Используем трейт-объект для работы с разными типами репозитария
     type Result = Option<User>;
 
     fn handle_command(&self, cmd: &DelUser, user_repo: &Self::Context) -> Self::Result {
@@ -99,8 +91,9 @@ impl CommandHandler<DelUser> for User {
     }    
 }
 
+// реализация обработчика команды для получения данных по пользователю
 impl CommandHandler<GetUser> for User {
-    type Context = dyn UserRepository; // Используем трейт-объект для работы с разными типами
+    type Context = dyn UserRepository; // Используем трейт-объект для работы с разными типами репозитария
     type Result = Option<User>;
 
     fn handle_command(&self, cmd: &GetUser, user_repo: &Self::Context) -> Self::Result {
@@ -135,12 +128,14 @@ impl<T: Storage<u64, User>> IUserRepository for UserRepository<T> {
     use super::* ;
     use std::cell::RefCell ;
     use std::collections::HashMap ;
+    use std::process::Command;
 
     struct MockRepo {
         users:  RefCell<HashMap<u64, User>>,
     }
 
     impl UserRepository for MockRepo {
+
         fn add(&self, user: User) -> Result<(), UserError> {
             self
                 .users
@@ -169,11 +164,47 @@ impl<T: Storage<u64, User>> IUserRepository for UserRepository<T> {
             self
                 .users
                 .borrow()
+                .get(id)
+                .is_some()
+                /*
                 .iter()
                 .any(|(k, v)| k == id)
+                 */
         }
     }
 
+    #[test]
+    fn mix_user() {
+        let mock_repo = MockRepo {users: RefCell::new(HashMap::new())} ;
+
+        let user_empty = User {
+                                id: 0, 
+                                email: Cow::Owned("".to_owned()),
+                                activated: false
+                            } ;
+        // создание пользователя
+        let cmd = CreateUser {id: 1, email: "m@n.c".into()} ;
+        assert!(user_empty.handle_command(&cmd, &mock_repo).is_ok()) ;
+        assert!(user_empty.handle_command(&cmd, &mock_repo).is_err()) ;
+
+        // получение данных по пользователю
+        let cmd = GetUser {id: 1} ;
+        let user_data = user_empty.handle_command(&cmd, &mock_repo) ;
+
+        match user_data {
+            Some(u ) => {
+                assert_eq!(u.id, cmd.id, "Invalid id: {}", u.id) ;
+                assert_eq!(u.activated, false, "Invalid activated: {}", u.activated) ;
+                assert_eq!(u.email.to_string(), "m@n.c".to_owned(), "Invalid email: {}", u.email.to_string()) ;
+            },
+            None => assert!(false, "Not found user for id: {}", cmd.id),
+        }
+
+        // удаление пользователя
+        let cmd = DelUser {id: cmd.id} ;
+
+        assert!(user_empty.handle_command(&cmd, &mock_repo).is_some()) ;
+    }
 
  }
 /*
