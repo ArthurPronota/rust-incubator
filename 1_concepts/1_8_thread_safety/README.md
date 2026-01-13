@@ -112,6 +112,7 @@ Rust предоставляет примитивы, которые инкапс�
 - <b>Arc (Atomic Reference Counted)</b>: Атомарный умный указатель, который позволяет нескольким потокам владеть данными. В отличие от Rc, он использует атомарные операции для счетчика, поэтому он Send и Sync. Документация Arc.
 - <b>Mutex и RwLock</b>: В Rust Mutex «владеет» данными. Чтобы получить доступ к данным, вы обязаны вызвать .lock(). Это возвращает MutexGuard, который гарантирует эксклюзивный доступ и автоматически освобождает замок, когда выходит из области видимости.
 
+Использование Mutex
 ```rust
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -136,20 +137,40 @@ fn main() {
     println!("Result: {}", *counter.lock().unwrap());
 }
 ```
-
+Использование RwLock
 ```rust
-use std::sync::RwLock;
+use std::sync::{Arc, RwLock} ;
+use std::thread ;
+use std::time::Duration ;
 
-let lock = RwLock::new(5);
+fn main() {
 
-{
-    let r1 = lock.read().unwrap();   // Много читателей - OK
-    let r2 = lock.read().unwrap();
-} // r1 и r2 выходят из области видимости
+    let vd = Arc::new(RwLock::new(0)) ;
 
-{
-    let mut w = lock.write().unwrap(); // Только один писатель
-    *w += 1;
+    let mut throw_arr = vec![] ;
+    for _ in 0..2 {
+        let vd_clone = vd.clone() ;
+        throw_arr.push(
+            thread::spawn(move || {
+                let mut v = vd_clone.write().unwrap() ;
+                *v += 1 ;
+                println!("v: {}", v) ;
+            })
+        ) ;
+    }
+
+    let vd_clone = vd.clone() ;
+    throw_arr.push(
+        thread::spawn(move || {
+            thread::sleep(Duration::from_millis(100));
+            println!("result: {}", vd_clone.read().unwrap()) ;
+        })
+    ) ;
+
+    for un in throw_arr {
+        un.join().unwrap() ;
+    }
+
 }
 ```
 

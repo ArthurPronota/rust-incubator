@@ -1,20 +1,34 @@
-use std::sync::mpsc;  // Multi-producer, single-consumer
-use std::thread;
+use std::sync::{Arc, RwLock} ;
+use std::thread ;
+use std::time::Duration ;
 
 fn main() {
-    let (tx, rx) = mpsc::channel();
-    
-    let tx1 = tx.clone() ;
-    thread::spawn(move || {
-        tx1.send("Hello from thread!").unwrap();
-    });
-    
-    thread::spawn(move || {
-        tx.send("Hello from thread2!").unwrap();
-    });
 
-    for mess in rx {
-        println!("Received: {}", mess) ;
+    let vd = Arc::new(RwLock::new(0)) ;
+
+    let mut throw_arr = vec![] ;
+    for _ in 0..2 {
+        let vd_clone = vd.clone() ;
+        throw_arr.push(
+            thread::spawn(move || {
+                let mut v = vd_clone.write().unwrap() ;
+                *v += 1 ;
+                println!("v: {}", v) ;
+            })
+        ) ;
     }
-    //println!("Received: {}", rx.recv().unwrap());
+
+
+    let vd_clone = vd.clone() ;
+    throw_arr.push(
+        thread::spawn(move || {
+            thread::sleep(Duration::from_millis(100));
+            println!("result: {}", vd_clone.read().unwrap()) ;
+        })
+    ) ;
+
+    for un in throw_arr {
+        un.join().unwrap() ;
+    }
+
 }
