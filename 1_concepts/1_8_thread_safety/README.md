@@ -112,10 +112,72 @@ Rust предоставляет примитивы, которые инкапс�
 - <b>Arc (Atomic Reference Counted)</b>: Атомарный умный указатель, который позволяет нескольким потокам владеть данными. В отличие от Rc, он использует атомарные операции для счетчика, поэтому он Send и Sync. Документация Arc.
 - <b>Mutex и RwLock</b>: В Rust Mutex «владеет» данными. Чтобы получить доступ к данным, вы обязаны вызвать .lock(). Это возвращает MutexGuard, который гарантирует эксклюзивный доступ и автоматически освобождает замок, когда выходит из области видимости.
 
+```rust
+use std::sync::{Arc, Mutex};
+use std::thread;
+
+fn main() {
+    let counter = Arc::new(Mutex::new(0));
+    let mut handles = vec![];
+
+    for _ in 0..10 {
+        let counter = Arc::clone(&counter);
+        let handle = thread::spawn(move || {
+            let mut num = counter.lock().unwrap();
+            *num += 1;
+        });
+        handles.push(handle);
+    }
+
+    for handle in handles {
+        handle.join().unwrap();
+    }
+
+    println!("Result: {}", *counter.lock().unwrap());
+}
+```
+
+```rust
+use std::sync::RwLock;
+
+let lock = RwLock::new(5);
+
+{
+    let r1 = lock.read().unwrap();   // Много читателей - OK
+    let r2 = lock.read().unwrap();
+} // r1 и r2 выходят из области видимости
+
+{
+    let mut w = lock.write().unwrap(); // Только один писатель
+    *w += 1;
+}
+```
+
 5. Каналы (Channels)
 
 Rust активно поддерживает философию: «Не общайтесь через разделяемую память, разделяйте память через общение». Трейты Send гарантируют, что как только вы отправили данные в канал (mpsc), вы теряете к ним доступ, и их безопасно получает другой поток.
+```rust
+use std::sync::mpsc;  // Multi-producer, single-consumer
+use std::thread;
 
+fn main() {
+    let (tx, rx) = mpsc::channel();
+    
+    let tx1 = tx.clone() ;
+    thread::spawn(move || {
+        tx1.send("Hello from thread!").unwrap();
+    });
+    
+    thread::spawn(move || {
+        tx.send("Hello from thread2!").unwrap();
+    });
+
+    for mess in rx {
+        println!("Received: {}", mess) ;
+    }
+    //println!("Received: {}", rx.recv().unwrap());
+}
+```
 Итог:
 
 Rust остается лидером в системном программировании именно благодаря тому, что ошибки многопоточности — это ошибки компиляции, а не часы отладки в рантайме. Вы можете смело использовать сложные паттерны (параллельные итераторы rayon, асинхронность tokio), зная, что если код скомпилировался, в нем нет состояний гонки по памяти. Официальная глава о конкурентности.
