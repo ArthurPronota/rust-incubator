@@ -1,5 +1,5 @@
-use std::borrow::Cow;
-use std::rc::Rc ;
+use std::{borrow::Cow, cell::RefCell};
+//use std::rc::Rc ;
 
 // струткура пользователя
 #[derive(Debug, Clone, PartialEq)]
@@ -13,7 +13,7 @@ pub struct User {
 #[derive(Debug)]
 pub enum UserError {
     AlreadyExists,
-    NotFound,
+    //NotFound,
 }
 
 // Структура с данными для создания пользователя
@@ -101,35 +101,13 @@ impl CommandHandler<GetUser> for User {
     }
 }
 
-/*
-// Оборачиваем Storage в RefCell, так как CommandHandler принимает &Context (неизменяемую ссылку),
-// а Storage требует &mut self для записи.
-use std::cell::RefCell;
-
-pub struct UserRepository<T: Storage<u64, User>> {
-    pub storage: RefCell<T>,
-}
-
-impl<T: Storage<u64, User>> IUserRepository for UserRepository<T> {
-
-    fn add(&self, user: User) -> Result<(), UserError> {
-        self.storage.borrow_mut().set(user.id, user);
-        Ok(())
-    }
-
-    fn exists(&self, id: u64) -> bool {
-        self.storage.borrow().get(&id).is_some()
-    }
-}
- */
-
  #[cfg(test)]
  mod test {
     use super::* ;
     use std::cell::RefCell ;
     use std::collections::HashMap ;
-    use std::process::Command;
 
+    // Первая реализация репозитария
     struct MockRepo {
         users:  RefCell<HashMap<u64, User>>,
     }
@@ -137,6 +115,11 @@ impl<T: Storage<u64, User>> IUserRepository for UserRepository<T> {
     impl UserRepository for MockRepo {
 
         fn add(&self, user: User) -> Result<(), UserError> {
+
+            if self.exists(&user.id) {
+                return Err(UserError::AlreadyExists)
+            }
+
             self
                 .users
                 .borrow_mut()
@@ -166,15 +149,12 @@ impl<T: Storage<u64, User>> IUserRepository for UserRepository<T> {
                 .borrow()
                 .get(id)
                 .is_some()
-                /*
-                .iter()
-                .any(|(k, v)| k == id)
-                 */
         }
     }
 
     #[test]
     fn mix_user() {
+
         let mock_repo = MockRepo {users: RefCell::new(HashMap::new())} ;
 
         let user_empty = User {
@@ -207,64 +187,85 @@ impl<T: Storage<u64, User>> IUserRepository for UserRepository<T> {
     }
 
  }
-/*
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::{cell::RefCell, collections::HashMap};
 
-    // Ручной Mock-тип для тестирования
-    // Тестовый репозитарий для хранения пользователей
-    struct MockRepo {
-        users: RefCell<Vec<User>>,
-        //users:   RefCell<HashMap<u64, User>>
+fn main() {
+
+    // Вторая реализация репозитария
+    #[derive(Debug)]
+    struct UserVecRepository {
+        users:  RefCell<Vec<User>>,
     }
 
-    impl UserRepository for MockRepo {
+    impl UserRepository for UserVecRepository {
 
         fn add(&self, user: User) -> Result<(), UserError> {
+
+            if self.exists(&user.id) {
+                return Err(UserError::AlreadyExists)                
+            }
+
             self.users.borrow_mut().push(user);
+            
             Ok(())
         }
 
-        fn exists(&self, id: u64) -> bool {
-            self.users.borrow().iter().any(|u| u.id == id)
+        fn exists(&self, id: &u64) ->bool {
+            self.users.borrow().iter().any(|x| x.id == *id)
         }
-    }
 
-    #[test]
-    fn test_create_user_success() {
-        let mock_repo = MockRepo { users: RefCell::new(vec![]) };
-        let cmd = CreateUser { id: 1, email: "test@example.com".into() };
-        
-        // Создаем "пустого" пользователя как исполнителя команды
-        let actor = User { id: 0, email: "".into(), activated: false };
-
-        let result = actor.handle_command(&cmd, &mock_repo);
-
-        assert!(result.is_ok());
-        assert_eq!(mock_repo.users.borrow().len(), 1);
-        assert_eq!(mock_repo.users.borrow()[0].id, 1);
-    }
-
-    #[test]
-    fn test_create_user_already_exists() {
-        let existing_user = User { id: 1, email: "old@test.com".into(), activated: true };
-        let mock_repo = MockRepo { users: RefCell::new(vec![existing_user]) };
-        
-        let cmd = CreateUser { id: 1, email: "new@test.com".into() };
-        let actor = User { id: 0, email: "".into(), activated: false };
-
-        let result = actor.handle_command(&cmd, &mock_repo);
-
-        match result {
-            Err(UserError::AlreadyExists) => (),
-            _ => panic!("Should have failed with AlreadyExists"),
+        fn get(&self, id: &u64) ->Option<User> {
+            self
+                .users
+                .borrow()
+                .iter()
+                .find(|u| u.id == *id)
+                .map(|x| x.clone())
         }
-    }
-}
- */
 
-fn main() {
-    println!("Implement me!");
+        fn remove(&self, id: &u64) ->Option<User> {
+
+            let real_index ;
+
+            match self
+                .users
+                .borrow()
+                .iter()
+                .position(|x| x.id == *id) {
+                    Some(index) => {
+                        real_index = index ;
+                    },
+                    None => return None
+            }
+
+            Some(self
+                    .users
+                    .borrow_mut()
+                    .remove(real_index)
+                )
+        }
+
+    }
+
+    let reps = UserVecRepository {users:  RefCell::new(Vec::new())} ;
+
+    let user_empty = User {id: 0, email: Cow::Borrowed(""), activated: false} ;
+
+    // создание нового пользователя
+    let com = CreateUser {id: 1, email: "m@n.c".into()} ;
+    let res = user_empty.handle_command(&com, &reps) ;
+    println!("1) res: {:?}", res) ;
+    let res = user_empty.handle_command(&com, &reps) ;
+    println!("2) res: {:?}", res) ;
+
+
+    // получение данных по пользователю
+    let com = GetUser {id: com.id} ;
+    println!("user for id {}: {:?}", com.id, user_empty.handle_command(&com, &reps)) ;
+    let com = GetUser {id: com.id * 10} ;
+    println!("user for id {}: {:?}", com.id, user_empty.handle_command(&com, &reps)) ;
+
+    // удаление пользователя
+    let com = DelUser {id: 1} ;
+    println!("Deleted user: {:?}", user_empty.handle_command(&com, &reps)) ;
+
 }
