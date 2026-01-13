@@ -54,7 +54,7 @@ pub trait UserRepository {
 
 // трейт обработчика команд
 pub trait CommandHandler<C: Command> {
-    type Context: ?Sized;
+    type Context: ?Sized;   // без `?Sized` не будет работать `dyn Trait`
     type Result;
 
     fn handle_command(&self, cmd: &C, ctx: &Self::Context) -> Self::Result;
