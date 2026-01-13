@@ -78,7 +78,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
     - [ ] [Шаг 1.5: Преобразования, приведение типов и разыменование][Step 1.5] (1 day)
     - [ ] [Шаг 1.6: Статическая и динамическая диспетчеризация][Step 1.6] (1 day)
     - [ ] [Шаг 1.7: `Sized` и `?Sized` типы][Step 1.7] (1 day)
-    - [ ] [1.8. Thread safety][Step 1.8] (1 day)
+    - [ ] [Шаг 1.8: Потоковая безопасность][Step 1.8] (1 day)
     - [ ] [1.9. Phantom types][Step 1.9] (1 day)
 - [ ] [2. Idioms][Step 2] (2 days, after all sub-steps)
     - [ ] [2.1. Rich types ensure correctness][Step 2.1] (1 day)
