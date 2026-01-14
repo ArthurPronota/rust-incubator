@@ -191,8 +191,7 @@ Fact about Vec: Vec may re-allocate on growing.
 
 - [`Зачем в Rust существует PhantomData? Какие проблемы он решает?`](#зачем-в-rust-существует-phantomdata-какие-проблемы-он-решает)
 
-- How does [`PhantomData`]'s transparency work in practise?
-- [Как на практике работает прозрачность PhantomData?]()
+- [Как на практике работает прозрачность PhantomData?](#как-на-практике-работает-прозрачность-phantomdata)
 
 - What alternatives of [`PhantomData`] do exist? When is it meaningful to use them?
 
