@@ -1,4 +1,4 @@
-Step 1.9: Phantom types
+Шаг 1.9: Фантомные типы
 =======================
 
 __Estimated time__: 1 day
