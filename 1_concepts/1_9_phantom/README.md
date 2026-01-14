@@ -193,7 +193,6 @@ Fact about Vec: Vec may re-allocate on growing.
 
 - [Как на практике работает прозрачность PhantomData?](#как-на-практике-работает-прозрачность-phantomdata)
 
-- What alternatives of [`PhantomData`] do exist? When is it meaningful to use them?
 - [`Какие существуют альтернативы PhantomData? Когда их целесообразно использовать?`](#какие-существуют-альтернативы-phantomdata-когда-их-целесообразно-использовать)
 
 <hr>
