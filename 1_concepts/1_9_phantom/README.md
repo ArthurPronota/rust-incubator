@@ -185,13 +185,20 @@ Fact about Vec: Vec may re-allocate on growing.
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - Why does [`PhantomData`] exists in [Rust]? Which problems does it solve?
+- [`Зачем в Rust существует PhantomData? Какие проблемы он решает?`]()
+
 - How does [`PhantomData`]'s transparency work in practise?
 - What alternatives of [`PhantomData`] do exist? When is it meaningful to use them?
 
+<hr>
+
+<h3>Зачем в Rust существует PhantomData? Какие проблемы он решает?</h3>
 
 
+
+<hr>
 
 [`ghost`]: https://docs.rs/ghost
 [`PhantomData`]: https://doc.rust-lang.org/std/marker/struct.PhantomData.html
