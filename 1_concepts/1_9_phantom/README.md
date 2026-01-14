@@ -191,8 +191,9 @@ Fact about Vec: Vec may re-allocate on growing.
 
 - [`Зачем в Rust существует PhantomData? Какие проблемы он решает?`](#зачем-в-rust-существует-phantomdata-какие-проблемы-он-решает)
 
-
 - How does [`PhantomData`]'s transparency work in practise?
+- [Как на практике работает прозрачность PhantomData?]()
+
 - What alternatives of [`PhantomData`] do exist? When is it meaningful to use them?
 
 <hr>
@@ -356,6 +357,10 @@ struct RawRef<'a, T> {
 <h4>Резюме</h4>
 
 PhantomData нужен, чтобы «объяснить» компилятору ваши намерения, которые не выражены явно через обычные поля. Это мост между высокоуровневой системой типов Rust и низкоуровневой реальностью указателей и сырой памяти.
+
+<hr>
+
+<h3>Как на практике работает прозрачность PhantomData?</h3>
 
 <hr>
 
