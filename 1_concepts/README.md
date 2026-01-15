@@ -17,7 +17,7 @@ These steps describe common and necessary-to-know concepts for everyday programm
 
 - [`Каким образом могут быть нарушены правила заимствования? Какой ценой? Когда и почему это обычно требуется?`](#каким-образом-могут-быть-нарушены-правила-заимствования-какой-ценой-когда-и-почему-это-обычно-требуется)
 
-- [`Как одновременно работать с собственными и заимствованными данными? Когда и почему это обычно необходимо?`]()
+- [`Как одновременно работать с собственными и заимствованными данными? Когда и почему это обычно необходимо?`](#как-одновременно-работать-с-собственными-и-заимствованными-данными-когда-и-почему-это-обычно-необходимо)
 
 - How to share values between threads? What is `Send` and `Sync` markers? Why are they required, when should be used?
 - How do static and dynamic dispatches differ? Why do they exist? When and why should I choose between them?
