@@ -11,7 +11,7 @@ These steps describe common and necessary-to-know concepts for everyday programm
 
 - [`Как распознать, что данные выделяются в куче, а не в стеке? Когда данные следует выделять в куче?`](#как-распознать-что-данные-выделяются-в-куче-а-не-в-стеке-когда-данные-следует-выделять-в-куче)
 
-- [`Что такое копирование и клонирование данных в Rust? В чём разница? Когда и зачем их использовать?`]()
+- [`Что такое копирование и клонирование данных в Rust? В чём разница? Когда и зачем их использовать?`](#что-такое-копирование-и-клонирование-данных-в-rust-в-чём-разница-когда-и-зачем-их-использовать)
 
 - How can a single piece of data be owned by multiple parts of program? When and why is this commonly required?
 - How borrowing rules may be violated? In what price? When and why is this commonly required?
