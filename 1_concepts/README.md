@@ -13,7 +13,8 @@ These steps describe common and necessary-to-know concepts for everyday programm
 
 - [`Что такое копирование и клонирование данных в Rust? В чём разница? Когда и зачем их использовать?`](#что-такое-копирование-и-клонирование-данных-в-rust-в-чём-разница-когда-и-зачем-их-использовать)
 
-- How can a single piece of data be owned by multiple parts of program? When and why is this commonly required?
+- [`Как один и тот же фрагмент данных может принадлежать нескольким частям программы? Когда и почему это обычно необходимо?`]()
+
 - How borrowing rules may be violated? In what price? When and why is this commonly required?
 - How to deal with owned and borrowed data simultaneously? When and why is this commonly required?
 - How to share values between threads? What is `Send` and `Sync` markers? Why are they required, when should be used?
@@ -134,6 +135,14 @@ let s2 = s1.clone(); // Явное копирование данных в куч
 Золотое правило Rust:
 
 Если тип может быть `Copy` без потери производительности (он маленький и только на стеке), сделайте его `Copy`. Если тип сложный или динамический — используйте только `Clone`, чтобы не делать скрытых тяжелых операций за спиной программиста.
+
+<hr>
+
+<h3>Как один и тот же фрагмент данных может принадлежать нескольким частям программы? Когда и почему это обычно необходимо?</h3>
+
+В Rust по умолчанию действует правило единого владения: у одного фрагмента данных есть только один владелец. Однако в сложных программах часто возникает необходимость разделить владение данными.
+
+Для этого используются три основных механизма, каждый из которых предназначен для своего сценария.
 
 
 ## Task
