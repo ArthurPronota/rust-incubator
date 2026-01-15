@@ -9,8 +9,7 @@ These steps describe common and necessary-to-know concepts for everyday programm
 
 После выполнения этих заданий вы сможете ответить на следующие вопросы:
 
-- How do I recognize that data is allocated at the heap rather than at the stack? When data should be allocated at the heap?
-- [`Как распознать, что данные выделяются в куче, а не в стеке? Когда данные следует выделять в куче?`]()
+- [`Как распознать, что данные выделяются в куче, а не в стеке? Когда данные следует выделять в куче?`](#как-распознать-что-данные-выделяются-в-куче-а-не-в-стеке-когда-данные-следует-выделять-в-куче)
 
 - What is copying and cloning data in [Rust]? What's the difference? When and why should I use them?
 - How can a single piece of data be owned by multiple parts of program? When and why is this commonly required?
