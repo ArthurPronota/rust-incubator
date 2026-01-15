@@ -19,7 +19,8 @@ These steps describe common and necessary-to-know concepts for everyday programm
 
 - [`Как одновременно работать с собственными и заимствованными данными? Когда и почему это обычно необходимо?`](#как-одновременно-работать-с-собственными-и-заимствованными-данными-когда-и-почему-это-обычно-необходимо)
 
-- How to share values between threads? What is `Send` and `Sync` markers? Why are they required, when should be used?
+- [Как обмениваться значениями между потоками? Что такое маркеры `Send` и `Sync`? Зачем они нужны и когда их следует использовать?]()
+
 - How do static and dynamic dispatches differ? Why do they exist? When and why should I choose between them?
 - Why `?Sized` types exist? How are they used? Why should I care about them?
 - Why phantom types exist? What problems do they solve?
@@ -296,7 +297,9 @@ fn sanitize(input: &str) -> Cow<str> {
 
 Для глубокого понимания изучите документацию трейта `ToOwned`, который является фундаментом для работы `Cow`.
 
+<hr>
 
+<h3>Как обмениваться значениями между потоками? Что такое маркеры `Send` и `Sync`? Зачем они нужны и когда их следует использовать?</h3>
 
 ## Task
 
