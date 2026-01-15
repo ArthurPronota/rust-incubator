@@ -168,20 +168,6 @@ For more detailed explanation, read through:
 
 ## Task
 
-Implement a `Fact<T>` type which returns some random fact about `T` type that `Fact<T>` is implemented for.
-
-```rust
-let f: Fact<Vec<T>> = Fact::new();
-println!("Fact about Vec: {}", f.fact());
-println!("Fact about Vec: {}", f.fact());
-```
-```
-Fact about Vec: Vec is heap-allocated.
-Fact about Vec: Vec may re-allocate on growing.
-```
-
--------------
-
 Реализуйте тип `Fact<T>`, который возвращает случайный факт о типе `T`, для которого реализован `Fact<T>`.
 
 ```rust
