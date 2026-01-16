@@ -163,6 +163,7 @@ impl<T> ConcurrentDoublyLinkedList<T> {
                             1, 
                             Ordering::SeqCst
                         ) ;
+                        
                     break;
                 },
                 Err(_) => { // Другая операция изменила head
