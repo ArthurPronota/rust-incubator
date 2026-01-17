@@ -837,11 +837,6 @@ fn main() {
 
 ## Task
 
-Provide your own implementation of [doubly linked list][11] data structure. It should be [thread safe][12] without a necessity to use explicit synchronization primitives (like `Arc<Mutex<T>>`) on top of it.
-
-Prove your implementation correctness with tests. Provide both single-threaded and multi-threaded examples of usage.  
-
-
 Предоставьте собственную реализацию структуры данных [двусвязный список][11]. Она должна быть [потокобезопасной][12] без необходимости использования явных примитивов синхронизации (таких как `Arc<Mutex<T>>`) поверх неё.
 
 Докажите корректность вашей реализации с помощью тестов. Предоставьте примеры использования как в однопоточном, так и в многопоточном режимах.
