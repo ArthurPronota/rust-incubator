@@ -60,7 +60,8 @@ impl<T> Node<T> {
     }
 }
 
-/*
+/*  Структура списка:
+
         +----+   +----+  +----+
         +    v   +    v  +    v    << Следующий узел
      Node3   Node2   Node1   null
@@ -88,7 +89,7 @@ impl<T> ConcurrentDoublyLinkedList<T> {
         }
     }
 
-    // Добавление в начало списка (lock-free)
+    // Добавить узел в начало списка (lock-free)
     pub fn push_front(&self, data: T) {
         // создание нового узла
         let new_node = Node::new(data);
@@ -168,6 +169,83 @@ impl<T> ConcurrentDoublyLinkedList<T> {
                 },
                 Err(_) => { // Другая операция изменила head
                     continue;   // повторяем попытку
+                }
+            }
+        }
+    }
+
+    // Добавить узел в конец списка (lock-free)
+    pub fn push_back(&self, data: T) {
+        
+        // создание нового узла
+        let new_node = Node::new(data);
+        
+        loop {
+            
+            let tail = self
+                                        .tail
+                                        .load(  // загрузка даных о конце списка
+                                            Ordering::Acquire
+                                        );
+            unsafe {  // unsafe нужун при разименовывании raw point
+                (*new_node)
+                    .prev
+                    .store( // установить предыдущий узел для нового узла
+                        tail,
+                        Ordering::Relaxed
+                    );
+                (*new_node)
+                    .next
+                    .store( // установить следуюшийузел для нового узла
+                        ptr::null_mut(),
+                        Ordering::Relaxed
+                    );
+            }
+            
+            // Попытка атомарно установить новый узел как окончание списка
+            match self
+                    .tail
+                    // Сохраняет значение в указатель, если self.tail является 
+                    // таким же как загруженное tail 
+                    // VVV                    
+                    .compare_exchange_weak(
+                tail,
+                new_node,
+                Ordering::Release,
+                Ordering::Relaxed,
+            ) {
+                Ok(_) => {  // Успешно установили новый хвост
+                    if tail.is_null() { // tail is null
+                        // Если список был пуст, новый узел также является заголовком списка
+                        self
+                            .head
+                            .store( // сохранить новый заголовок
+                                new_node,
+                                Ordering::Release
+                            );
+                    } else {
+                        // Связываем старый хвост с новым
+                        unsafe {
+                            (*tail)
+                                .next
+                                .store(
+                                    new_node,
+                                    Ordering::Release
+                                );
+                        }
+                    }
+                    self
+                        .len
+                        .fetch_add( // добавляем 1 к количеству узлов списка
+                            1, 
+                            Ordering::SeqCst
+                        );
+
+                    break;
+                }
+                Err(_) => {
+                    // Другая операция изменила tail, повторяем попытку
+                    continue;
                 }
             }
         }
