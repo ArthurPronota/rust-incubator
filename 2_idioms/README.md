@@ -1,4 +1,4 @@
-Step 2: Idioms
+Шаг 2: Идиомы
 ==============
 
 __Estimated time__: 2 days

@@ -1,4 +1,4 @@
-Step 2.1: Rich types ensure correctness
+Шаг 2.1: Расширенные типы обеспечивают корректность
 =======================================
 
 __Estimated time__: 1 day
@@ -12,7 +12,7 @@ __Estimated time__: 1 day
 
 ## Newtype
 
-Consider the following example, which demonstrates a possible bug:
+Рассмотрим следующий пример, демонстрирующий возможную ошибку:
 ```rust
 #[derive(Clone)]
 struct Post {
@@ -28,9 +28,10 @@ fn repost(post: &Post, new_author_id: u64) -> Post {
     new_post
 }
 ```
-Here the problem occurs because our entities are expressed in values, so compiler makes no difference between `Post::id` and `Post::user_id` as they have the same type.
 
-Let's express those entities in types:
+Проблема возникает потому, что наши сущности выражены в значениях, поэтому компилятор не различает `Post::id` и `Post::user_id`, поскольку они имеют один и тот же тип.
+
+Давайте представим эти сущности в виде типов:
 ```rust
 mod post {
     #[derive(Clone, Debug, PartialEq)]
@@ -61,7 +62,7 @@ fn repost(post: &Post, new_author_id: user::Id) -> Post {
     new_post
 }
 ```
-Now, compiler is able to cut off this type of bugs _totally_ at compile time, and to be quite informative with errors:
+Теперь компилятор способен полностью исключить подобные ошибки на этапе компиляции и предоставлять достаточно информативные сообщения об ошибках:
 ```rust
 error[E0308]: mismatched types
   --> src/main.rs:27:19
