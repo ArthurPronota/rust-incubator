@@ -2,7 +2,7 @@ use std::borrow::Cow;
 // Управление памятью вручную с помощью сырых указателей.
 use std::ptr::{
             self,
-            NonNull // не null сырой указатель (*mut T but non-zero and covariant)
+            //NonNull // не null сырой указатель (*mut T but non-zero and covariant)
         } ;
 /*
 Атомарные типы обеспечивают примитивную связь между потоками через общую 
@@ -14,7 +14,7 @@ use std::sync::atomic::{
                 Ordering    // Порядок операций в памяти определяет способ синхронизации памяти атомарными операциями.
             } ;
 use std::marker::PhantomData;
-use std::fmt;
+//use std::fmt;
 
 // Узел двусвязного списка
 struct Node<T> {
@@ -66,7 +66,9 @@ impl<T> Node<T> {
         // Воссоздаёт объект Box<Node<T>> из сырого указателя node который 
         // ранее был преобразован из Box с помощью into_raw в Node<T>::new() методе
         // Это преобразование: *mut Node<T> -> Node<T>
-        let boxed_node = Box::from_raw(node);
+        let boxed_node = unsafe {
+                                        Box::from_raw(node) 
+                                    };
         boxed_node.data  // Данные перемещаются из Box
     }
     
@@ -425,7 +427,7 @@ impl<T> ConcurrentDoublyLinkedList<T> {
     }    
 
     // создание структуры итератора для чтения с начала списка
-    pub fn get_iter(&self) -> Iter<'_, T> {
+    fn get_iter(&self) -> Iter<'_, T> {
         Iter {
             current: self
                         .head
@@ -437,7 +439,7 @@ impl<T> ConcurrentDoublyLinkedList<T> {
     }
 
     // создание структуры итератора для чтения с конца списка
-    pub fn get_reviter(&self) ->RevIter<'_, T> {
+    fn get_reviter(&self) ->RevIter<'_, T> {
         RevIter { 
             current: self.tail.load(Ordering::Acquire), 
             _marker: PhantomData 
@@ -510,7 +512,7 @@ impl<'a, T> Iterator for RevIter<'a, T> {
 
 #[cfg(test)]
 mod tests {
-    use std::os::windows::thread;
+    //use std::os::windows::thread;
 
     use super::* ;
 
@@ -557,7 +559,7 @@ mod tests {
 
         assert_eq!(v_threads.len(), 100) ;
 
-        let v = v_threads
+        let _ = v_threads
             .into_iter()
             .for_each(|x| {
                 x.join().unwrap()
@@ -566,7 +568,7 @@ mod tests {
         assert_eq!(list.len(), 100) ;
 
         v_threads = vec![] ;
-        for u in 0..100 {
+        for _ in 0..100 {
             let list_clone = Arc::clone(&list) ;
             v_threads.push(
                 thread::spawn(move || {
@@ -582,7 +584,7 @@ mod tests {
         assert_eq!(list.len(), 0) ;
     }
 
-    
+
     // тесты с потоками обратный проход
     #[test]
     fn thread_backward_oper() {
@@ -603,7 +605,7 @@ mod tests {
 
         assert_eq!(v_threads.len(), 100) ;
 
-        let v = v_threads
+        let _ = v_threads
             .into_iter()
             .for_each(|x| {
                 x.join().unwrap()
@@ -612,7 +614,7 @@ mod tests {
         assert_eq!(list.len(), 100) ;
 
         v_threads = vec![] ;
-        for u in 0..100 {
+        for _ in 0..100 {
             let list_clone = Arc::clone(&list) ;
             v_threads.push(
                 thread::spawn(move || {
@@ -720,7 +722,7 @@ fn main() {
 
     assert_eq!(v_threads.len(), 100) ;
 
-    let v = v_threads
+    let _ = v_threads
             .into_iter()
             .for_each(|x| x.join().unwrap())
             ;
