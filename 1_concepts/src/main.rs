@@ -41,6 +41,7 @@ impl<T> Node<T> {
         )
     }
     
+    /*
     // удаление узла
     unsafe fn free(node: *mut T) {
         if ! node.is_null() // проверка что node is_null
@@ -58,24 +59,34 @@ impl<T> Node<T> {
         }
 
     }
+     */
 
     // Изменяем метод free для безопасного извлечения данных
     unsafe fn take_data(node: *mut Node<T>) -> T {
-        // Создаём Box из raw pointer и извлекаем данные
+        // Воссоздаёт объект Box<Node<T>> из сырого указателя node который 
+        // ранее был преобразован из Box с помощью into_raw в Node<T>::new() методе
+        // Это преобразование: *mut Node<T> -> Node<T>
         let boxed_node = Box::from_raw(node);
         boxed_node.data  // Данные перемещаются из Box
-    } 
+    }
     
 }
 
 /*  Структура списка:
 
-        +----+   +----+  +----+
-        +    v   +    v  +    v    << Следующий узел
-     Node3   Node2   Node1   null
-     +  ^    +   ^    +  ^         << Превыдущий узел
-     |  +----+   +----+  |
-     +-------------------+
+              +------+   +----+  +----+
+              +      v   +    v  +    v    << Следующий узел
+       null   Node3  Node2   Node1   null
+         ^    +   ^   +  ^    +            << Предыдущий узел
+         +----+   +---+  +----+
+
+                        Или так:
+
+       null <- Node3 <-> Node2 <-> Node1 -> null
+
+       <- предыдущий узел
+       -> следуюший узел
+
  */
 // Управляющая структура двусвязного списка
 pub struct ConcurrentDoublyLinkedList<T> {
@@ -413,21 +424,96 @@ impl<T> ConcurrentDoublyLinkedList<T> {
         }
     }    
 
+    // создание структуры итератора для чтения с начала списка
+    pub fn get_iter(&self) -> Iter<'_, T> {
+        Iter {
+            current: self
+                        .head
+                        .load(
+                            Ordering::Acquire
+                        ),
+            _marker: PhantomData,
+        }
+    }
+
+    // создание структуры итератора для чтения с конца списка
+    pub fn get_reviter(&self) ->RevIter<'_, T> {
+        RevIter { 
+            current: self.tail.load(Ordering::Acquire), 
+            _marker: PhantomData 
+        }
+    }
+
 }
 
-// реализация Drop
+// реализация Drop для ConcurrentDoublyLinkedList
 impl<T> Drop for ConcurrentDoublyLinkedList<T>  {
     fn drop(&mut self) {
         self.clear();
     }
 }
 
+// Структура для итератора прямого обхода без модификации
+struct Iter<'a, T> {
+    current:    *mut Node<T>,                       // текущий узел
+    _marker:    PhantomData<&'a Node<T>>,           // маркерный трейт
+}
+
+// реализация итератора прямого обхода для структуры Iter
+impl<'a, T> Iterator for Iter<'a, T> {
+    type Item = &'a T ;
+
+    fn next(&mut self) -> Option<Self::Item> {
+
+        if self.current.is_null() {
+            return None ;
+        }
+
+        unsafe {    // unsafe для разименоывания сыпых указателей
+            let result = &(*self.current).data ;
+            self.current = (*self.current)
+                                    .next
+                                    .load(
+                                        Ordering::Acquire
+                                    ) ;
+            Some(result)                                    
+        }
+    }
+}
+
+// Структура для итератора обратного обхода без модификации
+struct RevIter<'a, T> {
+    current:    *mut Node<T>,                       // текущий узел
+    _marker:    PhantomData<&'a Node<T>>,           // маркерный трейт
+}
+
+// реализация итератора обратного обхода без модификации
+impl<'a, T> Iterator for RevIter<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.current.is_null() {
+            return None;
+        }
+
+        unsafe {
+            let result = &(*self.current).data ;
+            self.current = (*self.current)
+                                .prev
+                                .load(
+                                    Ordering::Acquire
+                                ) ;
+            Some(result)                                
+        }
+    }
+}
 fn main() {
 
+    // Обшее тестирование
+    println!("--- Обшее Тестирование ---");
     let list = ConcurrentDoublyLinkedList::new();
 
     list.push_front(
-            // 100
             "abc".to_owned()
         );
 
@@ -436,14 +522,35 @@ fn main() {
         ) ;
 
     list.push_front(
-            //100
             "abc".to_owned()
         );
 
     list.clear();
     println!("is_empty: {}", list.is_empty()) ;
 
-    /*
+    let list = ConcurrentDoublyLinkedList::new();
+
+    list.push_front(String::from("Hello"));
+    list.push_back(String::from("World"));
+    list.push_front(String::from("First"));
+    
+    for unit in list.get_iter() {
+        println!("unit: {}", unit) ;
+    }
+
+    list.clear();
+    println!("is_empty: {}", list.is_empty()) ;
+
+    let list = ConcurrentDoublyLinkedList::new();
+
+    list.push_front(String::from("Hello"));
+    list.push_back(String::from("World"));
+    list.push_front(String::from("First"));
+
+    for unit in list.get_reviter() {
+        println!("rev_unit: {}", unit) ;
+    }
+
     // Тестирование со строками
     let list = ConcurrentDoublyLinkedList::new();
 
@@ -474,5 +581,5 @@ fn main() {
     while let Some(value) = list3.pop_front() {
         println!("Value: {}", value);
     }
-     */
+
 }
