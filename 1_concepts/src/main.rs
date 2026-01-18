@@ -580,7 +580,6 @@ mod tests {
             .for_each(|x| x.join().unwrap());
 
         assert_eq!(list.len(), 0) ;
-
     }
 
     
