@@ -507,6 +507,129 @@ impl<'a, T> Iterator for RevIter<'a, T> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::os::windows::thread;
+
+    use super::* ;
+
+    // тесты базовых операций
+    #[test]
+    fn basic_oper() {
+        let list = ConcurrentDoublyLinkedList::<i32>::new() ;
+        assert!(list.is_empty()) ;
+
+        let list = ConcurrentDoublyLinkedList::new() ;
+        
+        for i in 0..10 {
+            list.push_front(i.to_string());
+        }
+        assert_eq!(list.len(), 10) ;
+        assert_eq!(list.pop_front(), Some("9".to_string())) ;
+
+        for i in -10..=-1 {
+            list.push_back(i.to_string());
+        }
+        assert_eq!(list.len(), 19) ;
+        assert_eq!(list.pop_back(), Some("-1".to_string())) ;
+        assert_eq!(list.len(), 18) ;
+    }
+
+
+    // тесты с потоками прямой проход
+    #[test]
+    fn thread_forvard_oper() {
+        use std::sync::Arc ;
+        use std::thread ;
+
+        let list = Arc::new(ConcurrentDoublyLinkedList::new()) ;
+        let mut v_threads = vec![] ;
+
+        for i in 0..100 {
+            let list_clone = Arc::clone(&list) ;
+            v_threads.push(
+                thread::spawn(move || {
+                    list_clone.push_front(i.to_string());
+                })
+            );
+        }
+
+        assert_eq!(v_threads.len(), 100) ;
+
+        let v = v_threads
+            .into_iter()
+            .for_each(|x| {
+                x.join().unwrap()
+            }) ;
+        
+        assert_eq!(list.len(), 100) ;
+
+        v_threads = vec![] ;
+        for u in 0..100 {
+            let list_clone = Arc::clone(&list) ;
+            v_threads.push(
+                thread::spawn(move || {
+                    list_clone.pop_front() ;
+                })
+            );
+        }
+
+        v_threads
+            .into_iter()
+            .for_each(|x| x.join().unwrap());
+
+        assert_eq!(list.len(), 0) ;
+
+    }
+
+    
+    // тесты с потоками обратный проход
+    #[test]
+    fn thread_backward_oper() {
+        use std::sync::Arc ;
+        use std::thread ;
+
+        let list = Arc::new(ConcurrentDoublyLinkedList::new()) ;
+        let mut v_threads = vec![] ;
+
+        for i in 0..100 {
+            let list_clone = Arc::clone(&list) ;
+            v_threads.push(
+                thread::spawn(move || {
+                    list_clone.push_back(i.to_string());
+                })
+            );
+        }
+
+        assert_eq!(v_threads.len(), 100) ;
+
+        let v = v_threads
+            .into_iter()
+            .for_each(|x| {
+                x.join().unwrap()
+            }) ;
+        
+        assert_eq!(list.len(), 100) ;
+
+        v_threads = vec![] ;
+        for u in 0..100 {
+            let list_clone = Arc::clone(&list) ;
+            v_threads.push(
+                thread::spawn(move || {
+                    list_clone.pop_back() ;
+                })
+            );
+        }
+
+        v_threads
+            .into_iter()
+            .for_each(|x| x.join().unwrap());
+
+        assert_eq!(list.len(), 0) ;
+    }    
+}
+
 fn main() {
 
     // Обшее тестирование
@@ -580,6 +703,33 @@ fn main() {
     
     while let Some(value) = list3.pop_front() {
         println!("Value: {}", value);
+    }
+
+    println!("--- Тестирование throw прямой проход ---");
+
+    let list = std::sync::Arc::new(ConcurrentDoublyLinkedList::new()) ;
+    let mut v_threads = vec![] ;
+
+    for i in 0..100 {
+        let list_clone = std::sync::Arc::clone(&list) ;
+        v_threads.push(
+            std::thread::spawn(move || {
+                list_clone.push_front(i.to_string());
+            })
+        );
+    }
+
+    assert_eq!(v_threads.len(), 100) ;
+
+    let v = v_threads
+            .into_iter()
+            .for_each(|x| x.join().unwrap())
+            ;
+
+    assert_eq!(list.len(), 100) ;
+
+    for u in list.get_iter().enumerate() {
+        println!("u: {:?}", u) ;
     }
 
 }
