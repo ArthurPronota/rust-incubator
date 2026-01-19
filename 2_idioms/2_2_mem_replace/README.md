@@ -1,9 +1,10 @@
-Step 2.2: Swapping values with `mem::replace`
+Шаг 2.2: Обмен значений с помощью `mem::replace`
 =============================================
 
 __Estimated time__: 1 day
 
-As [Rust] implies [move semantics][1] by default and quite strict [borrowing rules][2], often, there are situations (especially, with large `struct`s and `enum`s) where mutating value in-place or values swapping may not be allowed by borrow checker, which is quite confusing and leads to doing needless clones (so providing redudant performance costs). For example:
+Поскольку [Rust] подразумевает [move semantics][1] по умолчанию и довольно строгие [borrowing rules][2], часто возникают ситуации (особенно с большими структурами и перечислениями), когда проверка заимствований может не разрешать изменение значения на месте или замену значений, что довольно запутывает и приводит к созданию ненужных клонов (что, следовательно, влечет за собой избыточные затраты на производительность). Например:
+
 ```rust
 impl<T> Buffer<T> {
     fn get_and_reset(&mut self) -> Vec<T> {
@@ -14,8 +15,8 @@ impl<T> Buffer<T> {
     }
 }
 ```
+В подобных ситуациях полезный и необходимый прием — использование [`mem::replace`] (или [`mem::swap`]). Он позволяет поменять местами два значения одного типа без перемещения элементов, частичной деструктуризации и путаницы со ссылками. Таким образом, приведенный выше пример просто преобразуется в:
 
-A neat and need-to-know trick in such situations is to use [`mem::replace`] (or [`mem::swap`]). It allows to swap two values of the same type without moving things around, partial destructuring and references mess. So, the example above is simply turns into:
 ```rust
 impl<T> Buffer<T> {
     fn get_and_reset(&mut self) -> Vec<T> {
