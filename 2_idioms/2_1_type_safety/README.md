@@ -111,7 +111,8 @@ To better understand [typestates][3], read through:
 
 ## Task
 
-For the `Post` type described above, assume the following behavior in our application:
+
+Для `Post` типа описанного выше предположим следующее поведение в нашем приложении:
 ```
 +-----+              +-------------+            +-----------+
 | New |--publish()-->| Unmoderated |--allow()-->| Published |
@@ -125,17 +126,23 @@ For the `Post` type described above, assume the following behavior in our applic
 
 Implement this behavior using [typestates idiom][3], so that calling `delete()` on `New` post (or calling `deny()` on `Deleted` post) will be a compile-time error.
 
+Реализуйте это поведение, используя [typestates idiom][3], так чтобы вызов `delete()` для записи `New` (или вызов `deny()` для записи `Deleted`) приводил к ошибке компиляции.
 
 
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
+
 - Why expressing semantics in types is good? What are the benefits and downsides?
+- [`Почему выражение семантики в типах — это хорошо? Каковы преимущества и недостатки?`]()
+
 - What is newtype pattern? How does it work? Which guarantees does it give?
 - What is typestates pattern? How does it work? Which guarantees does it give?
 
+<hr>
 
+<h3>Почему выражение семантики в типах — это хорошо? Каковы преимущества и недостатки?</h3>
 
 
 [`derive_more`]: https://docs.rs/derive_more
