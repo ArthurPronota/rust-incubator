@@ -109,12 +109,17 @@ error[E0500]: closure requires unique access to `*self` but it is already borrow
 ```rust
 impl Names {
     fn apply_exclusions(&mut self) {
-        let mut exclusions = mem::take(&mut self.exclusions);
-        exclusions.drain(..).for_each(|name| {
-            self.remove_name(&name);
-        });
+        let mut exclusions = mem::take( // Замещает dest с значением по умолчанию T, возвращая предыдущий dest значение.
+                                &mut self.exclusions
+                             );
+        exclusions
+            .drain(..)  // Удаляет из вектора subslice, указанную заданным диапазоном, и возвращает двусторонний итератор по удаленному subslice.
+            .for_each(|name| {
+                self.remove_name(&name);  // (первое изменяемое заимствование &mut self) удаление из HashSet значения name
+            });
     }
 
+    // удаление из HashSet значения name
     fn remove_name(&mut self, name: &str) {
         self.names.remove(name);
     }
@@ -122,6 +127,8 @@ impl Names {
 ```
 
 It's worth mentioning, that this problem became much less common after [disjoint capture in closures had been introduced in 2021 Rust edition][5]. For illustration, the `self.name` mutation is intentionally separated into its own method, so we can lock the whole `&mut self`. If we simplify the code straightforwardly, it just compiles fine, due to mutable borrows are disjoint: 
+
+Стоит отметить, что эта проблема стала гораздо реже встречаться после [Функция непересекающегося захвата в замкнутых структурах была введена в версии Rust 2021 года. - (disjoint capture in closures had been introduced in 2021 Rust edition)][5]. Для иллюстрации мутация `self.name` намеренно выделена в отдельный метод, чтобы мы могли заблокировать весь `&mut self`. Если мы упростим код, он просто скомпилируется без проблем, поскольку изменяемые заимствования не пересекаются:
 ```rust
 struct Names {
     exclusions: Vec<String>,
@@ -137,8 +144,15 @@ impl Names {
 }
 ```
 
+Как это работает сейчас (Rust 2021+)
 
+Начиная с редакции 2021 года, компилятор анализирует код и захватывает только те поля, которые реально используются. Это и называется «непересекающимся захватом» (disjoint capture).
 
+В примере выше:
+
+- Код видит, что вначале используется только `exclusions`.
+- Он захватывает только `exclusions`.
+- Поле `names` остается свободным, и его можно изменять параллельно в замыкании.
 
 ## Task
 

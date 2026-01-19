@@ -7,7 +7,7 @@ struct Names {
 }
 
 impl Names {
-    /*
+    //*
     fn _apply_exclusions(&mut self) {
         self    // первое изменяемле заимствование &mut self
             .exclusions
@@ -16,18 +16,31 @@ impl Names {
                 self.remove_name(&name);    // второе изменяемле заимствование &mut self
             })
     }
-     */
+    // */
+
+    fn __apply_exclusions(&mut self) {
+        self
+            .exclusions
+            .drain(..)
+            .for_each(|name| {
+                self
+                    .names
+                    .remove(&name) 
+                    ;
+            });
+    }
 
     fn apply_exclusions(&mut self) {
         let mut exclusions = 
+                // это установка self.exclusions = vec![] ;
                 mem::take( // Замещает dest с значением по умолчанию T, возвращая предыдущий dest значение.
                     &mut self.exclusions
-                ) // это установка self.exclusions = vec![] ;
+                )
                 ;
         exclusions
             .drain(..) // Удаляет из вектора subslice, указанную заданным диапазоном, и возвращает двусторонний итератор по удаленному subslice.
             .for_each(|name| {
-                self.remove_name(&name);    // удаление из HashSet значения name
+                self.remove_name(&name); // (первое изменяемое заимствование &mut self) удаление из HashSet значения name
             })
             ;
     }
