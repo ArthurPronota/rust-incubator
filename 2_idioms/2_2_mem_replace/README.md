@@ -126,8 +126,6 @@ impl Names {
 }
 ```
 
-It's worth mentioning, that this problem became much less common after [disjoint capture in closures had been introduced in 2021 Rust edition][5]. For illustration, the `self.name` mutation is intentionally separated into its own method, so we can lock the whole `&mut self`. If we simplify the code straightforwardly, it just compiles fine, due to mutable borrows are disjoint: 
-
 Стоит отметить, что эта проблема стала гораздо реже встречаться после [Функция непересекающегося захвата в замкнутых структурах была введена в версии Rust 2021 года. - (disjoint capture in closures had been introduced in 2021 Rust edition)][5]. Для иллюстрации мутация `self.name` намеренно выделена в отдельный метод, чтобы мы могли заблокировать весь `&mut self`. Если мы упростим код, он просто скомпилируется без проблем, поскольку изменяемые заимствования не пересекаются:
 ```rust
 struct Names {
