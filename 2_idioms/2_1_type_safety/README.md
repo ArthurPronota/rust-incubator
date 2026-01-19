@@ -175,7 +175,7 @@ Implement this behavior using [typestates idiom][3], so that calling `delete()` 
 
 Дополнительно о проектировании типов можно почитать в [Rust Design Patterns](https://rust-unofficial.github.io/patterns/intro.html).
 
-<h4>
+<hr>
 
 <h3>Что такое шаблон NewType? Как он работает? Какие гарантии он предоставляет?</h3>
 
