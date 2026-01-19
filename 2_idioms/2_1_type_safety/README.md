@@ -135,7 +135,7 @@ Implement this behavior using [typestates idiom][3], so that calling `delete()` 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 
 - Why expressing semantics in types is good? What are the benefits and downsides?
-- [`Почему выражение семантики в типах — это хорошо? Каковы преимущества и недостатки?`]()
+- [`Почему выражение семантики в типах — это хорошо? Каковы преимущества и недостатки?`](#почему-выражение-семантики-в-типах--это-хорошо-каковы-преимущества-и-недостатки)
 
 - What is newtype pattern? How does it work? Which guarantees does it give?
 - What is typestates pattern? How does it work? Which guarantees does it give?
