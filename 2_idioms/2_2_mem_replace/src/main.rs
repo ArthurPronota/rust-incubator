@@ -1,3 +1,28 @@
+use std::collections::HashSet ;
+
+struct Names {
+    exclusions: Vec<String>,
+    names: HashSet<String>,
+}
+
+impl Names {
+    fn apply_exclusions(&mut self) {
+        self
+            .exclusions
+            .drain(..)
+            .for_each(|name| {
+                self.remove_name(&name);
+            })
+    }
+    
+    fn remove_name(&mut self, name: &str) {
+        self
+            .names
+            .remove(name)
+            ;
+    }
+}
+
 fn main() {
     let mut s = Solver {
         expected: Trinity { a: 1, b: 2, c: 3 },

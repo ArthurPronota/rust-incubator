@@ -63,10 +63,12 @@ fn swizzle(e: &mut MyEnum) {
 
 > Смотри, мама, никаких квот! А ещё ты можешь почувствовать себя Индианой Джонсом, выполняя это.
 
-## Mutating embedded collection
+## Мутирующая встроенная коллекция
 
-Consider the following situation:
+Рассмотрим следующую ситуацию:
 ```rust
+use std::collections::HashSet ;
+
 struct Names {
     exclusions: Vec<String>,
     names: HashSet<String>,
@@ -84,7 +86,7 @@ impl Names {
     }
 }
 ```
-which does not compile due to 2 mutable borrows:
+который не компилируется из-за двух изменяемых заимствований:
 ```rust
 error[E0500]: closure requires unique access to `*self` but it is already borrowed
   --> src/lib.rs:10:44
