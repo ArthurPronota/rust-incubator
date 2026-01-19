@@ -76,9 +76,12 @@ struct Names {
 
 impl Names {
     fn apply_exclusions(&mut self) {
-        self.exclusions.drain(..).for_each(|name| {
-            self.remove_name(&name);
-        })
+        self    // первое изменяемле заимствование &mut self
+            .exclusions
+            .drain(..)
+            .for_each(|name| {
+                self.remove_name(&name);    // второе изменяемле заимствование &mut self
+            })
     }
     
     fn remove_name(&mut self, name: &str) {
@@ -100,7 +103,9 @@ error[E0500]: closure requires unique access to `*self` but it is already borrow
    |             ---- second borrow occurs due to use of `*self` in closure
 ```
 
-Using [`mem::take`] here allows us to avoid the problem with 2 mutable borrows at almost no cost (`Vec::defaukt()` is no-op), by swapping out the value in a temporary variable:
+
+Использование [`mem::take`] позволяет нам избежать проблемы с двумя изменяемыми заимствованиями практически без затрат (`Vec::default()` ничего не делает), путем замены значения во временной переменной:
+
 ```rust
 impl Names {
     fn apply_exclusions(&mut self) {

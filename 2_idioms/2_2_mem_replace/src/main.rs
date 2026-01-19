@@ -1,4 +1,5 @@
 use std::collections::HashSet ;
+use std::mem ;
 
 struct Names {
     exclusions: Vec<String>,
@@ -6,15 +7,32 @@ struct Names {
 }
 
 impl Names {
-    fn apply_exclusions(&mut self) {
-        self
+    /*
+    fn _apply_exclusions(&mut self) {
+        self    // первое изменяемле заимствование &mut self
             .exclusions
             .drain(..)
             .for_each(|name| {
-                self.remove_name(&name);
+                self.remove_name(&name);    // второе изменяемле заимствование &mut self
             })
     }
+     */
+
+    fn apply_exclusions(&mut self) {
+        let mut exclusions = 
+                mem::take( // Замещает dest с значением по умолчанию T, возвращая предыдущий dest значение.
+                    &mut self.exclusions
+                ) // это установка self.exclusions = vec![] ;
+                ;
+        exclusions
+            .drain(..) // Удаляет из вектора subslice, указанную заданным диапазоном, и возвращает двусторонний итератор по удаленному subslice.
+            .for_each(|name| {
+                self.remove_name(&name);    // удаление из HashSet значения name
+            })
+            ;
+    }
     
+    // удаление из HashSet значения name
     fn remove_name(&mut self, name: &str) {
         self
             .names
