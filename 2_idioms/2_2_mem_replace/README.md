@@ -154,8 +154,6 @@ impl Names {
 
 ## Task
 
-Improve and optimize the code contained in [this step's crate](src/main.rs) to cut off redudant performance costs.
-
 Улучшите и оптимизируйте код, содержащийся в [в crate этого шага](src/main.rs), чтобы сократить избыточные затраты на производительность.
 
 
