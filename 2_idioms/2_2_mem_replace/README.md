@@ -159,11 +159,19 @@ impl Names {
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
+
 - What is the reason of [`mem::replace`] existing in [Rust]? What does it give to us? Why cannot we solve the same problems without it?
+- [`В чём причина существования `mem::replace` в [Rust]? Что он нам даёт? Почему мы не можем решить те же проблемы без него?`]()
+
 - Provide some meaningful examples of using [`mem::replace`] in [Rust].
 
+<hr>
 
+<h3>В чём причина существования `mem::replace` в [Rust]? Что он нам даёт? Почему мы не можем решить те же проблемы без него?</h3>
+
+
+<hr>
 
 
 [`mem::replace`]: https://doc.rust-lang.org/std/mem/fn.replace.html
