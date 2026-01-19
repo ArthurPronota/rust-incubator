@@ -25,27 +25,25 @@ impl<T> Buffer<T> {
 }
 ```
 
-To better understand [`mem::replace`]'s, [`mem::swap`]'s and [`mem::take`]'s purpose, design, limitations and use cases, read through:
+Чтобы лучше понять назначение, структуру, ограничения и варианты использования функций [`mem::replace`], [`mem::swap`] и [`mem::take`], ознакомьтесь со следующими материалами:
+
 - [Official `mem::replace` docs][`mem::replace`]
 - [Official `mem::swap` docs][`mem::swap`]
 - [Official `mem::take` docs][`mem::take`]
 - [Karol Kuczmarski: Moving out of a container in Rust][4]
 - [Ferrous Systems: Using `mem::take` to reduce heap allocations][6]
 
-Some examples of useful applying these functions are described below.
+Ниже приведены некоторые примеры полезного применения этих функций.
 
+## Сохранение собственных значений в измененных перечислениях
 
-
-
-## Keeping owned values in changed enums
-
-This situation has detailed explanation in the following article:
+Подробное объяснение этой ситуации приведено в следующей статье:
 - [Rust Design Patterns: `mem::replace` to keep owned values in changed enums][3]
 
-> The borrow checker won't allow us to take out `name` of the enum (because _something_ must be there). We could of course `.clone()` name and put the clone into our `MyEnum::B`, but that would be an instance of the "Clone to satisfy the borrow checker" antipattern. Anyway, we can avoid the extra allocation by changing `e` with only a mutable borrow.
+> Проверка заимствований не позволит нам удалить `name` из перечисления (потому что там должно быть _что-то_). Конечно, мы могли бы использовать `.clone()` для имени и поместить клон в наш `MyEnum::B`, но это был бы пример антипаттерна «Клонировать, чтобы удовлетворить проверку заимствований». В любом случае, мы можем избежать дополнительного выделения памяти, заменив `e` только на изменяемое заимствование.
 > 
-> `mem::replace` lets us swap out the value, replacing it with something else. In this case, we put in an empty `String`, which does not need to allocate. As a result, we get the original `name` _as an owned value_. We can then wrap this in another enum.
-
+> `mem::replace` позволяет нам заменить значение, заменив его чем-то другим. В данном случае мы помещаем пустую `String`, для которой не требуется выделение памяти. В результате мы получаем исходное `name` _в качестве принадлежащего значения_. Затем мы можем обернуть это в другое enum.
+>
 ```rust
 enum MyEnum {
     A { name: String },
@@ -63,10 +61,7 @@ fn swizzle(e: &mut MyEnum) {
 }
 ```
 
-> Look ma, no allocation! Also you may feel like Indiana Jones while doing it.
-
-
-
+> Смотри, мама, никаких квот! А ещё ты можешь почувствовать себя Индианой Джонсом, выполняя это.
 
 ## Mutating embedded collection
 
