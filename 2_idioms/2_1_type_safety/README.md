@@ -134,10 +134,11 @@ Implement this behavior using [typestates idiom][3], so that calling `delete()` 
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 
-- Why expressing semantics in types is good? What are the benefits and downsides?
 - [`Почему выражение семантики в типах — это хорошо? Каковы преимущества и недостатки?`](#почему-выражение-семантики-в-типах--это-хорошо-каковы-преимущества-и-недостатки)
 
 - What is newtype pattern? How does it work? Which guarantees does it give?
+- [`Что такое шаблон NewType? Как он работает? Какие гарантии он предоставляет?`]()
+
 - What is typestates pattern? How does it work? Which guarantees does it give?
 
 <hr>
@@ -174,6 +175,38 @@ Implement this behavior using [typestates idiom][3], so that calling `delete()` 
 
 Дополнительно о проектировании типов можно почитать в [Rust Design Patterns](https://rust-unofficial.github.io/patterns/intro.html).
 
+<h4>
+
+<h3>Что такое шаблон NewType? Как он работает? Какие гарантии он предоставляет?</h3>
+
+Шаблон NewType в Rust — это идиома проектирования, при которой вы создаете новую структуру с единственным полем, чтобы «обернуть» существующий тип. Это позволяет создать новый именованный тип, который для компилятора будет полностью отличаться от исходного, хотя в памяти они выглядят идентично.
+
+Этот шаблон остается краеугольным камнем архитектуры надежных систем на Rust.
+
+<h4>Как он работает?</h4>
+
+Обычно NewType реализуется как кортежная структура (`tuple struct`):
+
+```rust
+// Обертываем стандартный String в наш собственный тип
+struct Email(String);
+
+// Обертываем u32 для разных идентификаторов
+struct UserId(u32);
+struct ProjectId(u32);
+
+fn main() {
+    let user_id = UserId(10);
+    let project_id = ProjectId(10);
+
+    // ОШИБКА КОМПИЛЯЦИИ: типы UserId и ProjectId несовместимы, 
+    // хотя оба внутри содержат u32.
+    // if user_id == project_id { ... } 
+}
+```
+<h4>Какие гарантии он предоставляет?</h4>
+
+1. Типобезопасность (`Type Safety`): Самая важная гарантия — защита от логических ошибок. Вы не сможете случайно передать `OrderId` там, где функция ожидает `UserId`. Без `NewType` (используя просто `u64`) такая ошибка была бы обнаружена только в рантайме или через баг-репорты.
 
 
 <hr>
