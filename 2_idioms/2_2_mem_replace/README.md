@@ -164,7 +164,7 @@ impl Names {
 - [`В чём причина существования `mem::replace` в [Rust]? Что он нам даёт? Почему мы не можем решить те же проблемы без него?`](#в-чём-причина-существования-memreplace-в-rust-что-он-нам-даёт-почему-мы-не-можем-решить-те-же-проблемы-без-него)
 
 - Provide some meaningful examples of using [`mem::replace`] in [Rust].
-
+- [`Приведите несколько наглядных примеров использования [`mem::replace`] в [Rust].`]()
 <hr>
 
 <h3>В чём причина существования `mem::replace` в [Rust]? Что он нам даёт? Почему мы не можем решить те же проблемы без него?</h3>
@@ -237,6 +237,11 @@ fn transition(state: &mut State) {
 
 <hr>
 
+<h3>Приведите несколько наглядных примеров использования [`mem::replace`] в [Rust].</h3>
+
+
+
+<ht>
 
 [`mem::replace`]: https://doc.rust-lang.org/std/mem/fn.replace.html
 [`mem::swap`]: https://doc.rust-lang.org/std/mem/fn.swap.html
