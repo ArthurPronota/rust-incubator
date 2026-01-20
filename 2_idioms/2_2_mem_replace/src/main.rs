@@ -33,7 +33,7 @@ impl Names {
     fn apply_exclusions(&mut self) {
         let mut exclusions = 
                 // это установка self.exclusions = vec![] ;
-                mem::take( // Замещает dest со значением по умолчанию T, возвращая предыдущий dest значение.
+                mem::take( // Замещает dest со значением по умолчанию T, возвращая предыдущее dest значение.
                     &mut self.exclusions
                 )
                 ;
@@ -55,6 +55,8 @@ impl Names {
         // mem::replace<T>(dest: &mut T, src: T) -> T // Перемещает src в упомянутую dest, возвращая предыдущее dest значение.
 
         // mem::swap<T>(x: &mut T, y: &mut T) // Меняет местами значения в двух изменяемых местах, не деинициализируя ни одно из них.
+
+        // Option::take(&mut self) -> Option<T> // Удаляет значение из Option возвращая его, оставляя вместо него значение «None».
 
     }
 }
