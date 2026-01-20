@@ -111,6 +111,9 @@ let copy = loader.clone(); // it compiles now!
 - [`Какие проблемы создают ограничения трейтов в [Rust] при их размещении на определении типа?`](#какие-проблемы-создают-ограничения-трейтов-в-rust-при-их-размещении-на-определении-типа)
 
 - Why placing trait bounds on `impl` blocks is better?
+- [`Почему размещение ограничений на трейты в блоках `impl` предпочтительнее?`]()
+
+
 - When cannot we do that and should use trait bounds on a type definition? When is it preferred?
 - What are the problems with `std` derive macros regarding type parameters? How could they be solved?
 
@@ -183,6 +186,11 @@ impl<T> Buffer<T> {
 
 <hr>
 
+<h3>Почему размещение ограничений на трейты в блоках `impl` предпочтительнее?</h3>
+
+
+
+<hr>
 
 [Rust]: https://www.rust-lang.org
 
