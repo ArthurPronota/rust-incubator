@@ -106,13 +106,21 @@ let copy = loader.clone(); // it compiles now!
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
+
 - Which problems do trait bounds impose in [Rust] when are placed on a type definition?
+- [`Какие проблемы создают ограничения трейтов в [Rust] при их размещении на определении типа?`]()
+
 - Why placing trait bounds on `impl` blocks is better?
 - When cannot we do that and should use trait bounds on a type definition? When is it preferred?
 - What are the problems with `std` derive macros regarding type parameters? How could they be solved?
 
+<hr>
 
+<h3>Какие проблемы создают ограничения трейтов в [Rust] при их размещении на определении типа?</h3>
+
+
+<hr>
 
 
 [Rust]: https://www.rust-lang.org
