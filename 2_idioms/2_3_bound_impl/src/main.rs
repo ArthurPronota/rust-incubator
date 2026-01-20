@@ -1,11 +1,7 @@
 use std::{
     borrow::{Borrow, BorrowMut},
-    num::NonZeroU64,
+    num::NonZeroU64, sync::{Arc, Mutex},
 };
-
-fn main() {
-    println!("Refactor me!");
-}
 
 /// A projected state built from a series of events.
 pub trait Aggregate: Default {
@@ -264,4 +260,8 @@ where
     fn borrow_mut(&mut self) -> &mut HydratedAggregate<A> {
         &mut self.aggregate
     }
+}
+
+fn main() {
+    println!("Refactor me!");
 }

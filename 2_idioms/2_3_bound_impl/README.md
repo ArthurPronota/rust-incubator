@@ -1,23 +1,25 @@
 Step 2.3: Bound behavior, not data
+Шаг 2.3: Ограничение поведения, а не данных.
 ==================================
 
 __Estimated time__: 1 day
 
-Often, when we want to abstract over some type or behavior in [Rust] we are going from this:
+Часто, когда мы хотим абстрагироваться от какого-либо типа или поведения в [Rust], мы начинаем с этого:
 ```rust
 struct UserService {
     repo: UserRepo,
 }
 ```
-to this:
+к этому:
 ```rust
 struct UserService<R: UserRepo> {
     repo: R,
 }
 ```
-We specify `R: UserRepo` bound here as we want to restrict types in `repo` field to implement `UserRepo` behavior.
 
-However, such restriction directly on a type leads to what is called "trait bounds pollution": we have to repeat this bound in every single `impl`, even in those ones, which has no relation to `UserRepo` behavior at all.
+Здесь мы указываем привязку `R: UserRepo`, поскольку хотим ограничить типы в поле `repo` для реализации поведения `UserRepo`.
+
+Однако такое ограничение непосредственно на тип приводит к так называемому «загрязнению границ трейтов»: нам приходится повторять это ограничение в каждой отдельной реализации, даже в тех, которые никак не связаны с поведением `UserRepo`.
 ```rust
 struct UserService<R: UserRepo> {
     repo: R,
@@ -32,23 +34,24 @@ where
     }
 }
 ```
-In a complex codebase such pollution multiplies from different types and may become a nightmare at some point.
 
-The solution to this problem would be to understand that a __trait represents a certain behavior__, and, in reality, __we need that behavior only when we're declaring one__. Type declaration has nothing about behavior, it's all about _data_. __It's functions and methods where behavior happens__. So, let's just expect certain behavior when we really need this:
+В сложной кодовой базе подобное загрязнение, возникающее из-за множества различных типов данных, в какой-то момент может превратиться в настоящий кошмар.
+
+Решение этой проблемы заключается в понимании того, что __трейт представляет собой определенное поведение__, и, в действительности, __нам это поведение нужно только тогда, когда мы его объявляем__. Объявление типа не содержит ничего о поведении, оно полностью посвящено данным. __Поведение проявляется в функциях и методах__. Поэтому давайте просто будем ожидать определенного поведения, когда оно нам действительно понадобится:
 ```rust
 struct UserService<R> {
     repo: R,
 }
 
-// Expect Display when we expressing Display behavior.
+// Ожидайте отображения (Expect Display) при выражении поведения отображения.
 impl<R: Display> Display for UserService<R> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "UserService with repo {}", self.repo)
     }
 }
 
-// Expect UserRepo when we expressing actual UserService behavior,
-// which deals with Users.
+// Ожидайте UserRepo, когда мы будем описывать фактическое поведение UserService,
+// которое работает с Users.
 impl<R: UserRepo> UserService<R> {
     fn activate(&self, user: User) {
         // Changing User state in UserRepo...
@@ -56,16 +59,16 @@ impl<R: UserRepo> UserService<R> {
 }
 ```
 
-Placing trait bounds on `impl` blocks, methods and functions, rather than on types, _reduces the trait bounds pollution_, _lowers [coupling][1] of code parts_ and _makes generic code more clean, straightforward and ergonomic_.
+Размещение ограничений трейтов на блоках `impl`, методах и функциях, а не на типах, _уменьшает загрязнение трейтами_, _снижает [связность][1] частей кода_ и _делает обобщенный код более чистым, понятным и эргономичным_.
 
 
 
+## Снять ненужные ограничения
 
-## Lift unnecessary bounds
+В качестве более общего правила: __следует стараться максимально расширять ограничения трейтов__ (особенно в библиотечном коде), поскольку это увеличивает разнообразие вариантов использования типа.
 
-As a more general rule: __you should try to lift trait bounds as much as possible__ (especially in a library code), as it enlarges a variety of usages for a type.
 
-Sometimes this requires to omit using `#[derive]` as this may impose unnecessary trait bound. For example:
+Иногда для этого необходимо отказаться от использования `#[derive]`, поскольку это может привести к ненужной привязке к трейту. Например:
 ```rust
 #[derive(Clone)]
 struct Loader<K, V> {
@@ -77,15 +80,15 @@ struct My;
 let loader: Loader<My, My> = ..;
 let copy = loader.clone(); // compile error as `My` doesn't impl `Clone`
 ```
-This happens because `#[derive(Clone)]` applies `K: Clone` and `V: Clone` bounds in the derived code, despite the fact that they are not necessary at all, as [`Arc` always implements `Clone`][2] (also, consider `T: ?Sized` bound in the [linked implementation][2], which lifts implicit `T: Sized` bound, so allows to use `Arc::clone()` even for [unsized types][3] too).
+Это происходит потому, что `#[derive(Clone)]` применяет ограничения `K: Clone` и `V: Clone` в производном коде, несмотря на то, что они совершенно не нужны, поскольку [`Arc` всегда реализует `Clone`][2] (также рассмотрите ограничение `T: ?Sized` в [linked implementation][2], которое снимает неявное ограничение `T: Sized`, поэтому позволяет использовать `Arc::clone()` даже для [unsized types][3]).
 
-By providing hand-baked implementation we are able to clone values of `Loader<My, My>` type without any problems:
+Предоставляя реализованный вручную код, мы можем без проблем клонировать значения типа `Loader<My, My>`:
 ```rust
 struct Loader<K, V> {
     state: Arc<Mutex<State<K, V>>>,
 }
 
-// Manual implementation is used to omit applying unnecessary Clone bounds.
+// Ручная реализация используется для того, чтобы избежать применения ненужных ограничений Clone.
 impl<K, V> Clone for Loader<K, V> {
     fn clone(&self) -> Self {
         Self {
@@ -98,14 +101,11 @@ let loader: Loader<My, My> = ..;
 let copy = loader.clone(); // it compiles now!
 ```
 
-
-
-
 ## Task
 
 Refactor the code contained in [this step's crate](src/main.rs) to reduce trait bounds pollution as much as possible.
 
-
+Переработайте код, содержащийся в [crate этого шага](src/main.rs), чтобы максимально уменьшить загрязнение границ трейтов.
 
 
 ## Questions
