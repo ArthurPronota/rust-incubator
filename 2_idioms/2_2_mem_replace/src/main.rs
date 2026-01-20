@@ -7,7 +7,7 @@ struct Names {
 }
 
 impl Names {
-    //*
+    /*
     fn _apply_exclusions(&mut self) {
         self    // первое изменяемле заимствование &mut self
             .exclusions
@@ -16,7 +16,7 @@ impl Names {
                 self.remove_name(&name);    // второе изменяемле заимствование &mut self
             })
     }
-    // */
+     */
 
     fn __apply_exclusions(&mut self) {
         self
@@ -33,7 +33,7 @@ impl Names {
     fn apply_exclusions(&mut self) {
         let mut exclusions = 
                 // это установка self.exclusions = vec![] ;
-                mem::take( // Замещает dest с значением по умолчанию T, возвращая предыдущий dest значение.
+                mem::take( // Замещает dest со значением по умолчанию T, возвращая предыдущий dest значение.
                     &mut self.exclusions
                 )
                 ;
@@ -51,8 +51,24 @@ impl Names {
             .names
             .remove(name)
             ;
+
+        // mem::replace<T>(dest: &mut T, src: T) -> T // Перемещает src в упомянутую dest, возвращая предыдущее dest значение.
+
+        // mem::swap<T>(x: &mut T, y: &mut T) // Меняет местами значения в двух изменяемых местах, не деинициализируя ни одно из них.
+
     }
 }
+
+/*
+// Это НЕ СКОМПИЛИРУЕТСЯ
+fn swap_out(r: &mut String) -> String {
+    let val = *r; // Ошибка: попытка перемещения из-под ссылки.
+                  // После этого r указывал бы на невалидную память.
+    *r = String::from("new"); 
+    val
+}
+ */
+
 
 fn main() {
     let mut s = Solver {
