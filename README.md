@@ -82,7 +82,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
     - [ ] [Шаг 1.9: Фантомные типы, Ковариантность, Контравариантность, Инвариантность][Step 1.9] (1 day)
 - [ ] [Шаг 2: Идиомы][Step 2] (2 days, after all sub-steps)
     - [ ] [Шаг 2.1: Расширенные типы обеспечивают корректность][Step 2.1] (1 day)
-    - [ ] [2.2. Swapping values with `mem::replace`][Step 2.2] (1 day)
+    - [ ] [Шаг 2.2: Обмен значений с помощью `mem::replace`][Step 2.2] (1 day)
     - [ ] [2.3. Bound behavior, not data][Step 2.3] (1 day)
     - [ ] [2.4. Abstract type in, concrete type out][Step 2.4] (1 day)
     - [ ] [2.5. Exhaustivity][Step 2.5] (1 day)

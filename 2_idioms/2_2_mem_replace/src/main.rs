@@ -1,4 +1,7 @@
-
+/*
+    Скрипт по проверке возможности приведения векторов из Solver::unsolved 
+    к вектору Solver::expected путём ротации Solver::unsolved
+*/
 #[derive(Clone, Debug, PartialEq)]
 struct Trinity<T> {
     a: T,
@@ -7,13 +10,20 @@ struct Trinity<T> {
 }
 
 impl<T: Clone> Trinity<T> {
+
     fn rotate(&mut self) {
+        /* старый код:
         let a = self.a.clone();
         let b = self.b.clone();
         let c = self.c.clone();
         self.a = b;
         self.b = c;
         self.c = a;
+         */
+        // новый код
+        use std::mem::swap ;
+        swap(&mut self.a, &mut self.b);
+        swap(&mut self.a, &mut self.c);
     }
 }
 
@@ -25,6 +35,7 @@ struct Solver<T> {
 
 impl<T: Clone + PartialEq> Solver<T> {
     fn resolve(&mut self) {
+        /* старый код:
         let mut unsolved = Vec::with_capacity(self.unsolved.len());
         'l: for t in self.unsolved.iter_mut() {
             for _ in 0..3 {
@@ -36,6 +47,35 @@ impl<T: Clone + PartialEq> Solver<T> {
             unsolved.push(t.clone())
         }
         self.unsolved = unsolved;
+         */
+        use std::mem ;
+
+        let mut unsolved = mem::take(&mut self.unsolved);
+
+        for mut un in unsolved.drain(..) {
+
+            let mut is_normal = false ; // признак достижения нормального порядка элементов в векторе
+
+            for _ in 0..3 {
+                if un == self.expected {
+                    is_normal = true ;
+                    break;
+                }
+
+                // ротация нужна всегда даже на последней тьерации чтобы
+                // привести un к начальному виду перед добавлением 
+                // в self.unsolved
+                un.rotate();
+            }
+
+            if ! is_normal {
+                    self
+                        .unsolved
+                        .push(un)
+                        ;
+            }
+        }
+
     }
 }
 
@@ -55,7 +95,7 @@ fn main() {
 
 
 
-
+/*
 // ---------------------------------
 use std::collections::HashSet ;
 use std::mem ;
@@ -113,12 +153,14 @@ impl Names {
         // mem::replace<T>(dest: &mut T, src: T) -> T // Перемещает src в упомянутую dest, возвращая предыдущее dest значение.
 
         // mem::swap<T>(x: &mut T, y: &mut T) // Меняет местами значения в двух изменяемых местах, не деинициализируя ни одно из них.
+        
+        // mem::take<T>(dest: &mut T) -> T // заменяет dest со значением по умолчанию T, возвращая предыдущее значение dest.
 
         // Option::take(&mut self) -> Option<T> // Удаляет значение из Option возвращая его, оставляя вместо него значение «None».
 
     }
 }
-
+ */
 
 // Это НЕ СКОМПИЛИРУЕТСЯ
 // fn swap_out(r: &mut String) -> String {
