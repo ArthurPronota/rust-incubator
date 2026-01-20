@@ -22,6 +22,7 @@ impl<T: Clone> Trinity<T> {
          */
         // новый код
         use std::mem::swap ;
+
         swap(&mut self.a, &mut self.b);
         swap(&mut self.a, &mut self.c);
     }
@@ -62,13 +63,13 @@ impl<T: Clone + PartialEq> Solver<T> {
                     break;
                 }
 
-                // ротация нужна всегда даже на последней тьерации чтобы
+                // ротация нужна всегда даже на последней итерации чтобы
                 // привести un к начальному виду перед добавлением 
                 // в self.unsolved
                 un.rotate();
             }
 
-            if ! is_normal {
+            if ! is_normal {    // un нельзя привести к .expected путём ротации
                     self
                         .unsolved
                         .push(un)
