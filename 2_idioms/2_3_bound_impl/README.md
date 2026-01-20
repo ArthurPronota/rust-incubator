@@ -1,4 +1,3 @@
-Step 2.3: Bound behavior, not data
 Шаг 2.3: Ограничение поведения, а не данных.
 ==================================
 
@@ -103,10 +102,7 @@ let copy = loader.clone(); // it compiles now!
 
 ## Task
 
-Refactor the code contained in [this step's crate](src/main.rs) to reduce trait bounds pollution as much as possible.
-
 Переработайте код, содержащийся в [crate этого шага](src/main.rs), чтобы максимально уменьшить загрязнение границ трейтов.
-
 
 ## Questions
 
