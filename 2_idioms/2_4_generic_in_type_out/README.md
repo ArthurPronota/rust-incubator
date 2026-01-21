@@ -1,4 +1,3 @@
-Step 2.4: Abstract type in, concrete type out
 Шаг 2.4: Абстрактный входной тип, конкретный выходной тип
 =============================================
 
@@ -103,7 +102,6 @@ just_print_stringy(&nickname);
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 
-- Why abstracting over input type is good? Which problems does it have and how can they be overcome?
 - [`Почему абстрагирование от типов входных данных — это хорошо? Какие проблемы оно создает и как их можно преодолеть?`]()
 
 - When returning a concrete type is good? When not? What are the trade-offs?

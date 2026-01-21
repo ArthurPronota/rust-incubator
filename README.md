@@ -84,7 +84,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
     - [ ] [Шаг 2.1: Расширенные типы обеспечивают корректность][Step 2.1] (1 day)
     - [ ] [Шаг 2.2: Обмен значений с помощью `mem::replace`][Step 2.2] (1 day)
     - [ ] [Шаг 2.3: Ограничение поведения, а не данных.][Step 2.3] (1 day)
-    - [ ] [2.4. Abstract type in, concrete type out][Step 2.4] (1 day)
+    - [ ] [Шаг 2.4: Абстрактный входной тип, конкретный выходной тип][Step 2.4] (1 day)
     - [ ] [2.5. Exhaustivity][Step 2.5] (1 day)
     - [ ] [2.6. Sealing][Step 2.6] (1 day)
 - [ ] [3. Common ecosystem][Step 3] (2 days, after all sub-steps)
