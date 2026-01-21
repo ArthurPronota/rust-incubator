@@ -1,35 +1,63 @@
 use std::net::{IpAddr, SocketAddr};
+use std::borrow::Cow ;
 
 fn main() {
-    println!("Refactor me!");
 
     let mut err = Error::new("NO_USER".to_string());
     err.status(404).message("User not found".to_string());
+    println!("1) err: {:?}", err) ;
+
+    let no_user = "NO_USER".to_owned() ;
+    let user_not_found = "User not found".to_string() ;
+    let mut err = Error::new(&no_user);
+    err.status(404).message(&user_not_found);
+    println!("2) err: {:?}", err) ;
+
+    let mut err = Error::new("NO_USER");
+    err.status(404).message("User not found");
+    println!("3) err: {:?}", err) ;
+
+    let mut err = Error::new(format!("NO_USER"));
+    err.status(404).message(format!("User not found"));
+    println!("4) err: {:?}", err) ;
+
+    let mut err = Error::new(Cow::Borrowed("NO_USER"));
+    err.status(404).message(Cow::Borrowed("User not found"));
+    println!("5) err: {:?}", err) ;
+
+    let mut err = Error::new(Cow::Owned("NO_USER".into()));
+    err.status(404).message(Cow::Owned("User not found".into()));
+    println!("6) err: {:?}", err) ;
 
 }
 
 #[derive(Debug)]
-pub struct Error {
-    code: String,
-    status: u16,
-    message: String,
+pub struct Error<'a> {
+    code:       Cow<'a, str>,
+    status:     u16,
+    message:    Cow<'a, str>,
 }
 
-impl Default for Error {
+impl<'a> Default for Error<'a> {
     #[inline]
     fn default() -> Self {
         Self {
-            code: "UNKNOWN".to_string(),
-            status: 500,
-            message: "Unknown error has happened.".to_string(),
+            code:    Cow::Borrowed("UNKNOWN"),
+            status:  500,
+            message: Cow::Borrowed("Unknown error has happened."),
         }
     }
 }
 
-impl Error {
-    pub fn new(code: String) -> Self {
+impl<'a> Error<'a> {
+    pub fn new<S>(code: S) -> Self 
+    //where S: Into<Cow::<'static, str>>,
+    where S: Into<Cow::<'a, str>>,
+    {
         let mut err = Self::default();
-        err.code = code;
+        err.code = code
+                    .into()
+                    ;
         err
     }
 
@@ -38,8 +66,13 @@ impl Error {
         self
     }
 
-    pub fn message(&mut self, m: String) -> &mut Self {
-        self.message = m;
+    pub fn message<S>(&mut self, m: S) -> &mut Self 
+    //where S: Into<Cow<'static, str>>
+    where S: Into<Cow<'a, str>>
+    {
+        self.message = m
+                        .into()
+                        ;
         self
     }
 }
