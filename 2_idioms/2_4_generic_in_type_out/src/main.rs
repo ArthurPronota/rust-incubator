@@ -5,6 +5,7 @@ fn main() {
 
     let mut err = Error::new("NO_USER".to_string());
     err.status(404).message("User not found".to_string());
+
 }
 
 #[derive(Debug)]

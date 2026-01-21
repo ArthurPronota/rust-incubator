@@ -19,6 +19,8 @@ __Estimated time__: 1 day
 
 Проиллюстрируем это следующими простыми примерами:
 ```rust
+use derive_more::{AsMut, AsRef};
+
 // Read-only access is enough here.
 pub fn just_print_stringy(v: &str) {
     println!("{}", v)
@@ -46,7 +48,7 @@ add_hi(nickname.as_mut());
 just_print_stringy(nickname.as_ref());
 ```
 
-The most standard way to improve ergonomics here is to __hide type conversions under-the-hood by abstracting over input types__ in our APIs:
+Наиболее стандартный способ улучшить эргономику в данном случае — это _скрыть преобразования типов «под капотом», абстрагируясь от типов входных данных_ в наших API:
 ```rust
 pub fn just_print_stringy<S: AsRef<str>>(v: S) {
     println!("{}", v.as_ref())
@@ -62,50 +64,69 @@ impl Nickname {
     }
 }
 ```
-And now our API is pleasant to use:
+Теперь нашим API удобно пользоваться:
 ```rust
 let mut nickname = Nickname::new("Vasya");
 add_hi(&mut nickname);
 just_print_stringy(&nickname);
 ```
 
-This is one of the key features, which drive [Rust] expressiveness and ergonomics. Just look over `std` library to see how widely it's used: [`Iterator::eq()`][1], [`Vec::drain()`][2], [`HashMap::extend()`][3], etc.
+Это одна из ключевых особенностей, определяющих выразительность и эргономичность [Rust]. Достаточно взглянуть на библиотеку `std`, чтобы увидеть, насколько широко она используется: [`Iterator::eq()`][1], [`Vec::drain()`][2], [`HashMap::extend()`][3] и т. д.
 
-The downside of this idiom is that compiler generates more code due to monomorphization, so potentially leads to code bloating. The way it can be optimized has already been [explained in "Reducing code bloat optimization" section of 1.6 step][6].
+Недостатком этого подхода является то, что компилятор генерирует больше кода из-за мономорфизации, что потенциально приводит к раздуванию кода. Способ его оптимизации уже был [объяснен в разделе «Оптимизация для уменьшения раздувания кода» шага 1.6][6].
 
-Further reading on theme:
+
+Дополнительная литература по теме:
 - [Joe Wilm: From &str to Cow][4]
 - [Pascal Hertleif: Elegant Library APIs in Rust: Use conversion traits][5]
 - [Carl M. Kadie: Nine Rules for Elegant Rust Library APIs][10]
 
 
 
+## Возвращение конкретного типа
 
-## Returning concrete type
+В то время как для входного параметра мы хотим принимать как можно больше типов, для возвращаемых типов хорошей практикой будет __возвращать наиболее конкретный тип, чтобы предоставить как можно больше информации__, поэтому предпочтительнее возвращать конкретный тип вместо `impl Trait` или параметра типа. Это расширяет API использования возвращаемого типа (поскольку это конкретный тип, который не удаляется) и, потенциально, может уменьшить мономорфизм (на самом деле, этого делать не следует, поскольку мономорфизм в основном происходит из-за параметров входного типа).
 
-While for an input parameter we want to accept as much types as possible, for return types a vice versa will be a good practice: __return the most concrete type to provide as much information as possible__, so prefer returning a concrete type instead of `impl Trait` or a type parameter. This extends usage API of a returned type (as it's concrete type not erased), and, potentially, may reduce monomorphization (actually, it shouldn't, as monomorphization mostly happens due to input type parameters).
+Рассмотрим в качестве примера методы адаптера [`Iterator`]: [`Iterator::map()`][7], [`Iterator::enumerate()`][8], [`Iterator::filter()`][9] и т. д. Все они возвращают конкретный тип адаптера, а не абстракцию `impl Iterator<..>`.
 
-Consider [`Iterator`] adapter methods as an example: [`Iterator::map()`][7], [`Iterator::enumerate()`][8], [`Iterator::filter()`][9], etc. They all return a concrete adapter type, rather than `impl Iterator<..>` abstraction.
-
-However, this is not a strict rule, so should not be applied blindly. If you _really need_ to abstract over a return type (for example, to future-proof your API), then just do it.
-
+Однако это не строгое правило, поэтому его не следует применять слепо. Если вам _действительно_ необходимо абстрагироваться от типа возвращаемого значения (например, чтобы обеспечить перспективность вашего API), то просто сделайте это.
 
 
 
 ## Task
 
-Refactor the code contained in [this step's crate](src/main.rs) to make it more efficient, idiomatic, simple and pleasant to use.
-
+Переработайте код, содержащийся в [crate этого шага](src/main.rs), чтобы сделать его более эффективным, идиоматичным, простым и удобным в использовании.
 
 
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
+
 - Why abstracting over input type is good? Which problems does it have and how can they be overcome?
+- [`Почему абстрагирование от типов входных данных — это хорошо? Какие проблемы оно создает и как их можно преодолеть?`]()
+
 - When returning a concrete type is good? When not? What are the trade-offs?
 
+<hr>
 
+<h3>Почему абстрагирование от типов входных данных — это хорошо? Какие проблемы оно создает и как их можно преодолеть?</h4>
+
+Абстрагирование от типов входных данных (через обобщения/generics и трейты) в Rust — это основа создания гибких, переиспользуемых и производительных библиотек.
+
+<h4>Почему это хорошо?</h4>
+
+1. Принцип `DRY` (`Don't Repeat Yourself`): Вы пишете логику один раз, и она работает для `Vec<u8>`, `&[u8]`, `File` или `TcpStream`, если они реализуют нужный трейт (например, `Read`).
+
+2. Эргономика и гибкость API: Пользователь вашего кода сам выбирает удобный ему тип данных.
+    - Пример: Использование `AsRef<Path>` позволяет функции принимать и `String`, и `&str`, и `PathBuf`.
+
+3. Производительность (`Zero-Cost`): Благодаря мономорфизации, Rust генерирует оптимизированный машинный код для каждого конкретного типа. Это быстрее, чем динамическая проверка типов в рантайме.
+
+4. Безопасность: Вы четко описываете поведение, которое вам нужно (например, «мне нужно то, что можно сравнить»), и компилятор гарантирует, что ничего другого в функцию не попадет.
+
+
+<hr>
 
 
 [`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html
