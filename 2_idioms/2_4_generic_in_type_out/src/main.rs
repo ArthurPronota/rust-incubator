@@ -1,33 +1,54 @@
+/*
+        Представление в памяти Cow<'a, str>: 
+
+// Cow::Borrowed("text") - примерно эквивалентно:
+struct CowBorrowed {
+    tag: 0,          // Дискриминант для enum
+    data: *const u8, // Указатель на строку где-то еще
+    len: usize,
+}
+
+// Cow::Owned(String) - примерно эквивалентно:
+struct CowOwned {
+    tag: 1,          // Дискриминант для enum  
+    ptr: *mut u8,    // Указатель на выделенную память
+    len: usize,
+    capacity: usize,
+}
+*/
+
+
 use std::net::{IpAddr, SocketAddr};
 use std::borrow::Cow ;
 
 fn main() {
 
+    // String как аргумент
     let mut err = Error::new("NO_USER".to_string());
     err.status(404).message("User not found".to_string());
     println!("1) err: {:?}", err) ;
 
+    // &String как аргумент
     let no_user = "NO_USER".to_owned() ;
     let user_not_found = "User not found".to_string() ;
     let mut err = Error::new(&no_user);
     err.status(404).message(&user_not_found);
     println!("2) err: {:?}", err) ;
 
+    // &str как аргумент
     let mut err = Error::new("NO_USER");
     err.status(404).message("User not found");
     println!("3) err: {:?}", err) ;
 
-    let mut err = Error::new(format!("NO_USER"));
-    err.status(404).message(format!("User not found"));
-    println!("4) err: {:?}", err) ;
-
+    // Cow::Borrowed как аргумент
     let mut err = Error::new(Cow::Borrowed("NO_USER"));
     err.status(404).message(Cow::Borrowed("User not found"));
-    println!("5) err: {:?}", err) ;
+    println!("4) err: {:?}", err) ;
 
+    // Cow::Owned как аргумент
     let mut err = Error::new(Cow::Owned("NO_USER".into()));
     err.status(404).message(Cow::Owned("User not found".into()));
-    println!("6) err: {:?}", err) ;
+    println!("5) err: {:?}", err) ;
 
 }
 
@@ -50,9 +71,16 @@ impl<'a> Default for Error<'a> {
 }
 
 impl<'a> Error<'a> {
-    pub fn new<S>(code: S) -> Self 
-    //where S: Into<Cow::<'static, str>>,
-    where S: Into<Cow::<'a, str>>,
+    pub fn new<S>(code: S) -> Self
+    /* тип S должен реализовывать преобразование в Cow::<'a, str>
+       Это моут быть:
+           1) String
+           2) &String
+           3) &str
+           4) Cow::Owned
+           5) Cow::Borrow
+     */
+        where S: Into<Cow::<'a, str>>,
     {
         let mut err = Self::default();
         err.code = code
@@ -67,8 +95,7 @@ impl<'a> Error<'a> {
     }
 
     pub fn message<S>(&mut self, m: S) -> &mut Self 
-    //where S: Into<Cow<'static, str>>
-    where S: Into<Cow<'a, str>>
+        where S: Into<Cow<'a, str>>
     {
         self.message = m
                         .into()
