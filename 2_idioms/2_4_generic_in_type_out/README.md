@@ -1,4 +1,5 @@
 Step 2.4: Abstract type in, concrete type out
+Шаг 2.4: Абстрактный входной тип, конкретный выходной тип
 =============================================
 
 __Estimated time__: 1 day
@@ -6,14 +7,17 @@ __Estimated time__: 1 day
 
 
 
-## Abstracting over input type
+## Абстрагирование по типу входных данных
 
-The common and obvious rules in [Rust] when choosing type for an input parameter are the following:
-- If you need a _read-only access_ to the value, then use a shared reference (`&T`).
-- If you want to _mutate the value in-place_, then use a mutable reference (`&mut T`).
-- If you want to _consume and own_ the value, then move it (`T`).
+В [Rust] существуют следующие общепринятые и очевидные правила выбора типа для входного параметра:
 
-Let's illustrate it with the following trivial examples:
+- Если вам нужен доступ к значению только для чтения, используйте разделяемую ссылку (`&T`).
+
+- Если вы хотите изменить значение на месте, используйте изменяемую ссылку (`&mut T`).
+
+- Если вы хотите _потреблять и владеть_ этим значением, то переместите его (`T`).
+
+Проиллюстрируем это следующими простыми примерами:
 ```rust
 // Read-only access is enough here.
 pub fn just_print_stringy(v: &str) {
@@ -34,7 +38,8 @@ impl Nickname {
     }
 }
 ```
-However, due to the need of explicit type conversions in [Rust], such API can lack ergonomics in use (notice the explicit conversion methods that API user has to use):
+
+Однако из-за необходимости явного преобразования типов в [Rust] такой API может быть неэргономичным в использовании (обратите внимание на явные методы преобразования, которые должен использовать пользователь API):
 ```rust
 let mut nickname = Nickname::new("Vasya".to_string());
 add_hi(nickname.as_mut());
