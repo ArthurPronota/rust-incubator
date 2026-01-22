@@ -133,6 +133,10 @@ help: if you don't care about this missing field, you can explicitly ignore it
 
 __`#[non_exhaustive]` attribute__, interestedly, __serves the very same purpose of [future-proofing][12]__ a source code, but in a totally opposite manner: it's __used in a library code__ (the one which declares [API] of some type for usage) to preserve backwards compatibility __for omitting breaking any user code whenever the used [API] is extended__.
 
+__Интересно, что атрибут `#[non_exhaustive]`__, __служит той же самой цели [обеспечения защиты от устаревания][12]__ исходного кода, но совершенно противоположным образом: __он используется в библиотечном коде__ (том, который объявляет [API] какого-либо типа для использования) __для сохранения обратной совместимости, чтобы избежать нарушения работы пользовательского кода при расширении используемого [API]__.
+
+
+
 > Within the defining crate, `non_exhaustive` has no effect.
 
 > Outside of the defining crate, types annotated with `non_exhaustive` have limitations that preserve backwards compatibility when new fields or variants are added.
