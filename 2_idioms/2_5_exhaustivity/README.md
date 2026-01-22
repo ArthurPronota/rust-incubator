@@ -1,18 +1,18 @@
 Step 2.5: Exhaustivity
+Шаг 2.5: Исчерпывание
 ======================
 
 __Estimated time__: 1 day
 
-Exhaustiveness checking in [pattern matching][1] is a very useful tool, allowing to spot certain bugs at compile-time by cheking whether all the combinations of some values where covered and considered in a source code. Being applied correctly, it increases the [fearless refactoring][2] quality of a source code, eliminating possibilities for "forgot to change" bugs to subtly sneak into the codebase whenever it's extended.
 
-
+Проверка полноты в [сопоставлении с образцом][1] — очень полезный инструмент, позволяющий выявлять определенные ошибки на этапе компиляции, проверяя, были ли учтены и рассмотрены все комбинации значений в исходном коде. При правильном применении она повышает качество [бесстрашного рефакторинга][2] исходного кода, исключая возможность незаметного проникновения ошибок типа «забыл изменить» в кодовую базу при ее расширении.
 
 
 ## Enums
 
-The most canonical and iconic example of exhaustiveness checking is using an enum in a `match` expression. The point here is to __[omit][5] using [`_` (wildcard pattern)][4] or match-anything bindings__, as such `match` expressions won't break in compile-time when something new is added.
+Наиболее каноническим и знаковым примером проверки исчерпываемости является использование перечисления в выражении `match`. Суть здесь в том, чтобы __[опустить][5] использование [`_` (шаблон подстановки)][4] или привязок «соответствует чему угодно»__, поскольку такие выражения `match` не сломаются во время компиляции при добавлении чего-либо нового.
 
-For example, this is a very bad code:
+Например, это очень плохой код:
 ```rust
 fn grant_permissions(role: &Role) -> Permissions {
     match role {
@@ -22,9 +22,10 @@ fn grant_permissions(role: &Role) -> Permissions {
     }
 }
 ```
-If, for some reason, a new `Role::Guest` is added, __with very high probability this code won't be changed accordingly__, introducing a security bug, by granting `Permissions::All` to any guest. This mainly happens, because the code itself doesn't signal back in any way that it should be reconsidered.
+Если по какой-либо причине будет добавлен новый объект `Role::Guest`, то с очень высокой вероятностью этот код не будет соответствующим образом изменен, что приведет к возникновению уязвимости безопасности, поскольку любому гостю будет предоставлено разрешение `Permissions::All`. Это происходит главным образом потому, что сам код никак не сигнализирует о необходимости его пересмотра.
 
-By leveraging exhaustivity, the code can be altered in the way __it breaks at compile-time whenever a new `Role` variant is added__:
+
+Благодаря использованию принципа исчерпывающего поиска, код можно изменить таким образом, __чтобы он ломался на этапе компиляции при добавлении нового варианта `Role`__:
 ```rust
 fn grant_permissions(role: &Role) -> Permissions {
     match role {
@@ -49,8 +50,6 @@ note: `Role` defined here
 2  |     Guest,
    |     ^^^^^ not covered
 ```
-
-
 
 
 ## Structs
