@@ -309,33 +309,4 @@ fn main() {
     err.status(404).message(Cow::Owned("User not found".into()));
     println!("5) err: {:?}", err) ;
 
-    /*
-    {
-
-    let mut server = Server::default();
-    println!("server: {:?}", server) ;
-    
-    // Все варианты работают:
-    server.bind(IpAddr::from([127, 0, 0, 1]), 8080).unwrap();
-    server.bind("localhost", 8081).unwrap(); // Если localhost разрешен
-    server.bind("192.168.1.1", 8082).unwrap();
-    
-    let ip_string = String::from("10.0.0.1");
-    server.bind(ip_string, 8083).unwrap();
-    
-    let ip_string = String::from("10.0.0.1");
-    server.bind(&ip_string, 8083).unwrap();
-
-    println!("Server address: {:?}", server.get_address());
-    //Ok(())
-
-    let v = "i" ;
-    let v2 = 
-            v
-                .parse::<IpAddr>() 
-                ;
-    println!("v2: {:?}", v2) ;
-
-    }
-     */
 }
