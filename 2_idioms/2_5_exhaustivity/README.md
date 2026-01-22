@@ -51,7 +51,6 @@ note: `Role` defined here
    |     ^^^^^ not covered
 ```
 
-
 ## Structs
 
 While enums exhaustiveness is quite an obvious idea, due to extensive usage of `match` expressions in a regular code, the structs exhaustiveness, on the other hand, is not, while being as much useful. Exhaustivity for structs is achieved by __using [destructuring][6] without [`..` syntax (multiple fields ignoring)][7]__.
