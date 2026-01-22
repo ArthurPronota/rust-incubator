@@ -145,8 +145,9 @@ __Интересно, что атрибут `#[non_exhaustive]`__, __служи�
 
 > - могут быть созданы экземпляры `enum`.
 
-> There are limitations when matching on non-exhaustive types outside of the defining crate:
-> - When pattern matching on a non-exhaustive variant (`struct` or `enum` variant), a `StructPattern` must be used which must include a `...` Tuple variant constructor visibility is lowered to `min($vis, pub(crate))`.
+> При сопоставлении с non-exhaustive типов, выходящих за рамки определяющей библиотеки, существуют ограничения:
+> - При сопоставлении с шаблоном для non-exhaustive варианта (`struct` или `enum`) необходимо использовать `StructPattern`, который должен включать `...`. Видимость конструктора варианта кортежа снижается до `min($vis, pub(crate))`.
+
 > - When pattern matching on a non-exhaustive `enum`, matching on a variant does not contribute towards the exhaustiveness of the arms.
 
 > It's also not allowed to cast non-exhaustive types from foreign crates.
