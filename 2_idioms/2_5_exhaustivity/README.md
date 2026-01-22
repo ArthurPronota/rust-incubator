@@ -1,4 +1,3 @@
-Step 2.5: Exhaustivity
 Шаг 2.5: Исчерпывание
 ======================
 
@@ -55,7 +54,9 @@ note: `Role` defined here
 
 While enums exhaustiveness is quite an obvious idea, due to extensive usage of `match` expressions in a regular code, the structs exhaustiveness, on the other hand, is not, while being as much useful. Exhaustivity for structs is achieved by __using [destructuring][6] without [`..` syntax (multiple fields ignoring)][7]__.
 
-For example, having the following code:
+В то время как исчерпывающая детализация перечислений является довольно очевидной идеей из-за широкого использования выражений `match` в обычном коде, исчерпывающая детализация структур, с другой стороны, не является таковой, хотя и столь же полезна. Исчерпывающая детализация структур достигается путем __использования [деструктуризации][6] без [`..` синтаксиса (игнорирование нескольких полей)][7]__.
+
+Например, имея следующий код:
 ```rust
 struct Address {
     country: Country,
@@ -73,9 +74,12 @@ impl fmt::Display for Address {
     }
 }
 ```
-It's super __easy to forget changing the `Display` implementation when a new `state` field is added__.
 
-So, altering the code with __exhaustive destructuring allows to omit such a subtle bug, by breaking in compile-time__:
+Очень легко забыть изменить реализацию `Display` при добавлении нового поля `state`.
+
+
+Таким образом, изменение кода с помощью __исчерпывающей деструктуризации позволяет избежать такой незаметной ошибки, возникающей на этапе компиляции__:
+
 ```rust
 impl fmt::Display for Address {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -115,7 +119,8 @@ help: if you don't care about this missing field, you can explicitly ignore it
    |    
 ```
 
-Another real-world use-cases of maintaining invariants covering all struct fields via exhaustiveness checking are illustrated in the following articles:
+Другие примеры практического применения поддержания инвариантов, охватывающих все поля структуры, посредством проверки исчерпываемости, иллюстрируются в следующих статьях:
+
 - [Ashley Mannix: How we organize a complex Rust codebase][8]
 
 
@@ -123,7 +128,8 @@ Another real-world use-cases of maintaining invariants covering all struct field
 
 ## `#[non_exhaustive]`
 
-Until now, it has been illustrated how __exhaustiveness checking can future-proof a user code__ (the one which uses API of some type, not declares), by making it to __break whenever the used [API] is extended__ and should be reconsidered.
+До настоящего времени было показано, __как проверка на исчерпывающий характер кода может обеспечить перспективность пользовательского кода__ (того, который использует API определенного типа, а не объявляет его), __заставляя его ломаться всякий раз, когда используемый [API] расширяется__ и требует пересмотра.
+
 
 __`#[non_exhaustive]` attribute__, interestedly, __serves the very same purpose of [future-proofing][12]__ a source code, but in a totally opposite manner: it's __used in a library code__ (the one which declares [API] of some type for usage) to preserve backwards compatibility __for omitting breaking any user code whenever the used [API] is extended__.
 
