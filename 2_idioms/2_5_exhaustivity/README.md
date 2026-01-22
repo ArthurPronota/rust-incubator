@@ -131,19 +131,19 @@ help: if you don't care about this missing field, you can explicitly ignore it
 До настоящего времени было показано, __как проверка на исчерпывающий характер кода может обеспечить перспективность пользовательского кода__ (того, который использует API определенного типа, а не объявляет его), __заставляя его ломаться всякий раз, когда используемый [API] расширяется__ и требует пересмотра.
 
 
-__`#[non_exhaustive]` attribute__, interestedly, __serves the very same purpose of [future-proofing][12]__ a source code, but in a totally opposite manner: it's __used in a library code__ (the one which declares [API] of some type for usage) to preserve backwards compatibility __for omitting breaking any user code whenever the used [API] is extended__.
-
 __Интересно, что атрибут `#[non_exhaustive]`__, __служит той же самой цели [обеспечения защиты от устаревания][12]__ исходного кода, но совершенно противоположным образом: __он используется в библиотечном коде__ (том, который объявляет [API] какого-либо типа для использования) __для сохранения обратной совместимости, чтобы избежать нарушения работы пользовательского кода при расширении используемого [API]__.
 
 
+> Внутри определяющего крейта параметр `non_exhaustive` не оказывает никакого эффекта.
 
-> Within the defining crate, `non_exhaustive` has no effect.
+> За пределами определяющей библиотеки типы, аннотированные `non_exhaustive`, имеют ограничения, обеспечивающие обратную совместимость при добавлении новых полей или вариантов.
 
-> Outside of the defining crate, types annotated with `non_exhaustive` have limitations that preserve backwards compatibility when new fields or variants are added.
 > 
-> Non-exhaustive types cannot be constructed outside of the defining crate:
-> - Non-exhaustive variants (`struct` or `enum` variant) cannot be constructed with a `StructExpression` (including with functional update syntax).
-> - `enum` instances can be constructed.
+> Non-exhaustive типы не могут быть сконструированы вне определяющего крейта:
+
+> - Non-exhaustive варианты (варианты `struct` или `enum`) нельзя создать с помощью `StructExpression` (в том числе с использованием синтаксиса функционального обновления).
+
+> - могут быть созданы экземпляры `enum`.
 
 > There are limitations when matching on non-exhaustive types outside of the defining crate:
 > - When pattern matching on a non-exhaustive variant (`struct` or `enum` variant), a `StructPattern` must be used which must include a `...` Tuple variant constructor visibility is lowered to `min($vis, pub(crate))`.
