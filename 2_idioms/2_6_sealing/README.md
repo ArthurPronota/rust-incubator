@@ -3,15 +3,12 @@
 
 __Estimated time__: 1 day
 
-Sealing, in programming, usually means that some API (mostly public) cannot be inherited, extended or implemented outside its definition place. For example, a [sealed class or interface in Kotlin][1] cannot be inherited or implemented outside the library where it's defined. In [Rust], this idiom may be applied to [traits][2]. 
-
 В программировании «запечатывание» обычно означает, что некоторый API (в основном публичный) не может быть унаследован, расширен или реализован за пределами места его определения. Например, [запечатанный класс или интерфейс в Kotlin][1] не может быть унаследован или реализован за пределами библиотеки, где он определен. В [Rust] этот принцип может применяться к [трейтам][2].
 
 
 ## Traits
 
-__Sealed trait__ is a __publicly accessible__ trait, which __cannot be implemented outside its definition place__ (__module or crate__, depending on the visibility of this trait).
-
+__Запечатанный trait__ — это __общедоступный__ trait, который __не может быть реализован вне места его определения__ (__module или crate__, в зависимости от видимости этого признака).
 > ```rust
 > /// This trait is sealed and cannot be implemented for types outside this crate.
 > pub trait TheTrait: private::Sealed {
