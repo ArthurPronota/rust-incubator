@@ -81,8 +81,8 @@ Seal the traits defined in [this step's crate](src/lib.rs) in the following way:
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- What does sealing mean in programming in a broad sense?
-- [`Что означает «запечатывание» в программировании в широком смысле?`]()
+
+- [`Что означает «запечатывание» в программировании в широком смысле?`](#что-означает-запечатывание-в-программировании-в-широком-смысле)
 
 - What is trait sealing in [Rust]? When is it useful?
 - What limitations does trait sealing in [Rust] have? What could it be able to provide if supported by compiler?
