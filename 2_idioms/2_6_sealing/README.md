@@ -86,7 +86,6 @@ Seal the traits defined in [this step's crate](src/lib.rs) in the following way:
 
 - [`Что такое «запечатывание трейтов» в [Rust]? Когда это полезно?`](#что-такое-запечатывание-трейтов-в-rust-когда-это-полезно)
 
-- What limitations does trait sealing in [Rust] have? What could it be able to provide if supported by compiler?
 - [`Какие ограничения имеет механизм изоляции трейтов в [Rust]? Что он мог бы обеспечить, если бы поддерживался компилятором?`](#какие-ограничения-имеет-механизм-изоляции-трейтов-в-rust-что-он-мог-бы-обеспечить-если-бы-поддерживался-компилятором)
 
 <hr>
