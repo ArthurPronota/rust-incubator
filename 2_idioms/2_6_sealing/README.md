@@ -76,6 +76,8 @@ Seal the traits defined in [this step's crate](src/lib.rs) in the following way:
 
 Запечатайте traits, определенные в [crate этого шага](src/lib.rs), следующим образом:
 
+- Полностью запечатайте трейт [`MyIteratorExt`](src/my_iterator_ext.rs). Делать это вручную, использование crate [`sealed`] или аналогичный, __не допускается__.
+
 
 ## Questions
 
