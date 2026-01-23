@@ -10,17 +10,17 @@ __Estimated time__: 1 day
 
 __Запечатанный trait__ — это __общедоступный__ trait, который __не может быть реализован вне места его определения__ (__module или crate__, в зависимости от видимости этого признака).
 > ```rust
-> /// This trait is sealed and cannot be implemented for types outside this crate.
+> /// Этот trait является запечатанный и не может быть реализована для типов, находящихся за пределами этого crate.
 > pub trait TheTrait: private::Sealed {
->     // Zero or more methods that the user is allowed to call.
+>     // Ноль или более методов, которые пользователю разрешено вызывать.
 >     fn ...();
 >
->     // Zero or more private methods, not allowed for user to call.
+>     // Ноль или более закрытых методов, вызов которых пользователю запрещен.
 >     #[doc(hidden)]
 >     fn ...();
 > }
 >
-> // Implement for some types.
+> // Реализуйте для некоторых типов.
 > impl TheTrait for usize {
 >     /* ... */
 > }
@@ -29,12 +29,18 @@ __Запечатанный trait__ — это __общедоступный__ tra
 >     pub trait Sealed {}
 >
 >     // Implement for those same types, but no others.
+>     // Реализуйте для тех же типов, но не для других.
 >     impl Sealed for usize {}
 > }
 > ```
 > The empty private `Sealed` supertrait cannot be named by downstream crates, so we are guaranteed that implementations of `Sealed` (and therefore `TheTrait`) only exist in the current crate.
+> Пустой private супертрейт `Sealed` не может быть назван нижестоящими крейтами, поэтому мы гарантируем, что реализации `Sealed` (и, следовательно, `TheTrait`) существуют только в текущем крейте.
+
+
 
 This is the most common way to seal a trait. The boilerplate could be completely cut off by using a [`sealed`] crate, providing a convenient macro to generate the one:
+Это наиболее распространенный способ запечатать trait. Стандартный текст можно полностью убрать, используя крейт [`sealed`], который предоставит удобный макрос для его генерации:
+
 ```rust
 use sealed::sealed;
 
@@ -45,20 +51,20 @@ pub trait TheTrait {}
 impl TheTrait for usize {}
 ```
 
-However, there are alternative ways to seal a trait [via its method signature][5], or even [seal it partially][6].
+Однако существуют альтернативные способы запечатать признак [с помощью сигнатуры его метода][5] или даже [запечатать его частично][6].
 
-The main purpose of sealing a trait is, of course, [future-proofing][7] of [API]s.
+Главная цель защиты признака, конечно же, заключается в [обеспечении защиты от будущих угроз][7] для [API].
 
-> We are free to add methods to `TheTrait` in a non-breaking release even though that would ordinarily be a breaking change for traits that are not sealed. Also we are free to change the signature of methods that are not publicly documented.
+> Мы можем добавлять методы в `TheTrait` в релизе, не нарушающем обратную совместимость, даже если это обычно приводит к изменению совместимости для трейтов, которые не запечатаны. Также мы можем изменять сигнатуру методов, которые не задокументированы публично.
 
-It's important to note that __trait sealing fully relies on__ tricking over visibility rules (__using a public [supertrait][8]__ or type, which __name is not publicly exported__), and so, has no impact on the type system semantics (a sealed public trait is just a regular public trait from the type system perspective). In theory, sealing a trait should affect its [coherence][9], by [relaxing its strictness for the use-cases which can never happen with a sealed trait][10]. However, that would require a special support by compiler, which seems [not gonna happen in the near future][11].
+Важно отметить, что __запечатывание трейта полностью основано на__ обмане с правилами видимости (__использовании публичного [супертрейта][8]__ или типа, имя которого не является публично экспортируемым__), и поэтому не влияет на семантику системы типов (запечатанный публичный трейт — это просто обычный публичный трейт с точки зрения системы типов). Теоретически, запечатывание трейта должно влиять на его [когерентность][9], [ослабляя его строгость для вариантов использования, которые никогда не могут произойти с запечатанным трейтом][10]. Однако это потребовало бы специальной поддержки со стороны компилятора, что, похоже, [не произойдет в ближайшем будущем][11].
 
-To better understand traits sealing, its design and use-cases, read through:
+
+Для лучшего понимания свойств запечатывания, её конструкции и областей применения, ознакомьтесь со следующей информацией:
 - [Rust API Guidelines: 10. Future proofing: Sealed traits protect against downstream implementations (C-SEALED)][3]
 - [Predrag Gruevski: A definitive guide to sealed traits in Rust][4]
 - [Jack Wrenn: Private Methods on a Public Trait][13]
 - [Official `sealed` crate docs][`sealed`]
-
 
 
 
@@ -74,13 +80,60 @@ Seal the traits defined in [this step's crate](src/lib.rs) in the following way:
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - What does sealing mean in programming in a broad sense?
+- [`Что означает «запечатывание» в программировании в широком смысле?`]()
+
 - What is trait sealing in [Rust]? When is it useful?
 - What limitations does trait sealing in [Rust] have? What could it be able to provide if supported by compiler?
 
+<hr>
+
+<h3>Что означает «запечатывание» в программировании в широком смысле?</h3>
+
+В программировании термин «запечатывание» (`sealing`) означает ограничение возможности расширения или изменения программного компонента внешним кодом.
+
+В широком смысле это механизм контроля иерархии, который запрещает другим программистам наследоваться от вашего класса или реализовывать ваш интерфейс за пределами строго определенной области (обычно — текущего модуля или библиотеки).
+
+Вот основные аспекты «запечатывания» в разных парадигмах:
+
+<h4>1. Запечатывание в объектно-ориентированном программировании (ООП)</h4>
+
+В таких языках, как C#, Kotlin или Java, запечатывание используется для остановки цепочки наследования.
+
+- Механизм: Ключевые слова sealed (Kotlin/Java) или sealed / final (C#).
+- Цель: Гарантировать, что поведение класса не будет переопределено. Это упрощает поддержку кода, так как автор точно знает все возможные подтипы своего класса.
+- Пример: Если вы создаете класс CreditCardPayment, вы можете «запечатать» его, чтобы никто не мог создать «поддельный» подкласс, который меняет логику списания средств.
+
+<h4>2. Запечатывание типов (Алгебраические типы данных)</h4>
+
+В функциональных и современных системных языках (Swift, Scala, а также Java 17+) «запечатанный» интерфейс или класс позволяет компилятору знать все возможные варианты реализации.
+
+- Преимущество: Это включает проверку полноты (`exhaustiveness checking`). Если вы используете `match` или `switch` по запечатанному типу, компилятор выдаст ошибку, если вы забыли обработать один из вариантов. В Rust эту роль выполняют `enum`.
+
+<h4>3. Запечатывание в контексте Rust (`Sealed Traits`)</h4>
+
+Хотя в Rust нет ключевого слова sealed, программисты используют этот шаблон (паттерн), чтобы запретить пользователям библиотеки реализовывать определенный трейт для своих типов.
+
+- Как это работает: Трейт делается зависимым от другого (скрытого в приватном модуле) трейта.
+- Зачем: Это позволяет автору библиотеки добавлять новые методы в трейт, не ломая код пользователей (так как пользователи всё равно не могли его реализовать сами).
+
+<h4>Почему «запечатывание» — это хорошо?</h4>
+
+- Безопасность (`Security`): Гарантия того, что критически важный код не будет подменен или расширен непредсказуемым образом.
+- Оптимизация (`Performance`): Компилятор может применять более агрессивные оптимизации (например, `devirtualization`), так как он точно знает, что новых наследников у типа не появится.
+- Предсказуемость API: Пользователь библиотеки получает четкие границы использования инструмента, что снижает риск ошибок.
+
+<h4>Когда НЕ стоит запечатывать?</h4>
+
+Если вы разрабатываете фреймворк, который по своей сути должен расширяться пользователями (например, система плагинов или базовые UI-компоненты), запечатывание будет излишним и вредным ограничением.
+
+<h4>Итог:</h4>
+Запечатывание — это способ сказать: «Этот компонент завершен и должен использоваться именно так, как я задумал, без вмешательства в его структуру».
 
 
+
+<hr>
 
 [`sealed`]: https://docs.rs/sealed
 [API]: https://en.wikipedia.org/wiki/API
