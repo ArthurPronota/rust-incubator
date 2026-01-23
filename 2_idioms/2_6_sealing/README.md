@@ -74,6 +74,7 @@ Seal the traits defined in [this step's crate](src/lib.rs) in the following way:
 - Sealing should work on both module level (disallowing to implement the sealed trait or the sealed method in the root module of the crate or any other module outside the one where the traits are defined, prove it by providing commented implementations in the root module of the crate, which doesn't compile due to the seal, if uncommented) and crate level (prove it by creating [documentation tests which doesn't compile][12] due to the seal).
 
 
+Запечатайте traits, определенные в [crate этого шага](src/lib.rs), следующим образом:
 
 
 ## Questions
