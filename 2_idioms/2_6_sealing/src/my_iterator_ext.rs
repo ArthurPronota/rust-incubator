@@ -72,6 +72,7 @@ pub trait MyIteratorExt: Iterator {
 
 impl<T> MyIteratorExt for T where T: Iterator {}
 
+// модуль format
 mod format {
     use std::{cell::RefCell, fmt};
 
