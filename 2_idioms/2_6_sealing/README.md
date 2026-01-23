@@ -10,10 +10,11 @@ __Estimated time__: 1 day
 
 __Запечатанный trait__ — это __общедоступный__ trait, который __не может быть реализован вне места его определения__ (__module или crate__, в зависимости от видимости этого признака).
 > ```rust
-> mod private { // приватный модулб с именем private
+> // приватный модуль с именем private
+> mod private {
 >     pub trait Sealed {}   // трейт Sealed
 >
->     // Реализуйте для тех же типов, но не для других.
+>     // Реализация трейта Sealed для типа usize.
 >     impl Sealed for usize {}
 > }
 >
@@ -36,9 +37,6 @@ __Запечатанный trait__ — это __общедоступный__ tra
 > ```
 > Пустой private супертрейт `Sealed` не может быть использован нижестоящими крейтами, поэтому мы гарантируем, что реализации `Sealed` (и, следовательно, `TheTrait`) существуют только в текущем крейте.
 
-
-
-This is the most common way to seal a trait. The boilerplate could be completely cut off by using a [`sealed`] crate, providing a convenient macro to generate the one:
 Это наиболее распространенный способ запечатать trait. Стандартный текст можно полностью убрать, используя крейт [`sealed`], который предоставит удобный макрос для его генерации:
 
 ```rust
