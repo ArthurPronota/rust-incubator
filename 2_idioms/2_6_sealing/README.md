@@ -1,11 +1,11 @@
-Step 2.6: Sealing
+Шаг 2.6: Запечатывание
 =================
 
 __Estimated time__: 1 day
 
 Sealing, in programming, usually means that some API (mostly public) cannot be inherited, extended or implemented outside its definition place. For example, a [sealed class or interface in Kotlin][1] cannot be inherited or implemented outside the library where it's defined. In [Rust], this idiom may be applied to [traits][2]. 
 
-
+В программировании «запечатывание» обычно означает, что некоторый API (в основном публичный) не может быть унаследован, расширен или реализован за пределами места его определения. Например, [запечатанный класс или интерфейс в Kotlin][1] не может быть унаследован или реализован за пределами библиотеки, где он определен. В [Rust] этот принцип может применяться к [трейтам][2].
 
 
 ## Traits

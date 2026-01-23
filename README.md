@@ -88,7 +88,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
     - [ ] [Шаг 2.5: Исчерпывание][Step 2.5] (1 day)
         - [`Как может быть полезна проверка полноты в коде [Rust] для перечислений и структур? Когда её следует использовать, а когда нет?`](https://github.com/ArthurPronota/rust-incubator/tree/main/2_idioms/2_5_exhaustivity#как-может-быть-полезна-проверка-полноты-в-коде-rust-для-перечислений-и-структур-когда-её-следует-использовать-а-когда-нет)
         - [`Как работает атрибут #[non_exhaustive] в [Rust]? В каких случаях он используется? Когда его следует использовать, а когда нет?`](https://github.com/ArthurPronota/rust-incubator/tree/main/2_idioms/2_5_exhaustivity#как-работает-атрибут-non_exhaustive-в-rust-в-каких-случаях-он-используется-когда-его-следует-использовать-а-когда-нет)
-    - [ ] [2.6. Sealing][Step 2.6] (1 day)
+    - [ ] [Шаг 2.6: Запечатывание][Step 2.6] (1 day)
 - [ ] [3. Common ecosystem][Step 3] (2 days, after all sub-steps)
     - [ ] [3.1. Testing and mocking][Step 3.1] (1 day)
     - [ ] [3.2. Declarative and procedural macros][Step 3.2] (1 day)
