@@ -52,8 +52,6 @@ note: `Role` defined here
 
 ## Structs
 
-While enums exhaustiveness is quite an obvious idea, due to extensive usage of `match` expressions in a regular code, the structs exhaustiveness, on the other hand, is not, while being as much useful. Exhaustivity for structs is achieved by __using [destructuring][6] without [`..` syntax (multiple fields ignoring)][7]__.
-
 В то время как исчерпывающая детализация перечислений является довольно очевидной идеей из-за широкого использования выражений `match` в обычном коде, исчерпывающая детализация структур, с другой стороны, не является таковой, хотя и столь же полезна. Исчерпывающая детализация структур достигается путем __использования [деструктуризации][6] без [`..` синтаксиса (игнорирование нескольких полей)][7]__.
 
 Например, имея следующий код:
@@ -177,8 +175,8 @@ Refactor the code contained in [this step's crate](src/lib.rs), so the bugs intr
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- How can exhaustiveness checking be useful in [Rust] code for enums and structs? When should we use it, when not?
-- [`Как может быть полезна проверка полноты в коде [Rust] для перечислений и структур? Когда её следует использовать, а когда нет?`]()
+
+- [`Как может быть полезна проверка полноты в коде [Rust] для перечислений и структур? Когда её следует использовать, а когда нет?`](#как-может-быть-полезна-проверка-полноты-в-коде-rust-для-перечислений-и-структур-когда-её-следует-использовать-а-когда-нет)
 - How does `#[non_exhaustive]` attribute work in [Rust]? What are its use-cases? When should it be used, when not?
 
 <hr>
