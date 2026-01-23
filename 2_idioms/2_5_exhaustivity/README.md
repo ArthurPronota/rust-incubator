@@ -167,9 +167,7 @@ Despite being opposite qualities, both exhaustivity and non-exhaustivity are int
 
 ## Task
 
-Refactor the code contained in [this step's crate](src/lib.rs), so the bugs introduced there will be uncovered at compile-time, and fix them appropriately.
-
-
+Проведите рефакторинг кода, содержащегося в [библиотеке этого crate](src/lib.rs), чтобы обнаруженные там ошибки выявлялись на этапе компиляции, и исправьте их соответствующим образом.
 
 
 ## Questions
