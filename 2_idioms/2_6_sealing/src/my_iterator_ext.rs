@@ -74,7 +74,10 @@ impl<T> MyIteratorExt for T where T: Iterator {}
 
 // модуль format
 mod format {
-    use std::{cell::RefCell, fmt};
+    use std::{
+            cell::RefCell,
+            fmt
+        };
 
     /// Format all iterator elements lazily, separated by `sep`.
     ///
