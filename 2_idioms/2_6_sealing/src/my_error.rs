@@ -71,9 +71,16 @@ pub trait MyError: Debug +
     /// fn main() {
     ///     match get_super_error() {
     ///         Err(e) => {
+    ///             
     ///             println!("Error: {e}, type_id: {:?}", e.type_id());
     ///             println!("Caused by: {}, type_id: {:?}", e.source().unwrap(), e.source().unwrap().type_id());
     ///             println!("SuperErrorSideKick: {:?}", e.source.source()) ;
+    ///             
+    ///             /*
+    ///             println!("Error: {e}");
+    ///             println!("Caused by: {}", e.source().unwrap());
+    ///              */
+    /// 
     ///         }
     ///         _ => println!("No error"),
     ///     }
@@ -98,7 +105,7 @@ pub trait MyError: Debug +
 }
 
 /// пример реазлизации запечатанного (sealed) метода
-impl<T: ?Sized> private::SealedTypeId for T 
+impl<T: MyError + ?Sized> private::SealedTypeId for T 
 {
     #[doc(hidden)]
     fn type_id(&self) -> TypeId

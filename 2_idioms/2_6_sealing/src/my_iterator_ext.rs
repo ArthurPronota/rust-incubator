@@ -243,18 +243,23 @@ mod private {
     // публичный trait Sealed
     pub trait Sealed {}
 
+    /*
     // публичная unit структура MyStruct
     pub struct MyStruct ;
 
     // реализация trait Sealed для структуры MyStruct
     impl Sealed for MyStruct {}
+     */
+
+    // реализовать Sealed для итератора
+    impl<I: Iterator> Sealed for I {}
 }
 
 /// расширение trait для [`Iterator`].
 pub trait MyIteratorExt: 
-                Iterator + 
+                Iterator
                 // добавлен ещё один супер трейт: Sealed из приватного модуля private
-                private::Sealed
+                + private::Sealed    // 20260125
 {
     /// Форматировать все итерационные элементы, разделённые по `sep`.
     ///
@@ -317,10 +322,22 @@ pub trait MyIteratorExt:
     }
 }
 
+/*
+impl <T> private::Sealed for T
+where T: MyIteratorExt
+{
+}
+*/
+
+/*
 impl<T> MyIteratorExt for T 
-    where T: Iterator + 
-             private::Sealed     // Добавлен трейт Sealed из приватного модуля private
+    where T: Iterator
+             + private::Sealed     // Добавлен трейт Sealed из приватного модуля private
 {}
+ */
+
+// реализовать MyIteratorExt для итератора
+impl<I: Iterator> MyIteratorExt for I {}
 
 // модуль format
 mod format {
