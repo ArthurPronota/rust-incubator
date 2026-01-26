@@ -75,7 +75,7 @@ impl TheTrait for usize {}
 |pub trait|✅|✅|✅|
 |трейт запечатанный супертрейтом (supertrait sealed trait)|✅|✅|❌|
 |метод трейта с запечатанной сигнатурой (method signature sealed trait)|✅|❌|❌|
-|private trait|❌|❌|❌|
+|private trait|<cen>❌</cen>|❌|❌|
 
 На самом деле, чуть позже мы увидим, что даже это не полная картина! Наш выбор может быть еще более детальным, чем то, что мы видим выше:
 
