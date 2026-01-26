@@ -160,8 +160,34 @@ impl SealedTrait for TypeThatImplsSealed {
 }
 ```
 
-Нижестоящие модули этого сделать не могут! Хотя сам Sealed является публичным, он определяется в частном модуле и никогда не экспортируется повторно. Это означает, что тип является публичным, но его имя — приватным.
+Нижестоящие модули этого сделать не могут! Хотя сам `Sealed` является публичным, он определяется в частном модуле и никогда не экспортируется повторно. Это означает, что тип является публичным, но его имя — приватным.
 
+Обращение к `private::Sealed` из нижестоящего крейта приводит к ошибкам:
+
+```rust
+struct DownstreamType {}
+
+// ERROR: module `private` is private
+impl upstream::private::Sealed for DownstreamType {}
+```
+
+Попытка реализовать `SealedTrait` непосредственно в библиотеке, созданной на основе исходного кода, также терпит неудачу:
+
+```rust
+struct DownstreamType {}
+
+// ERROR: the trait bound `DownstreamType: upstream::private::Sealed` is not satisfied
+impl upstream::SealedTrait for DownstreamType {
+    fn method(&self) {}
+}
+```
+
+Однако такое закрытие трейта не препятствует вызову его методов в нижестоящем коде. Следующий код в нижестоящем крейте работает отлично:
+```rust
+fn use_sealed(value: impl upstream::SealedTrait) {
+    value.method()
+}
+```
 
 
 ## Task

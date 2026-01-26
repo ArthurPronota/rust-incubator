@@ -237,7 +237,7 @@ use std::fmt;
 
 use self::format::{Format, FormatWith};
 
-// приватный модуль (видет только в текущем crate), имя модуля private
+// приватный модуль (видет только в текущем файле), имя модуля `private`
 mod private {
 
     // публичный trait Sealed
@@ -251,15 +251,15 @@ mod private {
     impl Sealed for MyStruct {}
      */
 
-    // реализовать Sealed для итератора
+    // реализация Sealed для типажа I (что реализует Iterator)
     impl<I: Iterator> Sealed for I {}
 }
 
 /// расширение trait для [`Iterator`].
-pub trait MyIteratorExt: 
+pub trait MyIteratorExt:
                 Iterator
                 // добавлен ещё один супер трейт: Sealed из приватного модуля private
-                + private::Sealed    // 20260125
+                + private::Sealed
 {
     /// Форматировать все итерационные элементы, разделённые по `sep`.
     ///
@@ -270,7 +270,9 @@ pub trait MyIteratorExt:
     ///
     /// ```rust
     /// use step_2_6::MyIteratorExt as _;
-    ///
+    /// //* Ошибка компиляции: module `private` is private
+    /// use step_2_6::private ;
+    /// // */
     /// let data = [1.1, 2.71828, -3.];
     /// assert_eq!(
     ///     format!("{:.2}", data.iter().format(", ")),
@@ -299,6 +301,9 @@ pub trait MyIteratorExt:
     ///
     /// ```rust
     /// use step_2_6::MyIteratorExt as _;
+    /// //* Ошибка компиляции: module `private` is private
+    /// use step_2_6::private ;
+    /// // */
     ///
     /// let data = [1.1, 2.71828, -3.];
     /// let data_formatter = data.iter().format_with(", ", |elt, f| f(&format_args!("{:.2}", elt)));
@@ -336,7 +341,7 @@ impl<T> MyIteratorExt for T
 {}
  */
 
-// реализовать MyIteratorExt для итератора
+/// реализация MyIteratorExt для типажа I (что реализует Iterator), покрывающая реализация
 impl<I: Iterator> MyIteratorExt for I {}
 
 // модуль format

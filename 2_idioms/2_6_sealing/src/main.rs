@@ -52,6 +52,7 @@ use step_2_6::MyIteratorExt;
 
     {
     use step_2_6::MyIteratorExt as _ ;
+    //use step_2_6::private ;
     
     /*
     struct MyIterator(u32) ;
@@ -102,15 +103,5 @@ use step_2_6::MyIteratorExt;
          f(&row.iter().format_with(", ", |elt, g| g(&elt)))
     });
     assert_eq!(matrix_formatter.to_string(), "1, 2, 3\n4, 5, 6");
-    }
-
-    // ----------------------------
-    {
-        trait PrivateTrait {}
-
-        pub trait PublicTrait : PrivateTrait {}
-
-        println!("Yes") ;
-
     }
  }
