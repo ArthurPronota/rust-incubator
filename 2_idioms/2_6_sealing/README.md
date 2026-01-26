@@ -86,6 +86,7 @@ impl TheTrait for usize {}
 - [`Трюк для запечатывания трейтов`](#трюк-для-запечатывания-трейтов)
 - [`Закрепление признаков с помощью суперпризнака (Sealing traits with a supertrait)`](#закрепление-признаков-с-помощью-суперпризнака-sealing-traits-with-a-supertrait)
 - [`Запечатывание traits с помощью сигнатур методов.`](#запечатывание-traits-с-помощью-сигнатур-методов)
+- [`Разрешается вызывать только некоторые методы.`]()
 
 <h4>Что такое запечатанные признаки (sealed traits)?</h4>
 
@@ -193,7 +194,7 @@ fn use_sealed(value: impl upstream::SealedTrait) {
 
 <h4>Запечатывание traits с помощью сигнатур методов.</h4>
 
-Иногда `trait` должно быть `pub`, но мы хотим предотвратить вызов его методов другими библиотеками.
+Иногда `trait` должно быть `pub`, но мы хотим предотвратить вызов его методов нижестоящими crates.
 
 Мы воспользуемся той же идеей "неименуемых типов", но на этот раз применимой к аргументам метода, а не к супертрейту:
 
@@ -208,6 +209,40 @@ pub trait SealedTrait {
 ```
 
 `private::Token` — это структура типа `unit`, и, будучи `zero-sized type` (`ZST`), она не создаст никаких накладных расходов на производительность. Для создания значения структуры `unit` достаточно указать её имя, поэтому код, имеющий возможность указать имя для private::Token, может вызвать метод трейта следующим образом: [playground](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=34eb425ec87dddc1ea34dbc4a6984597)
+
+```rust
+pub struct TypeThatImplsSealed;
+
+impl SealedTrait for TypeThatImplsSealed {
+    fn method(&self, _: private::Token) {
+        // impl here
+    }
+}
+```
+
+Между тем, нижний код может видеть и называть трейт и его метод, но не может реализовать трейт или вызвать метод:
+
+```rust
+struct DownstreamType {}
+
+impl upstream::SealedTrait for DownstreamType {
+    // ERROR: module `private` is private
+    fn method(&self, token: upstream::private::Token) {}
+}
+
+
+fn call_method(value: impl upstream::SealedTrait) {
+    // ERROR: module `private` is private
+    let token = upstream::private::Token;
+    value.method(token);
+}
+```
+
+Пока хотя бы один обязательный метод трейта принимает аргумент с неименованным типом, трейт считается закрытым и не может быть реализован последующими библиотеками.
+
+В последнем предложении есть две хитрые вспомогательные фразы: «по крайней мере один» и «необходимый метод». Давайте рассмотрим каждую из них по очереди.
+
+<h4>Разрешается вызывать только некоторые методы.</h4>
 
 
 ## Task
