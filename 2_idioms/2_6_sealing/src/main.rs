@@ -10,8 +10,8 @@ use step_2_6::MyIteratorExt;
         struct SuperErrorSideKick;
 
         #[derive(Debug)]
-            struct SuperError {
-                source: SuperErrorSideKick,
+        struct SuperError {
+            source: SuperErrorSideKick,
         }
 
         impl fmt::Display for SuperError {
@@ -33,20 +33,20 @@ use step_2_6::MyIteratorExt;
             }
         }
 
-    impl MyError for SuperErrorSideKick {}
+        impl MyError for SuperErrorSideKick {}
 
-    fn get_super_error() -> Result<(), SuperError> {
-        Err(SuperError { source: SuperErrorSideKick })
-    }
-
-    match get_super_error() {
-        Err(e) => {
-            println!("Error: {e}, type_id: {:?}", e.type_id());
-            println!("Caused by: {}, type_id: {:?}", e.source().unwrap(), e.source().unwrap().type_id());
-            println!("SuperErrorSideKick: {:?}", e.source.source()) ;
+        fn get_super_error() -> Result<(), SuperError> {
+            Err(SuperError { source: SuperErrorSideKick })
         }
-        _ => println!("No error"),
-    }
+
+        match get_super_error() {
+            Err(e) => {
+                println!("Error: {e}, type_id: {:?}", e.type_id());
+                println!("Caused by: {}, type_id: {:?}", e.source().unwrap(), e.source().unwrap().type_id());
+                println!("SuperErrorSideKick: {:?}", e.source.source()) ;
+            }
+            _ => println!("No error"),
+        }
 
     }
 
