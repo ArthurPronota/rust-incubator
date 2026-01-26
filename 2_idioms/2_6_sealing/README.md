@@ -88,6 +88,7 @@ impl TheTrait for usize {}
 - [`Запечатывание traits с помощью сигнатур методов.`](#запечатывание-traits-с-помощью-сигнатур-методов)
 - [`Разрешается вызывать только некоторые методы.`](#разрешается-вызывать-только-некоторые-методы)
 - [`Частично запечатанные (Partially-sealed) traits`](#частично-запечатанные-partially-sealed-traits)
+- [`Полная матрица возможностей`]`()
 
 <h4>Что такое запечатанные признаки (sealed traits)?</h4>
 
@@ -269,7 +270,80 @@ pub trait SealedTrait {
 
 <h4>Частично запечатанные (Partially-sealed) traits</h4>
 
+Встроенный трейт `Error` является частично закрытым: разработчики, реализующие его в последующих проектах, могут переопределять некоторые, но не все его методы. Трейт предоставляет реализацию по умолчанию для методов, которые нельзя переопределить, и разработчики, реализующие его в последующих проектах, должны использовать эту реализацию по умолчанию.
 
+Например, следующий код без проблем переопределяет метод `Error::source()`: [playground](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=f451b5517933700b49aef3bf25a9e4b3)
+
+```rust
+use std::fmt::{self, Display, Formatter};
+use std::error::Error;
+
+#[derive(Debug)]
+struct MyError;
+
+impl Display for MyError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
+        write!(f, "MyError")
+    }
+}
+
+impl Error for MyError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        None
+    }
+}
+```
+
+Но давайте попробуем переопределить метод `Error::type_id()`.
+
+```rust
+impl Error for MyError {
+    fn type_id(&self, _: core::error::private::Internal) -> std::any::TypeId {
+        todo!()
+    }
+}
+```
+
+and we get: [playground](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=7574afca169c256cd9482ba4e0fe6c43)
+
+```
+error[E0603]: module `private` is private
+  --> src/lib.rs:18:39
+   |
+18 |     fn type_id(&self, _: core::error::private::Internal) -> std::any::TypeId {
+   |                                       ^^^^^^^ private module
+   |
+note: the module `private` is defined here
+  --> /rustc/9eb3afe9ebe9c7d2b84b71002d44f4a0edac95e0/library/core/src/error.rs:206:1
+```
+
+Частично закрытые трейты не ограничиваются стандартной библиотекой Rust. Мы можем изменить наш предыдущий `SealedTrait`, чтобы сделать его частично закрытым — нам просто нужно предоставить реализацию по умолчанию для всех методов, которые принимают аргумент, который не могут назвать нижестоящие crates.
+
+```rust
+mod private {
+    pub struct Token;
+}
+
+pub trait PartiallySealedTrait {
+    fn callable_method(&self);
+
+    fn non_callable_method(&self, _: private::Token) {
+        println!("you can't change this");
+    }
+}
+```
+
+Здесь вы могли заметить, что непереопределяемый метод нашего трейта также не может быть вызван нижестоящими crates. Однако мы можем разрешить нижестоящим крейтам вызывать его косвенно, предоставив в нашем крейте функцию, например: [playground](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=c34902cb5b96a325b2bd42a6aa7bcbdd)
+
+```rust
+pub fn call_method_indirectly(value: &PartiallySealedTrait) {
+    value.non_callable_method(private::Token)
+}
+```
+
+Это выполнимо, но вряд ли эргономично. К счастью, на горизонте маячит лучшее решение: в предварительном RFC-проекте "Final Trait Methods" предлагается добавить ключевое слово final или атрибут #[final] к методам трейтов, чтобы предотвратить их переопределение, не делая их при этом недоступными для вызова в последующем коде.
+
+<h4>Полная матрица возможностей</h4>
 
 ## Task
 
