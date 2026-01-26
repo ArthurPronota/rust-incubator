@@ -103,4 +103,14 @@ use step_2_6::MyIteratorExt;
     });
     assert_eq!(matrix_formatter.to_string(), "1, 2, 3\n4, 5, 6");
     }
+
+    // ----------------------------
+    {
+        trait PrivateTrait {}
+
+        pub trait PublicTrait : PrivateTrait {}
+
+        println!("Yes") ;
+
+    }
  }

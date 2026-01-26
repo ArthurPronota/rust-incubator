@@ -103,6 +103,28 @@ impl TheTrait for usize {}
 
 <h4>Трюк для запечатывания трейтов</h4>
 
+В общих чертах, хитрость с закрытием трейтов довольно проста: нужно сделать так, чтобы реализация trait требовала тип, доступный только внутри текущего crate. Crates, находящиеся ниже по цепочке, не смогут использовать этот тип, поэтому они не смогут реализовать trait. Готово!
+
+На практике требуется некоторая тонкость. Rust не допускает утечки приватных типов в публичном API крейта:
+
+```rust
+trait PrivateTrait {}
+
+pub trait PublicTrait : PrivateTrait {}
+```
+Произведено [playground](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=c8a04e39ab23f400bbcb5d376372a6a2)
+
+```
+error[E0445]: private trait `PrivateTrait` in public interface
+ --> src/lib.rs:3:1
+  |
+1 | trait PrivateTrait {}
+  | ------------------ `PrivateTrait` declared as private
+2 |
+3 | pub trait PublicTrait : PrivateTrait {}
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ can't leak private trait
+```
+
 
 ## Task
 
