@@ -189,6 +189,8 @@ fn use_sealed(value: impl upstream::SealedTrait) {
     value.method()
 }
 ```
+Вот тут-то и появляется другой способ запечатать поступающие traits.
+
 
 
 ## Task
