@@ -133,6 +133,36 @@ error[E0445]: private trait `PrivateTrait` in public interface
 
 <h4>Закрепление признаков с помощью суперпризнака (Sealing traits with a supertrait)</h4>
 
+Вместо использования приватного супертрейта, давайте воспользуемся публичным супертрейтом, имя которого не экспортируется в открытый доступ:
+
+```rust
+mod private {
+    pub trait Sealed {}
+}
+
+pub trait SealedTrait : private::Sealed {
+    fn method(&self);
+}
+```
+
+Реализовать `SealedTrait` для типа в том же крейте очень просто. 
+
+1. Сначала реализуйте `private::Sealed` для этого типа
+2. Затем реализуйте `SealedTrait` обычным способом:
+
+```rust
+pub struct TypeThatImplsSealed;
+
+impl private::Sealed for TypeThatImplsSealed {}
+
+impl SealedTrait for TypeThatImplsSealed {
+    fn method(&self) {}
+}
+```
+
+Нижестоящие модули этого сделать не могут! Хотя сам Sealed является публичным, он определяется в частном модуле и никогда не экспортируется повторно. Это означает, что тип является публичным, но его имя — приватным.
+
+
 
 ## Task
 
