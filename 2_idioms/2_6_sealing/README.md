@@ -70,10 +70,10 @@ impl TheTrait for usize {}
 
 |Что|Вышестоящий код может использовать его в качестве привязки.|Вышестоящий код может вызывать его методы.|Вышестоящие типы могут его реализовывать.|
 |---|----|----|---|
-|pub trait|Да|Да|Да|
-|supertrait sealed trait|Да|Да|Нет|
-|method signature sealed trait|Да|Нет|Нет|
-|private trait|Нет|Нет|Нет|
+|pub trait|✅|✅|✅|
+|supertrait sealed trait|✅|✅|❌|
+|method signature sealed trait|✅|❌|❌|
+|private trait|❌|❌|❌|
 
 
 ## Task
