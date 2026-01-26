@@ -181,6 +181,7 @@ impl upstream::SealedTrait for DownstreamType {
     fn method(&self) {}
 }
 ```
+Причина проблем в том что для `DownstreamType` не реализован трейт `upstream::private::Sealed`.
 
 Однако такое закрытие трейта не препятствует вызову его методов в нижестоящем коде. Следующий код в нижестоящем крейте работает отлично:
 ```rust
