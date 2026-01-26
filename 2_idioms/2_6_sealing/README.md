@@ -193,6 +193,23 @@ fn use_sealed(value: impl upstream::SealedTrait) {
 
 <h4>Запечатывание traits с помощью сигнатур методов.</h4>
 
+Иногда `trait` должно быть `pub`, но мы хотим предотвратить вызов его методов другими библиотеками.
+
+Мы воспользуемся той же идеей "неименуемых типов", но на этот раз применимой к аргументам метода, а не к супертрейту:
+
+```rust
+mod private {
+    pub struct Token;
+}
+
+pub trait SealedTrait {
+    fn method(&self, _: private::Token);
+}
+```
+
+`private::Token` — это структура типа `unit`, и, будучи `zero-sized type` (`ZST`), она не создаст никаких накладных расходов на производительность. Для создания значения структуры `unit` достаточно указать её имя, поэтому код, имеющий возможность указать имя для private::Token, может вызвать метод трейта следующим образом: [playground](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=34eb425ec87dddc1ea34dbc4a6984597)
+
+
 ## Task
 
 Seal the traits defined in [this step's crate](src/lib.rs) in the following way:
