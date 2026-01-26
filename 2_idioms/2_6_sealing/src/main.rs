@@ -5,6 +5,7 @@ use step_2_6::MyIteratorExt;
         use std::{any::Any, fmt};
 
         use step_2_6::MyError;
+        //use step_2_6::private ;
 
         #[derive(Debug)]
         struct SuperErrorSideKick;
@@ -31,6 +32,16 @@ use step_2_6::MyIteratorExt;
             fn source(&self) -> Option<&(dyn MyError + 'static)> {
                 Some(&self.source)
             }
+
+            /*
+            #[doc(hidden)]
+            fn type_id(&self, _: private::Token) -> TypeId
+                where
+                     Self: 'static,
+            {
+                TypeId::of::<Self>()
+            } 
+             */           
         }
 
         impl MyError for SuperErrorSideKick {}
@@ -41,9 +52,13 @@ use step_2_6::MyIteratorExt;
 
         match get_super_error() {
             Err(e) => {
+                /*
                 println!("Error: {e}, type_id: {:?}", e.type_id());
                 println!("Caused by: {}, type_id: {:?}", e.source().unwrap(), e.source().unwrap().type_id());
                 println!("SuperErrorSideKick: {:?}", e.source.source()) ;
+                 */
+                println!("Error: {e}");
+                println!("Caused by: {}", e.source().unwrap());                
             }
             _ => println!("No error"),
         }
