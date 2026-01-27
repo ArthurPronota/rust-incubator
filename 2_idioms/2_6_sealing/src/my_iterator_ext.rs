@@ -1,10 +1,27 @@
 /*
-    Внёсённые изменения:
-1) добавлен модуль mod private
+    Этот код создаёт trait MyIteratorExt с двумя реализованными методами
+        1) fn format(self, sep: &str) -> Format<Self>
+        2) fn format_with<F>(self, sep: &str, format: F) -> FormatWith<Self, F>
+     и покрывающей реализацией для всего что является Iterator:
+        impl<I: Iterator> MyIteratorExt for I {}
+
+
+    Внесённые изменения:
+1) добавлен модуль mod private для запечатывания trait.
 2) модифицировано определение trait:
      pub trait MyIteratorExt: Iterator + private::Sealed
 3) модифицирована реализация trait:
-impl<T> MyIteratorExt for T where T: Iterator + private::Sealed {}
+    impl<I: Iterator> MyIteratorExt for I {}
+
+Для того чтобы документальные тесты проходили нужно раскомментировать
+комментарии //\*
+В них содержится код реализующий trait MyIteratorExt
+
+    Запуск теста:   cargo test --doc
+    Вывод в части документальных тестов этого файла:
+2_idioms\2_6_sealing\src\my_error.rs - my_error::MyError::source (line 33)    
+
+                Описания некоторых разделов rust.
 
                         1. FnMut
 
@@ -243,14 +260,6 @@ mod private {
     // публичный trait Sealed
     pub trait Sealed {}
 
-    /*
-    // публичная unit структура MyStruct
-    pub struct MyStruct ;
-
-    // реализация trait Sealed для структуры MyStruct
-    impl Sealed for MyStruct {}
-     */
-
     // реализация Sealed для типажа I (что реализует Iterator)
     impl<I: Iterator> Sealed for I {}
 }
@@ -327,21 +336,7 @@ pub trait MyIteratorExt:
     }
 }
 
-/*
-impl <T> private::Sealed for T
-where T: MyIteratorExt
-{
-}
-*/
-
-/*
-impl<T> MyIteratorExt for T 
-    where T: Iterator
-             + private::Sealed     // Добавлен трейт Sealed из приватного модуля private
-{}
- */
-
-/// реализация MyIteratorExt для типажа I (что реализует Iterator), покрывающая реализация
+/// покрывающая реализация MyIteratorExt для типажа I (что реализует Iterator), покрывающая реализация
 impl<I: Iterator> MyIteratorExt for I {}
 
 // модуль format

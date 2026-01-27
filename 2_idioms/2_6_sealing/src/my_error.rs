@@ -1,3 +1,16 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    Для того чтобы документальные тесты проходили нужно раскомментировать
+    комментарии //\*
+    В них содержится код реализующий trait MyError
+
+    Это упрщённый вариант Error
+
+    Запуск теста:   cargo test --doc
+    Вывод в части документальных тестов этого файла:
+test 2_idioms\2_6_sealing\src\my_iterator_ext.rs - my_iterator_ext::MyIteratorExt::format (line 271) ... FAILED
+test 2_idioms\2_6_sealing\src\my_iterator_ext.rs - my_iterator_ext::MyIteratorExt::format_with (line 302) ... FAILED
+
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /// Базовые ожидания для значений ошибок.
 ///
 /// Упрощенна версия [`std::error::Error`].
@@ -11,10 +24,7 @@ mod private {
 }
 
 /// Базовые ожидания для значений ошибок.
-pub trait MyError: Debug
-                   + Display
-                   //+ private::SealedTypeId // добавлен трейт SealedTypeId из модуля private
-{
+pub trait MyError: Debug + Display {
     /// Низкоуровневый источник этой ошибки (ошибки на более низком уровне), если есть.
     /// 
     ///
@@ -85,9 +95,9 @@ pub trait MyError: Debug
         None
     }
 
-    /// Gets the `TypeId` of `self`.
+    /// Получить `TypeId` от `self`.
     ///
-    /// __This is memory-unsafe to override in user code.__
+    /// __Это является небезопасный для памяти чтобы переопределять в пользовательском коде.__
     #[doc(hidden)]
     fn type_id(&self,
                //* Ошибка: при переопределении метода
