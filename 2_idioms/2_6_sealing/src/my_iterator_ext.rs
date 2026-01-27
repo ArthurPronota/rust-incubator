@@ -4,7 +4,8 @@
         2) fn format_with<F>(self, sep: &str, format: F) -> FormatWith<Self, F>
      и покрывающей реализацией для всего что является Iterator:
         impl<I: Iterator> MyIteratorExt for I {}
-
+    Этот код является упрощённой версией:
+        use itertools::Itertools;
 
     Внесённые изменения:
 1) добавлен модуль mod private для запечатывания trait.
@@ -19,9 +20,9 @@
 
     Запуск теста:   cargo test --doc
     Вывод в части документальных тестов этого файла:
-2_idioms\2_6_sealing\src\my_error.rs - my_error::MyError::source (line 33)    
+test 2_idioms\2_6_sealing\src\my_error.rs - my_error::MyError::source (line 33) ... FAILED
 
-                Описания некоторых разделов rust.
+    * * * * * * * Описания некоторых разделов rust. * * * * * * * 
 
                         1. FnMut
 

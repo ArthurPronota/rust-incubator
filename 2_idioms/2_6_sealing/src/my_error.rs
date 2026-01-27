@@ -7,8 +7,8 @@
 
     Запуск теста:   cargo test --doc
     Вывод в части документальных тестов этого файла:
-test 2_idioms\2_6_sealing\src\my_iterator_ext.rs - my_iterator_ext::MyIteratorExt::format (line 271) ... FAILED
-test 2_idioms\2_6_sealing\src\my_iterator_ext.rs - my_iterator_ext::MyIteratorExt::format_with (line 302) ... FAILED
+test 2_idioms\2_6_sealing\src\my_iterator_ext.rs - my_iterator_ext::MyIteratorExt::format (line 280) ... FAILED
+test 2_idioms\2_6_sealing\src\my_iterator_ext.rs - my_iterator_ext::MyIteratorExt::format_with (line 311) ... FAILED
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /// Базовые ожидания для значений ошибок.
