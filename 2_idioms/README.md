@@ -3,19 +3,28 @@
 
 __Estimated time__: 2 days
 
-These steps describe common idioms required for writing well-designed and idiomatic [Rust] code.
+Эти шаги описывают распространенные идиомы, необходимые для написания хорошо продуманного и идиоматического кода на [Rust].
 
-> ❗️Before completing this step you should complete all its sub-steps.
+> ❗️Перед завершением этого шага необходимо выполнить все его подшаги.
 
 After doing them you should be able to answer the following questions:
+После выполнения этих заданий вы сможете ответить на следующие вопросы:
+
 - Why should I care about types and expressing things in types? How do types help to increase guarantees of a program being correct?
+- [`Почему меня должны волновать типы и способ выражения информации с помощью типов? Как типы помогают повысить гарантии корректности программы?`]()
+
 - What is essential for writing well-designed and ergonomic APIs in [Rust] and why?
 - Why `mem::replace` exists and what purpose does it solve? When and why is it really helpful?
 - How input type polymorphism is usually organized in [Rust] APIs? What cost does it have?
 - Which ways and tools do exist for future-proofing source code in [Rust]?
 
+<hr>
+
+<h3>Почему меня должны волновать типы и способ выражения информации с помощью типов? Как типы помогают повысить гарантии корректности программы?</h3>
 
 
+
+<hr>
 
 ## Task
 
