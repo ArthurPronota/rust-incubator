@@ -334,3 +334,487 @@ impl Buffer {
 [Rust]: https://www.rust-lang.org
 
 [1]: https://en.wikipedia.org/wiki/Vending_machine
+
+<hr>
+use std::collections::HashMap;
+use std::fmt;
+use thiserror::Error; // Для удобных ошибок, можно заменить на ручную реализацию
+
+// Номиналы монет
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Coin {
+    One = 1,
+    Two = 2,
+    Five = 5,
+    Ten = 10,
+    Twenty = 20,
+    Fifty = 50,
+}
+
+impl Coin {
+    // Получить все возможные номиналы для итерации
+    pub fn all() -> [Coin; 6] {
+        [
+            Coin::One,
+            Coin::Two,
+            Coin::Five,
+            Coin::Ten,
+            Coin::Twenty,
+            Coin::Fifty,
+        ]
+    }
+    
+    // Значение монеты
+    pub fn value(&self) -> u32 {
+        *self as u32
+    }
+}
+
+impl fmt::Display for Coin {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}₽", self.value())
+    }
+}
+
+// Продукт
+#[derive(Debug, Clone, PartialEq)]
+pub struct Product {
+    pub name: String,
+    pub price: u32, // в наименьших единицах (копейках/центах)
+}
+
+impl Product {
+    pub fn new(name: impl Into<String>, price: u32) -> Self {
+        Self {
+            name: name.into(),
+            price,
+        }
+    }
+}
+
+impl fmt::Display for Product {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{} - {}.{:02}₽", self.name, self.price / 100, self.price % 100)
+    }
+}
+
+// Ошибки автомата
+#[derive(Debug, Error, PartialEq)]
+pub enum VendingError {
+    #[error("Product '{0}' not found")]
+    ProductNotFound(String),
+    
+    #[error("Insufficient funds. Required: {0}, Provided: {1}")]
+    InsufficientFunds(u32, u32),
+    
+    #[error("Insufficient change. Cannot give change for {0}")]
+    InsufficientChange(u32),
+    
+    #[error("Product '{0}' is out of stock")]
+    OutOfStock(String),
+    
+    #[error("Machine is at full capacity")]
+    MachineFull,
+    
+    #[error("Invalid coin: {0}")]
+    InvalidCoin(u32),
+    
+    #[error("No money inserted")]
+    NoMoneyInserted,
+}
+
+// Результат покупки
+#[derive(Debug, PartialEq)]
+pub struct PurchaseResult {
+    pub product: Product,
+    pub change: HashMap<Coin, u32>,
+    pub total_change: u32,
+}
+
+impl fmt::Display for PurchaseResult {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "Successfully purchased: {}", self.product)?;
+        writeln!(f, "Total change: {}.{:02}₽", self.total_change / 100, self.total_change % 100)?;
+        
+        if !self.change.is_empty() {
+            writeln!(f, "Change breakdown:")?;
+            for (coin, count) in &self.change {
+                if *count > 0 {
+                    writeln!(f, "  {} x {}", coin, count)?;
+                }
+            }
+        }
+        
+        Ok(())
+    }
+}
+
+// Торговый автомат
+pub struct VendingMachine {
+    products: HashMap<String, (Product, u32)>, // name -> (product, quantity)
+    coins: HashMap<Coin, u32>, // номинал -> количество
+    capacity: usize,
+    inserted_coins: HashMap<Coin, u32>,
+    total_inserted: u32,
+}
+
+impl VendingMachine {
+    /// Создает новый торговый автомат с указанной вместимостью
+    pub fn new(capacity: usize) -> Self {
+        Self {
+            products: HashMap::new(),
+            coins: HashMap::new(),
+            capacity,
+            inserted_coins: HashMap::new(),
+            total_inserted: 0,
+        }
+    }
+    
+    /// Добавляет продукт в автомат
+    pub fn add_product(&mut self, product: Product, quantity: u32) -> Result<(), VendingError> {
+        if self.products.len() >= self.capacity && !self.products.contains_key(&product.name) {
+            return Err(VendingError::MachineFull);
+        }
+        
+        let entry = self.products
+            .entry(product.name.clone())
+            .or_insert_with(|| (product.clone(), 0));
+        
+        entry.1 += quantity;
+        Ok(())
+    }
+    
+    /// Загружает монеты в автомат для сдачи
+    pub fn load_coins(&mut self, coins: HashMap<Coin, u32>) {
+        for (coin, count) in coins {
+            *self.coins.entry(coin).or_insert(0) += count;
+        }
+    }
+    
+    /// Вставляет монету
+    pub fn insert_coin(&mut self, coin: Coin) -> Result<u32, VendingError> {
+        *self.inserted_coins.entry(coin).or_insert(0) += 1;
+        self.total_inserted += coin.value();
+        Ok(self.total_inserted)
+    }
+    
+    /// Вставляет несколько одинаковых монет
+    pub fn insert_coins(&mut self, coin: Coin, count: u32) -> Result<u32, VendingError> {
+        for _ in 0..count {
+            self.insert_coin(coin)?;
+        }
+        Ok(self.total_inserted)
+    }
+    
+    /// Покупает продукт
+    pub fn purchase(&mut self, product_name: &str) -> Result<PurchaseResult, VendingError> {
+        if self.total_inserted == 0 {
+            return Err(VendingError::NoMoneyInserted);
+        }
+        
+        // Проверяем наличие продукта
+        let (product, quantity) = self.products
+            .get_mut(product_name)
+            .ok_or_else(|| VendingError::ProductNotFound(product_name.to_string()))?;
+        
+        if *quantity == 0 {
+            return Err(VendingError::OutOfStock(product_name.to_string()));
+        }
+        
+        // Проверяем достаточно ли денег
+        if self.total_inserted < product.price {
+            return Err(VendingError::InsufficientFunds(
+                product.price,
+                self.total_inserted,
+            ));
+        }
+        
+        // Рассчитываем сдачу
+        let change_amount = self.total_inserted - product.price;
+        
+        // Пытаемся выдать сдачу
+        let change = self.calculate_change(change_amount)?;
+        
+        // Уменьшаем количество продукта
+        *quantity -= 1;
+        
+        // Добавляем внесенные монеты в автомат
+        for (coin, count) in &self.inserted_coins {
+            *self.coins.entry(*coin).or_insert(0) += count;
+        }
+        
+        // Убираем монеты для сдачи из автомата
+        for (coin, count) in &change {
+            if let Some(available) = self.coins.get_mut(coin) {
+                *available -= count;
+            }
+        }
+        
+        // Очищаем внесенные монеты
+        let result = PurchaseResult {
+            product: product.clone(),
+            change: change.clone(),
+            total_change: change_amount,
+        };
+        
+        self.clear_inserted_coins();
+        
+        Ok(result)
+    }
+    
+    /// Возвращает все внесенные деньги
+    pub fn cancel(&mut self) -> HashMap<Coin, u32> {
+        let coins = self.inserted_coins.clone();
+        self.clear_inserted_coins();
+        coins
+    }
+    
+    /// Рассчитывает оптимальную сдачу
+    fn calculate_change(&self, amount: u32) -> Result<HashMap<Coin, u32>, VendingError> {
+        if amount == 0 {
+            return Ok(HashMap::new());
+        }
+        
+        let mut change = HashMap::new();
+        let mut remaining = amount;
+        
+        // Копируем текущие монеты в автомате + внесенные
+        let mut available_coins = self.available_coins_with_inserted();
+        
+        // Сортируем номиналы по убыванию для жадного алгоритма
+        let mut denominations = Coin::all().to_vec();
+        denominations.sort_by(|a, b| b.value().cmp(&a.value()));
+        
+        for coin in denominations {
+            let coin_value = coin.value();
+            
+            if coin_value > remaining {
+                continue;
+            }
+            
+            if let Some(&available) = available_coins.get(&coin) {
+                let needed = remaining / coin_value;
+                let count = needed.min(available);
+                
+                if count > 0 {
+                    change.insert(coin, count);
+                    remaining -= coin_value * count;
+                    *available_coins.get_mut(&coin).unwrap() -= count;
+                }
+            }
+            
+            if remaining == 0 {
+                break;
+            }
+        }
+        
+        if remaining > 0 {
+            return Err(VendingError::InsufficientChange(amount));
+        }
+        
+        Ok(change)
+    }
+    
+    /// Получает все доступные монеты (в автомате + внесенные)
+    fn available_coins_with_inserted(&self) -> HashMap<Coin, u32> {
+        let mut all_coins = self.coins.clone();
+        
+        for (coin, count) in &self.inserted_coins {
+            *all_coins.entry(*coin).or_insert(0) += count;
+        }
+        
+        all_coins
+    }
+    
+    /// Очищает внесенные монеты
+    fn clear_inserted_coins(&mut self) {
+        self.inserted_coins.clear();
+        self.total_inserted = 0;
+    }
+    
+    /// Проверяет наличие продукта
+    pub fn has_product(&self, product_name: &str) -> bool {
+        self.products
+            .get(product_name)
+            .map_or(false, |(_, qty)| *qty > 0)
+    }
+    
+    /// Получает информацию о продуктах
+    pub fn get_products(&self) -> Vec<(Product, u32)> {
+        self.products.values().map(|(p, q)| (p.clone(), *q)).collect()
+    }
+    
+    /// Получает информацию о монетах в автомате
+    pub fn get_coins(&self) -> HashMap<Coin, u32> {
+        self.coins.clone()
+    }
+    
+    /// Получает информацию о внесенных монетах
+    pub fn get_inserted_coins(&self) -> HashMap<Coin, u32> {
+        self.inserted_coins.clone()
+    }
+    
+    /// Получает общую сумму внесенных денег
+    pub fn get_inserted_amount(&self) -> u32 {
+        self.total_inserted
+    }
+}
+
+// Реализация Display для удобного вывода
+impl fmt::Display for VendingMachine {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "=== Vending Machine ===")?;
+        writeln!(f, "Capacity: {} products", self.capacity)?;
+        writeln!(f, "Products:")?;
+        
+        for (product, quantity) in self.get_products() {
+            writeln!(f, "  {} ({} left)", product, quantity)?;
+        }
+        
+        writeln!(f, "Coins in machine:")?;
+        let mut total_coins = 0;
+        for (coin, count) in &self.coins {
+            if *count > 0 {
+                writeln!(f, "  {}: {}", coin, count)?;
+                total_coins += coin.value() * count;
+            }
+        }
+        writeln!(f, "Total coins value: {}.{:02}₽", total_coins / 100, total_coins % 100)?;
+        
+        if self.total_inserted > 0 {
+            writeln!(f, "Inserted coins:")?;
+            for (coin, count) in &self.inserted_coins {
+                writeln!(f, "  {}: {}", coin, count)?;
+            }
+            writeln!(f, "Total inserted: {}.{:02}₽", 
+                self.total_inserted / 100, self.total_inserted % 100)?;
+        }
+        
+        Ok(())
+    }
+}
+
+// Builder pattern для удобного создания автомата
+pub struct VendingMachineBuilder {
+    capacity: usize,
+    products: Vec<(Product, u32)>,
+    coins: HashMap<Coin, u32>,
+}
+
+impl VendingMachineBuilder {
+    pub fn new() -> Self {
+        Self {
+            capacity: 10,
+            products: Vec::new(),
+            coins: HashMap::new(),
+        }
+    }
+    
+    pub fn capacity(mut self, capacity: usize) -> Self {
+        self.capacity = capacity;
+        self
+    }
+    
+    pub fn add_product(mut self, product: Product, quantity: u32) -> Self {
+        self.products.push((product, quantity));
+        self
+    }
+    
+    pub fn add_coins(mut self, coin: Coin, count: u32) -> Self {
+        *self.coins.entry(coin).or_insert(0) += count;
+        self
+    }
+    
+    pub fn build(self) -> Result<VendingMachine, VendingError> {
+        let mut machine = VendingMachine::new(self.capacity);
+        
+        for (product, quantity) in self.products {
+            machine.add_product(product, quantity)?;
+        }
+        
+        machine.load_coins(self.coins);
+        
+        Ok(machine)
+    }
+}
+
+// Пример использования
+fn main() {
+    // Используем builder для создания автомата
+    let mut machine = VendingMachineBuilder::new()
+        .capacity(5)
+        .add_product(Product::new("Coke", 150), 3) // 1.50₽
+        .add_product(Product::new("Chips", 200), 5) // 2.00₽
+        .add_product(Product::new("Chocolate", 125), 2) // 1.25₽
+        .add_coins(Coin::Five, 10)
+        .add_coins(Coin::Ten, 5)
+        .add_coins(Coin::One, 20)
+        .build()
+        .expect("Failed to build vending machine");
+    
+    println!("{}", machine);
+    
+    // Пример покупки 1
+    println!("=== Purchase 1 ===");
+    
+    // Вставляем монеты
+    machine.insert_coin(Coin::Ten).unwrap();
+    machine.insert_coin(Coin::Ten).unwrap(); // Всего 20
+    machine.insert_coins(Coin::One, 3).unwrap(); // Всего 23
+    
+    println!("Inserted: {}.{:02}₽", 
+        machine.get_inserted_amount() / 100,
+        machine.get_inserted_amount() % 100);
+    
+    // Покупаем шоколад за 1.25₽
+    match machine.purchase("Chocolate") {
+        Ok(result) => {
+            println!("{}", result);
+        }
+        Err(err) => {
+            println!("Error: {}", err);
+        }
+    }
+    
+    println!("\n{}", machine);
+    
+    // Пример покупки 2 - недостаточно сдачи
+    println!("\n=== Purchase 2 ===");
+    
+    // Вставляем большую купюру (эмулируем банкноту как 50 монет)
+    machine.insert_coins(Coin::Fifty, 1).unwrap();
+    
+    // Пытаемся купить чипсы за 2.00₽
+    // Не будет сдачи, так как нет мелких монет
+    match machine.purchase("Chips") {
+        Ok(result) => {
+            println!("{}", result);
+        }
+        Err(err) => {
+            println!("Error: {}", err);
+        }
+    }
+    
+    // Отменяем операцию
+    let returned = machine.cancel();
+    println!("Cancelled, returned coins:");
+    for (coin, count) in returned {
+        println!("  {} x {}", coin, count);
+    }
+    
+    println!("\n{}", machine);
+    
+    // Пример покупки 3 - продукта нет
+    println!("\n=== Purchase 3 ===");
+    
+    machine.insert_coins(Coin::Ten, 2).unwrap(); // 20
+    
+    match machine.purchase("Pepsi") {
+        Ok(result) => {
+            println!("{}", result);
+        }
+        Err(err) => {
+            println!("Error: {}", err);
+        }
+    }
+}
