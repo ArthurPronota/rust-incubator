@@ -331,6 +331,14 @@ Design and implement a `VendingMachine` type, which behaves like a [vending mach
 Make its usage API as convenient as you're capable to.
 
 
+Разработайте и реализуйте тип `VendingMachine`, который ведет себя как [торговый автомат][1]:
+- `Product` должны иметь price и name;
+- `VendingMachine` должен иметь ограниченную ёмкость `Product`;
+- `VendingMachine` должен быть способным давать сдачу;
+- `VendingMachine` должен отклонять покупку если он не может дать сдачу;
+- `Coin` номинальные значения могут быть только `1`, `2`, `5`, `10`, `20` и `50`.
+
+Сделайте API для его использования максимально удобным, насколько это возможно.
 
 
 [Rust]: https://www.rust-lang.org
