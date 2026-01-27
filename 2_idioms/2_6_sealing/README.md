@@ -60,7 +60,7 @@ impl TheTrait for usize {}
 
 Для лучшего понимания свойств запечатывания, её конструкции и областей применения, ознакомьтесь со следующей информацией:
 - [Rust API Guidelines: 10. Future proofing: Sealed traits protect against downstream implementations (C-SEALED)][3]
-- [Predrag Gruevski: A definitive guide to sealed traits in Rust][4]
+- [Полное руководство по закрытым свойствам (sealed traits) в Rust](#%D0%BF%D0%BE%D0%BB%D0%BD%D0%BE%D0%B5-%D1%80%D1%83%D0%BA%D0%BE%D0%B2%D0%BE%D0%B4%D1%81%D1%82%D0%B2%D0%BE-%D0%BF%D0%BE-%D0%B7%D0%B0%D0%BA%D1%80%D1%8B%D1%82%D1%8B%D0%BC-%D1%81%D0%B2%D0%BE%D0%B9%D1%81%D1%82%D0%B2%D0%B0%D0%BC-sealed-traits-%D0%B2-rust)
 - [Jack Wrenn: Private Methods on a Public Trait][13]
 - [Official `sealed` crate docs][`sealed`]
 
