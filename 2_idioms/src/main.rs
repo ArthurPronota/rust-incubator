@@ -1,9 +1,27 @@
+use core::error;
 use std::collections::HashMap;
 //use std::collections::HashMap;
 use std::{fmt};
 //use thiserror::Error; // Для удобных ошибок, можно заменить на ручную реализацию
 //use std::path::Display;
-use std::num::NonZeroU32 ;
+// use std::num::NonZeroU32 ;
+// use core::error;
+use thiserror::Error;   // для  #[error(...)]
+
+/// Ошибки торгового автомата
+#[derive(Error, Debug)]
+enum VendingError {
+    #[error("The price must be greater than zero")]
+    ZeroPrice,
+
+    #[error("The product name is empty")]
+    EmptyProductionName,
+
+    #[error("The capacity of the vending machine must be greater than zero")]
+    CapacityMachineZero,
+
+}
+
 
 /// перечень допустимых монет
 #[derive(Clone, Copy, Debug)]
@@ -20,11 +38,11 @@ enum Coin {
 impl Coin {
     /// получить значение Coin
     pub fn value(&self) ->u32 {
-        *self as u32    // необходимы traites: Clone, Copy
+        *self as u32    // необходимы traits: Clone, Copy
     }
 }
 
-// пеализация Display для Coin
+// реализация Display для Coin
 impl fmt::Display for Coin {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 
@@ -43,15 +61,25 @@ struct PriceType(u32) ;
 
 // реализация методов для PriceType
 impl PriceType {
-    pub fn new(value: impl Into<u32>) -> Result<Self, String> {
+    /// создание нового PriceType
+    pub fn new(value: impl Into<u32>) -> Result<Self, VendingError> {
         match value.into() {
             v if v > 0 => Ok(Self(v)),
-            _ => Err("Цена должна быть больше нуля".to_string())
+            _ => Err(VendingError::ZeroPrice)
         }
     }
 
+    /// получение значения из PriceType
     pub fn value(&self) -> u32 {
         self.0
+    }
+
+    /// проверка значения PriceType
+    pub fn check(&self) ->Result<(), VendingError> {
+        match self.value() {
+            v if v > 0 => Ok(()),
+            _ => Err(VendingError::ZeroPrice)
+        }
     }
 
 }
@@ -68,10 +96,24 @@ struct CapacityType(u32) ;
 
 // реализация методов для PriceType
 impl CapacityType {
-    pub fn new(value: impl Into<u32>) -> Result<Self, String> {
+    /// создание нового CapacityType
+    pub fn new(value: impl Into<u32>) -> Result<Self, VendingError> {
         match value.into() {
             v if v > 0 => Ok(Self(v)),
-            _ => Err("Цена должна быть больше нуля".to_string()),
+            _ => Err(VendingError::ZeroPrice),
+        }
+    }
+
+    /// получить значение из CapacityType
+    pub fn value(&self) ->u32 {
+        self.0
+    }
+
+    /// проверка значения CapacityType
+    pub fn check(&self) ->Result<(), VendingError> {
+        match self.value() {
+            v if v > 0 => Ok(()),
+            _ => Err(VendingError::CapacityMachineZero),
         }
     }
 }
@@ -79,8 +121,24 @@ impl CapacityType {
 // тип количества продукции
 struct QuantityProdType(u32) ;
 
+// реализация методов для QuantityProdType
+impl QuantityProdType {
+    /// получить реальное количество продукции
+    pub fn value(&self) ->u32 {
+        self.0
+    }
+}
+
 // тип количества монет
 struct QuantityCoinType(u32) ;
+
+// реализация методов для QuantityCoinType
+impl QuantityCoinType {
+    /// получить реальное кол-во Coin
+    pub fn value(&self) -> u32 {
+        self.0
+    }
+}
 
 /// продукт (struct)
 struct Product {
@@ -90,15 +148,16 @@ struct Product {
 
 // реализация методов для Product
 impl Product {
+    
     /// создание нового Product
-    fn new(name: impl Into<String>, price: PriceType) ->Result<Self, String> {
-        if price.0 <= 0 {
-            return Err("Цена должна быть больше нуля".to_string()) ;
+    fn new(name: impl Into<String>, price: PriceType) ->Result<Self, VendingError> {
+        if price.value() <= 0 {
+            return Err(VendingError::ZeroPrice) ;
         }
         
         let name_val = name.into() ;  // Конвертирует этот тип в (обычно выведенный) входной тип.
         if name_val.len() == 0 {
-            return Err("наименование продукции пусто".to_string()) ;
+            return Err(VendingError::EmptyProductionName) ;
         }
 
         Ok(
@@ -108,21 +167,39 @@ impl Product {
             }
         )
     }
+
+    /// проверка содержимого Product
+    pub fn check(&self) ->Result<(), VendingError> {
+        match self.name.len() {
+            v_len if v_len != 0 => self.price.check(),
+            _ => Err(VendingError::EmptyProductionName)
+        }
+    }
+
+    /// получение имени Product
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// получение реальной цены
+    pub fn price(&self) ->u32 {
+        self.price.value()
+    }
+
 }
 
 // реализация Display для Product
 impl fmt::Display for Product {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{} - {}.{}$", 
-                self.name, 
-                self.price.value() / 100,
-                self.price.value() % 100,
+                self.name(), 
+                self.price() / 100,
+                self.price() % 100,
         )
     }
 }
 
 
-//quantity 
 
 /// Торговый автомат
 struct VendingMachine {
@@ -135,7 +212,7 @@ struct VendingMachine {
 // реализация методов торгового автоиата
 impl VendingMachine {
     /// создание нового автомата
-    pub fn new(capacity: CapacityType) -> Result<Self, String> {
+    pub fn new(capacity: CapacityType) -> Result<Self, VendingError> {
         match capacity.0 {  // проверка вместимости автомата
             c if c > 0 => 
                 Ok(
@@ -146,7 +223,7 @@ impl VendingMachine {
                         inserted_coins: HashMap::new(),
                     }
                 ),
-            _ => Err("Вместимость торгового автоиата должна быть больше 0".to_owned()),
+            _ => Err(VendingError::CapacityMachineZero),
         }
     }
     
@@ -157,9 +234,8 @@ fn main() {
     println!("c: {}", c) ;
 
     let v1 = 0 ;
-    let v = NonZeroU32::new(v1) ;
-
-    println!("{:?}", v) ;
+    //let v = NonZeroU32::new(v1) ;
+    //println!("{:?}", v) ;
 
     //println!("{:?}, {:?}", PriceType::new(0), PriceType(0).0) ;
     let v = PriceType::new(10i64 as u32) ;
