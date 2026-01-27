@@ -355,7 +355,7 @@ pub fn call_method_indirectly(value: &PartiallySealedTrait) {
 |--|--|--|--|
 |все методы переопределяемые|✅ (pub trait)|❌|❌|
 |некоторые методы переопределяемые|✅[signature-sealed default methods + pub fn to call them](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=fcdedb4be8f688e36dc07e16df28c080) + ["final methods" pre-RFC](https://internals.rust-lang.org/t/pre-rfc-final-trait-methods/18407)|✅partially-sealed / ["final methods" pre-RFC](https://internals.rust-lang.org/t/pre-rfc-final-trait-methods/18407)|❌|
-|трейт не может быть реализованным нижестоящим (никакие методы не могут быть переопределены)|✅ (supertrait sealed)|✅(как минимум один метод с запечатаной сигнатурой, не имеющий реализации по умолчанию)|✅(все методы сигнатурно запечатаны)|
+|трейт не может быть реализованным нижестоящим (никакие методы не могут быть переопределены)|✅ (запечатаны supertrait)|✅(как минимум один метод с запечатаной сигнатурой, не имеющий реализации по умолчанию)|✅(все методы сигнатурно запечатаны)|
 
 
 ## Task
