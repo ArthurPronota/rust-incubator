@@ -1,3 +1,4 @@
+// варианты тестов которые проходят
 use step_2_6::MyIteratorExt;
 
  fn main() {
