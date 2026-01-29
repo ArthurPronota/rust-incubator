@@ -1,3 +1,4 @@
+use core::error;
 use std::collections::HashMap;
 use std::ops::Add;
 //use std::collections::HashMap;
@@ -20,8 +21,8 @@ enum VendingError {
     #[error("The capacity of the vending machine must be greater than zero")]
     CapacityMachineZero,
 
-    #[error("The amount of product added must be greater than 0")]
-    ZeroAddProd,
+    #[error("The amount of product {0} must be greater than 0")]
+    ZeroAddProd(String),    // added    purchased
 
     #[error("The number of coins added must be greater than 0")]
     ZeroAddCoins,
@@ -32,6 +33,27 @@ enum VendingError {
     #[error("Overflow when loading a vending machine with: `{0}` units: {1}")]
     MachineOweflow(String, u32),
 
+    /// отсутствие продукции в автомате
+    #[error("Lack of product: {0} in the vending machine")]
+    ProdNotFound(String),
+
+    /// нехватка продукции
+    #[error("There are {0} units of {1} missing")]
+    ShortageProducts(u32, String),
+
+    #[error("The amount for the products has not been paid.")]
+    ZeroInsertedCoins,
+
+    /// Внесено недостаточно средств дляпокупки товара
+    #[error("Not enough funds to purchase {0} `{1}`. Add {2}.{3:02}$.")]
+    NotEnoughFunds(u32, String, u32, u32),
+
+    /// ошибка при расчёте сдачи
+    #[error("Error calculating change")]
+    ErrorCalculatingChange,
+
+    #[error("There is no {0} cent coins in the coin acceptor.")]
+    NotFoundCoinInInsertedCoins(u32),
 }
 
 
@@ -52,6 +74,18 @@ impl Coin {
     /// получить значение Coin
     pub fn value(&self) ->u32 {
         *self as u32    // необходимы traits: Clone, Copy
+    }
+
+    /// получить список все доступных монет в порядке убывания
+    pub fn get_all() -> [Coin; 6] {
+        [
+            Coin::Fifty,
+            Coin::Twenty,
+            Coin::Ten,
+            Coin::Five,
+            Coin::Two,
+            Coin::One,
+        ]
     }
 }
 
@@ -139,7 +173,7 @@ impl fmt::Display for CapacityType {
         write!(f, "Capacity: {}", self.value())
     }
 }
-// тип количества продукции
+/// тип количества продукции
 struct QuantityProdType(u32) ;
 
 // реализация методов для QuantityProdType
@@ -150,10 +184,10 @@ impl QuantityProdType {
     }
 
     /// проверка количества добавляемого продукта
-    pub fn check_add_quant(&self) ->Result<(), VendingError> {
+    pub fn check_add_quant(&self, prompt: &str) ->Result<(), VendingError> {
         match self.value() {
             q if q > 0 => Ok(()),
-            _ => Err(VendingError::ZeroAddProd)
+            _ => Err(VendingError::ZeroAddProd(prompt.to_owned()))
         }
     }
 }
@@ -167,7 +201,7 @@ impl Add<QuantityProdType> for u32 {
     }
 }
 
-// тип количества монет
+/// тип количества монет
 struct QuantityCoinType(u32) ;
 
 // реализация методов для QuantityCoinType
@@ -208,7 +242,7 @@ impl Product {
         }
     }
 
-    // получить реальное наименование Product
+    /// получить реальное наименование Product
     pub fn name(&self) ->&str {
         &self.0
     }
@@ -222,19 +256,6 @@ impl Product {
     }
 
 }
-
-/*
-// реализация Display для Product
-impl fmt::Display for Product {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} - {}.{}$", 
-                self.name(), 
-                self.price() / 100,
-                self.price() % 100,
-        )
-    }
-}
- */
 
 // реализация Display для Product
 impl fmt::Display for Product {
@@ -302,7 +323,7 @@ impl VendingMachine {
         }
 
         // проверка количества продукции
-        if let Err(err) = quant_prod.check_add_quant() {
+        if let Err(err) = quant_prod.check_add_quant("added") {
             return Err(err);
         }
 
@@ -368,6 +389,24 @@ impl VendingMachine {
         Ok(())
     }
 
+    /// перемещение монет из приёмника монет в монетохранилище
+    pub fn from_inserted_to_coins(&mut self) -> Result<(), VendingError> {
+        for (coin_in, quant_in) in &self.inserted_coins {
+            self
+                .coins
+                .entry(*coin_in)
+                .and_modify(|x| {
+                    *x = quant_in.value() + QuantityCoinType(x.value())
+                })
+                .or_insert(QuantityCoinType(quant_in.value()))
+                ;
+        }
+        // очистка монетоприёмника
+        self.inserted_coins = HashMap::new() ;
+
+        Ok(())
+    }
+
     /// добавить монету в приёмник монет
     pub fn insert_coin(&mut self, coin: Coin) /* -> Result<(), VendingError> */ {
         self
@@ -377,6 +416,29 @@ impl VendingMachine {
                 *x = 1 + QuantityCoinType(x.0) ;
             })
             .or_insert(QuantityCoinType(1)) ;
+    }
+
+    /// добавить несколько монеток одного номинала в приёмник монет
+    pub fn insert_some_coins(
+                &mut self,
+                coin: Coin,
+                quant: QuantityCoinType
+            ) ->Result<(), VendingError> 
+    {
+        // проверка количества вставленных монет
+        if let Err(err) = quant.check_add() {
+            return Err(err);
+        }
+
+        self
+            .coins
+            .entry(coin)
+            .and_modify(|x| {
+                *x = quant.value() + QuantityCoinType(x.0) ;
+            })
+            .or_insert(QuantityCoinType(1)) ;
+
+        Ok(())
     }
 
     /// получить сумму (cents) внесённую за покупку
@@ -405,7 +467,214 @@ impl VendingMachine {
     pub fn clear_inserted_coins(&mut self) {
         self.inserted_coins = HashMap::new() ;
     }
+
+    /// списание продукции
+    pub fn issuance_products(
+                &mut self,
+                prod: Product,
+                quant_prod: QuantityProdType
+            ) ->Result<(), VendingError> 
+    {
+        // проверка списываемого количества продукции
+        if let Err(err) = quant_prod.check_add_quant("purchased") {
+            return Err(err);
+        }
+
+        match self
+                .products
+                .get_mut(&prod) {
+            Some((price, quant_exists)) => {
+                if quant_exists.value() < quant_prod.value() {
+                    return Err(
+                            VendingError::ShortageProducts(
+                                quant_prod.value() - quant_exists.value(),
+                                prod.name().to_owned()
+                            )
+                        );
+                } else if quant_exists.value() == quant_prod.value() {
+                    if self.products.remove(&prod).is_none() {
+                        return Err(
+                            VendingError::ProdNotFound(prod.name().to_owned())
+                        ) ;
+                    }
+                } else {
+                    *quant_exists = QuantityProdType(quant_prod.value() - quant_exists.value()) ;
+                }
+            },
+            None => return Err(
+                            VendingError::ProdNotFound(prod.name().to_owned())
+                        ),
+        }
+
+        Ok(())
+    }
+
+    /// расчёт сдачи
+    fn change_calculation(&mut self, need_sum: &QuantityCoinType) ->Result<(), VendingError> {
+
+        // проверка параметров необъодимой суммы
+        if let Err(err) = need_sum.check_add() {
+            return Err(err);
+        }
+
+        // получить реальную сумму
+        let mut need_sum_real = need_sum.value() ;
+
+        // вставленные coins задействованные в сдаче
+        let mut inserted_coin = HashMap::<Coin, QuantityCoinType>::new() ;
+        // coins в монетохранилище задействованные в сдаче
+        let mut exists_coin = HashMap::<Coin, QuantityCoinType>::new() ;
+
+        for coin in &Coin::get_all() {
+            // перебор coins из монетоприёмника
+            if let Some(quant_coin) = self.inserted_coins.get(coin) {
+                for _ in 0..quant_coin.value() {
+                    if coin.value() >= need_sum_real {
+                        inserted_coin
+                            .entry(*coin)
+                            .and_modify(|q| 
+                                *q = QuantityCoinType(q.value() + 1)
+                            )
+                            .or_insert(QuantityCoinType(1)) ;
+                        need_sum_real -= coin.value() ;
+                    }
+
+                    if need_sum_real == 0 {
+                        break;
+                    }                    
+                }
+            }
+
+            // перебор coins из монетохранилища
+            if let Some(quant_coin) = self.coins.get(coin) {
+                for _ in 0..quant_coin.value() {
+                    if coin.value() >= need_sum_real {
+                        exists_coin
+                            .entry(*coin)
+                            .and_modify(|q| {
+                                *q = QuantityCoinType(q.value() + 1) ;
+                            })
+                            .or_insert(QuantityCoinType(1)) ;
+                        need_sum_real -= coin.value() ;
+                    }
+
+                    if need_sum_real == 0 {
+                        break;
+                    }
+                }
+            }
+        }
+
+        // контроль расчётасдачи
+        if need_sum_real != 0 {
+            return Err(VendingError::ErrorCalculatingChange) ;
+        }
+
+        // коррекция inserted_coin
+        for (coin, quant) in &inserted_coin {
+            match self.coins.get(coin) {
+                Some(q) => {
+                    
+                },
+                None => {
+                    return Err(VendingError::NotFoundCoinInInsertedCoins(coin.value())) ;
+                },
+            }
+        }
+
+
+        Ok(())
+    }
   
+    /// покупка продукции
+    pub fn purchase(
+                &mut self,
+                prod: Product,
+                quant_prod: QuantityProdType,
+                coins: HashMap<Coin, QuantityCoinType>
+            ) ->Result<(), VendingError> {
+
+        // проверка параметров продукции
+        if let Err(err) = prod.check() {
+            return Err(err);
+        }
+
+        // проверка количества покупаемой продукции
+        if let Err(err) = quant_prod.check_add_quant("purchased") {
+            return Err(err);
+        }
+
+        // проверка количества вставляемых монет
+        for (_, quant_coin) in &coins {
+            if let Err(err ) = quant_coin.check_add() {
+                return Err(err)
+            }
+        }
+
+        // внесение монет
+        for (coin, quant_coin) in coins {
+            if let Err(err) = self.insert_some_coins(coin, quant_coin) {
+                return Err(err);
+            }
+        }
+
+        // проверка внесена ли сумма за продукцию
+        if self.total_inserted() == 0 {
+            return Err(VendingError::ZeroInsertedCoins);
+        }
+
+        // проверка наличия продукции в автомате
+        match self.products.get(&prod) {
+            Some((price, quant_exists)) => {
+                // проверка доступного количества продукции
+                if quant_exists.value() < quant_prod.value() {
+                    return Err(
+                            VendingError::ShortageProducts(
+                                quant_prod.value() - quant_exists.value(),
+                                prod.name().to_owned()
+                            )
+                        );
+                }
+                // определение необходимой суммы
+                let need_sum = quant_prod.value() * price.value() ;
+
+                if need_sum > self.total_inserted() {   // внесено мало монет
+                    // расчёт недостающей суммы
+                    let delt_sum = need_sum - self.total_inserted() ;
+                    return Err(
+                            VendingError::NotEnoughFunds(
+                                quant_prod.value(),
+                                prod.name().to_owned(),
+                                delt_sum / 100,
+                                delt_sum % 100,
+                            )
+                        );
+                } 
+                
+                // нужна сдача
+                if need_sum < self.total_inserted() {
+
+
+
+                }
+
+                // списание (выдача) продукции
+                if let Err(err) = self.issuance_products(prod, quant_prod) {
+                    return Err(err);
+                }
+
+                // перенесение денег из монетоприёмника в хранилище монет
+                if let Err(err) = self.from_inserted_to_coins() {
+                    return Err(err);
+                }                
+
+            },
+            None => return Err(VendingError::ProdNotFound(prod.name().to_owned())),
+        }
+
+
+        Ok(())
+    }
 
 }
 
