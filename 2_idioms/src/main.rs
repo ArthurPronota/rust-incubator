@@ -59,7 +59,8 @@ enum VendingError {
 
 /// перечень допустимых монет
 #[derive(Clone, Copy, Debug)]
-#[derive(Eq, Hash, PartialEq)]
+//#[derive(Eq, Hash, PartialEq)]
+#[derive(Hash, PartialEq, Eq, PartialOrd, Ord)]
 enum Coin {
     One = 1,
     Two = 2,
@@ -201,7 +202,9 @@ impl Add<QuantityProdType> for u32 {
     }
 }
 
+
 /// тип количества монет
+#[derive(PartialEq, Eq, PartialOrd, Ord)]
 struct QuantityCoinType(u32) ;
 
 // реализация методов для QuantityCoinType
@@ -572,11 +575,19 @@ impl VendingMachine {
 
         // коррекция inserted_coin
         for (coin, quant) in &inserted_coin {
-            match self.coins.get(coin) {
+            match self.coins.get_mut(coin) {
                 Some(q) => {
-                    
+                    if q == quant {
+                        if self.coins.remove(coin).is_none() {
+                            return Err(VendingError::NotFoundCoinInInsertedCoins(coin.value()));
+                        }
+                    } else if *q > *quant {
+                        *q = QuantityCoinType(q.value() - quant.value()) ;
+                    } else {
+
+                    }
                 },
-                None => {
+                None => {   // не существует монет нужного номинала в монетоприёмнике
                     return Err(VendingError::NotFoundCoinInInsertedCoins(coin.value())) ;
                 },
             }
