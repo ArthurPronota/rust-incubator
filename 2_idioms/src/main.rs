@@ -330,16 +330,6 @@ impl Add<QuantityCoinType> for u32 {
     }
 }
 
-/*
-// реализация Sub (minus) для QuantityCoinType
-impl Sub for QuantityCoinType {
-    type Output = QuantityCoinType;
-    fn sub(self, rhs: Self) -> Self::Output {
-        QuantityCoinType(self.0 - rhs.0)
-    }
-}
- */
-
 /// продукт (struct)
 struct Product(String) ;
 
@@ -401,7 +391,7 @@ struct VendingMachine {
     capacity:       CapacityType,    // вместимость торгового автомата (штуки)
     inserted_coins: HashMap<Coin, QuantityCoinType>,    // монеты внесённые за покупку
     change:         HashMap<Coin, QuantityCoinType>,    // сдача
-    prod_out:       HashMap<Product, QuantityProdType>, // выдача продукции
+    prod_out:       HashMap<Product, QuantityProdType>, // выдача купленной продукции
 }
 
 // реализация методов торгового автоиата
@@ -434,10 +424,18 @@ impl VendingMachine {
     fn clear_prod_out(&mut self) {
         self.prod_out = HashMap::new() ;
     }
+
+    /// очистка prod_out & change
+    fn clear_prod_out_and_change(&mut self) {
+        self.clear_change();
+        self.clear_prod_out();
+    }
     
     /// определить capacity автомата
     pub fn define_capacity(&mut self, cap: CapacityType) ->Result<(), VendingError> {
         
+        self.clear_prod_out_and_change() ;
+
         // проверка нового capacity
         if let Err(err) = cap.check() {
             return Err(err);
@@ -454,6 +452,8 @@ impl VendingMachine {
                 price: PriceType,
                 quant_prod: QuantityProdType
             ) ->Result<(), VendingError> {
+
+        self.clear_prod_out_and_change() ;
 
         // проверка параметров продукта
         if let Err(err) = prod.check() {
@@ -474,7 +474,8 @@ impl VendingMachine {
         let tot_prods = self.total_products() ;
         if tot_prods >= self.capacity.value() {
             return Err(VendingError::MachineFull)  ;
-        } else if quant_prod.value() + tot_prods > self.capacity.value() {
+        } 
+        else if quant_prod.value() + tot_prods > self.capacity.value() {
             return Err(VendingError::MachineOweflow(prod.name().to_owned(), quant_prod.value()));
         }
 
@@ -513,6 +514,8 @@ impl VendingMachine {
                 coins: HashMap<Coin, QuantityCoinType>
             ) ->Result<(), VendingError> {
 
+        self.clear_prod_out_and_change() ;
+
         for (coin, quantity) in coins {
             // проверка количества добавляемых монет
             if let Err(err) = quantity.check_add() {
@@ -533,7 +536,7 @@ impl VendingMachine {
     }
 
     /// перемещение монет из приёмника монет в монетохранилище
-    pub fn from_inserted_to_coins(&mut self) -> Result<(), VendingError> {
+    fn from_inserted_to_coins(&mut self) -> Result<(), VendingError> {
         for (coin_in, quant_in) in &self.inserted_coins {
             self
                 .coins
@@ -551,7 +554,10 @@ impl VendingMachine {
     }
 
     /// добавить монету в приёмник монет
-    pub fn insert_coin(&mut self, coin: Coin) /* -> Result<(), VendingError> */ {
+    pub fn insert_coin(&mut self, coin: Coin) {
+        
+        self.clear_prod_out_and_change() ;
+
         self
             .coins
             .entry(coin)
@@ -568,6 +574,8 @@ impl VendingMachine {
                 quant: QuantityCoinType
             ) ->Result<(), VendingError> 
     {
+        self.clear_prod_out_and_change() ;
+
         // проверка количества вставленных монет
         if let Err(err) = quant.check_add() {
             return Err(err);
@@ -805,10 +813,7 @@ impl VendingMachine {
                 coins: HashMap<Coin, QuantityCoinType>
             ) ->Result<(), VendingError> {
 
-        // очистка сдачи
-        self.clear_change() ;
-        // очистка выдачи продукции
-        self.clear_prod_out() ;
+        self.clear_prod_out_and_change() ;
 
         // проверка параметров продукции
         if let Err(err) = prod.check() {
