@@ -36,6 +36,7 @@ enum VendingError {
     #[error("There are {0} units of {1} missing")]
     ShortageProducts(u32, String),
 
+    /// не внесены coins за продукцию 
     #[error("The amount for the products has not been paid.")]
     ZeroInsertedCoins,
 
@@ -47,6 +48,7 @@ enum VendingError {
     #[error("Error calculating change")]
     ErrorCalculatingChange,
 
+    /// не хватает  монет в монетоприймнике
     #[error("There is no {0} cent coins in the coin acceptor.")]
     NotFoundCoinInInsertedCoins(u32),
 }
