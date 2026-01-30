@@ -48,7 +48,7 @@ enum VendingError {
     #[error("Error calculating change")]
     ErrorCalculatingChange,
 
-    /// не хватает  монет в монетоприймнике
+    /// не хватает монет в монетоприймнике
     #[error("There is no {0} cent coins in the coin acceptor.")]
     NotFoundCoinInInsertedCoins(u32),
 }
