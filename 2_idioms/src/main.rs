@@ -7,24 +7,31 @@ use thiserror::Error;   // для  #[error(...)]
 /// Ошибки торгового автомата
 #[derive(Error, Debug)]
 enum VendingError {
+    /// нулевая цена
     #[error("The price must be greater than zero")]
     ZeroPrice,
 
+    /// пустое нпзвание продукции
     #[error("The product name is empty")]
     EmptyProductionName,
 
+    /// ёмкость автомата 0
     #[error("The capacity of the vending machine must be greater than zero")]
     CapacityMachineZero,
 
+    /// количество продукции должно быть > 0
     #[error("The amount of product {0} must be greater than 0")]
     ZeroAddProd(String),    // added    purchased
 
+    /// количество добавленныз coins должно быть юольше 0
     #[error("The number of coins added must be greater than 0")]
     ZeroAddCoins,
 
+    /// автомат переполнен
     #[error("The vending machine is full and cannot be loaded with new products.")]
     MachineFull,
 
+    /// переполнение при загрузке машины продукцией
     #[error("Overflow when loading a vending machine with: `{0}` units: {1}")]
     MachineOweflow(String, u32),
 
