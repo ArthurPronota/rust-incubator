@@ -1,5 +1,26 @@
 use std::{cmp::Ordering, env, io};
 
+fn get_secret_number() -> u32 {
+    let secret_number = env::args()
+        .skip(1)
+        .take(1)
+        .last()
+        .expect("No secret number is specified");
+    secret_number
+        .trim()
+        .parse()
+        .ok()
+        .expect("Secret number is not a number")
+}
+
+fn get_guess_number() -> Option<u32> {
+    let mut guess = String::new();
+    io::stdin()
+        .read_line(&mut guess)
+        .expect("Failed to read line");
+    guess.trim().parse().ok()
+}
+
 fn main() {
     println!("Guess the number!");
 
@@ -24,25 +45,4 @@ fn main() {
             }
         }
     }
-}
-
-fn get_secret_number() -> u32 {
-    let secret_number = env::args()
-        .skip(1)
-        .take(1)
-        .last()
-        .expect("No secret number is specified");
-    secret_number
-        .trim()
-        .parse()
-        .ok()
-        .expect("Secret number is not a number")
-}
-
-fn get_guess_number() -> Option<u32> {
-    let mut guess = String::new();
-    io::stdin()
-        .read_line(&mut guess)
-        .expect("Failed to read line");
-    guess.trim().parse().ok()
 }
