@@ -86,32 +86,30 @@ mod hash_spec {
 > _Проверка свойств_ — это система тестирования кода путем проверки того, выполняются ли определенные свойства его выходных данных или поведения для всех входных данных. Эти входные данные генерируются автоматически, и, что очень важно, при обнаружении неработающего входного значения, оно автоматически сводится к _минимальному_ тестовому случаю.
 
 
-[Rust] ecosystem has quite good [`proptest`] and [`quickcheck`] crates, which provide tools and primitives for [property testing][21].
+Экосистема [Rust] имеет довольно хорошие крейты [`proptest`] и [`quickcheck`], которые предоставляют инструменты и примитивы для [тестирования свойств][21].
 
-To better understand and be familiar with [property testing][21] in [Rust], read through:
+Чтобы лучше понять и ознакомиться с [тестированием свойств][21] в [Rust], прочтите:
 - [`proptest` crate description][`proptest`]
 - [`quickcheck` crate description][`quickcheck`]
 - [Proptest Book][22]
 
 
 
+## Тестирование на невалидных данных (Fuzzing)
 
-## Fuzzing
+[Fuzzing][31] — это еще один метод тестирования, который включает в себя предоставление недопустимых, неожиданных или случайных данных в качестве входных данных для компьютерной программы. Он [действительно помогает][32] выявлять сбои программы и утечки памяти в крайних случаях.
 
-[Fuzzing][31] is another testing technique, which involves providing invalid, unexpected, or random data as inputs to a computer program. It [really helps][32] to spot program crashes and memory leaks in edge cases.
 
-[Rust] ecosystem has [several tools][33] for [fuzzing][31] at the moment. Most known are:
-- [`cargo-fuzz`] is a command-line wrapper for using [`libFuzzer`].
-- [afl.rs] allows to run [AFL (american fuzzy lop)][AFL] on code written in [Rust].
-- [`honggfuzz`] is a security oriented fuzzer with powerful analysis options, which supports evolutionary, feedback-driven fuzzing based on code coverage (software- and hardware-based).
+В экосистеме [Rust] на данный момент есть [несколько инструментов][33] для [Fuzzing][31]. Наиболее известные из них:
+- [`cargo-fuzz`] является оболочкой командной строки для использования [`libFuzzer`].
+- [afl.rs] позволяет запускать [AFL (американский нечеткий алгоритм - american fuzzy lop)][AFL] на коде, написанном на [Rust].
+— [`honggfuzz`] — это ориентированный на безопасность fuzzer с мощными возможностями анализа, поддерживающий эволюционный fuzzing на основе обратной связи и анализа покрытия кода (программного и аппаратного обеспечения).
 
-To better understand and be familiar with [fuzzing][31] in [Rust], read through:
+Чтобы лучше понять и освоить [fuzzing][31] в [Rust], прочтите:
 - [Rust Fuzz Book][34]
 - [Official `cargo-fuzz` crate docs][`cargo-fuzz`]
 - [Official `honggfuzz` crate docs][`honggfuzz`]
 - [Adrian Taylor: Comparative fuzzing parallel Rust tools][35]
-
-
 
 
 ## More reading
