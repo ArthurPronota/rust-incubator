@@ -96,6 +96,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 - [ ] [3. Common ecosystem][Step 3] (2 days, after all sub-steps)
     - [ ] [Шаг 3.1: Тестирование и имитация][Step 3.1] (1 day)
         - [`Что такое стиль TDD? Что такое стиль BDD? В чём заключается основной акцент в стиле BDD?`](https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem/3_1_testing#%D1%87%D1%82%D0%BE-%D1%82%D0%B0%D0%BA%D0%BE%D0%B5-%D1%81%D1%82%D0%B8%D0%BB%D1%8C-tdd-%D1%87%D1%82%D0%BE-%D1%82%D0%B0%D0%BA%D0%BE%D0%B5-%D1%81%D1%82%D0%B8%D0%BB%D1%8C-bdd-%D0%B2-%D1%87%D1%91%D0%BC-%D0%B7%D0%B0%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D0%B5%D1%82%D1%81%D1%8F-%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%BD%D0%BE%D0%B9-%D0%B0%D0%BA%D1%86%D0%B5%D0%BD%D1%82-%D0%B2-%D1%81%D1%82%D0%B8%D0%BB%D0%B5-bdd)
+        - [`Что такое mocking (имитация)? Когда она полезна?`](https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem/3_1_testing#%D1%87%D1%82%D0%BE-%D1%82%D0%B0%D0%BA%D0%BE%D0%B5-mocking-%D0%B8%D0%BC%D0%B8%D1%82%D0%B0%D1%86%D0%B8%D1%8F-%D0%BA%D0%BE%D0%B3%D0%B4%D0%B0-%D0%BE%D0%BD%D0%B0-%D0%BF%D0%BE%D0%BB%D0%B5%D0%B7%D0%BD%D0%B0)
     - [ ] [3.2. Declarative and procedural macros][Step 3.2] (1 day)
     - [ ] [3.3. Date and time][Step 3.3] (1 day)
     - [ ] [3.4. Regular expressions and custom parsers][Step 3.4] (1 day)
