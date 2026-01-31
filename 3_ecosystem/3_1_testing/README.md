@@ -282,7 +282,12 @@ proptest! {
         let reversed: String = s.chars().rev().collect();
         let double_reversed: String = reversed.chars().rev().collect();
         // Свойство: двойной реверс возвращает оригинал
-        prop_assert_eq!(s, double_reversed);
+        // Это аналог assert_eq!, но специально адаптированный для proptest. 
+        // Если это условие не выполнится, библиотека начнет процесс шринкинга (shrinking).
+        prop_assert_eq!(
+            s, 
+            double_reversed
+        );
     }
 }
 ```
