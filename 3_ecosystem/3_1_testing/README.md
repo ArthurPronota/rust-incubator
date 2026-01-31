@@ -274,7 +274,11 @@ use proptest::prelude::*;   // Импортирует необходимые м�
 // По умолчанию он запустит этот тест 256 раз с разными входными данными.
 proptest! {
     #[test]
-    fn test_string_reversal(s in ".*") {
+    
+    fn test_string_reversal(
+            s in ".*"   // in ".*": Это стратегия генерации. Регулярное выражение ".*" говорит библиотеке генерировать абсолютно любые строки (пустые, с пробелами, спецсимволами, Unicode-эмодзи и т.д.).
+        ) 
+    {
         let reversed: String = s.chars().rev().collect();
         let double_reversed: String = reversed.chars().rev().collect();
         // Свойство: двойной реверс возвращает оригинал
