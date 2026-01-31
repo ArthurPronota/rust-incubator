@@ -129,13 +129,19 @@ For the implementation of a small [guessing game][51] in [this step's crate](src
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - What is TDD style? What is BDD style? Where is the essential accent of BDD?
-
+— [`Что такое стиль TDD? Что такое стиль BDD? В чём заключается основной акцент в стиле BDD?`]()
 
 - What is mocking? When is it useful?
 - What is property testing? How does it achieve its goals?
 - What is fuzzing? How does it differ from property testing?
 
+<hr>
 
+<h3>Что такое стиль TDD? Что такое стиль BDD? В чём заключается основной акцент в стиле BDD?</h3>
+
+
+
+<hr>
 
 
 [`cargo-fuzz`]: https://docs.rs/cargo-fuzz
