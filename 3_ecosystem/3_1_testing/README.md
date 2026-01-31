@@ -20,11 +20,11 @@ __Estimated time__: 1 day
 
 ## BDD style
 
-[BDD (behavior-driven development)][BDD] testing style implies that _test cases represent a program specification_, while _tests themselves prove the specification correctness_.
-
-Стиль тестирования [BDD] [разработка, управляемая поведением: behavior-driven development] подразумевает, что тестовые примеры представляют собой спецификацию программы, а сами тесты доказывают корректность спецификации.
+Стиль тестирования [BDD] [разработка, управляемая поведением: behavior-driven development] подразумевает, _что тестовые примеры представляют собой спецификацию программы_, _а сами тесты доказывают корректность спецификации_.
 
 While [Rust] ecosystem has [some BDD testing style crates][11] (the most mature one is [`cucumber`] crate), it's not a requirement to use them to follow the [BDD] style (as they may be too complex for some trivial cases, like [unit testing][12]). There is nothing preventing you from following [BDD] style in usual [Rust] tests. So, instead of:
+
+
 ```rust
 #[cfg(test)]
 mod tests {
