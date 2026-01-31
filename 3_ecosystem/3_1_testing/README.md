@@ -118,8 +118,6 @@ mod hash_spec {
 - [Joshua Mo: Everything you need to know about testing in Rust][62]
 
 
-
-
 ## Task
 
 For the implementation of a small [guessing game][51] in [this step's crate](src/main.rs) provide all possible tests you're able to write.
@@ -129,8 +127,10 @@ For the implementation of a small [guessing game][51] in [this step's crate](src
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - What is TDD style? What is BDD style? Where is the essential accent of BDD?
+
+
 - What is mocking? When is it useful?
 - What is property testing? How does it achieve its goals?
 - What is fuzzing? How does it differ from property testing?
