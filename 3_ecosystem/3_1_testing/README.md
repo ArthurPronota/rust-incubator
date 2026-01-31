@@ -132,6 +132,8 @@ For the implementation of a small [guessing game][51] in [this step's crate](src
 — [`Что такое стиль TDD? Что такое стиль BDD? В чём заключается основной акцент в стиле BDD?`](#%D1%87%D1%82%D0%BE-%D1%82%D0%B0%D0%BA%D0%BE%D0%B5-%D1%81%D1%82%D0%B8%D0%BB%D1%8C-tdd-%D1%87%D1%82%D0%BE-%D1%82%D0%B0%D0%BA%D0%BE%D0%B5-%D1%81%D1%82%D0%B8%D0%BB%D1%8C-bdd-%D0%B2-%D1%87%D1%91%D0%BC-%D0%B7%D0%B0%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D0%B5%D1%82%D1%81%D1%8F-%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%BD%D0%BE%D0%B9-%D0%B0%D0%BA%D1%86%D0%B5%D0%BD%D1%82-%D0%B2-%D1%81%D1%82%D0%B8%D0%BB%D0%B5-bdd)
 
 - What is mocking? When is it useful?
+— [`Что такое mocking (имитация)? Когда она полезна?`]()
+
 - What is property testing? How does it achieve its goals?
 - What is fuzzing? How does it differ from property testing?
 
@@ -181,6 +183,9 @@ TDD — это цикл разработки через тестирование
 
 <hr>
 
+<h4>Что такое mocking (имитация)? Когда она полезна?</h4>
+
+<hr>
 
 [`cargo-fuzz`]: https://docs.rs/cargo-fuzz
 [`cucumber`]: https://docs.rs/cucumber
