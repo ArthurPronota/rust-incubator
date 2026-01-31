@@ -57,17 +57,17 @@ mod hash_spec {
 ```
 Это делает тесты более детализированными (и, следовательно, позволяет выявлять более значимые ошибки в тестах), а цели тестирования становятся более понятными для читателей.
 
-## Mocking
+## Mocking (имитация)
 
-[Rust] ecosystem has [enough solutions][1] for [mocking][41], some of them are quite mature.
+Экосистема [Rust] имеет [достаточно решений][1] для [имитации][41], некоторые из них достаточно зрелые.
 
-The most interested one is [`mockiato`] crate at the moment, as is quite ergonomic in use and supports stable [Rust]. [`unimock`] crate works in the very similar way, but supports supertraits, as uses the single `Unimock` type for mocking. [`faux`] and [`mry`] crates are focused on struct mocking (instead of traits).
+В данный момент наиболее интересным является крейт [`mockiato`], поскольку он достаточно удобен в использовании и поддерживает стабильный [Rust]. Крейт [`unimock`] работает очень похожим образом, но поддерживает супертрейты, так как использует единственный тип `Unimock` для имитации объектов. Крейты [`faux`] и [`mry`] ориентированы на имитацию структур (вместо трейтов).
 
-Additionally, [`mockito`] and [`wiremock`] crates should be mentioned as a quite useful one for HTTP testing.
+Кроме того, следует упомянуть крейты [`mockito`] и [`wiremock`], которые весьма полезны для тестирования HTTP-трафика.
 
-The most powerful, however, is [`mockall`] crate. See [this overview][43] for more details.
+Однако самым мощным является ящик [`mockall`]. Подробнее см. [этот обзор][43].
 
-To better understand and be familiar with [mocking][41] in [Rust], read through:
+Чтобы лучше понять и ознакомиться с [mocking][41] в [Rust], прочтите:
 - [Jorge Ortiz-Fuentes: Rust unit testing: test doubles & stubs][46]
 - [Alan Somers: Rust Mock Shootout!][43]
 - [Oduah Chigozie: Mocking in Rust: Mockall and alternatives][45]
@@ -79,11 +79,12 @@ To better understand and be familiar with [mocking][41] in [Rust], read through:
 
 
 
-## Property testing
+## Тестирование свойств (Property testing)
 
-[Property testing][21] is another testing paradigm for considering. In a nutshell, it can be explained in the following way:
+[Тестирование свойств][21] — это еще одна парадигма тестирования, которую следует рассмотреть. Вкратце, ее можно объяснить следующим образом:
 
-> _Property testing_ is a system of testing code by checking that certain properties of its output or behaviour are fulfilled for all inputs. These inputs are generated automatically, and, critically, when a failing input is found, the input is automatically reduced to a _minimal_ test case.
+> _Проверка свойств_ — это система тестирования кода путем проверки того, выполняются ли определенные свойства его выходных данных или поведения для всех входных данных. Эти входные данные генерируются автоматически, и, что очень важно, при обнаружении неработающего входного значения, оно автоматически сводится к _минимальному_ тестовому случаю.
+
 
 [Rust] ecosystem has quite good [`proptest`] and [`quickcheck`] crates, which provide tools and primitives for [property testing][21].
 
