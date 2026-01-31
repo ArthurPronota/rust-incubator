@@ -120,10 +120,7 @@ mod hash_spec {
 
 ## Task
 
-For the implementation of a small [guessing game][51] in [this step's crate](src/main.rs) provide all possible tests you're able to write.
-
-
-
+Для реализации небольшой [игры в угадывание][51] в [библиотеке этого шага](src/main.rs) предоставьте все возможные тесты, которые вы можете написать.
 
 ## Questions
 
