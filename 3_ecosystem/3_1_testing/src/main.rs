@@ -1,25 +1,59 @@
+// cargo test doesnt_win  -- --nocapture
+
 use std::{cmp::Ordering, env, io};
 
+/// получить  секретное число
 fn get_secret_number() -> u32 {
-    let secret_number = env::args()
-        .skip(1)
-        .take(1)
-        .last()
+    
+    // получить агрумент командной строки являющийся secret number
+    let secret_number = env::args() // Возвращает аргументы с которыми была стартована эта программа, возвращает итератор
+        .skip(1)    // создаёт итератор что пропускает  1-ин элемент
+        .take(1)    // создаётитератор что уступает 1-ин элемент
+        .last() // взять последнее число из итератора
         .expect("No secret number is specified");
+
+    // преобразовать строку в u32
     secret_number
-        .trim()
-        .parse()
-        .ok()
+        .trim() // удаление пробельных символов
+        .parse()    // преобразует строку в u32
+        .ok() // преобразование Result<u32, ParseIntError > в Option<u32>
         .expect("Secret number is not a number")
 }
 
+/// получить секретный номер
 fn get_guess_number() -> Option<u32> {
+    
     let mut guess = String::new();
+
+    // считать строку из io::stdin
     io::stdin()
         .read_line(&mut guess)
         .expect("Failed to read line");
-    guess.trim().parse().ok()
+    
+    // преобразовать String в u32
+    guess
+        .trim()
+        .parse()
+        .ok()
 }
+
+/*
+#[cfg(test)]
+mod tests {
+    use super::* ;
+
+    #[test]
+    #[should_panic(expected = "Failed to read line")]
+    fn std_in_is_empty() {
+        use std::io ;
+
+        let input = "a\n";
+        let mut cursor = io::Cursor::new(input);
+
+        get_guess_number() ;
+    }
+}
+ */
 
 fn main() {
     println!("Guess the number!");
