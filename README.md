@@ -94,7 +94,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [`Что такое «запечатывание трейтов» в [Rust]? Когда это полезно?`](https://github.com/ArthurPronota/rust-incubator/tree/main/2_idioms/2_6_sealing#%D1%87%D1%82%D0%BE-%D1%82%D0%B0%D0%BA%D0%BE%D0%B5-%D0%B7%D0%B0%D0%BF%D0%B5%D1%87%D0%B0%D1%82%D1%8B%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D1%82%D1%80%D0%B5%D0%B9%D1%82%D0%BE%D0%B2-%D0%B2-rust-%D0%BA%D0%BE%D0%B3%D0%B4%D0%B0-%D1%8D%D1%82%D0%BE-%D0%BF%D0%BE%D0%BB%D0%B5%D0%B7%D0%BD%D0%BE)
         - [`Какие ограничения имеет механизм изоляции трейтов в [Rust]? Что он мог бы обеспечить, если бы поддерживался компилятором?`](https://github.com/ArthurPronota/rust-incubator/tree/main/2_idioms/2_6_sealing#%D0%BA%D0%B0%D0%BA%D0%B8%D0%B5-%D0%BE%D0%B3%D1%80%D0%B0%D0%BD%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D1%8F-%D0%B8%D0%BC%D0%B5%D0%B5%D1%82-%D0%BC%D0%B5%D1%85%D0%B0%D0%BD%D0%B8%D0%B7%D0%BC-%D0%B8%D0%B7%D0%BE%D0%BB%D1%8F%D1%86%D0%B8%D0%B8-%D1%82%D1%80%D0%B5%D0%B9%D1%82%D0%BE%D0%B2-%D0%B2-rust-%D1%87%D1%82%D0%BE-%D0%BE%D0%BD-%D0%BC%D0%BE%D0%B3-%D0%B1%D1%8B-%D0%BE%D0%B1%D0%B5%D1%81%D0%BF%D0%B5%D1%87%D0%B8%D1%82%D1%8C-%D0%B5%D1%81%D0%BB%D0%B8-%D0%B1%D1%8B-%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D0%B2%D0%B0%D0%BB%D1%81%D1%8F-%D0%BA%D0%BE%D0%BC%D0%BF%D0%B8%D0%BB%D1%8F%D1%82%D0%BE%D1%80%D0%BE%D0%BC)
 - [ ] [3. Common ecosystem][Step 3] (2 days, after all sub-steps)
-    - [ ] [3.1. Testing and mocking][Step 3.1] (1 day)
+    - [ ] [Шаг 3.1: Тестирование и имитация][Step 3.1] (1 day)
     - [ ] [3.2. Declarative and procedural macros][Step 3.2] (1 day)
     - [ ] [3.3. Date and time][Step 3.3] (1 day)
     - [ ] [3.4. Regular expressions and custom parsers][Step 3.4] (1 day)

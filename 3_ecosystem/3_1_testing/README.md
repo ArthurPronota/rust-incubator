@@ -1,16 +1,16 @@
-Step 3.1: Testing and mocking
+Шаг 3.1: Тестирование и имитация
 =============================
 
 __Estimated time__: 1 day
 
 [Rust] testing ecosystem [is not huge, but has grown quite well][1], providing some interesting libraries and solutions.
+Экосистема тестирования [Rust] не огромна, [но довольно хорошо развилась][1], предоставляя некоторые интересные библиотеки и решения.
 
 
 
+## Встроенные возможности тестирования
 
-## Built-in testing capabilities
-
-[Rust] provides quite good built-in testing capabilities, which are very well described in the following articles:
+[Rust] предоставляет довольно хорошие встроенные возможности тестирования, которые очень хорошо описаны в следующих статьях:
 - [Rust Book: 11. Writing Automated Tests][2]
 - [Rust By Example: 21. Testing][3]
 - [Rust By Example: 12.3. Tests][4]
@@ -21,6 +21,8 @@ __Estimated time__: 1 day
 ## BDD style
 
 [BDD (behavior-driven development)][BDD] testing style implies that _test cases represent a program specification_, while _tests themselves prove the specification correctness_.
+
+Стиль тестирования [BDD] [разработка, управляемая поведением: behavior-driven development] подразумевает, что тестовые примеры представляют собой спецификацию программы, а сами тесты доказывают корректность спецификации.
 
 While [Rust] ecosystem has [some BDD testing style crates][11] (the most mature one is [`cucumber`] crate), it's not a requirement to use them to follow the [BDD] style (as they may be too complex for some trivial cases, like [unit testing][12]). There is nothing preventing you from following [BDD] style in usual [Rust] tests. So, instead of:
 ```rust
