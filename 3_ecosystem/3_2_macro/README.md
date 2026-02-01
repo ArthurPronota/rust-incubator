@@ -138,6 +138,8 @@ Provide two implementations: one via declarative macro and other one via procedu
 - [`Какие виды процедурных макросов существуют в [Rust]?`](#какие-виды-процедурных-макросов-существуют-в-rust)
 
 - What are common crates for implementing procedural macros in [Rust]? What responsibilities does each one have? Which are mandatory, which are not?
+- [`Какие существуют распространённые крейты для реализации процедурных макросов в [Rust]? Какие обязанности выполняет каждый из них? Какие из них обязательны, а какие нет?`]()
+
 - What are good practices for implementing procedural macros in [Rust]?
 
 <hr>
@@ -243,6 +245,9 @@ __Сводная таблица__
 
 <hr>
 
+<h3>Какие существуют распространённые крейты для реализации процедурных макросов в [Rust]? Какие обязанности выполняет каждый из них? Какие из них обязательны, а какие нет?</h3>
+
+<hr>
 
 [`BTreeMap`]: https://doc.rust-lang.org/std/collections/struct.BTreeMap.html
 [`darling`]: https://docs.rs/darling
