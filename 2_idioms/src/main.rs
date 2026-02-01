@@ -1,3 +1,19 @@
+/*
+    Ключевые структуры программы:
+        1) VendingError - Ошибки торгового автомата
+        2) Coin - перечень допустимых монет
+        3) PriceType - цена (cents)
+        4) CapacityType - вместимость торгового автомата
+        5) QuantityProdType - количества продукции
+        6) QuantityCoinType - количества монет
+        7) Product - продукт
+        8) VendingMachine - Торговый автомат
+    
+    Все необходимые методы реализованы для этих структур.
+
+    Запуск программы: cargo run
+
+*/
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::ops::Add;
@@ -170,8 +186,7 @@ impl fmt::Display for PriceType {
 }
 
 
-// вместимость торгового автомата
-//#[derive(Eq)]
+/// вместимость торгового автомата
 struct CapacityType(u32) ;
 
 // реализация методов для PriceType
