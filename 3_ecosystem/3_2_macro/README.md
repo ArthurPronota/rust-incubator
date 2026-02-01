@@ -135,8 +135,9 @@ Provide two implementations: one via declarative macro and other one via procedu
 
 - [`Какие преимущества имеют декларативные макросы в [Rust] по сравнению с процедурными? Какие у них недостатки и ограничения?`](#какие-преимущества-имеют-декларативные-макросы-в-rust-по-сравнению-с-процедурными-какие-у-них-недостатки-и-ограничения)
 
-
 - Which kinds of procedural macros do exist in [Rust]?
+- [`Какие виды процедурных макросов существуют в [Rust]?`]()
+
 - What are common crates for implementing procedural macros in [Rust]? What responsibilities does each one have? Which are mandatory, which are not?
 - What are good practices for implementing procedural macros in [Rust]?
 
@@ -204,8 +205,14 @@ __Сводная таблица__
 
 __Итог__: Используйте декларативные макросы для простых повторяющихся задач и удобных оберток. Если вам нужно анализировать структуру полей или генерировать код на основе атрибутов — ваш выбор процедурные макросы.
 
+<hr>
+
+<h3>Какие виды процедурных макросов существуют в [Rust]?</h3>
+
+
 
 <hr>
+
 
 [`BTreeMap`]: https://doc.rust-lang.org/std/collections/struct.BTreeMap.html
 [`darling`]: https://docs.rs/darling
