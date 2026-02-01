@@ -130,8 +130,7 @@ Provide two implementations: one via declarative macro and other one via procedu
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- What are macros? Which problem do they solve?
-- [`Что такое макросы? Какую проблему они решают?`]()
+- [`Что такое макросы? Какую проблему они решают?`](#что-такое-макросы-какую-проблему-они-решают)
 
 
 - Which benefits do declarative macros have in [Rust] comparing to procedural ones? Which downsides and limitations?
