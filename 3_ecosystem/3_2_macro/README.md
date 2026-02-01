@@ -11,10 +11,10 @@ __Estimated time__: 1 day
 > - Функциональноподобные Макросы, которые выглядят как вызовы функций, но работают с токенами, указанными в качестве аргументов.
 
 
+## Декларативные макросы
 
-## Declarative macros
+Декларативные макросы представляют собой наиболее примитивную форму макросов в [Rust]. Они довольно ограничены в своих возможностях, а их синтаксис (который представляет собой выражение `match` на основе [DSL]) может стать довольно громоздким в сложных случаях.
 
-Declarative macros represent the most primitive form of macros in [Rust]. They are quite limited in their capabilities and their syntax (which represents a [DSL]-based `match` expression) may become quite cumbersome in complex cases.
 
 They are called _declarative_, because macro implementation represents a declaration of code transforming rules (you're declaring how your code will be transformed):
 ```rust
