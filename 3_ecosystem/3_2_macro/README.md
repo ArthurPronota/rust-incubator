@@ -1,4 +1,4 @@
-Step 3.2: Declarative and procedural macros
+Шаг 3.2: Декларативные и процедурные макросы
 ===========================================
 
 __Estimated time__: 1 day
