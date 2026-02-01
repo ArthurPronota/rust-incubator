@@ -141,6 +141,10 @@ cargo run "10"
 >
 > Запуск тестов: cargo test
 >
+> ```bash
+> cargo test
+> ```
+
 
 ## Questions
 
