@@ -142,6 +142,14 @@ Provide two implementations: one via declarative macro and other one via procedu
 
 <h3>Что такое макросы? Какую проблему они решают?</hr>
 
+В Rust макросы — это способ написания кода, который генерирует другой код. Это мощный инструмент метапрограммирования, который работает на этапе компиляции.
+
+Существует два основных типа:
+
+1. Декларативные (`Declarative`): `macro_rules!` — работают через сопоставление с шаблоном (как `vec![]` или `println!()`).
+2. Процедурные (`Procedural`): функции на Rust, которые принимают код как входные данные и возвращают модифицированный код (например, `#[derive(Serialize)]`).
+
+
 <hr>
 
 [`BTreeMap`]: https://doc.rust-lang.org/std/collections/struct.BTreeMap.html
