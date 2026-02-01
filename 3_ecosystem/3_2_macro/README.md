@@ -3,13 +3,12 @@
 
 __Estimated time__: 1 day
 
-[Rust] provides strong and convenient built-in capabilities for code generation in a form of [macros][1].
+[Rust] предоставляет мощные и удобные встроенные возможности для генерации кода в виде [макросов][1].
 
-> The term macro refers to a family of features in Rust: _declarative_ macros with `macro_rules!` and three kinds of _procedural_ macros:
-> - Custom `#[derive]` macros that specify code added with the `derive` attribute used on structs and enums
-> - Attribute-like macros that define custom attributes usable on any item
-> - Function-like macros that look like function calls but operate on the tokens specified as their argument
-
+> Термин macro обозначает семейство возможностей Rust: декларативные макросы с `macro_rules!` и три типа процедурных макросов:
+> - Пользовательские макросы `#[derive]`, указывающие код, добавляемый с помощью атрибута `derive`, используемого для структур и перечислений.
+> - Атрибуто подобные Макросы, которые определяют пользовательские атрибуты, используемые для любого элемента.
+> - Функциональноподобные Макросы, которые выглядят как вызовы функций, но работают с токенами, указанными в качестве аргументов.
 
 
 
