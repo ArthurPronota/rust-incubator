@@ -133,8 +133,7 @@ Provide two implementations: one via declarative macro and other one via procedu
 - [`Что такое макросы? Какую проблему они решают?`](#что-такое-макросы-какую-проблему-они-решают)
 
 
-- Which benefits do declarative macros have in [Rust] comparing to procedural ones? Which downsides and limitations?
-- [`Какие преимущества имеют декларативные макросы в [Rust] по сравнению с процедурными? Какие у них недостатки и ограничения?`]()
+- [`Какие преимущества имеют декларативные макросы в [Rust] по сравнению с процедурными? Какие у них недостатки и ограничения?`](#какие-преимущества-имеют-декларативные-макросы-в-rust-по-сравнению-с-процедурными-какие-у-них-недостатки-и-ограничения)
 
 
 - Which kinds of procedural macros do exist in [Rust]?
