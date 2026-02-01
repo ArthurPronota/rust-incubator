@@ -1,4 +1,6 @@
-// cargo test doesnt_win  -- --nocapture
+// заруск программы:
+// cargo run 1
+// где 1 - загаданное число
 
 use std::{cmp::Ordering, env, io};
 
@@ -34,26 +36,8 @@ fn get_guess_number() -> Option<u32> {
     guess
         .trim()
         .parse()
-        .ok()
+        .ok()   // преобразование Result<u32, ParseIntError> в Option<u32>
 }
-
-/*
-#[cfg(test)]
-mod tests {
-    use super::* ;
-
-    #[test]
-    #[should_panic(expected = "Failed to read line")]
-    fn std_in_is_empty() {
-        use std::io ;
-
-        let input = "a\n";
-        let mut cursor = io::Cursor::new(input);
-
-        get_guess_number() ;
-    }
-}
- */
 
 fn main() {
     println!("Guess the number!");
