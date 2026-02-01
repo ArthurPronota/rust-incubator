@@ -35,9 +35,9 @@ let v = vec![1, 2, 3];
 ```
 Преимущество декларативных макросов в том, что они [гигиеничны][11] (и поэтому имеют гораздо лучшую поддержку в [IDE]).
 
-Code generation purpose is not the only one declarative macros are used for. Quite often they are used for building abstractions and APIs too, because they all to implement much more ergonomic features than regular functions do: named arguments, [variadics][17], etc.
+Декларативные макросы используются не только для генерации кода. Довольно часто их применяют и для создания абстракций и API, поскольку они позволяют реализовать гораздо более эргономичные функции, чем обычные функции: именованные аргументы, [вариативные][17] и т. д.
 
-To better understand declarative macros' design, concepts, usage and features, read through:
+Для лучшего понимания дизайна, концепций, использования и особенностей декларативных макросов, ознакомьтесь со следующей информацией:
 - [Rust Book: 19.6. Macros: Declarative Macros with `macro_rules!` for General Metaprogramming][13]
 - [Rust By Example: 16. macro_rules!][14]
 - [The Little Book of Rust Macros][15]
@@ -47,9 +47,10 @@ To better understand declarative macros' design, concepts, usage and features, r
 
 
 
-## Procedural macros
+## Процедурные макросы
 
-Procedural macros represent much more powerful code generation tool. They are called _procedural_, because macro implementation represents a regular [Rust] code, which works directly with [AST] of transformed code (you're writing procedures which transform your code). Procedural macro __requires a separate `proc-macro = true` crate__ to be implemented in.
+Процедурные макросы представляют собой гораздо более мощный инструмент генерации кода. Они называются процедурными, потому что реализация макроса представляет собой обычный код [Rust], который работает непосредственно с [AST] преобразованного кода (вы пишете процедуры, которые преобразуют ваш код). Для реализации процедурного макроса __требуется отдельный crate `proc-macro = true`__.
+
 
 Procedural macros are [unhygienic][11], so implementing one you need to be careful to ensure that macro works in [as many contexts as possible][22].
 
