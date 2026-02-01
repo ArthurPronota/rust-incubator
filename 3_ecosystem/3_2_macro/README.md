@@ -16,8 +16,8 @@ __Estimated time__: 1 day
 Декларативные макросы представляют собой наиболее примитивную форму макросов в [Rust]. Они довольно ограничены в своих возможностях, а их синтаксис (который представляет собой выражение `match` на основе [DSL] 
 `Domain-specific language` - Предметно-ориентированный язык) может стать довольно громоздким в сложных случаях.
 
+Они называются _декларативными_, потому что реализация макросов представляет собой объявление правил преобразования кода (вы объявляете, как будет преобразован ваш код):
 
-They are called _declarative_, because macro implementation represents a declaration of code transforming rules (you're declaring how your code will be transformed):
 ```rust
 macro_rules! vec {
     ( $( $x:expr ),* ) => {
@@ -33,7 +33,7 @@ macro_rules! vec {
 
 let v = vec![1, 2, 3];
 ```
-The good part about declarative macros is that they are [hygienic][11] (and so, have much better [IDE]s support).
+Преимущество декларативных макросов в том, что они [гигиеничны][11] (и поэтому имеют гораздо лучшую поддержку в [IDE]).
 
 Code generation purpose is not the only one declarative macros are used for. Quite often they are used for building abstractions and APIs too, because they all to implement much more ergonomic features than regular functions do: named arguments, [variadics][17], etc.
 
