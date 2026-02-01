@@ -44,19 +44,18 @@ let v = vec![1, 2, 3];
 - [Rust Reference: 3.1. Macros By Example][16]
 - [Aurorans Solis: macros_rule!][18]
 
-
-
-
 ## Процедурные макросы
 
-Процедурные макросы представляют собой гораздо более мощный инструмент генерации кода. Они называются процедурными, потому что реализация макроса представляет собой обычный код [Rust], который работает непосредственно с [AST] преобразованного кода (вы пишете процедуры, которые преобразуют ваш код). Для реализации процедурного макроса __требуется отдельный crate `proc-macro = true`__.
+Процедурные макросы представляют собой гораздо более мощный инструмент генерации кода. Они называются процедурными, потому что реализация макроса представляет собой обычный код [Rust], который работает непосредственно с [AST] - (Abstract syntax tree) преобразованного кода (вы пишете процедуры, которые преобразуют ваш код). Для реализации процедурного макроса __требуется отдельный crate `proc-macro = true`__.
 
 
-Procedural macros are [unhygienic][11], so implementing one you need to be careful to ensure that macro works in [as many contexts as possible][22].
+Процедурные макросы [негигиеничны][11], поэтому при их реализации необходимо тщательно следить за тем, чтобы макрос работал [как можно больше контекстов][22].
 
-There are three kinds of procedural macros in [Rust] at the moment:
 
-- [`proc_macro` function-like macros][27], which usage looks like regular declarative macros usage, but they accept arbitrary tokens on input (while declarative ones don't), and are more powerful in general (can contain complex logic for generating simple code):
+В настоящее время в [Rust] существует три типа процедурных макросов:
+
+- [Функционально подобные макросы `proc_macro`][27], использование которых похоже на использование обычных декларативных макросов, но они принимают произвольные токены на входе (в отличие от декларативных) и, как правило, более мощные (могут содержать сложную логику для генерации простого кода):
+
     ```rust
     #[proc_macro]
     pub fn make_answer(_: TokenStream) -> TokenStream {
@@ -67,7 +66,7 @@ There are three kinds of procedural macros in [Rust] at the moment:
     make_answer!();
     ```
 
-- [`proc_macro_attribute` attribute macros][28], which allow to create custom [Rust attributes][25]:
+- [Атрибутные макросы `proc_macro_attribute`][28], которые позволяют создавать пользовательские [атрибуты Rust][25]:
     ```rust
     #[proc_macro_attribute]
     pub fn route(attr: TokenStream, item: TokenStream) -> TokenStream {
@@ -79,7 +78,7 @@ There are three kinds of procedural macros in [Rust] at the moment:
     fn index() {}
     ```
 
-- [`proc_macro_derive` derive macros][29], which allow to provide custom implementations for `#[derive(Trait)]` attribute:
+- [`proc_macro_derive` макросы производящие][29], которые позволяют предоставлять пользовательские реализации для атрибута `#[derive(Trait)]`:
     ```rust
     #[proc_macro_derive(AnswerFn)]
     pub fn derive_answer_fn(_: TokenStream) -> TokenStream {
