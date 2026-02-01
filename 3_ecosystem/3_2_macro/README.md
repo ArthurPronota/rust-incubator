@@ -124,8 +124,9 @@ Implement a `btreemap!` macro, which allows to create [`BTreeMap`] in an ergonom
 
 Provide two implementations: one via declarative macro and other one via procedural macro.
 
+Реализуйте макрос `btreemap!`, который позволит создавать [`BTreeMap`] эргономичным и декларативным способом (аналогично `vec!`).
 
-
+Предоставьте две реализации: одну с помощью декларативного макроса, а другую — с помощью процедурного макроса.
 
 ## Questions
 
