@@ -89,21 +89,21 @@ let v = vec![1, 2, 3];
     #[derive(AnswerFn)]
     struct Struct;
     ```
-    Idiomatically, `proc_macro_derive` should be used for _deriving trait implementations only_. For arbitrary functions generation it's better to go with `proc_macro_attribute`.
+    В идиоматическом плане `proc_macro_derive` следует использовать _только для генерации реализаций трейтов_. Для генерации произвольных функций лучше использовать `proc_macro_attribute`.
 
-[Rust] ecosystem has some well-know crates, which almost always are used for procedural macros' implementation:
-- [`syn`] crate represents an implementation of [Rust]'s [AST].
-- [`quote`] crate provides quasi-quoting, which allows to turn [Rust] syntax tree data structures into tokens of source code in an ergonomic and readable way.
-- [`proc-macro2`] crate provides unified [`proc_macro`] API across all [Rust] compiler versions and makes procedural macros unit-testable.
+В экосистеме [Rust] есть несколько хорошо известных библиотек, которые почти всегда используются для реализации процедурных макросов:
+- [`syn`] crate представляет собой реализацию [AST] языка [Rust].
+- [`quote`] crate предоставляет квази-цитирование, которое позволяет преобразовывать структуры данных синтаксического дерева [Rust] в токены исходного кода эргономичным и читаемым способом.
+- [`proc-macro2`] crate предоставляет унифицированный API [`proc_macro`] для всех версий компилятора [Rust] и делает процедурные макросы пригодными для модульного тестирования.
 
-Nowadays, these are backbone for writing a procedural macro implementation. Even though, developers mostly tend ot omit using [`syn`] for trivial cases (not requiring much [AST] parsing), as it [hits compilation times quite notably][30], or prefer to use simpler and less powerful [AST] parsing crates (like [`venial`] or [`unsynn`]).
+В настоящее время они являются основой для написания реализации процедурных макросов. Хотя разработчики, как правило, избегают использования [`syn`] в тривиальных случаях (не требующих сложного анализа [AST]), поскольку это [значительно увеличивает время компиляции][30], или предпочитают использовать более простые и менее мощные крейты для анализа [AST] (например, [`venial`] или [`unsynn`]).
 
-On top of them, more ecosystem crates may be used for having less boilerplate, better ergonomics and "batteries included". Most notable among them are:
-- [`darling`] crate, making declarative attribute parsing more straight-forward and ergonomic.
-- [`synstructure`] crate, providing helper types for matching against enum variants, and extracting bindings to each of the fields in the deriving struct or enum in a generic way.
-- [`synthez`] crate, providing [derive macros][29] for parsing [AST] (yeah, derive macros for derive macros!) and other helpful "batteries" for daily routine of procedural macro writing.
+Кроме того, для уменьшения количества лишнего оборудования, улучшения эргономики и включения батарей в комплектацию могут использоваться дополнительные контейнеры для экосистемы. Наиболее примечательными из них являются:
+- [`darling`] фреймворк, делающий декларативный анализ атрибутов более простым и эргономичным.
+- [`synstructure`] — это библиотека, предоставляющая вспомогательные типы для сопоставления с вариантами перечислений и извлечения привязок к каждому из полей в производной структуре или перечислении универсальным способом.
+- [`synthez`] фреймворк, предоставляющий [макросы вывода][29] для разбора [AST] (да, макросы вывода для макросов вывода!) и другие полезные «наборы» для ежедневной работы по написанию процедурных макросов.
 
-To better understand procedural macros' design, concepts, usage and features, read through:
+Для лучшего понимания дизайна, концепций, использования и особенностей процедурных макросов, ознакомьтесь со следующей информацией:
 - [Rust Book: 19.6. Macros: Procedural Macros for Generating Code from Attributes][23]
 - [Rust Reference: 3.2. Procedural Macros][26]
 - [Official `syn` crate docs][`syn`]
@@ -129,15 +129,21 @@ Provide two implementations: one via declarative macro and other one via procedu
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - What are macros? Which problem do they solve?
+- [`Что такое макросы? Какую проблему они решают?`]()
+
+
 - Which benefits do declarative macros have in [Rust] comparing to procedural ones? Which downsides and limitations?
 - Which kinds of procedural macros do exist in [Rust]?
 - What are common crates for implementing procedural macros in [Rust]? What responsibilities does each one have? Which are mandatory, which are not?
 - What are good practices for implementing procedural macros in [Rust]?
 
+<hr>
 
+<h3>Что такое макросы? Какую проблему они решают?</hr>
 
+<hr>
 
 [`BTreeMap`]: https://doc.rust-lang.org/std/collections/struct.BTreeMap.html
 [`darling`]: https://docs.rs/darling
