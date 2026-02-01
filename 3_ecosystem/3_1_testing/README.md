@@ -139,7 +139,7 @@ cargo run "10"
 >
 > Эти тесты расположены в файле tests/integration_test.rs
 >
-> Запуск тестов: cargo test
+> Запуск тестов:
 >
 > ```bash
 > cargo test
