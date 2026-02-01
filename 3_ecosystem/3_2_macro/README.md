@@ -135,8 +135,7 @@ Provide two implementations: one via declarative macro and other one via procedu
 
 - [`Какие преимущества имеют декларативные макросы в [Rust] по сравнению с процедурными? Какие у них недостатки и ограничения?`](#какие-преимущества-имеют-декларативные-макросы-в-rust-по-сравнению-с-процедурными-какие-у-них-недостатки-и-ограничения)
 
-- Which kinds of procedural macros do exist in [Rust]?
-- [`Какие виды процедурных макросов существуют в [Rust]?`]()
+- [`Какие виды процедурных макросов существуют в [Rust]?`](#какие-виды-процедурных-макросов-существуют-в-rust)
 
 - What are common crates for implementing procedural macros in [Rust]? What responsibilities does each one have? Which are mandatory, which are not?
 - What are good practices for implementing procedural macros in [Rust]?
