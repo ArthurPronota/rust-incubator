@@ -115,7 +115,7 @@ Prove your implementation correctness with tests.
 - [`Как библиотека [regex] достигает линейной временной сложности? Какой ценой?`](#как-библиотека-regex-достигает-линейной-временной-сложности-какой-ценой)
 
 - How to avoid regular expression recompilation in [Rust]? Why is it important?
-- [`Как избежать перекомпиляции регулярных выражений в [Rust]? Почему это важно?`]()
+- [`Как избежать перекомпиляции регулярных выражений в [Rust]? Почему это важно?`](#как-избежать-перекомпиляции-регулярных-выражений-в-rust-почему-это-важно)
 
 - Which are the common kinds of libraries for writing custom parses in [Rust]? Which benefits does each one have?
 - What advantages does libraries give for writing a custom parser? Are they mandatory? When does it make sense to avoid using a library for implementing a parser?
