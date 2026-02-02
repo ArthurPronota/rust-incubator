@@ -112,7 +112,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [`В чём заключается основное практическое различие между crates [`chrono`] и [`time`]?`](3_ecosystem/3_3_date_time#в-чём-заключается-основное-практическое-различие-между-crates-chrono-и-time)
         - [`Когда может быть полезен фреймворк [hifitime]?`](3_ecosystem/3_3_date_time#когда-может-быть-полезен-фреймворк-hifitime)
     - [ ] [Шаг 3.4: Регулярные выражения и пользовательские парсеры][Step 3.4] (1 day)
-    
+        - [`Как библиотека [regex] достигает линейной временной сложности? Какой ценой?`](3_ecosystem/3_4_regex_parsing#как-библиотека-regex-достигает-линейной-временной-сложности-какой-ценой)
     - [ ] [3.5. Collections and iterators][Step 3.5] (1 day)
     - [ ] [3.6. Serialization and deserialization][Step 3.6] (1 day)
     - [ ] [3.7. Randomness and cryptography][Step 3.7] (1 day)

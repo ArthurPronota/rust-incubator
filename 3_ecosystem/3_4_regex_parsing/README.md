@@ -112,8 +112,7 @@ Prove your implementation correctness with tests.
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- How does [`regex`] crate achieve linear time complexity? In what price?
-- [`Как библиотека [regex] достигает линейной временной сложности? Какой ценой?`]()
+- [`Как библиотека [regex] достигает линейной временной сложности? Какой ценой?`](#как-библиотека-regex-достигает-линейной-временной-сложности-какой-ценой)
 
 - How to avoid regular expression recompilation in [Rust]? Why is it important?
 - Which are the common kinds of libraries for writing custom parses in [Rust]? Which benefits does each one have?
@@ -123,7 +122,7 @@ Prove your implementation correctness with tests.
 
 ### Как библиотека [regex] достигает линейной временной сложности? Какой ценой?
 
-Крейт regex в Rust гарантирует линейную временную сложность \(O(m\times n)\), где \(m\) — длина регулярного выражения, а \(n\) — длина текста. Это достигается за счет использования детерминированных и недетерминированных конечных автоматов (DFA/NFA). 
+Крейт regex в Rust гарантирует линейную временную сложность \(O(m * n)\), где \(m\) — длина регулярного выражения, а \(n\) — длина текста. Это достигается за счет использования детерминированных и недетерминированных конечных автоматов (DFA/NFA). 
 
 <hr>
 
