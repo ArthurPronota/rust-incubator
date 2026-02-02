@@ -34,17 +34,23 @@ Prove your implementation correctness with additional tests. For tests reproduci
 
 
 
-# Questions
-
+## Questions
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - How does system clock and monotonic clock differ? What are use-cases for both?
+- [`Чем отличаются системные часы от монотонных? Для чего используются оба типа часов?`]()
 
 - Why is system clock is not reliable for measuring duration? What causes its drift?
 - What is the main practical difference between [`chrono`] and [`time`] crates?
 - When [`hifitime`] crate could be useful?
 
 <hr>
+
+### Чем отличаются системные часы от монотонных? Для чего используются оба типа часов?
+
+В Rust (и системном программировании в целом) различие между этими часами критично для надежности программы.
+
+#### 1. Системные часы (Wall Clock / Real Time)
 
 
 <hr>
