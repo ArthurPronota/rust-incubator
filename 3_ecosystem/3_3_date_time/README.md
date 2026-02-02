@@ -27,12 +27,9 @@ __Estimated time__: 1 day
 
 ## Task
 
-Provide implementations for `User::age()` and `User::is_adult()` methods in [this step's crate](src/main.rs).
+Предоставьте реализации методов `User::age()` и `User::is_adult()` в [в crate этого шага](src/main.rs).
 
-Prove your implementation correctness with additional tests. For tests reproducibility consider that "now time" is the date specified in the `NOW` constant.
-
-
-
+Подтвердите корректность вашей реализации с помощью дополнительных тестов. Для обеспечения воспроизводимости тестов учтите, что "текущее время" — это дата, указанная в константе `NOW`.
 
 ## Questions
 
