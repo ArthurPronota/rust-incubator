@@ -81,6 +81,9 @@ Prove your implementation correctness with additional tests. For tests reproduci
 |Основной метод|now()|now()|
 |Разница (duration_since)|Может вернуть Err|Всегда возвращает Duration|
 
+__Золотое правило Rust__: Если вам нужно измерить длительность (интервал) — используйте Instant. Если вам нужно сохранить момент в истории — используйте SystemTime.
+
+<hr>
 
 
 <hr>
