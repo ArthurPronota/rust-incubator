@@ -1,3 +1,5 @@
+//              Процедурная реализация макроса btreemap!
+
 /* Тип из стандартной библиотеки макросов.
    Представляет поток токенов, полученный компилятором на вход макроса.
    Это "сырые" токены, которые нужно разобрать.
@@ -63,8 +65,6 @@ impl Parse for MapEntry {
 // Основная функция макроса
 #[proc_macro]
 pub fn btreemap(input: TokenStream) -> TokenStream {
-    // Парсим входные данные как список пар, разделенных запятыми
-    // Punctuated автоматически обрабатывает завершающую запятую
 
     /* Парсим весь входной поток
        Разбирает последовательность MapEntry, разделенных запятыми
@@ -76,8 +76,14 @@ pub fn btreemap(input: TokenStream) -> TokenStream {
     /* Извлекаем ключи и значения
        Создаем итераторы по AST-узлам ключей и значений
     */
-    let keys = entries.iter().map(|e| &e.key);
-    let values = entries.iter().map(|e| &e.value);
+    let keys = 
+                entries
+                    .iter()
+                    .map(|e| &e.key);
+    let values = 
+                entries
+                    .iter()
+                    .map(|e| &e.value);
 
     // Генерируем код
     let expanded = quote! {
@@ -100,7 +106,8 @@ pub fn btreemap(input: TokenStream) -> TokenStream {
      */
 
     /* преобразование сгенерированного кода из промежуточного 
-       представления обратно в формат, понятный компилятору Rust.
+       proc_macro2::TokenStream представления обратно в формат, понятный 
+       компилятору Rust proc_macro::TokenStream.
     */
     TokenStream::from(expanded)
 }

@@ -26,6 +26,8 @@ fn main() {
     }
 
     {
+        // использование процедурной реализации макроса btreemap! 
+        // из src/lib.rs
         use step_3_2::btreemap;
 
         let map = btreemap!(
