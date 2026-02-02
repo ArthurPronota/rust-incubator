@@ -30,7 +30,8 @@ fn is_email(email: &str) -> bool {
 }
 ```
 
-To omit unnecessary performance penalty we should __compile regular expression once and reuse its compilation result__. This is easily achieved by using the [`once_cell`] crate both in global and/or local scopes:
+Чтобы избежать ненужных потерь производительности, следует __компилировать регулярное выражение один раз и повторно использовать результат его компиляции__. Этого легко добиться, используя крейт [`once_cell`] как в глобальной, так и в локальной областях видимости:
+
 ```rust
 static REGEX_EMAIL: Regex = once_cell::sync::Lazy::new(|| {
     Regex::new(".+@.+").unwrap()
@@ -41,22 +42,23 @@ fn is_email(email: &str) -> bool {
 }
 ```
 
-This may feel different with how [regular expressions][1] are used in other programming languages, because some of them implicitly cache compilation results and/or do not expose compilation API at all (like [PHP]). But if your background is a language like [Go] or [Java], this concept should be familiar to you.
+Возможно, это будет отличаться от того, как [regular expressions][1] используются в других языках программирования, поскольку некоторые из них неявно кэшируют результаты компиляции и/или вообще не предоставляют API компиляции (например, [PHP]). Но если вы знакомы с такими языками, как [Go] или [Java], то эта концепция должна быть вам знакома.
 
 
+## Пользовательские парсеры
 
+Если регулярные выражения [недостаточно мощные][2] для вашей задачи парсинга, то вам придётся писать собственный парсер. В экосистеме [Rust] есть [многочисленные][3] библиотеки, которые помогут в этом:
 
-## Custom parsers
-
-If regular expressions are [not powerful enough][2] for your parsing problem, then you are ended up with writing your own parser. [Rust] ecosystem has [numerous][3] crates to help with that:
 - [Parser combinators][4]:
-    - [`nom`] crate, nearly the most performant among others, and especially good for parsing binary stuff (byte/bit-oriented).
-    - [`chumsky`] crate, focusing on high-quality errors and ergonomics over performance.
-    - [`combine`] crate, inspired by the [Parsec] library in [Haskell].
-    - [`pom`] crate, providing [PEG][5] parser combinators created using operator overloading without macros.
-    - [`chomp`] crate, a fast [monadic][13]-style [parser combinator][4] library.
+    - [`nom`] крейт, один из самых производительных среди прочих, особенно хорош для анализа двоичных данных (побайтно-битовых).
+    - [`chumsky`] crate, ориентированный на высокое качество, ошибки и эргономику, а не на производительность.
+    - [`combine`] crate, вдохновленный библиотекой [Parsec] в [Haskell].
+    - [`pom`] crate, предоставляющий комбинаторы парсеров [PEG][5], созданные с использованием перегрузки операторов без макросов.
+    - [`chomp`] crate, быстрая библиотека [комбинатора парсеров][4] в стиле [monadic][13].
 - [Parser generators][12]:
     - [`peg`] crate, a simple yet flexible [parser generator][12] that makes it easy to write robust parsers, based on the [Parsing Expression Grammar][5] formalism.
+
+    
     - [`pest`] crate, with a focus on accessibility, correctness, and performance, using [PEG (parsing expression grammar)][5] as an input and deriving parser's code for it.
     - [`lalrpop`] crate, generating [LR(1) parser][6] code from custom grammar files.
     - [`parsel`] crate, a library for generating parsers directly from syntax tree node types.
