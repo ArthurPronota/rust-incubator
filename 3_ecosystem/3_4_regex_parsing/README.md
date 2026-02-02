@@ -116,8 +116,7 @@ Prove your implementation correctness with tests.
 
 - [`Как избежать перекомпиляции регулярных выражений в [Rust]? Почему это важно?`](#как-избежать-перекомпиляции-регулярных-выражений-в-rust-почему-это-важно)
 
-- Which are the common kinds of libraries for writing custom parses in [Rust]? Which benefits does each one have?
-- [`Какие библиотеки наиболее распространены для написания пользовательских парсеров на Rust? Какие преимущества у каждой из них?`]()
+- [`Какие библиотеки наиболее распространены для написания пользовательских парсеров на Rust? Какие преимущества у каждой из них?`](#какие-библиотеки-наиболее-распространены-для-написания-пользовательских-парсеров-на-rust-какие-преимущества-у-каждой-из-них)
 
 - What advantages does libraries give for writing a custom parser? Are they mandatory? When does it make sense to avoid using a library for implementing a parser?
 
