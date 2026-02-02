@@ -8,15 +8,16 @@ __Estimated time__: 1 day
 
 ## Regular expressions
 
-To operate with [regular expressions][1] there is the [`regex`] crate in [Rust] ecosystem, which is kinda a default choice to go with in most cases.
+Для работы с [регулярными выражениями][1] в экосистеме [Rust] существует crate [`regex`], который в большинстве случаев является своего рода выбором по умолчанию.
 
-> A Rust library for parsing, compiling, and executing regular expressions. Its syntax is similar to Perl-style regular expressions, but lacks a few features like look around and backreferences. In exchange, all searches execute in linear time with respect to the size of the regular expression and search text. Much of the syntax and implementation is inspired by [RE2].
+> Библиотека Rust для анализа, компиляции и выполнения регулярных выражений. Её синтаксис похож на синтаксис регулярных выражений в стиле Perl, но ей не хватает некоторых функций, таких как поиск по строкам и обратные ссылки. Взамен все поиски выполняются за линейное время относительно размера регулярного выражения и текста поиска. Большая часть синтаксиса и реализации вдохновлена ​​[RE2].
 
-If you need additional features (like look around and backreferences), consider using:
-- [`fancy-regex`] crate, building additional functionality on top of the [`regex`] crate.
-- [`pcre2`] crate, providing a safe high level Rust binding to [PCRE2] library.
-- [`hyperscan`] crate, wrapping a [Hyperscan] library.
 
+Если вам необходимы дополнительные функции (например, поиск информации и обратные ссылки), рассмотрите возможность использования:
+
+- [`fancy-regex`] — crate, расширяющий функциональность crate [`regex`].
+- [`pcre2`] crate, обеспечивающий безопасную высокоуровневую привязку Rust к библиотеке [PCRE2].
+- [`hyperscan`] crate, представляющий собой обертку для библиотеки [Hyperscan].
 
 ### Compile only once
 
