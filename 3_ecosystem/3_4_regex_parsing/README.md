@@ -1,4 +1,4 @@
-Step 3.4: Regular expressions and custom parsers
+Шаг 3.4: Регулярные выражения и пользовательские парсеры
 ================================================
 
 __Estimated time__: 1 day

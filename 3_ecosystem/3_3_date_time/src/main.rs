@@ -19,6 +19,7 @@ impl User {
     fn with_birthdate(year: i32, month: u32, day: u32) -> Self {
         //unimplemented!()
         
+        // Делает новый NaiveDate от календарной даты (year, month and day).
         match NaiveDate::from_ymd_opt(year, month, day)  {
             Some(nd) => Self(nd),
             None => panic!("Invalid birthdate: {}-{}-{}", year, month, day),
@@ -27,10 +28,11 @@ impl User {
 
     /// Returns current age of [`User`] in years.
     fn age(&self) -> u16 {
-        //unimplemented!()
 
+        // Разбирает строку NOW с указанным форматом строки и возвразает новый NaiveDate.
         match NaiveDate::parse_from_str(NOW, "%Y-%m-%d") {
             Ok(now_d) => {
+                // определение количества лет
                 let mut years = now_d.year() - self.0.year() ;
                 if years < 0 {
                     years = 0 ;
