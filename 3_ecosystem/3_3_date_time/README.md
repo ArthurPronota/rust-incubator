@@ -1,4 +1,4 @@
-Step 3.3: Date and time
+Шаг 3.3: Дата и время
 =======================
 
 __Estimated time__: 1 day
