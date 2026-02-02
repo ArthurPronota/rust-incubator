@@ -5,6 +5,9 @@ use chrono::{
 
 fn main() {
     //unimplemented!() // Указывает на нереализованный код, вызывая панику с сообщением «not implemented».
+    let user = User::with_birthdate(2010, 02, 1) ;
+
+    println!("age: {}, is_adult: {}", user.age(), user.is_adult()) ;
 }
 
 const NOW: &str = "2019-06-26";
@@ -80,5 +83,28 @@ mod age_spec {
             let user = User::with_birthdate(y, m, d);
             assert_eq!(user.age(), expected);
         }
+    }
+
+    /// проврка на adult
+    #[test]
+    fn is_adult() {
+        let user = User::with_birthdate(2000, 2, 1) ;
+
+        assert!(user.is_adult()) ;
+    }
+
+    /// проврка на не adult
+    #[test]
+    fn isnt_adult() {
+        let user = User::with_birthdate(2010, 02, 1) ;
+        assert!(!user.is_adult()) ;
+    }
+
+    /// проверка возраста
+    #[test]
+    fn check_age() {
+        let user = User::with_birthdate(2010, 02, 1) ;
+
+        assert_eq!(user.age(), 9) ;
     }
 }
