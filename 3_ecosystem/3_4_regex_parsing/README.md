@@ -56,14 +56,12 @@ fn is_email(email: &str) -> bool {
     - [`pom`] crate, предоставляющий комбинаторы парсеров [PEG][5], созданные с использованием перегрузки операторов без макросов.
     - [`chomp`] crate, быстрая библиотека [комбинатора парсеров][4] в стиле [monadic][13].
 - [Parser generators][12]:
-    - [`peg`] crate, a simple yet flexible [parser generator][12] that makes it easy to write robust parsers, based on the [Parsing Expression Grammar][5] formalism.
+    - [`peg`] crate, простой, но гибкий [генератор парсеров][12], который позволяет легко писать надежные парсеры, основанные на формализме [Parsing Expression Grammar][5].
+    - [`pest`] crate, с упором на доступность, корректность и производительность, используя [PEG (грамматика синтаксического анализа выражений)][5] в качестве входных данных и выводя для него код парсера.
+    - [`lalrpop`] crate, генерирующий код [LR(1) парсер][6] из пользовательских файлов грамматики.
+    - [`parsel`] crate — библиотека для генерации парсеров непосредственно из типов узлов синтаксического дерева.
 
-    
-    - [`pest`] crate, with a focus on accessibility, correctness, and performance, using [PEG (parsing expression grammar)][5] as an input and deriving parser's code for it.
-    - [`lalrpop`] crate, generating [LR(1) parser][6] code from custom grammar files.
-    - [`parsel`] crate, a library for generating parsers directly from syntax tree node types.
-
-To better understand parsing problem and approaches, along with some examples, read through:
+Для лучшего понимания проблемы синтаксического анализа и подходов, а также для ознакомления с примерами, прочтите следующее:
 - [Laurence Tratt: Which Parsing Approach?][9]
 - [Richard L. Apodaca: A Beginner's Guide to Parsing in Rust][10]
 - [Eshan Singh: Practical Parsing in Rust with nom][14]
@@ -113,14 +111,21 @@ Prove your implementation correctness with tests.
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - How does [`regex`] crate achieve linear time complexity? In what price?
+- [`Как библиотека [regex] достигает линейной временной сложности? Какой ценой?`]()
+
 - How to avoid regular expression recompilation in [Rust]? Why is it important?
 - Which are the common kinds of libraries for writing custom parses in [Rust]? Which benefits does each one have?
 - What advantages does libraries give for writing a custom parser? Are they mandatory? When does it make sense to avoid using a library for implementing a parser?
 
+<hr>
 
+### Как библиотека [regex] достигает линейной временной сложности? Какой ценой?
 
+Крейт regex в Rust гарантирует линейную временную сложность \(O(m\times n)\), где \(m\) — длина регулярного выражения, а \(n\) — длина текста. Это достигается за счет использования детерминированных и недетерминированных конечных автоматов (DFA/NFA). 
+
+<hr>
 
 [`chomp`]: https://docs.rs/chomp
 [`chumsky`]: https://docs.rs/chumsky
