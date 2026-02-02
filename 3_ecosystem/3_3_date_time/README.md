@@ -45,7 +45,7 @@ Prove your implementation correctness with additional tests. For tests reproduci
 - [`В чём заключается основное практическое различие между crates [`chrono`] и [`time`]?`](#в-чём-заключается-основное-практическое-различие-между-crates-chrono-и-time)
 
 - When [`hifitime`] crate could be useful?
-- [`Когда может быть полезен фреймворк [hifitime]?`]()
+- [`Когда может быть полезен фреймворк [hifitime]?`](#когда-может-быть-полезен-фреймворк-hifitime)
 
 <hr>
 
