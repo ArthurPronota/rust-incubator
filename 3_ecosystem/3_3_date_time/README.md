@@ -3,13 +3,15 @@
 
 __Estimated time__: 1 day
 
-[Rust] has a simple [`std::time`] module which contains very basic primitives for time measurements. To operate with dates, time zones, epochs, and other related stuff, the [`time`] and [`chrono`] crates are used in [Rust] ecosystem.
+В [Rust] есть простой модуль [`std::time`], содержащий самые базовые примитивы для измерения времени. Для работы с датами, часовыми поясами, эпохами и другими подобными вещами в экосистеме [Rust] используются crates [`time`] и [`chrono`].
 
-The main difference between them (except the API, ergonomics and maintaining activity) is that [`chrono`] crate parametrizes time zone in types, while [`time`] crate handles it in runtime. In practice, we recommend to use [`time`] crate (unless [`chrono`] better suits your needs), as it's much actively maintained and evolved.
 
-If you hit limitations of [`time`] and [`chrono`] crates regarding their accuracy (like swallowing [leap seconds][3]) or supported formats/standards (like [TAI]), consider using the [`hifitime`] crate, representing a scientifically accurate and [formally verified][4] date and time library.
+Основное различие между ними (за исключением API, эргономики и активности поддержки) заключается в том, что crate [`chrono`] параметризует часовой пояс в типах, в то время как crate [`time`] обрабатывает его во время выполнения. На практике мы рекомендуем использовать crate [`time`] (если только [`chrono`] лучше подходит для ваших нужд), поскольку он гораздо активнее поддерживается и развивается.
 
-To better understand and be familiar with this topic, read through:
+Если вы сталкиваетесь с ограничениями библиотек [`time`] и [`chrono`] в отношении их точности (например, пропуск [високосных секунд][3]) или поддерживаемых форматов/стандартов (например, [TAI]), рассмотрите возможность использования библиотеки [`hifitime`], представляющей собой научно точную и [формально проверенную][4] библиотеку даты и времени.
+
+
+Для лучшего понимания и ознакомления с этой темой, прочтите следующие материалы:
 - [Official `std::time` docs][`std::time`]
 - [Official `time` crate docs][`time`]
 - [Official `chrono` crate docs][`chrono`]
@@ -18,11 +20,9 @@ To better understand and be familiar with this topic, read through:
 
 
 
-## Duration measurements for code
+## Измерение длительности выполнения кода
 
-Beware, that to measure duration of some operation, you should not use [`time`] crate primitives or an [`std::time::SystemTime`], but only an [`std::time::Instant`] instead, as it provides [monotonic clock][1] measurement (otherwise, your time measurement may be inconsistent due to [system clock drift][2]).
-
-
+Обратите внимание, что для измерения продолжительности какой-либо операции следует использовать не примитивы крейта [`time`] или [`std::time::SystemTime`], а только [`std::time::Instant`], поскольку они обеспечивают [монотонное измерение времени][1] (в противном случае ваше измерение времени может быть непоследовательным из-за [дрейфа системных часов][2]).
 
 
 ## Task
@@ -34,16 +34,20 @@ Prove your implementation correctness with additional tests. For tests reproduci
 
 
 
-## Questions
+# Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - How does system clock and monotonic clock differ? What are use-cases for both?
+
 - Why is system clock is not reliable for measuring duration? What causes its drift?
 - What is the main practical difference between [`chrono`] and [`time`] crates?
 - When [`hifitime`] crate could be useful?
 
+<hr>
 
 
+<hr>
 
 [`chrono`]: https://docs.rs/chrono
 [`hifitime`]: https://docs.rs/hifitime
