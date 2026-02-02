@@ -19,9 +19,10 @@ __Estimated time__: 1 day
 - [`pcre2`] crate, обеспечивающий безопасную высокоуровневую привязку Rust к библиотеке [PCRE2].
 - [`hyperscan`] crate, представляющий собой обертку для библиотеки [Hyperscan].
 
-### Compile only once
+### Компилировать только один раз.
 
-Important to know, that in [Rust] __regular expression needs to be compiled before we can use it__. The compilation is not cheap. So, the following code introduces a performance problem:
+Важно знать, что в [Rust] __регулярные выражения необходимо компилировать перед использованием__. Компиляция — недешевый процесс. Поэтому следующий код создает проблемы с производительностью:
+
 ```rust
 fn is_email(email: &str) -> bool {
     let re = Regex::new(".+@.+").unwrap();  // compiles every time the function is called
