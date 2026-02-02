@@ -1,24 +1,53 @@
+use chrono::{
+        Datelike, 
+        NaiveDate, 
+    } ;
+
 fn main() {
-    println!("Implement me!");
+    //unimplemented!() // Указывает на нереализованный код, вызывая панику с сообщением «not implemented».
 }
 
 const NOW: &str = "2019-06-26";
 
-struct User;
+struct User(NaiveDate) ;
 
 impl User {
+    /// создание пользователя на основании дня рождения
     fn with_birthdate(year: i32, month: u32, day: u32) -> Self {
-        unimplemented!()
+        //unimplemented!()
+        
+        match NaiveDate::from_ymd_opt(year, month, day)  {
+            Some(nd) => Self(nd),
+            None => panic!("Invalid birthdate: {}-{}-{}", year, month, day),
+        }
     }
 
     /// Returns current age of [`User`] in years.
     fn age(&self) -> u16 {
-        unimplemented!()
+        //unimplemented!()
+
+        match NaiveDate::parse_from_str(NOW, "%Y-%m-%d") {
+            Ok(now_d) => {
+                let mut years = now_d.year() - self.0.year() ;
+                if years < 0 {
+                    years = 0 ;
+                }
+
+                if (now_d.month(), now_d.day()) < (self.0.month(), self.0.day()) {
+                    if years > 0 {
+                        years -= 1 ;
+                    }
+                }
+
+                return years as u16 ;
+            },
+            Err(err) => panic!("Error: {} convert NaiveDate to NaiveDateTime for: {}", err, NOW),
+        }
     }
 
     /// Checks if [`User`] is 18 years old at the moment.
     fn is_adult(&self) -> bool {
-        unimplemented!()
+        self.age() >= 18
     }
 }
 
