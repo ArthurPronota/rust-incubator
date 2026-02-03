@@ -107,8 +107,34 @@ Provide implementations in two flavours: [`regex`]-based and via building a cust
 Prove your implementation correctness with tests.
 
 
+Дана следующая [синтаксическая грамматика fmt в Rust][7]:
+> ```
+> format_string := text [ maybe_format text ] *
+> maybe_format := '{' '{' | '}' '}' | format
+> format := '{' [ argument ] [ ':' format_spec ] [ ws ] * '}'
+> argument := integer | identifier
+>
+> format_spec := [[fill]align][sign]['#']['0'][width]['.' precision]type
+> fill := character
+> align := '<' | '^' | '>'
+> sign := '+' | '-'
+> width := count
+> precision := count | '*'
+> type := '' | '?' | 'x?' | 'X?' | identifier
+> count := parameter | integer
+> parameter := argument '$'
+> ```
+> В приведенной выше грамматике,
+> - `text` не должен содержать символов `'{'` или `'}'`.
+> - `ws` — это любой символ, для которого метод `char::is_whitespace` возвращает `true` ([`char::is_whitespace`](https://doc.rust-lang.org/std/primitive.char.html#method.is_whitespace) не имеет семантического значения и является полностью необязательным.
+> - `integer` — это десятичное целое число, которое может содержать ведущие нули и должно помещаться в `usize`.
+> - `identifier` — это `IDENTIFIER_OR_KEYWORD` (а не `IDENTIFIER`), как определено в [справочнике по языку Rust](https://doc.rust-lang.org/reference/identifiers.html).
 
+Реализуйте парсер для извлечения значений `sign`, `width` и `precision` из заданного входного параметра (предполагается, что это `format_spec`).
 
+Предлагаются две реализации: на основе [`regex`] и путем создания собственного парсера.
+
+Подтвердите корректность своей реализации с помощью тестов.
 
 ## Questions
 
