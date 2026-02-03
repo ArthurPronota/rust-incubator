@@ -6,3 +6,4 @@ publish = false
 
 [dependencies]
 regex = "1.12.2"
+winnow = "0.7.14"

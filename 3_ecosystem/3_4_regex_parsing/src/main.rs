@@ -1,3 +1,5 @@
+// https://docs.rs/winnow/latest/winnow/_tutorial/chapter_1/index.html
+
 // Скомпилированное регулярное выражение для поиска в Unicode стогах.
 use regex::Regex ;
 // Примитив синхронизации, в который номинально можно записать данные только один раз.
