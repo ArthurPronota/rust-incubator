@@ -335,41 +335,7 @@ fn main() {
         assert_eq!(input, " Hello");
     }
 
-    {
-        use winnow::stream::Stream;
-        use winnow::Result;
 
-        fn parse_digits<'s>(input: &mut &'s str) -> Result<(&'s str, &'s str)> {
-            let start = input.checkpoint();
-            if let Ok(output) = ("0b", parse_bin_digits).parse_next(input) {
-                return Ok(output);
-            }
-
-            input.reset(&start);
-            if let Ok(output) = ("0o", parse_oct_digits).parse_next(input) {
-                return Ok(output);
-            }
-
-            input.reset(&start);
-            if let Ok(output) = ("0d", parse_dec_digits).parse_next(input) {
-                return Ok(output);
-            }
-
-            input.reset(&start);
-            ("0x", parse_hex_digits).parse_next(input)
-        }
-
-        let mut input = "0x1a2b Hello";
-
-        let (prefix, digits) = parse_digits.parse_next(&mut input).unwrap();
-
-        assert_eq!(input, " Hello");
-        assert_eq!(prefix, "0x");
-        assert_eq!(digits, "1a2b");
-
-        assert!(parse_digits(&mut "ghiWorld").is_err());
- 
-    }
 }
 
 /// разбор входной строки `format_spec`
