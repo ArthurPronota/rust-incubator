@@ -852,6 +852,83 @@ fn main() {
 
 См. [ascii](https://docs.rs/winnow/latest/winnow/ascii/index.html) для получения информации о других текстовых парсерах.
 
+### Глава 3. Последовательность и альтернативы
+
+В предыдущей главе мы рассмотрели, как создавать парсеры, используя готовые шаблоны.
+
+В этой главе мы рассмотрим две другие широко используемые функции: секвенирование и альтернативы.
+
+#### Последовательность действий
+
+Теперь, когда мы можем создавать более интересные парсеры, мы можем объединять их в последовательность, например:
+
+```rust
+use winnow::token::take_while;
+use winnow::Result;
+
+fn parse_prefix<'s>(input: &mut &'s str) -> Result<&'s str> {
+    "0x".parse_next(input)
+}
+
+fn parse_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
+    take_while(1.., (
+        ('0'..='9'),
+        ('A'..='F'),
+        ('a'..='f'),
+    )).parse_next(input)
+}
+
+fn main()  {
+    let mut input = "0x1a2b Hello";
+
+    let prefix = parse_prefix.parse_next(&mut input).unwrap();
+    let digits = parse_digits.parse_next(&mut input).unwrap();
+
+    assert_eq!(prefix, "0x");
+    assert_eq!(digits, "1a2b");
+    assert_eq!(input, " Hello");
+}
+```
+
+Чтобы объединить их в последовательность, вы можете просто объединить их в кортеж:
+
+```rust
+//...
+
+fn main()  {
+    let mut input = "0x1a2b Hello";
+
+    let (prefix, digits) = (
+        parse_prefix,
+        parse_digits
+    ).parse_next(&mut input).unwrap();
+
+    assert_eq!(prefix, "0x");
+    assert_eq!(digits, "1a2b");
+    assert_eq!(input, " Hello");
+}
+```
+
+Зачастую вам будет всё равно на буквальное значение, и вы сможете использовать один из предложенных комбинаторов, подобно [preceded](https://docs.rs/winnow/latest/winnow/combinator/fn.preceded.html):
+
+```rust
+use winnow::combinator::preceded;
+
+//...
+
+fn main() {
+    let mut input = "0x1a2b Hello";
+
+    let digits = preceded(
+        parse_prefix,
+        parse_digits
+    ).parse_next(&mut input).unwrap();
+
+    assert_eq!(digits, "1a2b");
+    assert_eq!(input, " Hello");
+}
+```
+
 <hr>
 
 [`chomp`]: https://docs.rs/chomp

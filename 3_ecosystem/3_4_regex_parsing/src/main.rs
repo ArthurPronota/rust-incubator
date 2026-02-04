@@ -266,6 +266,74 @@ fn main() {
         assert!(parse_digits.parse_next(&mut "Z").is_err());
         
     }
+
+    // Глава 3: https://docs.rs/winnow/latest/winnow/_tutorial/chapter_3/index.html
+
+    {
+        use winnow::token::take_while;
+        use winnow::Result;
+
+        fn parse_prefix<'s>(input: &mut &'s str) -> Result<&'s str> {
+            "0x"
+                .parse_next(input)
+        }
+
+        fn parse_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
+            take_while(
+                1.., 
+                (
+                    ('0'..='9'),
+                    ('A'..='F'),
+                    ('a'..='f'),
+                )
+            ).parse_next(input)
+        }
+
+        // -------------------------------
+        
+        let mut input = "0x1a2b Hello";
+
+        let prefix = parse_prefix
+                            .parse_next(&mut input)
+                            .unwrap();
+        let digits = parse_digits
+                            .parse_next(&mut input)
+                            .unwrap();
+
+        assert_eq!(prefix, "0x");
+        assert_eq!(digits, "1a2b");
+        assert_eq!(input, " Hello");
+
+
+        let mut input = "0x1a2b Hello";
+
+        let (prefix, digits) = (
+                parse_prefix,
+                parse_digits
+            )
+            .parse_next(&mut input)
+            .unwrap();
+
+        assert_eq!(prefix, "0x");
+        assert_eq!(digits, "1a2b");
+        assert_eq!(input, " Hello");
+
+        // -------------------------------
+
+        use winnow::combinator::preceded;
+
+        let mut input = "0x1a2b Hello";
+
+        let digits = preceded(
+                    parse_prefix,
+                     parse_digits
+                    )
+                    .parse_next(&mut input)
+                    .unwrap();
+
+        assert_eq!(digits, "1a2b");
+        assert_eq!(input, " Hello");
+    }
 }
 
 /// разбор входной строки `format_spec`
