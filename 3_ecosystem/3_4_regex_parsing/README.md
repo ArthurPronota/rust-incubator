@@ -792,7 +792,7 @@ fn main() {
 }
 ```
 
-Примечание: функция __one_of__ может показаться простой, возвращающей   значение, реализующее интерфейс __Parser__. Давайте рассмотрим её подробнее, как она используется выше (с разрешением всех обобщенных параметров):
+Примечание: функция [one_of](https://docs.rs/winnow/latest/winnow/token/fn.one_of.html) может показаться простой, возвращающей   значение, реализующее интерфейс __Parser__. Давайте рассмотрим её подробнее, как она используется выше (с разрешением всех обобщенных параметров):
 
 ```rust
 pub fn one_of<'i>(
@@ -806,9 +806,51 @@ pub fn one_of<'i>(
 
 Некоторые классы символов достаточно распространены, поэтому для них предусмотрен именованный парсер, например:
 
-- line_ending: Распознает конец строки (как \n, так и \r\n)
-- newline: Соответствует символу новой строки \n
-- tab: Соответствует символу табуляции \t
+- [line_ending](https://docs.rs/winnow/latest/winnow/ascii/fn.line_ending.html): Распознает конец строки (как \n, так и \r\n)
+- [newline](https://docs.rs/winnow/latest/winnow/ascii/fn.newline.html): Соответствует символу новой строки \n
+- [tab](https://docs.rs/winnow/latest/winnow/ascii/fn.tab.html): Соответствует символу табуляции \t
+
+Затем вы можете захватывать последовательности этих символов с помощью таких парсеров, как __take_while__.
+
+```rust
+use winnow::token::take_while;
+
+fn parse_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
+    take_while(1.., ('0'..='9', 'a'..='f', 'A'..='F')).parse_next(input)
+}
+
+fn main() {
+    let mut input = "1a2b Hello";
+
+    let output = parse_digits.parse_next(&mut input).unwrap();
+    assert_eq!(input, " Hello");
+    assert_eq!(output, "1a2b");
+
+    assert!(parse_digits.parse_next(&mut "Z").is_err());
+}
+```
+
+Мы могли бы еще больше упростить это, используя один из встроенных классов символов, [hex_digit1](https://docs.rs/winnow/latest/winnow/ascii/fn.hex_digit1.html):
+
+```rust
+use winnow::ascii::hex_digit1;
+
+fn parse_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
+    hex_digit1.parse_next(input)
+}
+
+fn main() {
+    let mut input = "1a2b Hello";
+
+    let output = parse_digits.parse_next(&mut input).unwrap();
+    assert_eq!(input, " Hello");
+    assert_eq!(output, "1a2b");
+
+    assert!(parse_digits.parse_next(&mut "Z").is_err());
+}
+```
+
+См. [ascii](https://docs.rs/winnow/latest/winnow/ascii/index.html) для получения информации о других текстовых парсерах.
 
 <hr>
 

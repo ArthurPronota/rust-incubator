@@ -243,6 +243,29 @@ fn main() {
 
         assert!(parse_digits.parse_next(&mut "Z").is_err());
     }
+
+    {
+        use winnow::token::take_while;
+        use winnow::Result;
+
+        fn parse_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
+            /* 
+             Распознать самый длинный (m <= len <= n) входной фрагмент, 
+             соответствующий набору токенов.
+            */
+            take_while(1.., ('0'..='9', 'a'..='f', 'A'..='F'))
+                .parse_next(input)
+        }
+
+        let mut input = "1a2b Hello";
+
+        let output = parse_digits.parse_next(&mut input).unwrap();
+        assert_eq!(input, " Hello");
+        assert_eq!(output, "1a2b");
+
+        assert!(parse_digits.parse_next(&mut "Z").is_err());
+        
+    }
 }
 
 /// разбор входной строки `format_spec`
