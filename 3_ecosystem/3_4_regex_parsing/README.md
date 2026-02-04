@@ -627,6 +627,37 @@ use winnow::Result;
 - _O_ - Output
 - _E_ - Error
 
+#### Давайте напишем наш первый парсер!
+
+Простейший парсер, который мы можем написать, — это тот, который успешно ничего не делает.
+
+Чтобы упростить реализацию парсера, трейт реализован для функций вида __Fn(&mut I) -> Result<O>__.
+
+Эта функция парсера должна принимать на вход строку __&str__:
+
+- Поскольку предполагается, что операция должна завершиться успешно, мы знаем, что она вернет вариант "Ok".
+- Поскольку она никак не влияет на наши входные данные, они останутся в исходном состоянии.
+- Поскольку она ничего не анализирует, она также должна просто вернуть пустую строку.
+
+```rust
+use winnow::Result;
+use winnow::Parser;
+
+pub fn do_nothing_parser<'s>(input: &mut &'s str) -> Result<&'s str> {
+    Ok("")
+}
+
+fn main() {
+    let mut input = "0x1a2b Hello";
+
+    let output = do_nothing_parser.parse_next(&mut input).unwrap();
+    // Same as:
+    // let output = do_nothing_parser(&mut input).unwrap();
+
+    assert_eq!(input, "0x1a2b Hello");
+    assert_eq!(output, "");
+}
+```
 
 <hr>
 
