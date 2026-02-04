@@ -26,7 +26,7 @@ fn main() {
             ) ;
     println!("res: {:?}", res) ;
 
-    {   // Глава 1:
+    {   // Глава 1: https://docs.rs/winnow/latest/winnow/_tutorial/chapter_1/index.html
 
         // pub type Result<O, E = ContextError> = core::result::Result<O, E>
         use winnow::Result;
@@ -52,6 +52,11 @@ fn main() {
 
         assert_eq!(input, "0x1a2b Hello");
         assert_eq!(output, "");
+    }
+
+    {   // Глава 2: https://docs.rs/winnow/latest/winnow/_tutorial/chapter_2/index.html
+        
+
     }
 }
 
