@@ -25,6 +25,12 @@ fn main() {
                 "-8_"
             ) ;
     println!("res: {:?}", res) ;
+
+    {
+        use winnow::Result;
+
+        
+    }
 }
 
 /// разбор входной строки `format_spec`

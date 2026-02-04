@@ -583,6 +583,10 @@ for word in re.find_iter(text) {
 3.  Избегайте захвата групп: используйте _(?:...)_ если не нужны группы
 4.  Будьте конкретны: _\d{4}_ лучше чем _\d\d\d\d_
 
+<hr>
+
+## winnow, making parsing a breeze
+
 
 <hr>
 
