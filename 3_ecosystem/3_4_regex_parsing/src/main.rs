@@ -2,6 +2,7 @@
 
 // Скомпилированное регулярное выражение для поиска в Unicode стогах.
 use regex::Regex ;
+use winnow::Parser;
 // Примитив синхронизации, в который номинально можно записать данные только один раз.
 use std::sync::OnceLock ;
 
@@ -54,9 +55,193 @@ fn main() {
         assert_eq!(output, "");
     }
 
-    {   // Глава 2: https://docs.rs/winnow/latest/winnow/_tutorial/chapter_2/index.html
-        
+    // Глава 2: https://docs.rs/winnow/latest/winnow/_tutorial/chapter_2/index.html
+    {
+        use winnow::stream::Stream;
+        use winnow::error::ParserError;
+        use winnow::Result;
 
+        fn parse_prefix(input: &mut &str) -> Result<char> {
+
+            let c = input
+                            // Откалывает следующий токен от input
+                            .next_token()
+                            // Трансформирует Option<T> в Result<T, E>, отображая Some(v) в Ok(v) и None в Err(err())
+                            .ok_or_else(|| {
+                                ParserError::from_input(input)  // Создаёт ошибку от input position
+                            })?;
+
+            if c != '0' {
+                return Err(ParserError::from_input(input));
+            }
+            Ok(c)
+        }        
+
+        let mut input = "0x1a2b Hello";
+
+        let output = parse_prefix
+
+                            /* 
+                            Извлекать токены из потока, преобразуя их в выходные данные.
+                            Это включает в себя продвижение входного потока к следующему местоположению.            
+                            */
+                            .parse_next(&mut input)
+                            .unwrap()
+                            ;
+
+        assert_eq!(input, "x1a2b Hello");
+        assert_eq!(output, '0');
+
+        assert!(parse_prefix.parse_next(&mut "d").is_err());
+
+    }
+
+    {
+        use winnow::Parser;
+        use winnow::token::any; // Соответствует одному токену
+        use winnow::error::ParserError;
+        use winnow::Result;
+
+        fn parse_prefix(input: &mut &str) -> Result<char> {
+            let c = any
+                /* 
+                 Извлекать токены из потока, преобразуя их в выходные данные.
+                 Это включает в себя продвижение входного потока к следующему местоположению.
+                 */
+                .parse_next(input)?;
+            if c != '0' {
+                return Err(ParserError::from_input(input));
+            }
+            Ok(c)
+        }        
+    }
+
+    {
+        use winnow::Parser;
+        use winnow::token::any;
+        use winnow::Result;
+
+        fn parse_prefix(input: &mut &str) -> Result<char> {
+            let c = any
+                    /*
+                     Возвращает результат работы дочернего парсера, если он удовлетворяет 
+                     функции проверки.
+                      */
+                    .verify(|c| *c == '0')
+                    /* 
+                     Извлекать токены из потока, преобразуя их в выходные данные.
+                     Это включает в себя продвижение входного потока к следующему местоположению.
+                     */
+                    .parse_next(input)
+                    ?;
+            Ok(c)
+        }
+    }
+
+    {
+        use winnow::Parser;
+        use winnow::Result;
+
+        fn parse_prefix(input: &mut &str) -> Result<char> {
+            let c = '0'
+                    /* 
+                     Извлекать токены из потока, преобразуя их в выходные данные.
+                     Это включает в себя продвижение входного потока к следующему местоположению.
+                     */            
+                            .parse_next(input)?;
+            Ok(c)
+        }        
+    }
+
+    {
+        use winnow::stream::Stream;
+        use winnow::error::ParserError;
+        use winnow::Result;
+
+        fn parse_prefix<'s>(input: &mut &'s str) -> Result<&'s str> {
+            let expected = "0x";
+            if input.len() < expected.len() {
+                return Err(ParserError::from_input(input));
+            }
+            let actual = input
+                                .next_slice(expected.len())
+                                ;
+            if actual != expected {
+                return Err(ParserError::from_input(input));
+            }
+            Ok(actual)
+        }
+
+
+        let mut input = "0x1a2b Hello";
+
+        let output = parse_prefix
+                            /* 
+                            Извлекать токены из потока, преобразуя их в выходные данные.
+                            Это включает в себя продвижение входного потока к следующему местоположению.
+                            */
+                            .parse_next(&mut input)
+                            .unwrap();
+        assert_eq!(input, "1a2b Hello");
+        assert_eq!(output, "0x");
+
+        assert!(parse_prefix.parse_next(&mut "0o123").is_err());
+    }
+
+    {
+        use winnow::token::literal;
+        use winnow::Result;
+
+        fn parse_prefix<'s>(input: &mut &'s str) -> Result<&'s str> {
+            let expected = "0x";
+            let actual = literal(expected) // Распознаёт литерал
+                                /* 
+                                Извлекать токены из потока, преобразуя их в выходные данные.
+                                Это включает в себя продвижение входного потока к следующему местоположению.
+                                */
+                                .parse_next(input)
+                                ?;
+            Ok(actual)
+        }        
+    }
+
+    {
+        use winnow::Parser;
+        use winnow::Result;
+
+        fn parse_prefix<'s>(input: &mut &'s str) -> Result<&'s str> {
+            let actual = "0x"
+                                /* 
+                                Извлекать токены из потока, преобразуя их в выходные данные.
+                                Это включает в себя продвижение входного потока к следующему местоположению.
+                                */            
+                                .parse_next(input)
+                                ?;
+            Ok(actual)
+        }        
+    }
+
+    {
+        // Распознать токен, соответствующий набору токенов.
+        use winnow::token::one_of;
+        use winnow::Result;
+
+        fn parse_digits(input: &mut &str) -> Result<char> {
+            one_of(('0'..='9', 'a'..='f', 'A'..='F'))
+                /* 
+                 Извлекать токены из потока, преобразуя их в выходные данные.
+                 Это включает в себя продвижение входного потока к следующему местоположению.
+                 */
+                .parse_next(input)
+        }
+
+        let mut input = "1a2b Hello";
+
+        let output = parse_digits.parse_next(&mut input).unwrap();
+        assert_eq!(input, "a2b Hello");
+        assert_eq!(output, '1');
+
+        assert!(parse_digits.parse_next(&mut "Z").is_err());
     }
 }
 

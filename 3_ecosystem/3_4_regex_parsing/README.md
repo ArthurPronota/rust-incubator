@@ -637,6 +637,170 @@ fn main() {
 
 #### Токены
 
+Stream предоставляет ряд основных операций для облегчения синтаксического анализа. Например, для обработки
+одного токена можно сделать следующее:
+
+```rust
+use winnow::stream::Stream;
+use winnow::error::ParserError;
+use winnow::Result;
+
+fn parse_prefix(input: &mut &str) -> Result<char> {
+    let c = input.next_token().ok_or_else(|| {
+        ParserError::from_input(input)
+    })?;
+    if c != '0' {
+        return Err(ParserError::from_input(input));
+    }
+    Ok(c)
+}
+
+fn main()  {
+    let mut input = "0x1a2b Hello";
+
+    let output = parse_prefix.parse_next(&mut input).unwrap();
+
+    assert_eq!(input, "x1a2b Hello");
+    assert_eq!(output, '0');
+
+    assert!(parse_prefix.parse_next(&mut "d").is_err());
+}
+```
+
+Извлечение токена инкапсулировано в any парсер:
+
+```rust
+use winnow::Parser;
+use winnow::token::any;
+use winnow::error::ParserError;
+use winnow::Result;
+
+fn parse_prefix(input: &mut &str) -> Result<char> {
+    let c = any
+        .parse_next(input)?;
+    if c != '0' {
+        return Err(ParserError::from_input(input));
+    }
+    Ok(c)
+}
+```
+
+При использовании более высокого уровня любой парсер открывает __parse_prefix__ для вспомогательных функций трейта __Parser__, таких как __Parser::verify__, который завершает парсинг с ошибкой, если условие не выполняется, как в нашей проверке выше:
+
+```rust
+use winnow::Parser;
+use winnow::token::any;
+use winnow::Result;
+
+fn parse_prefix(input: &mut &str) -> Result<char> {
+    let c = any
+        .verify(|c| *c == '0')
+        .parse_next(input)?;
+    Ok(c)
+}
+```
+
+Сопоставление одного единственного литерала токена достаточно распространено, поэтому для типа char реализован парсер, инкапсулирующий как any, так и Parser::verify:.
+
+```rust
+use winnow::Parser;
+use winnow::Result;
+
+fn parse_prefix(input: &mut &str) -> Result<char> {
+    let c = '0'.parse_next(input)?;
+    Ok(c)
+}
+```
+#### Теги
+
+Stream также поддерживает обработку фрагментов токенов:
+
+```rust
+use winnow::stream::Stream;
+use winnow::error::ParserError;
+use winnow::Result;
+
+fn parse_prefix<'s>(input: &mut &'s str) -> Result<&'s str> {
+    let expected = "0x";
+    if input.len() < expected.len() {
+        return Err(ParserError::from_input(input));
+    }
+    let actual = input.next_slice(expected.len());
+    if actual != expected {
+        return Err(ParserError::from_input(input));
+    }
+    Ok(actual)
+}
+
+fn main()  {
+    let mut input = "0x1a2b Hello";
+
+    let output = parse_prefix.parse_next(&mut input).unwrap();
+    assert_eq!(input, "1a2b Hello");
+    assert_eq!(output, "0x");
+
+    assert!(parse_prefix.parse_next(&mut "0o123").is_err());
+}
+```
+
+Сопоставление позиции входного значения со строковым литералом инкапсулировано в парсере литералов:
+
+```rust
+use winnow::token::literal;
+
+fn parse_prefix<'s>(input: &mut &'s str) -> Result<&'s str> {
+    let expected = "0x";
+    let actual = literal(expected).parse_next(input)?;
+    Ok(actual)
+}
+```
+
+Как и в случае с отдельным токеном, сопоставление строкового литерала достаточно распространено, поэтому парсер реализован для типа __&str__:
+
+```rust
+use winnow::Parser;
+use winnow::Result;
+
+fn parse_prefix<'s>(input: &mut &'s str) -> Result<&'s str> {
+    let actual = "0x".parse_next(input)?;
+    Ok(actual)
+}
+```
+
+Дополнительные парсеры для отдельных токенов и фрагментов токенов см. в разделе token.
+
+### Символьные Классы
+
+Выбор одного символа или литерала довольно ограничен. Иногда вам может потребоваться выбрать один из нескольких символов определенного класса, например, цифры. Для этого мы используем парсер __one_of__:
+
+```rust
+use winnow::token::one_of;
+use winnow::Result;
+
+fn parse_digits(input: &mut &str) -> Result<char> {
+    one_of(('0'..='9', 'a'..='f', 'A'..='F')).parse_next(input)
+}
+
+fn main() {
+    let mut input = "1a2b Hello";
+
+    let output = parse_digits.parse_next(&mut input).unwrap();
+    assert_eq!(input, "a2b Hello");
+    assert_eq!(output, '1');
+
+    assert!(parse_digits.parse_next(&mut "Z").is_err());
+}
+```
+
+    Примечание: функция __one_of__ может показаться простой, возвращающей   значение, реализующее интерфейс __Parser__. Давайте рассмотрим её подробнее, как она используется выше (с разрешением всех обобщенных параметров):
+
+    ```rust
+    pub fn one_of<'i>(
+        list: &'static [char]
+    ) -> impl Parser<&'i str, char, ContextError> {
+        // ...
+    }
+    ```
 
 <hr>
 
