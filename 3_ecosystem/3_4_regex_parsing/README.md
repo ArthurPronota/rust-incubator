@@ -77,36 +77,6 @@ fn is_email(email: &str) -> bool {
 
 ## Task
 
-Given the following [Rust `fmt` syntax grammar][7]:
-> ```
-> format_string := text [ maybe_format text ] *
-> maybe_format := '{' '{' | '}' '}' | format
-> format := '{' [ argument ] [ ':' format_spec ] [ ws ] * '}'
-> argument := integer | identifier
->
-> format_spec := [[fill]align][sign]['#']['0'][width]['.' precision]type
-> fill := character
-> align := '<' | '^' | '>'
-> sign := '+' | '-'
-> width := count
-> precision := count | '*'
-> type := '' | '?' | 'x?' | 'X?' | identifier
-> count := parameter | integer
-> parameter := argument '$'
-> ```
-> In the above grammar,
-> - `text` must not contain any `'{'` or `'}'` characters,
-> - `ws` is any character for which [`char::is_whitespace`](https://doc.rust-lang.org/std/primitive.char.html#method.is_whitespace) returns `true`, has no semantic meaning and is completely optional,
-> - `integer` is a decimal integer that may contain leading zeroes and must fit into an `usize` and
-> - `identifier` is an `IDENTIFIER_OR_KEYWORD` (not an `IDENTIFIER`) as defined by the [Rust language reference](https://doc.rust-lang.org/reference/identifiers.html).
-
-Implement a parser to parse `sign`, `width` and `precision` from a given input (assumed to be a `format_spec`).
-
-Provide implementations in two flavours: [`regex`]-based and via building a custom parser.
-
-Prove your implementation correctness with tests.
-
-
 Дана следующая [синтаксическая грамматика fmt в Rust][7]:
 > ```
 > format_string := text [ maybe_format text ] *
