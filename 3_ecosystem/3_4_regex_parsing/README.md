@@ -1030,6 +1030,10 @@ fn parse_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
 }
 ```
 
+Примечание: функция [peek](https://docs.rs/winnow/latest/winnow/combinator/fn.peek.html) может быть полезна при [dispatch](https://docs.rs/winnow/latest/winnow/combinator/macro.dispatch.html) на основе подсказок из парсера каждого конкретного случая.
+
+См. раздел [combinator](https://docs.rs/winnow/latest/winnow/combinator/index.html) для получения информации о других альтернативных парсерах.
+
 
 <hr>
 
