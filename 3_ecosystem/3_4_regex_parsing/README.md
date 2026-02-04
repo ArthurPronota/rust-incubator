@@ -929,6 +929,108 @@ fn main() {
 }
 ```
 
+См. раздел [combinator](https://docs.rs/winnow/latest/winnow/combinator/index.html) для получения информации о других парсерах для анализа последовательностей.
+
+#### Альтернативы
+
+Иногда нам может потребоваться выбрать один из двух парсеров, и нас устроит любой из них.
+
+Чтобы повторить результат парсинга, мы можем сохранить его в контрольной точке [Stream::checkpoint](https://docs.rs/winnow/latest/winnow/stream/trait.Stream.html#tymethod.checkpoint), а затем восстановить парсер в этой позиции с помощью [Stream::reset](https://docs.rs/winnow/latest/winnow/stream/trait.Stream.html#tymethod.reset):
+
+```rust
+use winnow::stream::Stream;
+
+fn parse_digits<'s>(input: &mut &'s str) -> Result<(&'s str, &'s str)> {
+    let start = input.checkpoint(); // сохранить контрольную точку
+    if let Ok(output) = ("0b", parse_bin_digits).parse_next(input) {
+        return Ok(output);
+    }
+
+    input.reset(&start);    // восстановить контрольную точку
+    if let Ok(output) = ("0o", parse_oct_digits).parse_next(input) {
+        return Ok(output);
+    }
+
+    input.reset(&start);
+    if let Ok(output) = ("0d", parse_dec_digits).parse_next(input) {
+        return Ok(output);
+    }
+
+    input.reset(&start);
+    ("0x", parse_hex_digits).parse_next(input)
+}
+
+// ...
+
+fn main() {
+    let mut input = "0x1a2b Hello";
+
+    let (prefix, digits) = parse_digits.parse_next(&mut input).unwrap();
+
+    assert_eq!(input, " Hello");
+    assert_eq!(prefix, "0x");
+    assert_eq!(digits, "1a2b");
+
+    assert!(parse_digits(&mut "ghiWorld").is_err());
+}
+```
+
+Предупреждение: приведенный выше пример носит иллюстративный характер, и использование __Result::Ok__ или __Result::Err__ может привести к некорректному поведению. Это будет разъяснено позже при рассмотрении обработки ошибок.
+
+[opt](https://docs.rs/winnow/latest/winnow/combinator/fn.opt.html) — это парсер, который воплощает в себе этот принцип «повторной попытки при неудаче»:
+
+```rust
+use winnow::combinator::opt;
+
+fn parse_digits<'s>(input: &mut &'s str) -> Result<(&'s str, &'s str)> {
+    if let Some(output) = opt(("0b", parse_bin_digits)).parse_next(input)? {
+        Ok(output)
+    } else if let Some(output) = opt(("0o", parse_oct_digits)).parse_next(input)? {
+        Ok(output)
+    } else if let Some(output) = opt(("0d", parse_dec_digits)).parse_next(input)? {
+        Ok(output)
+    } else {
+        ("0x", parse_hex_digits).parse_next(input)
+    }
+}
+```
+
+[alt](https://docs.rs/winnow/latest/winnow/combinator/fn.alt.html) воплощает в себе эту цепочку условий `if/else-if`, где последним условием является оператор `else`:
+
+```rust
+use winnow::combinator::alt;
+
+fn parse_digits<'s>(input: &mut &'s str) -> Result<(&'s str, &'s str)> {
+    alt((
+        ("0b", parse_bin_digits),
+        ("0o", parse_oct_digits),
+        ("0d", parse_dec_digits),
+        ("0x", parse_hex_digits),
+    )).parse_next(input)
+}
+```
+
+Примечание: [empty](https://docs.rs/winnow/latest/winnow/combinator/fn.empty.html) и [fail](https://docs.rs/winnow/latest/winnow/combinator/fn.fail.html) — это парсеры, которые могут быть полезны в случае использования оператора «else».
+
+Иногда использование громоздкой лестницы операторов if/else-if может замедлять работу, и в этом случае предпочтительнее использовать оператор match для ветвей парсера, имеющих уникальные префиксы. В таком случае можно использовать макрос [dispatch](https://docs.rs/winnow/latest/winnow/combinator/macro.dispatch.html):
+
+```rust
+use winnow::combinator::dispatch;
+use winnow::token::take;
+use winnow::combinator::fail;
+
+fn parse_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
+    dispatch!(take(2usize);
+        "0b" => parse_bin_digits,
+        "0o" => parse_oct_digits,
+        "0d" => parse_dec_digits,
+        "0x" => parse_hex_digits,
+        _ => fail,
+    ).parse_next(input)
+}
+```
+
+
 <hr>
 
 [`chomp`]: https://docs.rs/chomp
