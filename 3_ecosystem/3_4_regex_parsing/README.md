@@ -585,7 +585,8 @@ for word in re.find_iter(text) {
 
 <hr>
 
-## winnow, making parsing a breeze
+## winnow, делающиё разбор лёгким
+
 
 
 <hr>
