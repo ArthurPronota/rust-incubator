@@ -326,58 +326,17 @@ __Совет__: Если ваше регулярное выражение изв
 - _Нужно разобрать бинарный формат (видео, пакеты)?_ Используйте __Nom__.
 - _Нужно вытащить пару значений из простого конфига?_ Используйте стандартные методы __str__.
 
-
-
 <hr>
 
-[`chomp`]: https://docs.rs/chomp
-[`chumsky`]: https://docs.rs/chumsky
-[`combine`]: https://docs.rs/combine
-[`fancy-regex`]: https://docs.rs/fancy-regex
-[`hyperscan`]: https://docs.rs/hyperscan
-[`lalrpop`]: https://docs.rs/lalrpop
-[`nom`]: https://docs.rs/nom
-[`once_cell`]: https://docs.rs/once_cell
-[`parsel`]: https://docs.rs/parsel
-[`peg`]: https://docs.rs/peg
-[`pest`]: https://docs.rs/pest
-[`pcre2`]: https://docs.rs/pcre2
-[`pom`]: https://docs.rs/pom
-[`regex`]: https://docs.rs/regex
-[Go]: https://golang.org
-[Haskell]: https://www.haskell.org
-[Hyperscan]: https://github.com/intel/hyperscan
-[Java]: https://www.java.com
-[Parsec]: https://hackage.haskell.org/package/parsec
-[PCRE2]: https://www.pcre.org
-[PHP]: https://php.net
-[RE2]: https://github.com/google/re2
-[Rust]: https://www.rust-lang.org
+### Базовые конструкции
 
-[1]: https://en.wikipedia.org/wiki/Regular_expression
-[2]: https://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags
-[3]: https://github.com/rust-unofficial/awesome-rust#parsing
-[4]: https://en.wikipedia.org/wiki/Parser_combinator
-[5]: https://en.wikipedia.org/wiki/Parsing_expression_grammar
-[6]: https://en.wikipedia.org/wiki/Canonical_LR_parser
-[7]: https://doc.rust-lang.org/std/fmt/index.html#syntax
-[8]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
-[9]: https://tratt.net/laurie/blog/entries/which_parsing_approach.html
-[10]: https://depth-first.com/articles/2021/12/16/a-beginners-guide-to-parsing-in-rust
-[11]: https://briankung.dev/2021/12/07/building-a-cedict-parser-in-rust-with-nom
-[12]: https://en.wikipedia.org/wiki/Parser_generator
-[13]: https://en.wikipedia.org/wiki/Monad_(functional_programming)
-[14]: https://naiveai.hashnode.dev/practical-parsing-nom
-[15]: https://matklad.github.io/2023/05/21/resilient-ll-parsing-tutorial.html
-[16]: https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
-[17]: https://matklad.github.io/2020/04/15/from-pratt-to-dijkstra.html
-[18]: https://developerlife.com/2023/02/20/guide-to-nom-parsing
-[19]: https://tfpk.github.io/nominomicon/introduction.html
-
-1. Литералы
+1. #### Литералы
+```rust
 let re = Regex::new(r"abc"); // Точное совпадение "abc"
+```
 
-2. Метасимволы (специальные символы)
+2. #### Метасимволы (специальные символы)
+```
 .       // Любой символ, кроме новой строки (по умолчанию)
 \d      // Цифра [0-9]
 \D      // Не цифра [^0-9]
@@ -385,8 +344,10 @@ let re = Regex::new(r"abc"); // Точное совпадение "abc"
 \W      // Не словесный символ
 \s      // Пробельный символ [ \t\n\r\f]
 \S      // Не пробельный символ
+```
 
-3. Классы символов
+3. #### Классы символов
+```
 [abc]           // a, b или c
 [^abc]          // Любой символ, кроме a, b, c
 [a-z]           // Любая строчная буква
@@ -399,6 +360,7 @@ let re = Regex::new(r"abc"); // Точное совпадение "abc"
 [[:alnum:]]     // Буква или цифра
 [[:space:]]     // Пробельный символ
 [[:punct:]]     // Знак пунктуации
+```
 
 4. Квантификаторы (повторители)
 ?           // 0 или 1 раз
@@ -491,3 +453,50 @@ let re = Regex::new(r"(?x)
     2. Используйте атомарные группы: (?>...) для предотвращения backtracking
     3. Избегайте захвата групп: используйте (?:...) если не нужны группы
     4. Будьте конкретны: \d{4} лучше чем \d\d\d\d
+
+
+<hr>
+
+[`chomp`]: https://docs.rs/chomp
+[`chumsky`]: https://docs.rs/chumsky
+[`combine`]: https://docs.rs/combine
+[`fancy-regex`]: https://docs.rs/fancy-regex
+[`hyperscan`]: https://docs.rs/hyperscan
+[`lalrpop`]: https://docs.rs/lalrpop
+[`nom`]: https://docs.rs/nom
+[`once_cell`]: https://docs.rs/once_cell
+[`parsel`]: https://docs.rs/parsel
+[`peg`]: https://docs.rs/peg
+[`pest`]: https://docs.rs/pest
+[`pcre2`]: https://docs.rs/pcre2
+[`pom`]: https://docs.rs/pom
+[`regex`]: https://docs.rs/regex
+[Go]: https://golang.org
+[Haskell]: https://www.haskell.org
+[Hyperscan]: https://github.com/intel/hyperscan
+[Java]: https://www.java.com
+[Parsec]: https://hackage.haskell.org/package/parsec
+[PCRE2]: https://www.pcre.org
+[PHP]: https://php.net
+[RE2]: https://github.com/google/re2
+[Rust]: https://www.rust-lang.org
+
+[1]: https://en.wikipedia.org/wiki/Regular_expression
+[2]: https://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags
+[3]: https://github.com/rust-unofficial/awesome-rust#parsing
+[4]: https://en.wikipedia.org/wiki/Parser_combinator
+[5]: https://en.wikipedia.org/wiki/Parsing_expression_grammar
+[6]: https://en.wikipedia.org/wiki/Canonical_LR_parser
+[7]: https://doc.rust-lang.org/std/fmt/index.html#syntax
+[8]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
+[9]: https://tratt.net/laurie/blog/entries/which_parsing_approach.html
+[10]: https://depth-first.com/articles/2021/12/16/a-beginners-guide-to-parsing-in-rust
+[11]: https://briankung.dev/2021/12/07/building-a-cedict-parser-in-rust-with-nom
+[12]: https://en.wikipedia.org/wiki/Parser_generator
+[13]: https://en.wikipedia.org/wiki/Monad_(functional_programming)
+[14]: https://naiveai.hashnode.dev/practical-parsing-nom
+[15]: https://matklad.github.io/2023/05/21/resilient-ll-parsing-tutorial.html
+[16]: https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
+[17]: https://matklad.github.io/2020/04/15/from-pratt-to-dijkstra.html
+[18]: https://developerlife.com/2023/02/20/guide-to-nom-parsing
+[19]: https://tfpk.github.io/nominomicon/introduction.html
