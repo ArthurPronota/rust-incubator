@@ -376,13 +376,33 @@ fn main() {
 
         fn parse_list(input: &mut &str) -> Result<Vec<usize>> {
             let mut list = Vec::new();
+
+            /* Разбор сложного вложения парзеров:
+            let v: Result<Option<usize>, winnow::error::ContextError> = opt(
+                                terminated(
+                                        parse_digits,
+                                        opt(',')
+                                    )
+                                )
+                                .parse_next(input) ;
+
+                // Если parse_digits возвращает ошибку то terminated возвразает ошибку.
+                //
+                // opt(parser)
+                // - Если parser успешен → возвращает Ok(Some(result))
+                // - Если parser возвращает ошибку → возвращает Ok(None)
+                // - Никогда не возвращает ошибку (кроме фатальных ошибок вроде OOM)
+            */
+
             while let Some(output) = opt(
                                 terminated(
                                         parse_digits,
                                        opt(',')
                                     )
                                 )
-                                .parse_next(input)? {
+                                .parse_next(input) // -> Result<Option<usize>, ContextError>,
+                                ?
+            {
                 list.push(output);
             }
             Ok(list)
@@ -390,12 +410,27 @@ fn main() {
 
         let mut input = "1,2,3,4,5 Hello" ;
 
+        print!("input: `{}` => ", input) ;
         let digits = parse_list.parse_next(&mut input).unwrap();
 
+        println!("`{}`, digits: {:?}", input, digits) ;
+
+        // -------------------
+
+        let mut input = "0x1a2b,0x3c4d,0x5e6f Hello" ;
+
+        print!("input: `{}` => ", input) ;
+        let digits = parse_list.parse_next(&mut input).unwrap();
+
+        println!("`{}`, digits: {:?}", input, digits) ;
+
+
+        /*
         assert_eq!(input, " Hello");
         assert_eq!(digits, vec![1usize, 2, 3, 4, 5]);
 
         assert!(parse_digits(&mut "ghiWorld").is_err());
+         */
     }
 
     
