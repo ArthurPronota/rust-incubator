@@ -341,7 +341,7 @@ fn main() {
         assert_eq!(input, " Hello");
     }
 
-    // 
+    // Глава 4. https://docs.rs/winnow/latest/winnow/_tutorial/chapter_4/index.html
     {
         use winnow::Result;
         use winnow::ascii::digit1;
@@ -361,6 +361,11 @@ fn main() {
         assert!(parse_digits(&mut "Z").is_err());
 
     }
+
+    {
+        
+    }
+
     
 }
 

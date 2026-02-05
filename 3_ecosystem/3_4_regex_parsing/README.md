@@ -1042,14 +1042,17 @@ fn parse_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
 
 Для того чтобы наш парсер возвращал другой тип, нам нужно всего лишь изменить параметр типа объекта Result на желаемый возвращаемый тип. Например, чтобы вернуть __usize__, верните __Result<usize>__.
 
-Один из способов преобразования типов, встроенных в механизм фильтрации, — это использование комбинатора __Parser::parse_to__ для преобразования успешного синтаксического анализа в определенный тип с помощью функции __FromStr__.
+Один из способов преобразования типов, встроенных в механизм фильтрации, — это использование комбинатора [Parser::parse_to](https://docs.rs/winnow/latest/winnow/trait.Parser.html#method.parse_to) для преобразования успешного синтаксического анализа в определенный тип с помощью функции [FromStr](https://doc.rust-lang.org/nightly/core/str/traits/trait.FromStr.html).
 
 Следующий код преобразует строку, содержащую число, в переменную размера usize:
 
 ```rust
+use winnow::Result;
+use winnow::ascii::digit1;
+
 fn parse_digits(input: &mut &str) -> Result<usize> {
     digit1
-        .parse_to::<usize>()    // добавил ::<usize>
+        .parse_to::<usize>()    // добавил ::<usize> для вного преобразования
         .parse_next(input)
 }
 
@@ -1063,6 +1066,50 @@ fn main() {
     assert!(parse_digits(&mut "Z").is_err());
 }
 ```
+
+Parser::parse_to — это всего лишь удобная форма [Parser::try_map](https://docs.rs/winnow/latest/winnow/trait.Parser.html#method.try_map), которую мы можем использовать для обработки
+всех систем счисления чисел:
+
+```rust
+use winnow::Result;
+use winnow::combinator::dispatch;
+use winnow::token::take;
+use winnow::combinator::fail;
+
+fn parse_digits(input: &mut &str) -> Result<usize> {
+    dispatch!(take(2usize);
+        "0b" => parse_bin_digits.try_map(|s| usize::from_str_radix(s, 2)),
+        "0o" => parse_oct_digits.try_map(|s| usize::from_str_radix(s, 8)),
+        "0d" => parse_dec_digits.try_map(|s| usize::from_str_radix(s, 10)),
+        "0x" => parse_hex_digits.try_map(|s| usize::from_str_radix(s, 16)),
+        _ => fail,
+    ).parse_next(input)
+}
+
+/* здесь определены:
+    parse_bin_digits(...)
+    parse_oct_digits(...)
+    parse_dec_digits(...)
+    parse_hex_digits(...)
+*/
+
+fn main() {
+    let mut input = "0x1a2b Hello";
+
+    let digits = parse_digits.parse_next(&mut input).unwrap();
+
+    assert_eq!(input, " Hello");
+    assert_eq!(digits, 0x1a2b);
+
+    assert!(parse_digits(&mut "ghiWorld").is_err());
+}
+```
+
+См. также раздел [Parser](https://docs.rs/winnow/latest/winnow/trait.Parser.html) для получения информации о других парсерах, изменяющих выходные данные.
+
+### Глава 5: Повторение
+
+
 <hr>
 
 [`chomp`]: https://docs.rs/chomp
