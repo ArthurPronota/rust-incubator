@@ -43,7 +43,7 @@ pub struct FormatSpec<'a> {
 }
 
 // так:
-fn parse_format_spec<'a>(input: &mut &'a str) ->
+fn _parse_format_spec<'a>(input: &mut &'a str) ->
         PResult<FormatSpec<'a>> 
 /* или так:
 fn parse_format_spec<'a>(input: &mut &'a str) ->
@@ -190,7 +190,7 @@ mod tests {
                             //"0>+#010.5$r#",
                             "0>+#010.*r#"
                             ;
-        match parse_format_spec.parse_next(&mut input) {
+        match _parse_format_spec.parse_next(&mut input) {
             Ok(spec) => println!("{:#?}", spec),
             Err(e) => eprintln!("Error: {}", e),
         }        
