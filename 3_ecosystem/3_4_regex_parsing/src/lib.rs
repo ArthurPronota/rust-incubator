@@ -206,8 +206,11 @@ fn parse(input: &str) -> (
                             Option<usize>,      // width
                             Option<Precision>   // precision 
                         ) {
+    // VVV код для получения типа:  &mut &'a str 
     let v = input.to_string() ;
     let mut v2 = v.as_str() ;
+    // ^^^^ код для получения типа:  &mut &'a str 
+
     match parse_format_spec.parse_next(&mut v2) {
         Ok(spec) => spec,
         Err(e) => panic!("Error: {}", e),
