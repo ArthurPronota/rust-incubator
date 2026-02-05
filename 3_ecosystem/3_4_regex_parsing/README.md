@@ -1109,6 +1109,88 @@ fn main() {
 
 ### Глава 5: Повторение
 
+В [главе 3](глава-3-последовательность-и-альтернативы) мы рассмотрели, как упорядочить различные парсеры в кортеж, но иногда необходимо запускать один и тот же парсер несколько раз, собирая результаты в контейнер, например, Vec.
+
+Давайте получим результат выполнения функции parse_digits:
+
+```rust
+use winnow::Result;
+use winnow::combinator::opt;
+use winnow::combinator::terminated;
+use winnow::ascii::digit1;
+
+fn parse_digits(input: &mut &str) -> Result<usize> {
+    digit1
+        .parse_to::<usize>()
+        .parse_next(input)
+}
+
+fn parse_list(input: &mut &str) -> Result<Vec<usize>> {
+    let mut list = Vec::new();
+    while let Some(output) = opt(
+                                terminated(
+                                        parse_digits,
+                                       opt(',')
+                                    )
+                                )
+                                .parse_next(input)? {
+        list.push(output);
+    }
+    Ok(list)
+}
+
+fn main() {
+    let mut input = "1,2,3,4,5 Hello" ;
+
+    let digits = parse_list.parse_next(&mut input).unwrap();
+
+    assert_eq!(input, " Hello");
+    assert_eq!(digits, vec![1usize, 2, 3, 4, 5]);
+
+    assert!(parse_digits(&mut "ghiWorld").is_err());
+}
+```
+
+Мы можем реализовать это декларативно с помощью функции [repeat](https://docs.rs/winnow/latest/winnow/combinator/fn.repeat.html):
+
+```rust
+use winnow::combinator::opt;
+use winnow::combinator::repeat;
+use winnow::combinator::terminated;
+
+fn parse_list(input: &mut &str) -> Result<Vec<usize>> {
+    repeat(0..,
+        terminated(parse_digits, opt(','))
+    ).parse_next(input)
+}
+```
+
+Вы заметите, что в приведенном выше примере допускается запятая в конце. Однако, если это нежелательно, это легко исправить, используя [separated](https://docs.rs/winnow/latest/winnow/combinator/fn.separated.html) вместо [repeat](https://docs.rs/winnow/latest/winnow/combinator/fn.repeat.html):
+
+```rust
+use winnow::combinator::separated;
+
+fn parse_list(input: &mut &str) -> Result<Vec<usize>> {
+    separated(0.., parse_digits, ",").parse_next(input)
+}
+
+// ...
+
+fn main() {
+    let mut input = "0x1a2b,0x3c4d,0x5e6f Hello";
+
+    let digits = parse_list.parse_next(&mut input).unwrap();
+
+    assert_eq!(input, " Hello");
+    assert_eq!(digits, vec![0x1a2b, 0x3c4d, 0x5e6f]);
+
+    assert!(parse_digits(&mut "ghiWorld").is_err());
+}
+```
+
+Если внимательно присмотреться к [separated](https://docs.rs/winnow/latest/winnow/combinator/fn.separated.html) и [repeat](https://docs.rs/winnow/latest/winnow/combinator/fn.repeat.html), то окажется, что они не ограничиваются сбором результата в `Vec`, а реализуют любой трейт `Accumulate`. Например, `Accumulate` также реализован для `HashSet`, `String` и `()`.
+
+
 
 <hr>
 

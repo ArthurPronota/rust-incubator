@@ -363,7 +363,39 @@ fn main() {
     }
 
     {
-        
+        use winnow::Result;
+        use winnow::combinator::opt;
+        use winnow::combinator::terminated;
+        use winnow::ascii::digit1;
+
+        fn parse_digits(input: &mut &str) -> Result<usize> {
+            digit1
+                .parse_to::<usize>()
+                .parse_next(input)
+        }
+
+        fn parse_list(input: &mut &str) -> Result<Vec<usize>> {
+            let mut list = Vec::new();
+            while let Some(output) = opt(
+                                terminated(
+                                        parse_digits,
+                                       opt(',')
+                                    )
+                                )
+                                .parse_next(input)? {
+                list.push(output);
+            }
+            Ok(list)
+        }
+
+        let mut input = "1,2,3,4,5 Hello" ;
+
+        let digits = parse_list.parse_next(&mut input).unwrap();
+
+        assert_eq!(input, " Hello");
+        assert_eq!(digits, vec![1usize, 2, 3, 4, 5]);
+
+        assert!(parse_digits(&mut "ghiWorld").is_err());
     }
 
     
