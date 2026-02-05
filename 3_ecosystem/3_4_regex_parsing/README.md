@@ -1190,6 +1190,40 @@ fn main() {
 
 Если внимательно присмотреться к [separated](https://docs.rs/winnow/latest/winnow/combinator/fn.separated.html) и [repeat](https://docs.rs/winnow/latest/winnow/combinator/fn.repeat.html), то окажется, что они не ограничиваются сбором результата в `Vec`, а реализуют любой трейт `Accumulate`. Например, `Accumulate` также реализован для `HashSet`, `String` и `()`.
 
+Это позволяет нам создавать более сложные парсеры, чем те, что мы использовали в [главе 2](#глава-2-токены-и-тэги), путем накопления результатов в () и обработки полученных входных данных.
+
+Метод take работает следующим образом:
+
+- Создание контрольной точки
+- Запуск внутреннего парсера, в нашем случае парсера parse_list, который - будет продвигать входные данные
+- Возвращение среза из первой контрольной точки в текущую позицию.
+
+Поскольку результат функции parse_list отбрасывается, мы накапливаем его в (), чтобы не тратить время на создание неиспользуемого вектора.
+
+```rust
+fn take_list<'s>(input: &mut &'s str) -> Result<&'s str> {
+    parse_list.take().parse_next(input)
+}
+
+fn parse_list(input: &mut &str) -> Result<()> {
+    separated(0.., parse_digits, ",").parse_next(input)
+}
+
+
+fn main() {
+    let mut input = "0x1a2b,0x3c4d,0x5e6f Hello";
+
+    let digits = take_list.parse_next(&mut input).unwrap();
+
+    assert_eq!(input, " Hello");
+    assert_eq!(digits, "0x1a2b,0x3c4d,0x5e6f");
+
+    assert!(parse_digits(&mut "ghiWorld").is_err());
+}
+```
+
+См. раздел [combinator](https://docs.rs/winnow/latest/winnow/combinator/index.html) для получения информации о других парсерах повторений.
+
 
 
 <hr>
