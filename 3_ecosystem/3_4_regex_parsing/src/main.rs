@@ -1,4 +1,11 @@
-// https://docs.rs/winnow/latest/winnow/_tutorial/chapter_1/index.html
+/*
+   Реализация парзера на основе regex.
+
+   Документация по winnow:
+   https://docs.rs/winnow/latest/winnow/_tutorial/chapter_1/index.html
+
+   Запуск тестов:   cargo test 
+ */
 
 // Скомпилированное регулярное выражение для поиска в Unicode стогах.
 use regex::Regex ;
@@ -33,7 +40,6 @@ fn main() {
         use winnow::Result;
         // корневой trait для parsing
         use winnow::Parser ;
-
         pub fn do_nothing_parser<'s>(input: &mut &'s str) -> Result<&'s str> {
             Ok("")
         }
@@ -416,12 +422,14 @@ fn parse(input: &str) -> (
     (sign_out, width_out, precision_out)
 }
 
+/// знак (+-)
 #[derive(Debug, PartialEq)]
 enum Sign {
     Plus,
     Minus,
 }
 
+/// точность
 #[derive(Debug, PartialEq)]
 enum Precision {
     Integer(usize),
