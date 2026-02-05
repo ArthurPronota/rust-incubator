@@ -286,7 +286,7 @@ fn main() {
 
         fn parse_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
             take_while(
-                1.., 
+                1.., // 1 или более (как +)
                 (
                     ('0'..='9'),
                     ('A'..='F'),
@@ -341,7 +341,27 @@ fn main() {
         assert_eq!(input, " Hello");
     }
 
+    // 
+    {
+        use winnow::Result;
+        use winnow::ascii::digit1;
 
+        fn parse_digits(input: &mut &str) -> Result<usize> {
+            digit1
+                .parse_to::<usize>()
+                .parse_next(input)
+        }
+
+        let mut input = "1024 Hello";
+
+        let output = parse_digits.parse_next(&mut input).unwrap();
+        assert_eq!(input, " Hello");
+        assert_eq!(output, 1024);
+
+        assert!(parse_digits(&mut "Z").is_err());
+
+    }
+    
 }
 
 /// разбор входной строки `format_spec`
