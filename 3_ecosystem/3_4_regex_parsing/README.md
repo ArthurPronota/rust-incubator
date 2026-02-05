@@ -1144,12 +1144,55 @@ fn main() {
 
     let digits = parse_list.parse_next(&mut input).unwrap();
 
+    print!("input: `{}` => ", input) ;
+    let digits = parse_list.parse_next(&mut input).unwrap();
+
+    println!("`{}`, digits: {:?}", input, digits) ;
+
     assert_eq!(input, " Hello");
     assert_eq!(digits, vec![1usize, 2, 3, 4, 5]);
 
     assert!(parse_digits(&mut "ghiWorld").is_err());
+
+    // -------------------
+
+    let mut input = "0x1a2b,0x3c4d,0x5e6f Hello" ;
+
+    print!("input: `{}` => ", input) ;
+    let digits = parse_list.parse_next(&mut input).unwrap();
+
+    println!("`{}`, digits: {:?}", input, digits) ;    
 }
 ```
+
+__Вывод программы:__
+
+```text
+input: `1,2,3,4,5 Hello` => ` Hello`, digits: [1, 2, 3, 4, 5]
+input: `0x1a2b,0x3c4d,0x5e6f Hello` => `x1a2b,0x3c4d,0x5e6f Hello`, digits: [0]
+```
+
+__Разбор сложного вложения парзеров__:
+
+```rust
+let v: Result<Option<usize>, winnow::error::ContextError> = 
+                opt(
+                    terminated(
+                                parse_digits,
+                                opt(',')
+                              )
+                )
+                .parse_next(input) ;
+```
+
+Если parse_digits возвращает ошибку то terminated возвразает ошибку.
+
+_Особенности opt(parser):_
+
+- Если parser успешен → возвращает Ok(Some(result))
+- Если parser возвращает ошибку → возвращает Ok(None)
+- Никогда не возвращает ошибку (кроме фатальных ошибок вроде OOM)
+
 
 Мы можем реализовать это декларативно с помощью функции [repeat](https://docs.rs/winnow/latest/winnow/combinator/fn.repeat.html):
 

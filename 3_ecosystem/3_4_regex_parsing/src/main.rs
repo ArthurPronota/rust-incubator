@@ -415,6 +415,11 @@ fn main() {
 
         println!("`{}`, digits: {:?}", input, digits) ;
 
+        assert_eq!(input, " Hello");
+        assert_eq!(digits, vec![1usize, 2, 3, 4, 5]);
+
+        assert!(parse_digits(&mut "ghiWorld").is_err());
+
         // -------------------
 
         let mut input = "0x1a2b,0x3c4d,0x5e6f Hello" ;
@@ -423,14 +428,6 @@ fn main() {
         let digits = parse_list.parse_next(&mut input).unwrap();
 
         println!("`{}`, digits: {:?}", input, digits) ;
-
-
-        /*
-        assert_eq!(input, " Hello");
-        assert_eq!(digits, vec![1usize, 2, 3, 4, 5]);
-
-        assert!(parse_digits(&mut "ghiWorld").is_err());
-         */
     }
 
     
