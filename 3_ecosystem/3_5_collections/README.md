@@ -96,13 +96,28 @@ Prove your implementation correctness with tests.
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
-- What is a collection? What is an iterator? How do they differ? How are they used? Which limitations does each one have?
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
+- [Что такое коллекция? Что такое итератор? Чем они отличаются? Как они используются? Какие ограничения есть у каждого из них?]()
+
 - What are immutable collections? How do they work? Why shouldn't we use them all the time? When does it make sense to use them?
 - What are concurrent collections? How do they work? Why are they better than explicit synchronization on a normal collection?
 
+<hr>
+
+### Что такое коллекция? Что такое итератор? Чем они отличаются? Как они используются? Какие ограничения есть у каждого из них?
+
+1. #### Что такое Коллекция (Collection)?
+
+__Коллекция__ — это структура данных, которая реально владеет набором значений и хранит их в памяти (обычно в куче/heap).
+
+- Примеры: Vec<T>, HashMap<K, V>, BTreeMap<K, V>, String.
+- Цель: Хранение, организация и быстрый доступ к данным.
+- Ограничения:
+    - Память: Потребляет место в куче.
+    - Владение: Когда коллекция выходит из области видимости, она уничтожает все свои элементы (вызывает drop).
 
 
+<hr>
 
 [`chashmap`]: https://docs.rs/chashmap
 [`crossbeam`]: https://docs.rs/crossbeam
