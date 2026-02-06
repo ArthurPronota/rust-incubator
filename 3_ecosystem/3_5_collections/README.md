@@ -6,11 +6,12 @@ __Estimated time__: 1 day
 
 
 
-## `std` collections
+## `std` коллекции
 
-[Rust] provides [implementations for commonly used collections][`std::collections`] in its `std` library. They come with [different guarantees][2] and for [different purposes][1], and are usually applicable for 90% use cases.
+[Rust] предоставляет [реализации для часто используемых коллекций][`std::collections`] в своей библиотеке `std`. Они имеют [различные гарантии][2] и предназначены для [различных целей][1], и обычно применимы для 90% случаев использования.
 
-To better understand [`std::collections`]' purpose, design, limitations and use cases, read through:
+
+Чтобы лучше понять назначение, дизайн, ограничения и варианты использования [`std::collections`], ознакомьтесь со следующими материалами:
 - [Rust Book: 8. Common Collections][5]
 - [Rust By Example: 19.2. Vectors][3]
 - [Rust By Example: 19.7. HashMap][4]
@@ -19,20 +20,21 @@ To better understand [`std::collections`]' purpose, design, limitations and use 
 
 
 
-## Iterators
+## Итераторы
 
-> Iterators are heavily used in idiomatic Rust code, so it's worth becoming familiar with them.
+> Итераторы широко используются в идиоматическом коде Rust, поэтому стоит с ними ознакомиться.
 
-While collection represents a some complete set of data, an [`Iterator`] is a way of iteration over its elements.
+В то время как коллекция представляет собой полный набор данных, итератор — это способ итерации по её элементам.
 
-> An iterator has a method, [`next`][7], which when called, returns an `Option<Item>`. [`next`][7] will return `Some(Item)` as long as there are elements, and once they've all been exhausted, will return `None` to indicate that iteration is finished. Individual iterators may choose to resume iteration, and so calling [`next`][7] again may or may not eventually start returning `Some(Item)` again at some point.
+> Итератор имеет метод [`next`][7], который при вызове возвращает `Option<Item>`. [`next`][7] будет возвращать `Some(Item)` до тех пор, пока есть элементы, и как только все они будут исчерпаны, вернет `None`, указывая на завершение итерации. Отдельные итераторы могут возобновить итерацию, поэтому повторный вызов [`next`][7] может в какой-то момент снова начать возвращать `Some(Item)`.
+
 >
-> Iterators are also composable, and it's common to chain them together to do more complex forms of processing.
+> Итераторы также являются составными, и их часто объединяют в цепочки для выполнения более сложных видов обработки.
 
-There are three forms of iteration over a collection in [Rust]:
-- `iter()` iterates over _borrowed_ elements (`&T`), so used for read-only operations with a collection.
-- `iter_mut()` iterates over _mutably borrowed_ elements (`&mut T`), so used when in-place elements mutation is required.
-- `into_iter()` iterates over _owned_ element (`T`), so used when whole collection transformation and/or moving is required.
+В [Rust] существует три способа итерации по коллекции:
+- Функция `iter()` перебирает заимствованные элементы (`&T`), поэтому используется для операций чтения с коллекцией.
+- Функция `iter_mut()` выполняет итерацию по _изменяемо заимствованным_ элементам (`&mut T`), поэтому используется, когда требуется изменение элементов на месте.
+- Функция `into_iter()` перебирает элементы, находящиеся в собственности (`T`), поэтому используется, когда требуется преобразование всей коллекции и/или перемещение элементов.
 
 It's important to remember, that __iterators (and their adapters) are lazy__. [`Iterator`] does _nothing_, unless its [`next()`][7] method is called. This property leads to the next one: __iterators do not have to be finite__. So, if you need a sort of an infinite collection (like endless [fibonacci sequence][8]), an [`Iterator`] implementation is a way to go, as each new element will be evaluated lazily on request.
 
