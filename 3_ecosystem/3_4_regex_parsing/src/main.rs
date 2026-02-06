@@ -40,7 +40,7 @@ fn main() {
         use winnow::Result;
         // корневой trait для parsing
         use winnow::Parser ;
-        pub fn do_nothing_parser<'s>(input: &mut &'s str) -> Result<&'s str> {
+        pub fn do_nothing_parser<'s>(_input: &mut &'s str) -> Result<&'s str> {
             Ok("")
         }
 
@@ -108,6 +108,7 @@ fn main() {
         use winnow::error::ParserError;
         use winnow::Result;
 
+        #[allow(dead_code)]
         fn parse_prefix(input: &mut &str) -> Result<char> {
             let c = any
                 /* 
@@ -126,7 +127,8 @@ fn main() {
         use winnow::Parser;
         use winnow::token::any;
         use winnow::Result;
-
+        
+        #[allow(dead_code)]
         fn parse_prefix(input: &mut &str) -> Result<char> {
             let c = any
                     /*
@@ -148,6 +150,7 @@ fn main() {
         use winnow::Parser;
         use winnow::Result;
 
+        #[allow(dead_code)]
         fn parse_prefix(input: &mut &str) -> Result<char> {
             let c = '0'
                     /* 
@@ -198,6 +201,7 @@ fn main() {
         use winnow::token::literal;
         use winnow::Result;
 
+        #[allow(dead_code)]
         fn parse_prefix<'s>(input: &mut &'s str) -> Result<&'s str> {
             let expected = "0x";
             let actual = literal(expected) // Распознаёт литерал
@@ -215,6 +219,7 @@ fn main() {
         use winnow::Parser;
         use winnow::Result;
 
+        #[allow(dead_code)]
         fn parse_prefix<'s>(input: &mut &'s str) -> Result<&'s str> {
             let actual = "0x"
                                 /* 
@@ -533,6 +538,7 @@ enum Precision {
 mod spec {
     use super::*;
 
+    // тест sign
     #[test]
     fn parses_sign() {
         for (input, expected) in vec![
@@ -547,6 +553,7 @@ mod spec {
         }
     }
 
+    // тест width
     #[test]
     fn parses_width() {
         for (input, expected) in vec![
@@ -561,6 +568,7 @@ mod spec {
         }
     }
 
+    // тест precision
     #[test]
     fn parses_precision() {
         for (input, expected) in vec![

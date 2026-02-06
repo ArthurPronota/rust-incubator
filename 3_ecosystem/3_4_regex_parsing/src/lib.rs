@@ -51,7 +51,7 @@ enum Precision {
     Asterisk,
 }
 
-// так:
+/// разбор строки по спецификации:
 fn parse_format_spec<'a>(input: &mut &'a str) ->
         PResult<(
                     Option<Sign>,       // sign
@@ -59,7 +59,7 @@ fn parse_format_spec<'a>(input: &mut &'a str) ->
                     Option<Precision>   // precision         
         )> 
 {
-    //let mut spec = FormatSpec::default();
+    // начальная установка
     let mut out_data = (
                     Option::<Sign>::None,       // sign
                     Option::<usize>::None,      // width
@@ -221,6 +221,7 @@ fn parse(input: &str) -> (
 mod tests {
     use super::* ;
 
+    // тест sign
     #[test]
     fn parses_sign() {
         for (input, expected) in vec![
@@ -235,6 +236,7 @@ mod tests {
         }
     }
 
+    // тест width
     #[test]
     fn parses_width() {
         for (input, expected) in vec![
@@ -249,6 +251,7 @@ mod tests {
         }
     }
 
+    // тест precision
     #[test]
     fn parses_precision() {
         for (input, expected) in vec![
