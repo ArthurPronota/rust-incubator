@@ -1623,6 +1623,14 @@ expected binary
 
 Для более подробного анализа синтаксических ошибок с использованием фрагментов текста, рассмотрите возможность разделения лексического и синтаксического анализа и аннотирования токенов с помощью [Parser::with_span](https://docs.rs/winnow/latest/winnow/trait.Parser.html#method.with_span).
 
+### Глава 8: Отладка
+
+Когда неизбежно что-то пойдет не так, вы можете проанализировать состояние парсинга, запустив тестовый случай с параметром __--features winnow/debug__.
+
+Например, трассировочный вывод [escaped string parser](https://docs.rs/winnow/latest/winnow/_topic/language/index.html#escaped-strings):
+
+![alt text](image.png)
+
 
 <hr>
 
