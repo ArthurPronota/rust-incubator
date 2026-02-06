@@ -118,7 +118,8 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [`Какие преимущества дают библиотеки при написании собственного парсера? Являются ли они обязательными? Когда имеет смысл избегать использования библиотек для реализации парсера?`](3_ecosystem/3_4_regex_parsing#какие-преимущества-дают-библиотеки-при-написании-собственного-парсера-являются-ли-они-обязательными-когда-имеет-смысл-избегать-использования-библиотек-для-реализации-парсера)
         - [`Базовые конструкции regex`](3_ecosystem/3_4_regex_parsing#базовые-конструкции-regex)
         - [`Парзер winnow, делающиё разбор лёгким (руководство)`](3_ecosystem/3_4_regex_parsing#парзер-winnow-делающиё-разбор-лёгким-руководство)
-    - [ ] [3.5. Collections and iterators][Step 3.5] (1 day)
+    - [ ] [Шаг 3.5: Коллекции и итераторы][Step 3.5] (1 day)
+    
     - [ ] [3.6. Serialization and deserialization][Step 3.6] (1 day)
     - [ ] [3.7. Randomness and cryptography][Step 3.7] (1 day)
     - [ ] [3.8. Logging and tracing][Step 3.8] (1 day)

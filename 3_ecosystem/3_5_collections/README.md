@@ -1,4 +1,4 @@
-Step 3.5: Collections and iterators
+Шаг 3.5: Коллекции и итераторы
 ===================================
 
 __Estimated time__: 1 day
