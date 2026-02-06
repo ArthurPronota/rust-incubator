@@ -1347,6 +1347,132 @@ fn main() {
 }
 ```
 
+В [главе 1](#глава-1-winnow-way) мы вскользь упомянули вариант Err объекта `Result`. `Result<O>` — это, по сути, сокращение от `Result<O, E=ContextError>`, где [ContextError](https://docs.rs/winnow/latest/winnow/error/struct.ContextError.html) — это относительно простой способ создания разумных для человека ошибок.
+
+Для уточнения ошибки и добавления пользовательских типов при размотке стека можно использовать [Parser::context](https://docs.rs/winnow/latest/winnow/trait.Parser.html#method.context):
+
+```rust
+use winnow::error::StrContext;
+use winnow::error::StrContextValue;
+use winnow::combinator::alt;
+use winnow::Result;
+use winnow::token::take_while;
+
+// Парсер для двоичных цифр (0-1)
+fn parse_bin_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
+    // Распознать самый длинный (m <= len <= n) входной фрагмент, соответствующий набору токенов.
+    take_while(
+        1.., |c: char| c == '0' || c == '1')
+        // Если разбор не удался, добавьте контекст к сообщению об ошибке.
+        .context(
+            StrContext::Expected(
+                    StrContextValue::Description("binary digit (0 or 1)")
+                )
+            )
+        .parse_next(input)
+}
+
+// Парсер для восьмеричных цифр (0-7)
+fn parse_oct_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
+    // Распознать самый длинный (m <= len <= n) входной фрагмент, соответствующий набору токенов.
+    take_while(
+        1.., 
+        |c: char| 
+                ('0'..='7')
+                    .contains(&c) // Возвращает true, если элемент содержится в заданном диапазоне.
+    )
+    // Если разбор не удался, добавьте контекст к сообщению об ошибке.
+    .context(
+        StrContext::Expected(
+            StrContextValue::Description("octal digit (0-7)")
+        )
+    )
+    // Извлекает токены из потока и преобразует их в выходные данные.
+    .parse_next(input)
+}
+
+// Парсер для десятичных цифр (0-9)
+fn parse_dec_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
+    // Распознать самый длинный (m <= len <= n) входной фрагмент, соответствующий набору токенов.
+    take_while(
+        1.., 
+        |c: char| c.is_ascii_digit()
+    )
+    // Если разбор не удался, добавьте контекст к сообщению об ошибке.
+    .context(
+        StrContext::Expected(
+            StrContextValue::Description("decimal digit (0-9)")
+        )
+    )
+    // Извлекает токены из потока и преобразует их в выходные данные.
+    .parse_next(input)
+}
+
+// Парсер для шестнадцатеричных цифр (0-9, A-F, a-f)
+fn parse_hex_digits<'s>(input: &mut &'s str) -> Result<&'s str> {
+    // Распознать самый длинный (m <= len <= n) входной фрагмент, соответствующий набору токенов.
+    take_while(
+        1.., 
+        |c: char| c.is_ascii_hexdigit() // Проверяет, является ли значение шестнадцатеричной цифрой ASCII:
+    )
+    // Если разбор не удался, добавьте контекст к сообщению об ошибке.
+    .context(
+        StrContext::Expected(
+            StrContextValue::Description("hexadecimal digit (0-9, A-F, a-f)")
+        )
+    )
+    // Извлекает токены из потока и преобразует их в выходные данные.
+    .parse_next(input)
+}
+
+/// разбор цифр
+fn parse_digits<'s>(input: &mut &'s str) -> Result<(&'s str, &'s str)> {
+    // alt((parser1, parser2, parser3, ...)) пытается выполнить парсеры по порядку
+    // Возвращает результат первого успешного парсера
+    // Если все парсеры неуспешны - возвращает ошибку
+    alt((
+        ("0b", parse_bin_digits)
+            // установка цепочки контекстов
+          .context(StrContext::Label("digit"))
+          .context(StrContext::Expected(StrContextValue::Description("binary"))),
+        ("0o", parse_oct_digits)
+            // установка цепочки контекстов
+          .context(StrContext::Label("digit"))
+          .context(StrContext::Expected(StrContextValue::Description("octal"))),
+        ("0d", parse_dec_digits)
+            // установка цепочки контекстов
+          .context(StrContext::Label("digit"))
+          .context(StrContext::Expected(StrContextValue::Description("decimal"))),
+        ("0x", parse_hex_digits)
+            // установка цепочки контекстов
+          .context(StrContext::Label("digit"))
+          .context(StrContext::Expected(StrContextValue::Description("hexadecimal"))),
+    )).parse_next(input)
+}
+
+// ...
+
+fn main() {
+    let input = "0xZZ";
+    let error = "\
+0xZZ
+  ^
+invalid digit
+expected hexadecimal";
+    assert_eq!(input.parse::<Hex>().unwrap_err(), error);
+}
+```
+
+__alt((parser1, parser2, parser3, ...))__:
+
+- пытается выполнить парсеры по порядку
+- Возвращает результат первого успешного парсера
+- Если все парсеры неуспешны - возвращает ошибку
+
+#### Error Cuts
+
+
+
 <hr>
 
 [`chomp`]: https://docs.rs/chomp
