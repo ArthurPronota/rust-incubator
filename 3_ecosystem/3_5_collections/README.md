@@ -100,6 +100,8 @@ Prove your implementation correctness with tests.
 - [Что такое коллекция? Что такое итератор? Чем они отличаются? Как они используются? Какие ограничения есть у каждого из них?](#что-такое-коллекция-что-такое-итератор-чем-они-отличаются-как-они-используются-какие-ограничения-есть-у-каждого-из-них)
 
 - What are immutable collections? How do they work? Why shouldn't we use them all the time? When does it make sense to use them?
+- [Что такое неизменяемые коллекции? Как они работают? Почему не стоит использовать их постоянно? Когда имеет смысл их использовать?]()
+
 - What are concurrent collections? How do they work? Why are they better than explicit synchronization on a normal collection?
 
 <hr>
@@ -161,6 +163,14 @@ let doubled_evens: Vec<i32> = numbers
 - Итераторы: Вы не можете произвольно прыгнуть в середину итератора (нужно вызвать .next() n раз). Также итератор блокирует коллекцию (вы не можете менять Vec, пока по нему открыт iter()), чтобы избежать [ошибок доступа](https://www.google.com/url?sa=i&source=web&rct=j&url=https://doc.rust-lang.org/nomicon/aliasing.html&ved=2ahUKEwiBz97C2MSSAxU1ExAIHcUvCSkQy_kOegYIAQgTEAQ&opi=89978449&cd&psig=AOvVaw33btpfIaRL_vMFnyV5R5OO&ust=1770461322228000).
 
 __Важный совет__: Всегда старайтесь выполнять как можно больше работы через итераторы перед тем, как вызывать .collect(). Это позволяет компилятору Rust применить инлайнинг и превратить ваш сложный код в один максимально быстрый цикл на языке ассемблера.
+
+<ht>
+
+### Что такое неизменяемые коллекции? Как они работают? Почему не стоит использовать их постоянно? Когда имеет смысл их использовать?
+
+В Rust термин «неизменяемые коллекции» обычно относится не к стандартным Vec или HashMap (которые становятся неизменяемыми просто при отсутствии mut), а к персистентным структурам данных (Persistent Data Structures).
+
+Наиболее популярной библиотекой для этого является [im](https://docs.rs/im/latest/im/) (или её более быстрая версия [im-rc](https://docs.rs/im-rc/latest/im_rc/index.html)).
 
 
 
