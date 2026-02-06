@@ -1469,9 +1469,75 @@ __alt((parser1, parser2, parser3, ...))__:
 - Возвращает результат первого успешного парсера
 - Если все парсеры неуспешны - возвращает ошибку
 
-#### Error Cuts
+#### Ошибочные сокращения
 
+У нас по-прежнему остается проблема с тем, что происходит сбой, когда система счисления действительна, но цифры ей не соответствуют:
 
+```rust
+fn main() {
+    let input = "0b5";
+    let error = "\
+0b5
+^
+invalid radix prefix
+expected `0b`, `0o`, `0d`, `0x`";
+    assert_eq!(input.parse::<Hex>().unwrap_err(), error);
+}
+```
+
+Winnow предоставляет обертку для ошибок, [ErrMode<ContextError>](https://docs.rs/winnow/latest/winnow/error/enum.ErrMode.html), поэтому различные режимы ошибок могут влиять на синтаксический анализ. ErrMode — это перечисление с вариантами Backtrack и Cut (игнорируйте Incomplete, так как оно актуально только для потоковой обработки). По умолчанию ошибки относятся к режиму Backtrack, что означает, что при сбое будут предприняты попытки выполнения других ветвей синтаксического анализа, например, следующего случая alt. Cut прерывает все остальные ветви, немедленно сообщая об ошибке.
+
+Для повышения удобства использования [ErrMode](https://docs.rs/winnow/latest/winnow/error/enum.ErrMode.html), Winnow предоставляет [ModalResult](https://docs.rs/winnow/latest/winnow/error/type.ModalResult.html):
+
+```rust
+pub type ModalResult<O, E = ContextError> = Result<O, ErrMode<E>>;
+```
+
+Таким образом, мы можем получить правильный контекст, изменив тип на ModalResult и добавив [cut_err](https://docs.rs/winnow/latest/winnow/combinator/fn.cut_err.html):
+
+__cut_err(parser) применяет parser__
+
+- Если parser возвращает ошибку - она становится "жесткой" (Cut)
+- Это предотвращает backtracking и попытки других альтернатив
+
+```rust
+use winnow::combinator::cut_err;
+
+fn parse_digits<'s>(input: &mut &'s str) -> ModalResult<(&'s str, &'s str)> {
+    alt((
+        ("0b", cut_err(parse_bin_digits))
+          .context(StrContext::Label("digit"))
+          .context(StrContext::Expected(StrContextValue::Description("binary"))),
+        ("0o", cut_err(parse_oct_digits))
+          .context(StrContext::Label("digit"))
+          .context(StrContext::Expected(StrContextValue::Description("octal"))),
+        ("0d", cut_err(parse_dec_digits))
+          .context(StrContext::Label("digit"))
+          .context(StrContext::Expected(StrContextValue::Description("decimal"))),
+        ("0x", cut_err(parse_hex_digits))
+          .context(StrContext::Label("digit"))
+          .context(StrContext::Expected(StrContextValue::Description("hexadecimal"))),
+        fail
+          .context(StrContext::Label("radix prefix"))
+          .context(StrContext::Expected(StrContextValue::StringLiteral("0b")))
+          .context(StrContext::Expected(StrContextValue::StringLiteral("0o")))
+          .context(StrContext::Expected(StrContextValue::StringLiteral("0d")))
+          .context(StrContext::Expected(StrContextValue::StringLiteral("0x"))),
+    )).parse_next(input)
+}
+
+// ...
+
+fn main() {
+    let input = "0b5";
+    let error = "\
+0b5
+  ^
+invalid digit
+expected binary";
+    assert_eq!(input.parse::<Hex>().unwrap_err(), error);
+}
+```
 
 <hr>
 
