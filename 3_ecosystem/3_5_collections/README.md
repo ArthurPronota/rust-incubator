@@ -36,24 +36,25 @@ __Estimated time__: 1 day
 - Функция `iter_mut()` выполняет итерацию по _изменяемо заимствованным_ элементам (`&mut T`), поэтому используется, когда требуется изменение элементов на месте.
 - Функция `into_iter()` перебирает элементы, находящиеся в собственности (`T`), поэтому используется, когда требуется преобразование всей коллекции и/или перемещение элементов.
 
-It's important to remember, that __iterators (and their adapters) are lazy__. [`Iterator`] does _nothing_, unless its [`next()`][7] method is called. This property leads to the next one: __iterators do not have to be finite__. So, if you need a sort of an infinite collection (like endless [fibonacci sequence][8]), an [`Iterator`] implementation is a way to go, as each new element will be evaluated lazily on request.
+Важно помнить, __что итераторы (и их адаптеры) являются ленивыми__. [`Итератор`] ничего не делает, если не вызван его метод [`next()`][7]. Это свойство приводит к следующему: __итераторы не обязательно должны быть конечными__. Поэтому, если вам нужна своего рода бесконечная коллекция (например, бесконечная [последовательность Фибоначчи][8]), реализация с помощью [`Итератора` — это подходящий вариант, поскольку каждый новый элемент будет вычисляться лениво по запросу.
 
-[`Iterator`] comes with a lot of powerful and useful [adapters][9] in `std` library, which makes them highly composable and pleasant to use. If `std` capabilities are not enough for your needs, consider to use [`itertools`] crate, which provides more non-trivial adapters.
+[`Iterator`] поставляется с множеством мощных и полезных [адаптеров][9] в библиотеке `std`, что делает их очень компонуемыми и удобными в использовании. Если возможностей `std` недостаточно для ваших нужд, рассмотрите возможность использования крейта [`itertools`], который предоставляет больше нетривиальных адаптеров.
 
-To better understand [Rust] iterators' purpose, design, limitations and use cases, read through:
+
+Чтобы лучше понять назначение, дизайн, ограничения и варианты использования итераторов в Rust, ознакомьтесь со следующей информацией:
 - [Rust By Example: 16.4. Iterators][6]
 - [Official `std::iter` docs][`std::iter`]
 
 
 
 
-## Immutable collections
+## Неизменяемые коллекции
 
-[Immutable collections][10] (aka "persistent data structures") are collections which preserve interface and behavior of its mutable analogues, but have a different implementation under-the-hood, which __allows each piece of code to work with its own copy of a whole collection without worrying about accidentally changing elements for others__. The key feature is in implicit data deduplication. This inevitably comes in a price of performance, so immutable collection has [other performance guarantees][11] than mutable ones.
+[Неизменяемые коллекции][10] (также известные как «постоянные структуры данных») — это коллекции, которые сохраняют интерфейс и поведение своих изменяемых аналогов, но имеют другую внутреннюю реализацию, которая __позволяет каждому фрагменту кода работать со своей собственной копией всей коллекции, не беспокоясь о случайном изменении элементов для других__. Ключевой особенностью является неявная дедупликация данных. Это неизбежно происходит за счет производительности, поэтому неизменяемые коллекции имеют [другие гарантии производительности][11], чем изменяемые.
 
-[Rust] ecosystem has [`im`] and [`rpds`] crates, which provide immutable implementations for some collections.
+В экосистеме [Rust] есть crates [`im`] и [`rpds`], которые предоставляют неизменяемые реализации для некоторых коллекций.
 
-To better understand immutable collections' nature, design, and a motivation behind them, read through:
+Чтобы лучше понять природу, структуру и мотивацию создания неизменяемых коллекций, ознакомьтесь со следующей информацией:
 - [Official `im` crate docs][`im`]
 - [Wikipedia: Persistent data structure][10]
 - [Jean Niklas L'orange: Understanding Clojure's Persistent Vectors, pt. 1][15_1]
@@ -63,13 +64,13 @@ To better understand immutable collections' nature, design, and a motivation beh
 
 
 
-## Concurrent collections
+## Совместно используемые коллекции (Concurrent collections)
 
-When you need to operate with the same collection from multiple threads, the most common and obvious way to go is to put it behind some synchronization primitive (like `Arc<RwLock<VecDeque<T>>>`, for example). However, this _performs too bad_ for an extensive use of a collection. That's why concurrent collections exist: they __allow usage of a collection from multiple threads without explicit synchronization__ and __provide efficient synchronization mechanism under-the-hood__ (usually, leveraging lock-free algorithms).
+Когда необходимо работать с одной и той же коллекцией из нескольких потоков, наиболее распространенный и очевидный способ — это использовать для этого примитив синхронизации (например, `Arc<RwLock<VecDeque<T>>>`). Однако это _слишком плохо_ работает при интенсивном использовании коллекции. Именно поэтому существуют параллельные коллекции: они _позволяют использовать коллекцию из нескольких потоков без явной синхронизации_ и _обеспечивают эффективный механизм синхронизации внутри_ (обычно, используя алгоритмы без блокировок).
 
-[Rust] ecosystem has [`crossbeam`] and [`lockfree`] crates, providing efficient lock-free implementations for some collections usually used in a concurrent context. Also, consider [`flurry`] and [`chashmap`] crates for a concurrent [hash map][`HashMap`] implementation.
+В экосистеме [Rust] есть крейты [`crossbeam`] и [`lockfree`], предоставляющие эффективные реализации без блокировок для некоторых коллекций, обычно используемых в параллельном контексте. Также рассмотрите крейты [`flurry`] и [`chashmap`] для совместной реализации [хэш-карты][`HashMap`].
 
-To better understand concurrent collections' nature, design, and a motivation behind them, read through:
+Чтобы лучше понять природу, структуру и мотивацию создания параллельных коллекций, ознакомьтесь со следующими материалами:
 - [Aaron Turon: Lock-freedom without garbage collection][13]
 - [Stjepan Glavina: Lock-free Rust: Crossbeam in 2019][14]
 - [Wikipedia: Non-blocking algorithm][12]
