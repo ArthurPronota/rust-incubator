@@ -574,7 +574,7 @@ for word in re.find_iter(text) {
 
 В случае успеха парсер вернет обработанные данные. Входные данные будут перемещены в конец обработанного фрагмента, указывая на то, что будет обработано дальше.
 
-Если парсер не сработал, могут быть возвращены различные ошибки. Мы подробнее рассмотрим это в [`главе 7`](_).
+Если парсер не сработал, могут быть возвращены различные ошибки. Мы подробнее рассмотрим это в [`главе 7`](#глава-7-сообщение-об-ошибках).
 
 ```text
                                  ┌─► Ok(what matched the parser)
@@ -591,7 +591,7 @@ my input───►│a parser├──►either──┤
 use winnow::Result;
 ```
 
-Для объединения парсеров нам нужен общий способ обращения к ним, и здесь на помощь приходит трейт __Parser<I, O, E>__, а __Parser::parse_next__ является основным способом продвижения парсинга. В [главе 6]() мы рассмотрим, как интегрировать их в ваше приложение, в частности, с помощью __Parser::parse__.
+Для объединения парсеров нам нужен общий способ обращения к ним, и здесь на помощь приходит трейт __Parser<I, O, E>__, а __Parser::parse_next__ является основным способом продвижения парсинга. В [главе 6](#глава-6-интеграция-парсера) мы рассмотрим, как интегрировать их в ваше приложение, в частности, с помощью __Parser::parse__.
 
 Обратите внимание, что __I__ и __O__ параметризованы — хотя большинство примеров в этой книге будут использовать __&str__ (то есть, разбор строки), они не обязательно должны быть строками и не обязательно должны быть одного типа (рассмотрим простой пример, где __I = &str__, а __O = u64__ — это разбор строки в беззнаковое целое число).
 
@@ -1294,7 +1294,7 @@ pub fn parser<'s>(input: &mut &'s str) -> Result<&'s str> {
 - Оборачивает ошибку в [ParseError](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html).
     - В простых случаях [ParseError](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html) предоставляет реализацию [std::fmt::Display](https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html) для отображения ошибки.
     - В более сложных случаях [ParseError](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html) предоставляет исходные [input](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html#method.input) данные и [offset](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html#method.offset) места сбоя, так что вы можете сохранить эту информацию в сообщении об ошибке и  [отобразить его так, как вам нужно](https://docs.rs/winnow/latest/winnow/_tutorial/chapter_7/index.html#error-adaptation-and-rendering).
-- Преобразует [ModalResult](https://docs.rs/winnow/latest/winnow/error/type.ModalResult.html) в [Result](https://doc.rust-lang.org/nightly/core/result/enum.Result.html) (если используется, подробнее об этом в [главе 7]()).
+- Преобразует [ModalResult](https://docs.rs/winnow/latest/winnow/error/type.ModalResult.html) в [Result](https://doc.rust-lang.org/nightly/core/result/enum.Result.html) (если используется, подробнее об этом в [главе 7](#глава-7-сообщение-об-ошибках)).
 
 Однако [ParseError](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html) все равно потребует некоторой адаптации для интеграции с типами ошибок вашего приложения (например, с символом ?).
 
