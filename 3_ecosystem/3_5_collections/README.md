@@ -97,7 +97,7 @@ Prove your implementation correctness with tests.
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- [Что такое коллекция? Что такое итератор? Чем они отличаются? Как они используются? Какие ограничения есть у каждого из них?]()
+- [Что такое коллекция? Что такое итератор? Чем они отличаются? Как они используются? Какие ограничения есть у каждого из них?](#что-такое-коллекция-что-такое-итератор-чем-они-отличаются-как-они-используются-какие-ограничения-есть-у-каждого-из-них)
 
 - What are immutable collections? How do they work? Why shouldn't we use them all the time? When does it make sense to use them?
 - What are concurrent collections? How do they work? Why are they better than explicit synchronization on a normal collection?

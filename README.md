@@ -119,7 +119,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [`Базовые конструкции regex`](3_ecosystem/3_4_regex_parsing#базовые-конструкции-regex)
         - [`Парзер winnow, делающиё разбор лёгким (руководство)`](3_ecosystem/3_4_regex_parsing#парзер-winnow-делающиё-разбор-лёгким-руководство)
     - [ ] [Шаг 3.5: Коллекции и итераторы][Step 3.5] (1 day)
-    
+        - [Что такое коллекция? Что такое итератор? Чем они отличаются? Как они используются? Какие ограничения есть у каждого из них?](3_ecosystem/3_5_collections#что-такое-коллекция-что-такое-итератор-чем-они-отличаются-как-они-используются-какие-ограничения-есть-у-каждого-из-них)
     - [ ] [3.6. Serialization and deserialization][Step 3.6] (1 day)
     - [ ] [3.7. Randomness and cryptography][Step 3.7] (1 day)
     - [ ] [3.8. Logging and tracing][Step 3.8] (1 day)
