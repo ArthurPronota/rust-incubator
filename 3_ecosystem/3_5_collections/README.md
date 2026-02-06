@@ -92,7 +92,14 @@ Provide an implementation of `UsersRepository` trait backed by some [immutable c
 Prove your implementation correctness with tests.
 
 
+Напишите простой трейт `UsersRepository`, поддерживающий 3 операции (постарайтесь выбрать правильные коллекции):
+- Возвращает единственный `User` по его ID;
+- Возвращает несколько `User` по их IDs;
+- Возвращает IDs of IDs, чей `nickname` содержит заданную строку (функция поиска).
 
+Предоставьте реализацию трейта `UsersRepository`, основанную на некоторой [неизменяемой коллекции](#immutable-collections).
+
+Подтвердите корректность своей реализации с помощью тестов.
 
 ## Questions
 
