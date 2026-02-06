@@ -1327,6 +1327,26 @@ fn main() {
     assert!(input.parse::<Hex>().is_err());
 }
 ```
+
+### Глава 7: Сообщение об ошибках
+
+#### Контекст
+
+При использовании [Parser::parse](https://docs.rs/winnow/latest/winnow/trait.Parser.html#method.parse) мы получаем ошибки, указывающие на причину сбоя, но не объясняющие его:
+
+```rust
+// ...
+
+fn main() {
+    let input = "0xZZ";
+    let error = "\
+0xZZ
+  ^
+";
+    assert_eq!(input.parse::<Hex>().unwrap_err(), error);
+}
+```
+
 <hr>
 
 [`chomp`]: https://docs.rs/chomp
