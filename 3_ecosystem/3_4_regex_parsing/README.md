@@ -1539,6 +1539,91 @@ expected binary";
 }
 ```
 
+#### Адаптация ошибок и рендеринг
+
+Хотя Winnow может обеспечить базовое отображение ошибок, ваше приложение может предъявлять различные требования, выходящие за рамки предоставленных базовых функций, такие как...
+
+- Корректное отображение столбцов с символами Юникода
+- Соответствие определенной разметке
+
+Например, чтобы получить ошибки, аналогичные ошибкам rustc, с помощью фрагментов кода [annotate-snippets](https://crates.io/crates/annotate-snippets):
+
+```rust
+#[derive(Debug, PartialEq, Eq)]
+pub struct Hex(usize);
+
+impl std::str::FromStr for Hex {
+    type Err = HexError;
+
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        // ...
+            .parse(input)
+            .map_err(|e| HexError::from_parse(e))
+    }
+}
+
+#[derive(Debug)]
+pub struct HexError {
+    message: String,
+    // Byte spans are tracked, rather than line and column.
+    // This makes it easier to operate on programmatically
+    // and doesn't limit us to one definition for column count
+    // which can depend on the output medium and application.
+    span: std::ops::Range<usize>,
+    input: String,
+}
+
+impl HexError {
+    // Avoiding `From` so `winnow` types don't become part of our public API
+    fn from_parse(error: ParseError<&str, ContextError>) -> Self {
+        // The default renderer for `ContextError` is still used but that can be
+        // customized as well to better fit your needs.
+        let message = error.inner().to_string();
+        let input = (*error.input()).to_owned();
+        // Assume the error span is only for the first `char`.
+        let span = error.char_span();
+        Self {
+            message,
+            span,
+            input,
+        }
+    }
+}
+
+impl std::fmt::Display for HexError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let message = annotate_snippets::Level::Error.title(&self.message)
+            .snippet(annotate_snippets::Snippet::source(&self.input)
+                .fold(true)
+                .annotation(annotate_snippets::Level::Error.span(self.span.clone()))
+            );
+        let renderer = annotate_snippets::Renderer::plain();
+        let rendered = renderer.render(message);
+        rendered.fmt(f)
+    }
+}
+
+impl std::error::Error for HexError {}
+
+fn main() {
+    let input = "0b5";
+    let error = "\
+error: invalid digit
+expected binary
+  |
+1 | 0b5
+  |   ^
+  |";
+    assert_eq!(input.parse::<Hex>().unwrap_err().to_string(), error);
+}
+```
+
+Чтобы добавить фрагменты данных (span) к разобранным данным для включения в семантические ошибки, см. [Parser::with_span](https://docs.rs/winnow/latest/winnow/trait.Parser.html#method.with_span).
+
+
+Для более подробного анализа синтаксических ошибок с использованием фрагментов текста, рассмотрите возможность разделения лексического и синтаксического анализа и аннотирования токенов с помощью [Parser::with_span](https://docs.rs/winnow/latest/winnow/trait.Parser.html#method.with_span).
+
+
 <hr>
 
 [`chomp`]: https://docs.rs/chomp
