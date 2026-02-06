@@ -1288,6 +1288,16 @@ pub fn parser<'s>(input: &mut &'s str) -> Result<&'s str> {
     - На них безопасно ссылаться между потоками
     - Они не заимствуют
 
+Для решения этой задачи winnow предоставляет [Parser::parse](https://docs.rs/winnow/latest/winnow/trait.Parser.html#method.parse):
+
+- Это гарантирует достижение нами конечной [eof](https://docs.rs/winnow/latest/winnow/combinator/fn.eof.html).
+- Оборачивает ошибку в [ParseError](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html).
+    - В простых случаях [ParseError](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html) предоставляет реализацию [std::fmt::Display](https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html) для отображения ошибки.
+    - В более сложных случаях [ParseError](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html) предоставляет исходные [input](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html#method.input) данные и [offset](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html#method.offset) места сбоя, так что вы можете сохранить эту информацию в сообщении об ошибке и  [отобразить его так, как вам нужно](https://docs.rs/winnow/latest/winnow/_tutorial/chapter_7/index.html#error-adaptation-and-rendering).
+- Преобразует [ModalResult](https://docs.rs/winnow/latest/winnow/error/type.ModalResult.html) в [Result](https://doc.rust-lang.org/nightly/core/result/enum.Result.html) (если используется, подробнее об этом в [главе 7]()).
+
+Однако [ParseError](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html) все равно потребует некоторой адаптации для интеграции с типами ошибок вашего приложения (например, с символом ?).
+
 <hr>
 
 [`chomp`]: https://docs.rs/chomp
