@@ -97,7 +97,7 @@ Prove your implementation correctness with tests.
 - Возвращает несколько `User` по их IDs;
 - Возвращает IDs of IDs, чей `nickname` содержит заданную строку (функция поиска).
 
-Предоставьте реализацию трейта `UsersRepository`, основанную на некоторой [неизменяемой коллекции](#immutable-collections).
+Предоставьте реализацию трейта `UsersRepository`, основанную на некоторой [неизменяемой коллекции](https://docs.rs/im/latest/im/).
 
 Подтвердите корректность своей реализации с помощью тестов.
 
