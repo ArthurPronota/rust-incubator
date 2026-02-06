@@ -1298,6 +1298,35 @@ pub fn parser<'s>(input: &mut &'s str) -> Result<&'s str> {
 
 Однако [ParseError](https://docs.rs/winnow/latest/winnow/error/struct.ParseError.html) все равно потребует некоторой адаптации для интеграции с типами ошибок вашего приложения (например, с символом ?).
 
+```rust
+use winnow::Parser;
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct Hex(usize);      // Структура-обертка для шестнадцатеричного числа
+
+impl std::str::FromStr for Hex {
+    type Err = anyhow::Error;   // Используем anyhow::Error как тип ошибки
+
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        parse_digits    // Предполагается, что это парсер шестнадцатеричных цифр
+            .map(Hex)   // Преобразует результат в структуру Hex
+            .parse(input)   // Парсит входную строку
+            .map_err(|e| anyhow::format_err!("{e}"))    // Конвертирует ошибку winnow в anyhow
+    }
+}
+
+// ...
+
+fn main() {
+    let input = "0x1a2b";
+    assert_eq!(input.parse::<Hex>().unwrap(), Hex(0x1a2b));
+
+    let input = "0x1a2b Hello";
+    assert!(input.parse::<Hex>().is_err());
+    let input = "ghiHello";
+    assert!(input.parse::<Hex>().is_err());
+}
+```
 <hr>
 
 [`chomp`]: https://docs.rs/chomp
