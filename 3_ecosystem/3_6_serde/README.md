@@ -8,9 +8,10 @@ __Estimated time__: 1 day
 
 ## `serde`
 
-[Rust] ecosystem has the well-known [`serde`] crate, which provides a common (standard, de facto) approach and toolset for serialization and deserialization.
+В экосистеме [Rust] существует хорошо известный крейт [`serde`], который предоставляет общий (стандартный, де-факто) подход и набор инструментов для сериализации и десериализации.
 
-The sweet part is that [`serde`] __does not rely on a runtime reflection__ mechanism and uses trait implementation for each type, so __eliminates most runtime costs__ and in most cases __makes serialization as performant as handwritten serializer for a particular case__, yet __remains ergonomic due to [automatic code deriving][1]__.
+
+Самое приятное то, что [`serde`] __не полагается на механизм рефлексии во время выполнения__ и использует реализацию трейтов для каждого типа, поэтому __исключает большинство затрат во время выполнения__ и в большинстве случаев __делает сериализацию такой же производительной, как и сериализатор, написанный вручную, для конкретного случая__, при этом __остается эргономичным благодаря [автоматическому выводу кода][1]__.
 
 ```rust
 use serde::{Deserialize, Serialize};
@@ -32,7 +33,7 @@ fn main() {
 }
 ```
 
-[`serde`] by itself represents only a universal serialization frontend, which can be backed by actual implementation for any format. There are already [implemented backends for most used formats][2], and you're free to [implement backend for your own format][3] if it's not implemented yet. 
+[`serde`] сам по себе представляет собой лишь универсальный интерфейс сериализации, который может быть подкреплен фактической реализацией для любого формата. Уже существуют [реализованные бэкенды для наиболее часто используемых форматов][2], и вы можете [реализовать бэкенд для своего собственного формата][3], если он еще не реализован.
 
 To better understand and be familiar with [`serde`]'s design, concepts, usage and features (like [zero-copy deserialization][5]), read through:
 - [Official `serde` crate guide][0]
