@@ -1,4 +1,4 @@
-Step 3.6: Serialization and deserialization
+Шаг 3.6: Сериализация и десериализация
 ===========================================
 
 __Estimated time__: 1 day
