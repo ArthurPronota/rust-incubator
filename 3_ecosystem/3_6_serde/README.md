@@ -60,52 +60,65 @@ fn main() {
 
 ## `musli`
 
-[`musli`] is a relatively fresh and alternative framework for serialization and deserialization, which succeeds the principles of [`serde`], but also rethinks and overcomes some of its fundamental limitations.
+[`musli`] — это относительно новая и альтернативная структура для сериализации и десериализации, которая развивает принципы [`serde`], но также переосмысливает и преодолевает некоторые из её фундаментальных ограничений.
 
-> Müsli is designed on similar principles as [`serde`]. Relying on Rust’s powerful trait system to generate code which can largely be optimized away. The end result should be very similar to handwritten highly optimized code.
+> Müsli разработан на принципах, схожих с [`serde`]. Он опирается на мощную систему трейтов Rust для генерации кода, который в значительной степени можно оптимизировать. В результате должен получиться код, очень похожий на написанный вручную высокооптимизированный код.
 
-> Where Müsli differs in design philosophy is twofold:
+> Отличия Müsli в философии дизайна заключаются в двух моментах:
 >
-> We make use of GATs to provide tighter abstractions, which should be easier for Rust to optimize.
+> Мы используем GAT для обеспечения более тесных абстракций, что должно упростить оптимизацию Rust.
 >
-> We make less use of the Visitor pattern in certain instances where it’s deemed unnecessary, such as [when decoding collections][21]. The result is usually cleaner decode implementations
+> В некоторых случаях, когда это считается ненужным, например, [при декодировании коллекций][21], мы реже используем паттерн «Посетитель». В результате обычно получаются более чистые реализации декодирования.
 
-However, the __main "killer feature"__ of [`musli`] is its __ability to serialize/deserialize the same data model in different [modes][22]__. 
+Однако главной "убийственной особенностью" [`musli`] является его способность сериализовывать/десериализовывать одну и ту же модель данных в разных [режимах][22].
 
-> Another major aspect where Müsli differs is in the concept of [modes][22] (note the `M` parameter above). Since this is a parameter of the `Encode` and `Decode` traits it allows for the same data model to be serialized in many different ways.
+> Еще одно важное отличие Müsli заключается в концепции [modes][22] (обратите внимание на параметр `M` выше). Поскольку это параметр трейтов `Encode` и `Decode`, он позволяет сериализовать одну и ту же модель данных множеством различных способов.
+
 
 > ```rust
 > use musli::mode::{DefaultMode, Mode};
 > use musli::{Decode, Encode};
 > use musli_json::Encoding;
 >
-> enum Alt {}
-> impl Mode for Alt {}
+> enum Alt {}   // Создается пустой enum Alt - это пользовательский режим сериализации
+> impl Mode for Alt {}  // Реализуется трейт Mode для этого enum
 >
 > #[derive(Decode, Encode)]
-> #[musli(mode = Alt, packed)]
-> #[musli(default_field_name = "name")]
+> #[musli(mode = Alt, packed)]  // для режима Alt использовать packed кодировку
+> // packed - это компактная форма сериализации, где:
+> // Поля сериализуются как массив (без имен полей)
+> // Порядок полей определяется порядком в структуре
+> // Более компактный вывод, но менее читаемый
+>
+> #[musli(default_field_name = "name")] // по умолчанию использовать имя поля как "name"
+> // Структура с двумя полями:
 > struct Word<'a> {
 >     text: &'a str,
 >     teineigo: bool,
 > }
->
+> // использует стандартный режим (DefaultMode) конфигурации
 > let CONFIG: Encoding<DefaultMode> = Encoding::new();
+> // использует пользовательский режим (Alt) конфигурации
 > let ALT_CONFIG: Encoding<Alt> = Encoding::new();
 >
 > let word = Word {
 >     text: "あります",
 >     teineigo: true,
 > };
->
+> // Сериализация в DefaultMode 
 > let out = CONFIG.to_string(&word)?;
 > assert_eq!(out, r#"{"text":"あります","teineigo":true}"#);
->
+> // Сериализация в Alt (пользовательский с packed)
 > let out = ALT_CONFIG.to_string(&word)?;
 > assert_eq!(out, r#"["あります",true]"#);
+> // Разбор сырой строки:
+> // r#" - начало сырой строки
+> // "#  - конец сырой строки
+> // ["あります",true] - содержимое сырой строки
+> // # - один символ-разделитель (можно больше: ##, ###, etc.)
 > ```
 
-To better understand and be familiar with [`musli`]'s design, concepts, usage and features, read through:
+Чтобы лучше понять и ознакомиться с дизайном, концепциями, использованием и функциями [`musli`], прочтите следующее:
 - [Official `musli` crate docs][`musli`]
 - [John-John Tedro: A fresh look on incremental zero copy serialization][23]
 
