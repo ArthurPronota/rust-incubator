@@ -150,7 +150,7 @@ Prove your implementation correctness with tests.
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- [Как `serde` достигает своей производительности? Как он моделирует данные и разделяет обязанности?]()
+- [Как `serde` достигает своей производительности? Как он моделирует данные и разделяет обязанности?](#как-serde-достигает-своей-производительности-как-он-моделирует-данные-и-разделяет-обязанности)
 
 - When does it have sense to prefer [`musli`] rather than [`serde`]?
 - What is zero-copy deserialization? Why is it beneficial? How does it work in [`serde`]? How does it work in [`rkyv`]?
