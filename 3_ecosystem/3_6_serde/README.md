@@ -35,7 +35,7 @@ fn main() {
 
 [`serde`] сам по себе представляет собой лишь универсальный интерфейс сериализации, который может быть подкреплен фактической реализацией для любого формата. Уже существуют [реализованные бэкенды для наиболее часто используемых форматов][2], и вы можете [реализовать бэкенд для своего собственного формата][3], если он еще не реализован.
 
-To better understand and be familiar with [`serde`]'s design, concepts, usage and features (like [zero-copy deserialization][5]), read through:
+Чтобы лучше понять и ознакомиться с дизайном, концепциями, использованием и функциями [`serde`] (например, [десериализация с нулевым копированием][5]), прочтите следующее:
 - [Official `serde` crate guide][0]
 - [Official `serde` crate docs][`serde`]
 - [Official `serde_json` crate docs][`serde_json`]
@@ -47,16 +47,19 @@ To better understand and be familiar with [`serde`]'s design, concepts, usage an
 - [Manish Goregaokar: So Zero It's ... Negative? (Zero-Copy #3)][14]
 
 
-### Extras
+### Дополнительно
 
-Being the de facto ecosystem standard, [`serde`] crate itself is quite conservative about stability guarantees, so often may feel lacking obvious features. Therefore, additional ecosystem crates are worth considering, which extend [`serde`] capabilities, being built on top of its machinery:
-- [`erased-serde`] crate, providing type-erased versions of `serde`’s `Serialize`, `Serializer` and `Deserializer` traits that can be used as [trait objects][9].
-- [`serde_state`] crate, extending the normal `Deserialize` and `Serialize` traits to allow state to be passed to every value which is serialized or deserialized.
-- [`serde_repr`] crate, deriving `serde`'s `Serialize` and `Deserialize` traits in a way that delegates to the underlying repr of a C-like enum.
-- [`serde_with`] crate, providing custom de/serialization helpers to use in combination with [`serde`’s `with`-annotation][8] and with the improved `serde_as`-annotation.
-- [`serde_valid`] crate, enabling [JSON Schema][10] based validation. 
+Будучи де-факто стандартом экосистемы, сам крейт [`serde`] довольно консервативен в отношении гарантий стабильности, поэтому часто может казаться, что ему не хватает очевидных функций. Следовательно, стоит рассмотреть дополнительные крейты экосистемы, которые расширяют возможности [`serde`], будучи построенными на основе его механизма:
 
+- [`erased-serde`] ящик, предоставляющий типизированные версии признаков serde `Serialize`, `Serializer` и `Deserializer`, которые могут использоваться в качестве [trait objects][9].
 
+- [`serde_state`] crate, расширяющий обычные трейты `Deserialize` и `Serialize`, позволяющий передавать состояние каждому значению, которое сериализуется или десериализуется.
+
+- [`serde_repr`] crate, производный от трейтов `Serialize` и `Deserialize` объекта `serde` таким образом, чтобы делегировать вызов базовому представлению C-подобного перечисления.
+
+- [`serde_with`] crate, предоставляющий пользовательские вспомогательные средства де/сериализации для использования в сочетании с [`serde`-аннотацией `with`][8] и с улучшенной `serde_as`-аннотацией.
+
+- [`serde_valid`] crate, позволяющий использовать валидацию на основе [JSON Schema][10].
 
 
 ## `musli`
