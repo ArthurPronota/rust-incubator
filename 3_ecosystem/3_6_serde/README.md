@@ -155,6 +155,8 @@ Prove your implementation correctness with tests.
 - When does it have sense to prefer [`musli`] rather than [`serde`]?
 - What is zero-copy deserialization? Why is it beneficial? How does it work in [`serde`]? How does it work in [`rkyv`]?
 
+- [Inlining](https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem/3_6_serde#inlining)
+
 <hr>
 
 ### Как `serde` достигает своей производительности? Как он моделирует данные и разделяет обязанности?
