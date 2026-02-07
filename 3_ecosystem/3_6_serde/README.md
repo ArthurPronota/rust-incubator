@@ -126,19 +126,16 @@ fn main() {
 
 ## `rkyv`
 
-[`rkyv`] (_archive_) is an another alternative serialization/deserialization framework, __fully focused on [zero-copy][31] operations__.
+[`rkyv`] (_archive_) — это еще одна альтернативная платформа сериализации/десериализации, __полностью ориентированная на операции [нулевого копирования][31]__.
 
-> Like [serde][0], rkyv uses Rust’s powerful trait system to serialize data without the need for reflection. Despite having a wide array of features, you also only pay for what you use. If your data checks out, the serialization process can be as simple as a `memcpy`! Like serde, this allows rkyv to perform at speeds similar to handwritten serializers.
+> Подобно [serde][0], rkyv использует мощную систему трейтов Rust для сериализации данных без необходимости использования рефлексии. Несмотря на широкий спектр функций, вы платите только за то, что используете. Если ваши данные верны, процесс сериализации может быть таким же простым, как `memcpy`! Как и serde, это позволяет rkyv работать со скоростью, сравнимой с сериализаторами, написанными вручную.
 >
-> Unlike serde, rkyv produces data that is guaranteed deserialization free. If you wrote your data to disk, you can just `mmap` your file into memory, cast a pointer, and your data is ready to use. This makes it ideal for high-performance and IO-bound applications.
+> В отличие от serde, rkyv гарантирует отсутствие десериализации данных. Если вы записали данные на диск, вы можете просто отобразить файл в память с помощью `mmap`, преобразовать указатель, и ваши данные будут готовы к использованию. Это делает его идеальным для высокопроизводительных приложений, интенсивно использующих ввод-вывод.
+> Хотя rkyv — отличный формат для итоговых данных, ему не хватает полноценной системы схем, и он плохо подходит для миграции данных и обновления схем. Если для вашего случая требуются эти возможности, вам могут понадобиться дополнительные библиотеки, которые позволят реализовать эти функции на основе rkyv. Вы можете использовать другие фреймворки сериализации, такие как serde, с теми же типами, что и в rkyv, без конфликтов.
 
-> While rkyv is a great format for final data, it lacks a full schema system and isn’t well equipped for data migration and schema upgrades. If your use case requires these capabilities, you may need additional libraries the build these features on top of rkyv. You can use other serialization frameworks like serde with the same types as rkyv conflict-free.
-
-To better understand and be familiar with [`rkyv`]'s design, concepts, usage and features, read through:
+Чтобы лучше понять и ознакомиться с дизайном, концепциями, использованием и функциями [`rkyv`], прочтите следующее:
 - [Official `rkyv` crate docs][`rkyv`]
 - [`rkyv` book][30]
-
-
 
 
 ## Task
@@ -152,12 +149,19 @@ Prove your implementation correctness with tests.
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
-- How does [`serde`] achieve its performance? How does it model data and decouple responsibilities?
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
+- [Как `serde` достигает своей производительности? Как он моделирует данные и разделяет обязанности?]()
+
 - When does it have sense to prefer [`musli`] rather than [`serde`]?
 - What is zero-copy deserialization? Why is it beneficial? How does it work in [`serde`]? How does it work in [`rkyv`]?
 
+<hr>
 
+### Как `serde` достигает своей производительности? Как он моделирует данные и разделяет обязанности?
+
+Производительность Serde в Rust остается эталонной благодаря тому, что библиотека переносит всю тяжелую работу с этапа выполнения (Runtime) на этап сборки (__Compile-time__).
+
+<hr>
 
 
 [`erased-serde`]: https://docs.rs/erased-serde
