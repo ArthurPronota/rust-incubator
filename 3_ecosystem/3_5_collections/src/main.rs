@@ -1,7 +1,7 @@
 /*
 
-Документация:
-https://docs.rs/im/latest/im/hashmap/struct.HashMap.html
+Использование неизменяемой коллекции:
+        https://docs.rs/im/latest/im/hashmap/struct.HashMap.html
 
 Запуск тестов:  cargo test
 
