@@ -328,6 +328,45 @@ rkyv (произносится как «archive») использует прин
 |Форматы|JSON, TOML, CBOR и др.|Только собственный бинарный|
 |Безопасность|Гарантируется Rust|Требует валидации (крейт bytecheck)|
 
+#### Итог
+
+- Используйте Serde, если вам нужно читать стандартные форматы (JSON) и вы хотите сэкономить на копировании строк.
+- Используйте rkyv, если вы строите сверхбыстрое хранилище, кэш или передаете огромные объемы данных между процессами через Shared Memory.
+
+__Реализуем безопасное чтение структуры__:
+
+```rust
+use rkyv::{check_archived_root, Archive, Serialize, Deserialize};
+use bytecheck::CheckBytes;
+
+#[derive(Archive, Serialize, Deserialize, Debug)]
+// Атрибут CheckBytes генерирует код для проверки валидности каждого поля
+#[archive_attr(derive(CheckBytes))]
+struct Config {
+    id: u32,
+    name: String,
+}
+
+fn main() {
+    // 1. Создаем тестовые данные (в реальном мире это пришло бы извне)
+    let config = Config { id: 42, name: "Rust2026".to_string() };
+    let bytes = rkyv::to_bytes::<_, 256>(&config).expect("failed to serialize");
+
+    // 2. БЕЗОПАСНОЕ чтение
+    // check_archived_root проверяет:
+    // - Выравнивание (alignment)
+    // - Длину данных
+    // - Валидность UTF-8 в строках
+    // - Соответствие всех типов
+    match check_archived_root::<Config>(&bytes) {
+        Ok(archived) => {
+            // Теперь мы можем безопасно обращаться к данным без копирования
+            println!("ID: {}, Name: {}", archived.id, archived.name);
+        },
+        Err(e) => eprintln!("Данные повреждены или подделаны: {:?}", e),
+    }
+}
+```
 
 <hr>
 
