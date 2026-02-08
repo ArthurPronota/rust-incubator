@@ -13,10 +13,27 @@ __Estimated time__: 1 day
 
 Самое приятное то, что [`serde`] __не полагается на механизм рефлексии во время выполнения__ и использует реализацию трейтов для каждого типа, поэтому __исключает большинство затрат во время выполнения__ и в большинстве случаев __делает сериализацию такой же производительной, как и сериализатор, написанный вручную, для конкретного случая__, при этом __остается эргономичным благодаря [автоматическому выводу кода][1]__.
 
-```rust
-use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize)]
+```Cargo.toml
+[dependencies]
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+```
+
+```rust
+use serde::{
+        Deserialize,    // Структура данных, которую можно десериализовать из любого формата данных, поддерживаемого Serde.
+        Serialize       // Структура данных, которую можно сериализовать в любой формат данных, поддерживаемый Serde.
+    };
+
+use serde_json ;    // JSON — это широко распространенный открытый стандартный формат, использующий удобочитаемый текст для передачи объектов данных, состоящих из пар «ключ-значение».
+
+/// Структура точки
+#[derive(
+    Debug,
+    Deserialize,
+    Serialize
+)]
 struct Point {
     x: i32,
     y: i32,
@@ -25,10 +42,12 @@ struct Point {
 fn main() {
     let point = Point { x: 1, y: 2 };
 
+    // Сериализуйте заданную структуру данных в виде строки JSON.
     let serialized = serde_json::to_string(&point).unwrap();
     println!("serialized = {}", serialized);
 
-    let deserialized: Point = serde_json::from_str(&serialized).unwrap();
+    // Десериализовать экземпляр типа T из строки JSON-текста.
+    let deserialized /*: Point  */ = serde_json::from_str::<Point>(&serialized).unwrap();
     println!("deserialized = {:?}", deserialized);
 }
 ```
@@ -144,8 +163,9 @@ Write a program which deserializes the [following JSON](request.json) into a sta
 
 Prove your implementation correctness with tests.
 
+Напишите программу, которая десериализует [следующий JSON](request.json) в статический тип `Request` и выводит его сериализованный результат в форматах YAML и TOML. Учтите, какие типы данных следует выбрать для представления данных.
 
-
+Подтвердите корректность своей реализации с помощью тестов.
 
 ## Questions
 
