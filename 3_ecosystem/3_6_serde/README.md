@@ -229,6 +229,56 @@ __Итог__:
 
 Serde — это «статическая рефлексия». Она дает удобство динамических языков при скорости системного программирования.
 
+__Сериализация и десериализация структуры на Serde:__
+
+```rust
+use serde::{Serialize, Deserialize};
+use serde_json::{json, to_string, from_str};
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Person {
+    name: String,
+    age: u32,
+    email: String,
+    phones: Vec<String>,
+    is_active: bool,
+}
+
+fn main() {
+    // Создаем объект
+    let person = Person {
+        name: "Иван Иванов".to_string(),
+        age: 30,
+        email: "ivan@example.com".to_string(),
+        phones: vec!["+7-123-456-78-90".to_string(), "+7-987-654-32-10".to_string()],
+        is_active: true,
+    };
+    
+    // 1. Сериализация в JSON строку
+    let json_string = serde_json::to_string(&person).unwrap();
+    println!("Сериализованный JSON:\n{}", json_string);
+    
+    // 2. Сериализация в красивый JSON с отступами
+    let json_pretty = serde_json::to_string_pretty(&person).unwrap();
+    println!("\nКрасивый JSON:\n{}", json_pretty);
+    
+    // 3. Десериализация из JSON строки
+    let deserialized: Person = serde_json::from_str(&json_string).unwrap();
+    println!("\nДесериализованный объект: {:?}", deserialized);
+    
+    // 4. Работа с json! макросом
+    let json_value = json!({
+        "name": "Мария Петрова",
+        "age": 25,
+        "email": "maria@example.com",
+        "phones": ["+7-111-222-33-44"],
+        "is_active": true,
+        "extra_field": "дополнительное поле"  // будет проигнорировано при десериализации
+    });
+    
+    println!("\nСозданный через макрос JSON:\n{}", json_value.to_string());
+}
+```
 
 <hr>
 
