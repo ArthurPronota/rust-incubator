@@ -20,7 +20,7 @@ use toml ;
 [dependencies]
 serde = { version = "1.0.228", features = ["derive"] }
 */
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 enum TypeRequest {
     /// Успешный запрос
     #[serde(rename = "success")]
@@ -36,7 +36,7 @@ enum TypeRequest {
 [dependencies]
 serde = { version = "1.0.228", features = ["derive"] }
 */
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 struct PublicTariff {
     id:             u32,
     price:          u32,
@@ -50,7 +50,7 @@ struct PublicTariff {
 [dependencies]
 serde = { version = "1.0.228", features = ["derive"] }
 */
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 struct PrivateTariff {
     #[serde(rename = "client_price")]
     client_price:   u32,    // В Rust: client_price; в JSON: "client_price", без #[serde(rename = "client_price")] будет clientPrice
@@ -64,7 +64,7 @@ struct PrivateTariff {
 [dependencies]
 uuid = { version = "1.20.0", features = ["serde", "v4"] }
 */
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 struct Stream {
     #[serde(rename = "user_id")]
     user_id:    Uuid,
@@ -80,7 +80,7 @@ struct Stream {
 }
 
 /// Подарок
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 struct Gift {
     id:     u32,
     price:  u32,
@@ -93,7 +93,7 @@ struct Gift {
 [dependencies]
 chrono = { version = "0.4.43", features = ["serde"]}
  */
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 struct Debug {
     duration:   String,
     at:         DateTime<Utc>,
@@ -105,7 +105,7 @@ struct Debug {
 [dependencies]
 serde = { version = "1.0.228", features = ["derive"] }
 */
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 struct Request {
     #[serde(rename = "type")]   // переименовать поле type_request в type
     type_request:   TypeRequest,
@@ -151,6 +151,52 @@ r#"
   }
 }    
 "#    
+}
+
+#[cfg(test)]
+mod tests {
+
+  use super::* ;
+
+  /// Тестирование serde_json
+  #[test]
+  fn check_serde_json() {
+    // получить структуру Request из json строки
+    let res = serde_json::from_str::<Request>(get_json_str()).unwrap() ;
+    // получить json строку из структуры Request
+    let res_str = serde_json::to_string(&res).unwrap() ;
+    // получить структуру Request из json строки
+    let res2 = serde_json::from_str::<Request>(&res_str).unwrap() ;
+    // сравнить структуру полученную из json строки со структорой полученной из json строки
+    assert_eq!(res, res2) ;
+  }
+
+  /// Тестирование serde_yaml
+  #[test]
+  fn check_serde_yaml() {
+    // получить структуру Request из json строки для serde_yaml (это возможно)
+    let req = serde_yaml::from_str::<Request>(get_json_str()).unwrap() ;
+    // получить yaml строку из структуры Request
+    let req_str = serde_yaml::to_string(&req).unwrap() ;
+    // получить структуру Request из yaml строки
+    let req2 = serde_yaml::from_str::<Request>(&req_str).unwrap() ;
+    // сравнить структуру полученную из json строки со структорой полученной из yaml строки
+    assert_eq!(req, req2) ;
+  }
+
+  /// Тестирование toml
+  #[test]
+  fn check_toml() {
+    // получить структуру Request из json строки
+    let req = serde_json::from_str::<Request>(get_json_str()).unwrap() ;
+    // получить toml строку из структуры Request
+    let req_str = toml::to_string(&req).unwrap() ;
+    // получить структуру Request из toml строки
+    let req2 = toml::from_str::<Request>(&req_str).unwrap() ;
+    // сравнить структуру полученную из json строки со структорой полученной из toml строки
+    assert_eq!(req, req2) ;
+  }
+
 }
 
 fn main() {
