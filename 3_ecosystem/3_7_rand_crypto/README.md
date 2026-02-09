@@ -123,7 +123,8 @@ Implement the following functions:
 4. `get_file_hash()`: returns SHA-3 hash of a file specified by its path.
 5. `hash_password()`: returns [Argon2] password hash for a given password.
 
-
+Реализуйте следующие функции:
+1. `generate_password()`: генерирует случайный пароль заданной длины и набора символов;
 
 
 ## Questions
