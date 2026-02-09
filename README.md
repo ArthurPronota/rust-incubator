@@ -129,6 +129,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [Inlining](3_ecosystem/3_6_serde#inlining)
     - [ ] [Шаг 3.7: Случайность и криптография][Step 3.7] (1 day)
         - [В чём заключается главный компромисс при генерации случайных чисел? Как это применяется на практике?](3_ecosystem/3_7_rand_crypto#в-чём-заключается-главный-компромисс-при-генерации-случайных-чисел-как-это-применяется-на-практике)
+        - [Что такое симметричная криптография? Что такое асимметричная криптография? Какие преимущества имеет каждая из них?](3_ecosystem/3_7_rand_crypto#что-такое-симметричная-криптография-что-такое-асимметричная-криптография-какие-преимущества-имеет-каждая-из-них)
     - [ ] [3.8. Logging and tracing][Step 3.8] (1 day)
     - [ ] [3.9. Command-line arguments, environment variables and configs][Step 3.9] (1 day)
     - [ ] [3.10. Multithreading and parallelism][Step 3.10] (1 day)
