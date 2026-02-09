@@ -130,8 +130,7 @@ Implement the following functions:
 
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- What is the main trade-off of generating random numbers? How is it applied in practice?
-- [В чём заключается главный компромисс при генерации случайных чисел? Как это применяется на практике?]()
+- [В чём заключается главный компромисс при генерации случайных чисел? Как это применяется на практике?](https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem/3_7_rand_crypto#в-чём-заключается-главный-компромисс-при-генерации-случайных-чисел-как-это-применяется-на-практике)
 
 - What is symmetric cryptography? What is asymmetric cryptography? Which benefits does each one have? 
 - What is signing in asymmetric cryptography? What is encryption in asymmetric cryptography? How do they work given the same private and public keys?

@@ -128,6 +128,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [Что такое десериализация с нулевым копированием? Почему она полезна? Как она работает в `serde`? Как она работает в `rkyv`?](3_ecosystem/3_6_serde#что-такое-десериализация-с-нулевым-копированием-почему-она-полезна-как-она-работает-в-serde-как-она-работает-в-rkyv)
         - [Inlining](3_ecosystem/3_6_serde#inlining)
     - [ ] [Шаг 3.7: Случайность и криптография][Step 3.7] (1 day)
+        - [В чём заключается главный компромисс при генерации случайных чисел? Как это применяется на практике?](#в-чём-заключается-главный-компромисс-при-генерации-случайных-чисел-как-это-применяется-на-практике)
     - [ ] [3.8. Logging and tracing][Step 3.8] (1 day)
     - [ ] [3.9. Command-line arguments, environment variables and configs][Step 3.9] (1 day)
     - [ ] [3.10. Multithreading and parallelism][Step 3.10] (1 day)
