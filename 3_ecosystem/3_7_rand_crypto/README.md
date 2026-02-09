@@ -1,4 +1,4 @@
-Step 3.7: Randomness and cryptography
+Шаг 3.7: Случайность и криптография
 =====================================
 
 __Estimated time__: 1 day
