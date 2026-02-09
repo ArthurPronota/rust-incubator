@@ -159,9 +159,14 @@ r#"
 "#    
 }
 
+/// Модуль тестов
 #[cfg(test)]
 mod tests {
 
+  /*
+    super - ссылка на родительский модуль (модуль на уровень выше)
+    ::* - оператор glob, импортирует ВСЕ публичные элементы  
+   */
   use super::* ;
 
   /// Тестирование serde_json
@@ -206,44 +211,6 @@ mod tests {
 }
 
 fn main() {
-    /*
-    // Базовая данные в json формате:
-    let json_str = r#"
-{
-  "type": "success",
-  "stream": {
-    "user_id": "8d234120-0bda-49b2-b7e0-fbd3912f6cbf",
-    "is_private": false,
-    "settings": 45345,
-    "shard_url": "https://n3.example.com/sapi",
-    "public_tariff": {
-      "id": 1,
-      "price": 100,
-      "duration": "1h",
-      "description": "test public tariff"
-    },
-    "private_tariff": {
-      "client_price": 250,
-      "duration": "1m",
-      "description": "test private tariff"
-    }
-  },
-  "gifts": [{
-    "id": 1,
-    "price": 2,
-    "description": "Gift 1"
-  }, {
-    "id": 2,
-    "price": 3,
-    "description": "Gift 2"
-  }],
-  "debug": {
-    "duration": "234ms",
-    "at": "2019-06-28T08:35:46+00:00"
-  }
-}    
-    "# ;
-     */
     // json формат
     let req = serde_json::from_str::<Request>(
                                                     get_json_str()
@@ -265,35 +232,3 @@ fn main() {
     println!("toml_req: {:?}", toml_req)
 
 }
-
-/*
-use serde::{
-        Deserialize,    // Структура данных, которую можно десериализовать из любого формата данных, поддерживаемого Serde.
-        Serialize       // Структура данных, которую можно сериализовать в любой формат данных, поддерживаемый Serde.
-    };
-
-use serde_json ;    // JSON — это широко распространенный открытый стандартный формат, использующий удобочитаемый текст для передачи объектов данных, состоящих из пар «ключ-значение».
-
-/// Структура точки
-#[derive(
-    Debug,
-    Deserialize,
-    Serialize
-)]
-struct Point {
-    x: i32,
-    y: i32,
-}
-
-fn main() {
-    let point = Point { x: 1, y: 2 };
-
-    // Сериализуйте заданную структуру данных в виде строки JSON.
-    let serialized = serde_json::to_string(&point).unwrap();
-    println!("serialized = {}", serialized);
-
-    // Десериализовать экземпляр типа T из строки JSON-текста.
-    let deserialized /*: Point  */ = serde_json::from_str::<Point>(&serialized).unwrap();
-    println!("deserialized = {:?}", deserialized);
-}
- */
