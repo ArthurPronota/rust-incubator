@@ -11,109 +11,102 @@ __Estimated time__: 1 day
 Для генерации случайных значений в экосистеме [Rust] существует крейт [`rand`], предоставляющий __унифицированный интерфейс__ и множество __реализаций генератора случайных значений__ с различными гарантиями качества и производительности__.
 
 
-[The Rust Rand Book] not only explains how to use [`rand`] crate primitives, but also makes a good intro to the [basics of random values generation problem][1] and [how it's solved in a modern world][2]. Read through it to understand what primitives you should use for different situations:
-
 [The Rust Rand Book] не только объясняет, как использовать примитивы крейта [`rand`], но и является хорошим введением в [основы проблемы генерации случайных значений][1] и [как она решается в современном мире][2]. Прочитайте её, чтобы понять, какие примитивы следует использовать в разных ситуациях:
+- когда целью является результативность;
+- когда целью является криптографическая безопасность и высокое качество статистических данных;
+- Что подходит для общего пользования.
 
-- when performance is a goal;
-- when cryptographical security and good statical quality is a goal;
-- what is good for general purpose.
+Один из наиболее распространенных случаев, когда необходимо генерировать случайные значения, — это генерация универсальных уникальных идентификаторов (таких как [UUID]). К счастью, в [Rust] уже есть крейт [`uuid`], который реализует [все версии спецификации UUID][3].
 
-One of the most common cases when you need to deal with generating random values is a generation of universally unique identifiers (such as [UUID]). Fortunately, [Rust] has the [`uuid`] crate already, which implements [all versions of UUID specification][3].
 
-More reading:
+Дополнительная информация:
 - [Aleksey Kladov: On Random Numbers][16]
 - [Orhun Parmaksız: Zero-dependency random number generation in Rust][17]
 
 
+## Шифрование и подписание
 
-
-## Encryption and signing
-
-While at the moment [Rust] doesn't have The Cryptographic Library, its ecosystem contains a bunch of well implemented (and still maturing) crates for different purposes.
+Хотя на данный момент в [Rust] нет криптографической библиотеки, в его экосистеме есть множество хорошо реализованных (и все еще развивающихся) библиотек для различных целей.
 
 
 ### [`ring`]
 
-[`ring`] library implements a core set of cryptographic operations exposed via an easy-to-use (and hard-to-misuse) API. It started as a subset of famous [BoringSSL] library (_"ring"_ is a substring of "Bo_ring_SSL"), so inherits some its code and regularly merges changes from it.
+Библиотека [`ring`] реализует основной набор криптографических операций, предоставляемых через простой в использовании (и трудно для неправильно используемый) API. Она начиналась как подмножество известной библиотеки [BoringSSL] (строка «ring» является подстрокой «Bo_ring_SSL»), поэтому наследует часть её кода и регулярно объединяет изменения из неё.
 
-[`ring`] is focused on a general-purpose cryptography. If you need just raw cryptography primitives - that is the way to go. Use it when you need to create:
-- digital signature;
-- simply encrypt plain data;
-- key derivation;
-- and so on...
 
-If you need more high-level implementations (like WebPKI [X.509] certificate validation, or cryptographic protocols like [TLS], [SSH]) consider to use other crates (which are often built on top of [`ring`]).
+[`ring`] ориентирован на криптографию общего назначения. Если вам нужны только базовые криптографические примитивы — это то, что вам нужно. Используйте его, когда вам необходимо создать:
+- цифровая подпись;
+- просто зашифровать незашифрованные данные;
+- вывод ключа;
+- и так далее...
+
+Если вам требуются более сложные реализации (например, проверка сертификатов WebPKI [X.509] или криптографические протоколы, такие как [TLS], [SSH]), рассмотрите возможность использования других библиотек (которые часто построены на основе [`ring`]).
 
 
 ### [dalek]
 
-While [`ring`] is focused on providing general-purpose cryptography primitives, [dalek] crates provide only few, but are focused to implement the best theoretical primitives.
+В то время как [`ring`] ориентирован на предоставление универсальных криптографических примитивов, крейты [dalek] предоставляют лишь несколько, но ориентированы на реализацию лучших теоретических примитивов.
 
-If you're going to build something that uses just some high-end cryptographic primitives (like using [Curve25519] for signing and verification) you should give [dalek] a try.
+Если вы собираетесь создавать что-то, использующее только высокоуровневые криптографические примитивы (например, [Curve25519] для подписи и проверки), вам стоит попробовать [dalek].
 
 
 ### [AWS] Libcrypto
 
-[`aws-lc-rs`] is a [`ring`]-compatible crypto library using the cryptographic operations provided by [AWS-LC].
+[`aws-lc-rs`] — это криптографическая библиотека, совместимая с [`ring`], использующая криптографические операции, предоставляемые [AWS-LC].
 
-The motivation [provided by authors][18] is quite self-explanatory:
-> [Rust] developers increasingly need to deploy applications that meet US and Canadian government cryptographic requirements. We evaluated how to deliver [FIPS] validated cryptography in idiomatic and performant [Rust], built around our [AWS-LC] offering. We found that the popular [`ring`] library fulfilled much of the cryptographic needs in the [Rust] community, but it did not meet the needs of developers with [FIPS] requirements. Our intention is to contribute a drop-in replacement for [`ring`] that provides [FIPS] support and is compatible with the [`ring`] API. [Rust] developers with prescribed cryptographic requirements can seamlessly integrate [`aws-lc-rs`] into their applications and deploy them into [AWS] Regions.
 
-More reading:
+Мотивация [предоставленная авторами][18] вполне понятна сама по себе:
+> Разработчикам на [Rust] все чаще требуется развертывать приложения, соответствующие криптографическим требованиям правительств США и Канады. Мы оценили, как обеспечить криптографию, соответствующую стандарту [FIPS], на идиоматичном и производительном языке [Rust], построенном на основе нашего решения AWS-LC. Мы обнаружили, что популярная библиотека [`ring`] удовлетворяет большую часть криптографических потребностей сообщества [Rust], но не отвечает потребностям разработчиков, предъявляющих требования [FIPS]. Наша цель — предложить замену `ring`, которая обеспечит поддержку [FIPS] и будет совместима с API `ring`. Разработчики на [Rust] с заданными криптографическими требованиями смогут беспрепятственно интегрировать `aws-lc-rs` в свои приложения и развертывать их в регионах [AWS].
+
+Дополнительная информация:
 - [Sean McGrai: Introducing AWS Libcrypto for Rust, an Open Source Cryptographic Library for Rust][19]
 
 
 
 
-## Hashing
+## Хэширование
 
 
-### Raw hash functions
+### Сырые хеш-функции
 
-The basic collection of raw [cryptographic hash functions][11] is introduced in [RustCrypto/hashes] crates collection.
-
-__DO NOT use them for password hashing!__ Consider to use some password hashing algorithm instead ([Argon2], [bcrypt], [scrypt] or [PBKDF2]).
+Базовый набор исходных [криптографических хеш-функций][11] представлен в коллекции крейтов [RustCrypto/hashes].
 
 
-### Password hashing
+__НЕ используйте их для хеширования паролей!__ Вместо этого рассмотрите возможность использования какого-либо алгоритма хеширования паролей ([Argon2], [bcrypt], [scrypt] или [PBKDF2]).
 
-There is the similar [RustCrypto/password-hashing] crates' collection for password hashing.
+### Хэширование паролей
 
-However, it lacks implementation for [Argon2] and [bcrypt] algorithms, so those [should be found][12] and chosen on your choice. For [Argon2] the [`rust-argon2`] crate seems to be the most mature one at the moment.
+Существует аналогичная коллекция библиотек [RustCrypto/password-hashing] для хеширования паролей.
 
-
-
-
-## Constant-time comparison
-
-For [constant-time comparison][13] in [Rust] consider to use [`subtle`] crate from [dalek].
+Однако в нем отсутствует реализация алгоритмов [Argon2] и [bcrypt], поэтому их [следует найти][12] и выбрать по своему усмотрению. Что касается [Argon2], то, похоже, наиболее зрелым на данный момент является крейт [`rust-argon2`].
 
 
+
+## Константное время сравнения
+
+Для [сравнения за постоянное время][13] в [Rust] рассмотрите возможность использования крейта [`subtle`] из [dalek].
 
 
 ## TLS / SSL
 
-For [TLS] usage [Rust] ecosystem currently has two common solutions:
-
+Для использования [TLS] в экосистеме [Rust] в настоящее время существуют два распространенных решения:
 
 ### [`native-tls`]
 
-[`native-tls`] crate is an abstraction over platform-specific [TLS] implementations. It uses [SChannel] on Windows (via [`schannel`] crate), Secure Transport on OSX (via [`security-framework`] crate), [OpenSSL] on all other platforms (via [`openssl`] crate), and provides a unified interface for using these libraries.
+Крейт [`native-tls`] представляет собой абстракцию над платформенно-специфичными реализациями [TLS]. Он использует [SChannel] в Windows (через крейт [`schannel`]), Secure Transport в OSX (через крейт [`security-framework`]), [OpenSSL] на всех остальных платформах (через крейт [`openssl`]) и предоставляет унифицированный интерфейс для использования этих библиотек.
 
-While this solution requires external non-[Rust] libraries to be present, it's a stable solution based on production-grade [TLS] implementations.
-
+Хотя это решение требует наличия внешних библиотек, не относящихся к Rust, оно является стабильным и основано на готовых к использованию реализациях TLS.
 
 ### [`rustls`]
 
-[`rustls`] crate is a pure-[Rust] implementation of [TLS]. It's built on top of [`ring`] and [`webpki`] crates.
-
-Despite the fact it's quite a feature rich solution, it [lacks good support for old and legacy cryptography][14] and has no stable version yet. Consider to use it when the legacy is non-concern for you.
+Крейт [`rustls`] — это реализация [TLS] на чистом [Rust]. Он построен на основе крейтов [`ring`] и [`webpki`].
 
 
+Несмотря на то, что это довольно многофункциональное решение, оно [не имеет хорошей поддержки старой и устаревшей криптографии][14] и пока не имеет стабильной версии. Рассмотрите возможность его использования, если устаревшие технологии для вас не имеют значения.
 
 
-## More reading
+
+## Больше материалов для чтения
 
 - [Sylvain Kerkour: Overview of the Rust cryptography ecosystem][15] (Tue, Aug 24, 2021)
 - [Sahil Mahapatra: Axum Backend Series: Implement JWT Access Token][20]
@@ -135,16 +128,24 @@ Implement the following functions:
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - What is the main trade-off of generating random numbers? How is it applied in practice?
+- [В чём заключается главный компромисс при генерации случайных чисел? Как это применяется на практике?]()
+
 - What is symmetric cryptography? What is asymmetric cryptography? Which benefits does each one have? 
 - What is signing in asymmetric cryptography? What is encryption in asymmetric cryptography? How do they work given the same private and public keys?
 - What is hash function? What is password hashing? Why is it not enough to use just a raw hash function for password hashing?
 - What is constant-time comparison? When and why it should be used?
 - Which are options of using [TLS] in [Rust]? Which advantages and disadvantages does each one have?
 
+<hr>
 
+### В чём заключается главный компромисс при генерации случайных чисел? Как это применяется на практике?
 
+В Rust главный компромисс при генерации случайных чисел (RNG) заключается в выборе между криптографической стойкостью и скоростью выполнения. Этот баланс выражается формулой: Безопасность \(\leftrightarrow \) Предсказуемость \(\leftrightarrow \) Производительность. 
+
+<hr>
 
 [`aws-lc-rs`]: https://docs.rs/aws-lc-rs
 [`native-tls`]: https://docs.rs/native-tls
