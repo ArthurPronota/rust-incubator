@@ -6,11 +6,15 @@ __Estimated time__: 1 day
 
 
 
-## Randomness
+## Случайность
 
-For random values generation [Rust] ecosystem has the [`rand`] crate, providing __unified interface__ and numerous random values __generator implementations with various statistical quality and performance guarantees__.
+Для генерации случайных значений в экосистеме [Rust] существует крейт [`rand`], предоставляющий __унифицированный интерфейс__ и множество __реализаций генератора случайных значений__ с различными гарантиями качества и производительности__.
+
 
 [The Rust Rand Book] not only explains how to use [`rand`] crate primitives, but also makes a good intro to the [basics of random values generation problem][1] and [how it's solved in a modern world][2]. Read through it to understand what primitives you should use for different situations:
+
+[The Rust Rand Book] не только объясняет, как использовать примитивы крейта [`rand`], но и является хорошим введением в [основы проблемы генерации случайных значений][1] и [как она решается в современном мире][2]. Прочитайте её, чтобы понять, какие примитивы следует использовать в разных ситуациях:
+
 - when performance is a goal;
 - when cryptographical security and good statical quality is a goal;
 - what is good for general purpose.
