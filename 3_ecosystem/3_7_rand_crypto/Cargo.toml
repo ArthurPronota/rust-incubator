@@ -5,4 +5,5 @@ edition = "2024"
 publish = false
 
 [dependencies]
-rand = "0.8.5"
+rand = { version ="0.8.5",  features = ["small_rng"] }
+sha3 = "0.10.8"
