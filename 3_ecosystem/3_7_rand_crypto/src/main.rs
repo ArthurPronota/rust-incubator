@@ -166,12 +166,10 @@ fn get_file_hash(path: &str) ->Result<String, String>{
     use sha3::Sha3_256 ;
 
     // Определение Reader
-    let file ;
-    // Попытка открыть файл в режиме только для чтения.
-    match File::open(path) {
-        Ok(v) => file = v,
-        Err(err) => return Err(err.to_string()),
-    } 
+    let file = File::open(path)
+        .map_err(|err|
+            format!("Cannit open file: {}, error: {}", path, err)
+        )? ;
 
     // Создает новый объект BufReader<R> с емкостью буфера по умолчанию (8 KiB).
     let mut reader = BufReader::new(file) ;
@@ -197,22 +195,74 @@ fn get_file_hash(path: &str) ->Result<String, String>{
         // Может вызываться много раз для одного хеша
         hasher.update(&buffer[..readed_bytes]);
     }
-    
+
     /*
-        hasher.finalize() - это финализирующий метод, который завершает 
-            процесс хеширования и возвращает окончательный хеш.
+    hasher.finalize() - это финализирующий метод, который завершает 
+        процесс хеширования и возвращает окончательный хеш.
     1. Добавляет padding (дополнение) к оставшимся данным
     2. Выполняет финальный раунд преобразований Keccak
     3. Извлекает итоговый хеш из внутреннего состояния
     4. Сбрасывает/потребляет хешер (после finalize() хешер нельзя использовать)
      */
-
     Ok(
         format!("{:x}", hasher.finalize())
     )
 }
 
+/// возвращает [Argon2] хэш пароля для заданного пароля.
+fn hash_password(password: &str) -> Result<String, String> {
+    // проверка пароля на пустоту
+    if password.is_empty() {
+        return Err("password is empty".to_string());
+    }
+
+    // Этот API хеширует пароль, преобразуя его в "строку PHC", подходящую
+    // для целей аутентификации на основе пароля.
+    use argon2::{
+        password_hash::{
+            rand_core::OsRng,   // Генератор случайных чисел, извлекающий случайные значения из операционной системы.
+            PasswordHasher,     // Trait для функций хеширования паролей.
+            SaltString  // Союственный Salt, выделенный в стеке.
+        },
+        Argon2,     // Контекст Argon2.
+        Algorithm,  // Тип примитива Argon2: варианты алгоритма.
+        Version,    // Версия алгоритма.
+        Params      // Параметры хеширования пароля Argon2.
+    } ;
+
+    // Сгенерировать случайную строку SaltString, закодированную в формате B64.
+    let salt = SaltString::generate(&mut OsRng);
+
+    // Создание новыех параметров.
+    let params = Params::new(
+            19456,    // память в KiB
+            2,        // количество итераций
+            1,        // степень параллелизма.
+            Some(32)  // Размер выходных данных KDF в байтах.
+        )
+    .map_err(|err|
+        format!("Invalid Argon2 params: {}", err)
+    )? ;
+
+    // Создание нового контекст Argon2.
+    let argon2 = Argon2::new(
+        Algorithm::Argon2id,  // Алгоритм
+        Version::V0x13,       // Версия 0x13
+        params // параметры
+    );
+
+    // формируется строка в формате PHC (Password Hashing Competition):
+    let password_hash = argon2
+        .hash_password(password.as_bytes(), &salt)
+        .map_err(|e| format!("Failed to hash password: {}", e))?
+        .to_string()
+        ;
+    
+    Ok(password_hash)
+}
+
 fn main() {
+    // Генерация пароля указанной длины из заданного charset
     println!("pass: {:?}", 
         generate_password(
             20, 
@@ -223,6 +273,7 @@ fn main() {
         )
     ) ;
 
+    // Извлечение случайный элемент из заданного среза
     println!("{:?}", select_rand_val(&[1, 2, 3])) ;
 
     println!("{:?}", select_rand_val(&['a', 'b', 'c'])) ;
@@ -231,7 +282,13 @@ fn main() {
 
     println!("{:?}", select_rand_val(&[(1, 2), (3, 4), (5, 6)])) ;
 
+    // генерирует уникальное криптографически безопасное случайное значение 
+    // в наборе символов `a-zA-Z0-9` и содержит ровно `64` символа
     println!("access_token: {}", new_access_token()) ;
 
-    println!("{:?}", get_file_hash("Cargo.toml"))
+    // возвращает хеш SHA-3 файла, указанного по его пути.
+    println!("{:?}", get_file_hash("Cargo.toml")) ;
+
+    // возвращает [Argon2] хэш пароля для заданного пароля.
+    println!("{:?}", hash_password("password")) ;
 }

@@ -116,18 +116,12 @@ __НЕ используйте их для хеширования паролей!
 
 ## Task
 
-Implement the following functions:
-1. `generate_password()`: generates random password of given length and symbols set;
-2. `select_rand_val()`: retrieves random element from a given slice;
-3. `new_access_token()`: generates unique cryptographically secure random value in `a-zA-Z0-9` symbols set and has exactly `64` symbols.
-4. `get_file_hash()`: returns SHA-3 hash of a file specified by its path.
-5. `hash_password()`: returns [Argon2] password hash for a given password.
-
 Реализуйте следующие функции:
 1. `generate_password()`: генерирует случайный пароль заданной длины и набора символов;
 2. `select_rand_val()`: извлекает случайный элемент из заданного среза;
 3. `new_access_token()`: генерирует уникальное криптографически безопасное случайное значение в наборе символов `a-zA-Z0-9` и содержит ровно `64` символа.
 4. `get_file_hash()`: возвращает хеш SHA-3 файла, указанного по его пути.
+5. `hash_password()`: возвращает [Argon2] хэш пароля для заданного пароля.
 
 ## Questions
 
