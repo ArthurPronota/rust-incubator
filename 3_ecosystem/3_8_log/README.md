@@ -1,4 +1,4 @@
-Step 3.8: Logging and tracing
+Шаг 3.8: Логирование и трассировка
 =============================
 
 __Estimated time__: 1 day
