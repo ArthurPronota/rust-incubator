@@ -3,53 +3,55 @@
 
 __Estimated time__: 1 day
 
-[Rust] has flexible type system and [metaprogramming][1] capabilities, allowing to build both efficient and highly reusable log system. The idea is very similar to [`serde`] and is introduced in a widely used [`log`], [`slog`] and [`tracing`] crates.
+[Rust] обладает гибкой системой типов и возможностями [метапрограммирования][1], что позволяет создавать как эффективную, так и высокоэффективную систему логирования. Идея очень похожа на [`serde`] и представлена ​​в широко используемых крейтах [`log`], [`slog`] и [`tracing`].
 
 
 
+## Простое логирование
 
-## Simple logging
+[`log`] crate представляет собой __единый унифицированный интерфейс (фасад)__, который используется всеми библиотеками одновременно, но поддерживается одной фактической реализацией бэкэнда на ваш выбор. Это позволяет управлять всеми логами (приложения и его зависимостей) из одного места и унифицированным образом: логи библиотек с возможностью включения и выключения, отдельные логи по адресам назначения и т. д.
 
-[`log`] crate represents a __single unified frontend interface (facade)__ which is used by all libraries at the same time, but is backed by one actual backend implementation on your choice. This allows to control all the logs (of application and its dependencies) from a single place and in a unified manner: opt-in and opt-out logs of libraries, separate logs by destinations, etc.
+> - Библиотеки должны ссылаться только на crate `log` и использовать предоставленные макросы для записи в журнал любой информации, которая будет полезна для последующих пользователей.
+> - Исполняемые файлы должны выбрать реализацию механизма логирования и инициализировать её на ранней стадии выполнения программы. Реализации логирования обычно включают функцию для этого.
 
-> - Libraries should link only to the `log` crate, and use the provided macros to log whatever information will be useful to downstream consumers.
-> - Executables should choose a logger implementation and initialize it early in the runtime of the program. Logging implementations will typically include a function to do this.
+Интересный момент заключается в том, что уровни логирования можно [отключить во время компиляции][3], и, следовательно, они _не оказывают никакого влияния на производительность во время выполнения__, если только вы не занимаетесь отладкой.
 
-One interesting part is that log levels can be [disabled at compile time][3], thus have __no runtime performance impact at all__, unless you're debugging.
-
-To better understand and be familiar with [`log`]'s design, concepts, usage and features, read through:
+Чтобы лучше понять и ознакомиться с дизайном, концепциями, использованием и функциями [`log`], прочтите следующее:
 - [Official `log` crate docs][`log`]
 - [Jimmy Hartzell: Using the Log Crate in Your Rust Projects][12]
 
 
 
+## Структурированное логирование
 
-## Structured logging
+Для [структурированного логирования][4] в экосистеме [Rust] есть отличный крейт [`slog`].
 
-For [structured logging][4] there is the excellent [`slog`] crate in [Rust] ecosystem.
+> Цель — стать лучшей библиотекой логирования для Rust. `slog` должен поддерживать различные функции и требования к логированию. Если вам нужна какая-либо функция, а стандартный крейт `log` её не содержит, `slog` должен её иметь.
 
-> The ambition is to be The Logging Library for Rust. `slog` should accommodate a variety of logging features and requirements. If there is a feature that you need and standard `log` crate is missing, `slog` should have it.
 
-It's __backward and forward compatible with [`log`]__ crate, extending its ideas and is baked with an [excellent performance][5].
+Он __обратно и напрямую совместим с crate [`log`]__, расширяет её идеи и разработан с [отличной производительностью][5].
 
-To better understand and be familiar with [`slog`]'s design, concepts, usage and features, read through:
+Чтобы лучше понять и ознакомиться с дизайном, концепциями, использованием и функциями [`slog`], прочтите следующие материалы:
 - [Official `slog` crate docs][`slog`]
 - [Official `slog` crate wiki][6]
 
 
 
 
-## Tracing
+## Отслеживание
 
-The famous [`tracing`] crate is fabulous at both [tracing][10] and [structured logging][4].
+Знаменитый crate [`tracing`] великолепен как при [трассировке][10], так и при [структурированном логировании][4].
 
-> `tracing` expands upon logging-style diagnostics by allowing libraries and applications to record structured events with additional information about _temporality_ and _causality_ — unlike a log message, a span in `tracing` has a beginning and end time, may be entered and exited by the flow of execution, and may exist within a nested tree of similar spans. In addition, `tracing` spans are _structured_, with the ability to record typed data as well as textual messages.
 
-Its "killer feature", undoubtedly, is [spans functionality][7], so [people tend to prefer it over `slog`][9] even for usual logging. It's also __[backward and forward compatible][8] with [`log`]__ crate.
+> `tracing` расширяет возможности диагностики в стиле логирования, позволяя библиотекам и приложениям записывать структурированные события с дополнительной информацией о _временности_ и _причинно-следственной связи_ — в отличие от сообщения журнала, интервал в `tracing` имеет время начала и окончания, может быть введен и завершен в процессе выполнения и может существовать во вложенном дереве аналогичных интервалов. Кроме того, интервалы в `tracing` являются _структурированными_, с возможностью записи как типизированных данных, так и текстовых сообщений.
 
-Speaking of [tracing][10], the [`tracing`] crate has good integrations with [OpenTelemetry]-compatible distributed tracing systems (and similar ones). All this allows to reuse the same solution both for logging, tracing (like [Jaeger], [Zipkin]), profiling (like [coz], [Tracy]), error reporting (like [Sentry]), etc.
+Его "убойной особенностью", несомненно, является [расширенная функциональность][7], поэтому [люди, как правило, предпочитают ее "утомительному"][9] даже для обычного ведения журнала. Это также __ [обратная и прямая совместимость][8] с [`log`]__ crate.
 
-To better understand and be familiar with [`tracing`]'s design, concepts, usage and features, read through:
+
+Говоря о [tracing][10], крейт [`tracing`] имеет хорошую интеграцию с распределенными системами трассировки, совместимыми с [OpenTelemetry] (и аналогичными). Все это позволяет повторно использовать одно и то же решение как для логирования, трассировки (например, [Jaeger], [Zipkin]), профилирования (например, [coz], [Tracy]), отчетов об ошибках (например, [Sentry]) и т. д.
+
+
+Чтобы лучше понять и ознакомиться с дизайном, концепциями, использованием и функциями трассировки, прочтите следующие материалы:
 - [Official `tracing` crate docs][`tracing`]
 - [Joshua Mo: Getting Started with Tracing in Rust][13]
 - [Yoav Danieli: Guide to OpenTelemetry Distributed Tracing in Rust][11]
@@ -77,15 +79,19 @@ Examples:
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
-- How does [`log`] crate achieve its reusability over ecosystem? What are the ideas behind it?
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
+- [Как библиотека `log` обеспечивает возможность повторного использования в экосистеме? Каковы лежащие в её основе идеи?]()
+
 - Why logging is preferred over printing (`println!` usage)? When it's not?
 - What is structured logging? What benefits does it provide?
 - Why [`tracing`] crate is good for logging? What makes it preferred over [`slog`] and [`log`] crates?
 - What is tracing? Why is it beneficial for observability?
 
+<hr>
 
+### Как библиотека `log` обеспечивает возможность повторного использования в экосистеме? Каковы лежащие в её основе идеи?
 
+<hr>
 
 [`log`]: https://docs.rs/log
 [`serde`]: https://docs.rs/serde
