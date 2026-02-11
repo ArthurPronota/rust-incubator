@@ -87,6 +87,8 @@ Examples:
 - [Что такое структурированное логирование? Какие преимущества оно предоставляет?](#что-такое-структурированное-логирование-какие-преимущества-оно-предоставляет)
 
 - Why [`tracing`] crate is good for logging? What makes it preferred over [`slog`] and [`log`] crates?
+- [Почему крейт `tracing` хорош для логирования? Чем он предпочтительнее крейтов `slog` и `log`?]()
+
 - What is tracing? Why is it beneficial for observability?
 
 <hr>
@@ -217,6 +219,11 @@ info!(user_id, client_ip = %ip, "User attempted login");
 __Итог:__ Структурированное логирование в 2026 году — это не роскошь, а стандарт индустрии, превращающий ваши логи из "кладбища текста" в ценный источник данных для отладки и бизнеса.
 
 <hr>
+
+### Почему крейт `tracing` хорош для логирования? Чем он предпочтительнее крейтов `slog` и `log`?
+
+<hr>
+
 
 [`log`]: https://docs.rs/log
 [`serde`]: https://docs.rs/serde
