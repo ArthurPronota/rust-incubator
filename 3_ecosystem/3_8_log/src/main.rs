@@ -30,7 +30,7 @@ use std::io;
 static LOGGER: OnceLock<()> = OnceLock::new();
 
 /// Кастомный форматтер времени с наносекундами по RFC 3339
-#[derive(Debug, Clone)]
+//#[derive(Debug, Clone)]
 struct Rfc3339Nanos;
 
 
@@ -55,7 +55,7 @@ impl FormatTime for Rfc3339Nanos {
 }
 
 /// перечесление возможных потоков вывода
-#[derive(Debug)]
+//#[derive(Debug)]
 enum OutputTarget {
     Stdout(io::Stdout),
     Stderr(io::Stderr),
