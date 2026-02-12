@@ -1,0 +1,691 @@
+pub mod logger {
+// Примитив синхронизации, в который номинально можно записать данные 
+// только один раз.
+use std::sync::OnceLock;
+
+use tracing::{
+        Level,
+        Subscriber
+    };
+
+use tracing_subscriber::{
+        EnvFilter, filter, fmt::{
+            self, FormatEvent, MakeWriter, format::JsonFields, time::FormatTime
+        }, prelude::*, registry::LookupSpan, util::SubscriberInitExt
+};
+
+use chrono::{
+        DateTime, 
+        Utc,
+        SecondsFormat
+    };
+
+// Трейты, помошники и типовые определения для ядра I/O функциональности.
+use std::io;
+
+
+
+
+use serde_json::{json, Value, Map};
+use tracing_subscriber::fmt::{format::Writer, FormatFields, FmtContext};
+use tracing::Event;
+use tracing_subscriber::fmt::format::JsonVisitor;
+
+
+
+
+
+
+/// Глобальный логгер
+static LOGGER: OnceLock<()> = OnceLock::new();
+
+/// Кастомный форматтер времени с наносекундами по RFC 3339
+#[derive(Debug, Clone)]
+struct Rfc3339Nanos;
+
+
+// Реализация FormatTime для структуры Rfc3339Nanos
+impl FormatTime for Rfc3339Nanos {
+    fn format_time(&self, w: &mut fmt::format::Writer<'_>) -> std::fmt::Result {
+        // Возвращает объект DateTime<Utc>, соответствующий текущей дате и 
+        // времени в формате UTC.
+        let now = Utc::now() ;
+
+        write!(w, 
+               "{}",
+               // Возвращает строку даты и времени, соответствующую RFC 3339 и 
+               // ISO 8601, с субсекундами, отформатированными в соответствии с 
+               // функцией SecondsFormat.
+               now.to_rfc3339_opts(
+                    SecondsFormat::Nanos, // формат времени в наносекундах
+                    true    // использовать TZ UTC
+                )
+            )
+    }
+}
+
+/// перечесление возможных потоков вывода
+#[derive(Debug)]
+enum OutputTarget {
+    Stdout(io::Stdout),
+    Stderr(io::Stderr),
+}
+
+/*
+struct StdioWriterImpl {
+    target: Option<io::Stdout>,
+}
+ */
+/// Структура для реализации низового вывода в тот или иной поток
+struct StdioWriterImpl {
+    target: Option<OutputTarget>,
+}
+
+/// реализация io::Write для структуры StdioWriterImpl
+impl io::Write for StdioWriterImpl {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        match &self.target {
+            /*
+            Some(w) => 
+                w
+                 // Блокирует этот обработчик к стандартному  выходному потоку,
+                 // возвращая гаоантии пригодности к записи
+                 .lock()
+                 // Записывает буфер в этот write, возвращая 
+                 // количество записанных байтов.
+                 .write(buf),
+             */
+            Some(OutputTarget::Stdout(w)) => w.lock().write(buf),
+            Some(OutputTarget::Stderr(w)) => w.lock().write(buf),
+            None => 
+                io::stdout()
+                 // Блокирует этот обработчик к стандартному выходному потоку,
+                 // возвращая гаоантии пригодности к записи
+                 .lock()
+                 // Записывает буфер в этот write, возвращая 
+                 // количество записанных байтов.                 
+                 .write(buf),
+        }
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        match &self.target {
+            /*
+            Some(w) => 
+
+               w
+               // Блокирует этот обработчик к стандартному выходному потоку,
+               // возвращая гаоантии пригодности к записи
+                .lock()
+               // Очищает этот выходной поток, гарантируя, что все промежуточно 
+               // буферизованные данные достигнут места назначения.
+                .flush(),
+                */
+            // вывод в Stdout
+            Some(OutputTarget::Stdout(w)) => w.lock().flush(),
+            // вывод в Stderr
+            Some(OutputTarget::Stderr(w)) => w.lock().flush(),
+            // для всего остального вывод в Stdout
+            None => io::stdout()
+               // Блокирует этот обработчик к стандартному выходному потоку,
+               // возвращая гаоантии пригодности к записи
+               .lock()
+               // Очищает этот выходной поток, гарантируя, что все промежуточно 
+               // буферизованные данные достигнут места назначения.                     
+               .flush(),
+        }    
+    }
+}
+
+/// Кастомный writer, который направляет WARN и ERROR в stderr, 
+/// остальное в stdout
+struct StdioWriter;
+
+impl<'a> MakeWriter<'a> for StdioWriter  {
+    type Writer = StdioWriterImpl;
+
+    // Возвращает экземпляр класса Writer.
+    fn make_writer(&'a self) -> Self::Writer {
+        StdioWriterImpl {
+            target: None,
+        }
+    }
+
+    // Возвращает объект Writer для записи данных из диапазона или события,
+    // описанного предоставленными метаданными.
+    fn make_writer_for(&'a self, meta: &tracing::Metadata<'_>) -> Self::Writer {
+        // Возвращает уровень детализации описываемого фрагмента текста или 
+        // события.
+        let level = meta.level() ;
+
+        /*
+          Отсортированный список значений перечисления Level
+          в порядке убывания важности
+            [Level(Error), 
+             Level(Warn),
+             Level(Info),
+             Level(Debug),
+             Level(Trace)]
+         */
+        let target = match *level {
+            Level::ERROR | Level::WARN => {
+                    Some(OutputTarget::Stderr(io::stderr()))
+                },
+            _ => Some(OutputTarget::Stdout(io::stdout())),
+        };
+
+        StdioWriterImpl{target}
+    }
+}
+
+
+/// Инициализация глобального логгера
+pub fn init_logger() {
+    LOGGER
+     // Получает содержимое ячейки, инициализируя его значением f(), 
+     // если ячейка не была инициализирована.
+     .get_or_init(
+        || {
+        // Создаем слой форматирования для app.log (основной логгер)
+        let app_logger = 
+          fmt::layer()
+            // Задает объект MakeWriter, который будет использоваться создаваемым
+            // слоем для записи событий.
+            .with_writer(StdioWriter)
+            // Задает форматтер событий, который будет использоваться создаваемым
+            // слоем для форматирования событий.
+            .event_format(
+                CustomJsonFormatter
+                /*
+                // Возвращает конфигурацию по умолчанию для форматировщика событий.
+                fmt::format()
+                    // Используйте полный формат JSON.
+                    .json()
+                    // Определяет, будет ли форматтер включать текущий элемент <span> 
+                    // в форматируемые события.
+                    .with_current_span(false)
+                    // Определяет, будет ли форматтер включать список (от корня до листа)
+                    // всех введенных в данный момент тегов <span> в форматируемые события.
+                    .with_span_list(false)
+                    // Определяет, отображается ли путь к файлу исходного кода события.
+                    .with_file(false)
+                    // Определяет, отображается ли номер строки исходного кода события.
+                    .with_line_number(false)
+                    // Определяет, отображается ли целевой объект события.
+                    .with_target(false)
+                    // Используйте указанный таймер для меток времени сообщений журнала.
+                    .with_timer(Rfc3339Nanos)
+                    // Используйте полный формат JSON, но с преобразованными в плоский 
+                    // формат полями события.
+                    // для выравнивания группы "fields"
+                    .flatten_event(true)
+                    //.format_event(ctx, writer, event) 
+                */
+            )
+            // Объединяет себя с фильтром, возвращая отфильтрованный слой.
+            //.with_filter(EnvFilter::from_default_env())
+            ;
+
+        // Инициализируем подписчика
+        tracing_subscriber::registry()
+            // Оборачивает себя предоставленным слоем форматирования.
+            .with(app_logger)
+            // Пытается установить self в качестве глобального подписчика по 
+            // умолчанию в текущей области
+            .init();
+    });
+}
+
+// ----------------------------------------------
+
+
+// 1. Простой посетитель для сбора полей в Map
+struct FieldVisitor {
+    fields: Map<String, Value>,
+}
+
+impl FieldVisitor {
+    fn new() -> Self {
+        Self {
+            fields: Map::new(),
+        }
+    }
+    
+    fn into_inner(self) -> Map<String, Value> {
+        self.fields
+    }
+}
+
+impl tracing::field::Visit for FieldVisitor {
+    fn record_str(&mut self, field: &tracing::field::Field, value: &str) {
+        self.fields.insert(field.name().to_string(), Value::String(value.to_string()));
+    }
+    
+    fn record_bool(&mut self, field: &tracing::field::Field, value: bool) {
+        self.fields.insert(field.name().to_string(), Value::Bool(value));
+    }
+    
+    fn record_u64(&mut self, field: &tracing::field::Field, value: u64) {
+        self.fields.insert(field.name().to_string(), Value::Number(value.into()));
+    }
+    
+    fn record_i64(&mut self, field: &tracing::field::Field, value: i64) {
+        self.fields.insert(field.name().to_string(), Value::Number(value.into()));
+    }
+    
+    fn record_f64(&mut self, field: &tracing::field::Field, value: f64) {
+        self.fields.insert(field.name().to_string(), 
+            serde_json::Number::from_f64(value).map_or(Value::Null, Value::Number));
+    }
+    
+    fn record_debug(&mut self, field: &tracing::field::Field, value: &dyn std::fmt::Debug) {
+        self.fields.insert(field.name().to_string(), 
+            Value::String(format!("{:?}", value)));
+    }
+}
+
+// 2. Посетитель с трансформацией имён полей
+struct RenamingVisitor {
+    fields: Map<String, Value>,
+}
+
+impl RenamingVisitor {
+    fn new() -> Self {
+        Self {
+            fields: Map::new(),
+        }
+    }
+    
+    fn transform_field_name(&self, name: &str) -> String {
+        match name {
+            "message" => "log.message".to_string(),
+            "error" => "error.message".to_string(),
+            "user_id" => "user.id".to_string(),
+            "span_id" => "trace.span_id".to_string(),
+            "trace_id" => "trace.id".to_string(),
+            _ => format!("event.{}", name),
+        }
+    }
+}
+
+impl tracing::field::Visit for RenamingVisitor {
+    fn record_str(&mut self, field: &tracing::field::Field, value: &str) {
+        let transformed = self.transform_field_name(field.name());
+        self.fields.insert(transformed, Value::String(value.to_string()));
+    }
+    
+    fn record_bool(&mut self, field: &tracing::field::Field, value: bool) {
+        let transformed = self.transform_field_name(field.name());
+        self.fields.insert(transformed, Value::Bool(value));
+    }
+    
+    fn record_u64(&mut self, field: &tracing::field::Field, value: u64) {
+        let transformed = self.transform_field_name(field.name());
+        self.fields.insert(transformed, Value::Number(value.into()));
+    }
+    
+    fn record_i64(&mut self, field: &tracing::field::Field, value: i64) {
+        let transformed = self.transform_field_name(field.name());
+        self.fields.insert(transformed, Value::Number(value.into()));
+    }
+    
+    fn record_f64(&mut self, field: &tracing::field::Field, value: f64) {
+        let transformed = self.transform_field_name(field.name());
+        self.fields.insert(transformed, 
+            serde_json::Number::from_f64(value).map_or(Value::Null, Value::Number));
+    }
+    
+    fn record_debug(&mut self, field: &tracing::field::Field, value: &dyn std::fmt::Debug) {
+        let transformed = self.transform_field_name(field.name());
+        self.fields.insert(transformed, Value::String(format!("{:?}", value)));
+    }
+}
+
+// 3. Кастомный форматтер с посетителем
+struct CustomJsonFormatter;
+
+impl CustomJsonFormatter {
+    fn format_level(level: &Level) -> &'static str {
+        match *level {
+            Level::TRACE => "TRACE",
+            Level::DEBUG => "DEBUG",
+            Level::INFO => "INFO",
+            Level::WARN => "WARN",
+            Level::ERROR => "ERROR",
+        }
+    }
+}
+
+impl<S, N> fmt::FormatEvent<S, N> for CustomJsonFormatter
+where
+    S: Subscriber + for<'a> LookupSpan<'a>,
+    N: for<'a> FormatFields<'a> + 'static,
+{
+    fn format_event(
+        &self,
+        ctx: &FmtContext<'_, S, N>,
+        mut writer: Writer<'_>,
+        event: &Event<'_>,
+    ) -> std::fmt::Result {
+        // Получаем метаданные события
+        let meta = event.metadata();
+        
+        // ---- Способ 1: Использование кастомного посетителя ----
+        let mut visitor = FieldVisitor::new();
+        event.record(&mut visitor);
+        let event_fields = visitor.into_inner();
+        
+        // Создаём JSON с кастомными ключами
+        let mut json_map = Map::new();
+        
+        // Основные поля
+        json_map.insert("@timestamp".to_string(), 
+            json!(Utc::now().to_rfc3339_opts(SecondsFormat::Nanos, true)));
+        json_map.insert("log.level".to_string(), 
+            json!(Self::format_level(meta.level())));
+        json_map.insert("log.logger".to_string(), 
+            json!(meta.target()));
+        json_map.insert("process.thread".to_string(), 
+            json!(format!("{:?}", std::thread::current().id())));
+        
+        // Добавляем поля события
+        for (key, value) in event_fields {
+            json_map.insert(format!("event.{}", key), value);
+        }
+        
+        /*
+        // ---- Способ 2: Использование JsonVisitor из tracing-subscriber ----
+        let mut json_value = json!({});
+        let mut json_visitor = JsonVisitor::new(&mut json_value);
+        event.record(&mut json_visitor);
+        
+        // ---- Способ 3: Использование посетителя с переименованием ----
+        let mut renaming_visitor = RenamingVisitor::new();
+        event.record(&mut renaming_visitor);
+        let renamed_fields = renaming_visitor.fields;
+         */
+        /*
+        // ---- Способ 4: Комбинированный подход с извлечением сообщения ----
+        let mut message = String::new();
+        let mut message_visitor = MessageExtractorVisitor {
+            message: &mut message,
+        };
+        event.record(&mut message_visitor);
+        
+        if !message.is_empty() {
+            json_map.insert("log.message".to_string(), json!(message));
+        }
+         */
+
+        /*
+        // Добавляем информацию о спанах
+        let mut span_names = Vec::new();
+        let mut span_context = Vec::new();
+        
+        if let Some(scope) = ctx.event_scope() {
+            for span in scope.from_root() {
+                span_names.push(span.name().to_string());
+                
+                // Собираем поля спана
+                let extensions = span.extensions();
+                if let Some(visitor) = extensions.get::<JsonVisitor>() {
+                    // Работаем с полями спана
+                }
+            }
+        }
+        
+        if !span_names.is_empty() {
+            json_map.insert("trace.spans".to_string(), json!(span_names));
+        }
+         */
+        
+        // Финальный JSON объект
+        let final_json = json!(json_map);
+        
+        // Записываем в Writer
+        write!(writer, "{}", serde_json::to_string(&final_json).unwrap())?;
+        writeln!(writer)?;
+        
+        Ok(())
+    }
+}
+
+// Посетитель для извлечения сообщения
+struct MessageExtractorVisitor<'a> {
+    message: &'a mut String,
+}
+
+impl<'a> tracing::field::Visit for MessageExtractorVisitor<'a> {
+    fn record_str(&mut self, field: &tracing::field::Field, value: &str) {
+        if field.name() == "message" {
+            self.message.push_str(value);
+        }
+    }
+    
+    fn record_debug(&mut self, field: &tracing::field::Field, value: &dyn std::fmt::Debug) {
+        if field.name() == "message" {
+            self.message.push_str(&format!("{:?}", value));
+        }
+    }
+    
+    // Для остальных методов - игнорируем
+    fn record_bool(&mut self, _field: &tracing::field::Field, _value: bool) {}
+    fn record_u64(&mut self, _field: &tracing::field::Field, _value: u64) {}
+    fn record_i64(&mut self, _field: &tracing::field::Field, _value: i64) {}
+    fn record_f64(&mut self, _field: &tracing::field::Field, _value: f64) {}
+}
+
+// 4. Расширенный посетитель с поддержкой вложенных структур
+struct NestedJsonVisitor {
+    output: Map<String, Value>,
+    current_path: Vec<String>,
+}
+
+impl NestedJsonVisitor {
+    fn new() -> Self {
+        Self {
+            output: Map::new(),
+            current_path: Vec::new(),
+        }
+    }
+    
+    fn insert_value(&mut self, field: &tracing::field::Field, value: Value) {
+        let parts: Vec<&str> = field.name().split('.').collect();
+        
+        if parts.len() == 1 {
+            self.output.insert(field.name().to_string(), value);
+        } else {
+            // Создаем вложенную структуру
+            let mut current = &mut self.output;
+            for (i, part) in parts.iter().enumerate() {
+                if i == parts.len() - 1 {
+                    current.insert(part.to_string(), value.clone());
+                } else {
+                    if !current.contains_key(*part) {
+                        current.insert(part.to_string(), json!({}));
+                    }
+
+                    if current.get_mut(*part).and_then(|v| v.as_object_mut()).is_some() {
+                        current = current.get_mut(*part).and_then(|v| v.as_object_mut()).unwrap() ;
+                    }
+
+                    /*
+                    if let Some(&mut obj) = current.get_mut(*part).and_then(|v| v.as_object_mut()) {
+                        current = *obj;
+                    }
+                     */
+                }
+            }
+        }
+    }
+}
+
+impl tracing::field::Visit for NestedJsonVisitor {
+    fn record_str(&mut self, field: &tracing::field::Field, value: &str) {
+        self.insert_value(field, Value::String(value.to_string()));
+    }
+    
+    fn record_bool(&mut self, field: &tracing::field::Field, value: bool) {
+        self.insert_value(field, Value::Bool(value));
+    }
+    
+    fn record_u64(&mut self, field: &tracing::field::Field, value: u64) {
+        self.insert_value(field, Value::Number(value.into()));
+    }
+    
+    fn record_i64(&mut self, field: &tracing::field::Field, value: i64) {
+        self.insert_value(field, Value::Number(value.into()));
+    }
+    
+    fn record_f64(&mut self, field: &tracing::field::Field, value: f64) {
+        if let Some(num) = serde_json::Number::from_f64(value) {
+            self.insert_value(field, Value::Number(num));
+        }
+    }
+    
+    fn record_debug(&mut self, field: &tracing::field::Field, value: &dyn std::fmt::Debug) {
+        self.insert_value(field, Value::String(format!("{:?}", value)));
+    }
+}
+
+// 5. Финальная реализация форматтера
+struct ElasticJsonFormatter;
+
+impl<S, N> fmt::FormatEvent<S, N> for ElasticJsonFormatter
+where
+    S: Subscriber + for<'a> LookupSpan<'a>,
+    N: for<'a> FormatFields<'a> + 'static,
+{
+    fn format_event(
+        &self,
+        ctx: &FmtContext<'_, S, N>,
+        mut writer: Writer<'_>,
+        event: &Event<'_>,
+    ) -> std::fmt::Result {
+        let meta = event.metadata();
+        
+        // Используем посетитель для сбора всех полей
+        let mut visitor = NestedJsonVisitor::new();
+        event.record(&mut visitor);
+        
+        // Создаем корневой объект
+        let mut root = Map::new();
+        
+        // ECS (Elastic Common Schema) поля
+        root.insert("@timestamp".to_string(), 
+            json!(Utc::now().to_rfc3339_opts(SecondsFormat::Nanos, true)));
+        root.insert("log.level".to_string(), 
+            json!(meta.level().to_string()));
+        root.insert("log.logger".to_string(), 
+            json!(meta.target()));
+        
+        // Добавляем все поля события
+        for (key, value) in visitor.output {
+            println!("key: {}, value: {}", key, value) ;
+            root.insert(key, value);
+        }
+        
+        // Добавляем информацию о спане, если есть
+        if let Some(scope) = ctx.event_scope() {
+            let spans: Vec<Value> = scope.from_root()
+                .map(|span| {
+                    json!({
+                        "name": span.name(),
+                        "target": span.metadata().target(),
+                    })
+                })
+                .collect();
+            
+            if !spans.is_empty() {
+                root.insert("trace.spans".to_string(), json!(spans));
+            }
+        }
+        
+        // Записываем результат
+        write!(writer, "{}", serde_json::to_string(&root).unwrap())?;
+        writeln!(writer)?;
+        
+        Ok(())
+    }
+}
+
+// ----------------------------------------------
+
+/// Макрос для логирования с автоматическим определением файла лога
+//#[macro_export]
+macro_rules! log {
+    ($level:expr, $msg:expr $(, $field:expr => $value:expr )*) => {
+        {
+            //let file = $crate::logger::get_log_filename(module_path!());
+            tracing::event!(
+                //target: module_path!(),
+                $level,
+                //lvl = %$level, 
+                file = "app.log",
+                msg = $msg
+                $(, $field = $value )*
+            );
+        }
+    };
+}
+
+// Экспортируем макрос для использования внутри крейта по пути
+pub(crate) use log;
+
+/// Удобные макросы для разных уровней логирования
+#[macro_export]
+macro_rules! log_error {
+    ($msg:expr $(, $field:expr => $value:expr )*) => {
+        crate::logger::log!(tracing::Level::ERROR, $msg $(, $field => $value )*);
+    };
+}
+
+#[macro_export]
+macro_rules! log_warn {
+    ($msg:expr $(, $field:expr => $value:expr )*) => {
+        crate::logger::log!(tracing::Level::WARN, $msg $(, $field => $value )*);
+    };
+}
+
+#[macro_export]
+macro_rules! log_info {
+    ($msg:expr $(, $field:expr => $value:expr )*) => {
+        crate::logger::log!(tracing::Level::INFO, $msg $(, $field => $value )*);
+    };
+}
+
+#[macro_export]
+macro_rules! log_debug {
+    ($msg:expr $(, $field:expr => $value:expr )*) => {
+        crate::logger::log!(tracing::Level::DEBUG, $msg $(, $field => $value )*);
+    };
+}
+
+#[macro_export]
+macro_rules! log_trace {
+    ($msg:expr $(, $field:expr => $value:expr )*) => {
+        crate::logger::log!(tracing::Level::TRACE, $msg $(, $field => $value )*);
+    };
+}
+}
+
+fn main() {
+    use logger ;
+
+    /*
+    let mut v = vec![
+                logger::Level::DEBUG,
+                Level::ERROR,
+                Level::INFO,
+                Level::TRACE,
+                Level::WARN,
+                            ] ;
+        println!("v: {:?}", {v.sort() ;v}) ;
+    */
+
+    logger::init_logger();
+
+    log_info!("Application started", "version" => "1.0.0") ;
+    log_error!("Application started", "version" => "1.0.0") ;
+    log_warn!("Application started", "version" => "1.0.0") ;
+}

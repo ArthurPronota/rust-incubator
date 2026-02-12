@@ -1,34 +1,24 @@
-mod logger {
+/// Глобальный логгер
+pub mod app_log {
 // Примитив синхронизации, в который номинально можно записать данные 
 // только один раз.
 use std::sync::OnceLock;
 
 use tracing::{
         Level,
-        Subscriber
     };
 
 use tracing_subscriber::{
         fmt::{
-            self,
-            format::JsonFields,
-            // Тип, позволяющий создавать экземпляры io::Write.
-            MakeWriter,
-            // Тип данных, способный измерять и форматировать текущее время.
-            time::FormatTime
-        },
-        prelude::{
-            // для .with_filter(filter)
-            *,
-            //__tracing_subscriber_SubscriberExt,
-        },
-        registry::LookupSpan,
+            self, 
+            MakeWriter, 
+            time::FormatTime,
+        }, 
+        prelude::*, 
         util::SubscriberInitExt,
-        EnvFilter,
 };
 
 use chrono::{
-        DateTime, 
         Utc,
         SecondsFormat
     };
@@ -36,13 +26,13 @@ use chrono::{
 // Трейты, помошники и типовые определения для ядра I/O функциональности.
 use std::io;
 
-
 /// Глобальный логгер
 static LOGGER: OnceLock<()> = OnceLock::new();
 
 /// Кастомный форматтер времени с наносекундами по RFC 3339
 #[derive(Debug, Clone)]
 struct Rfc3339Nanos;
+
 
 // Реализация FormatTime для структуры Rfc3339Nanos
 impl FormatTime for Rfc3339Nanos {
@@ -65,16 +55,12 @@ impl FormatTime for Rfc3339Nanos {
 }
 
 /// перечесление возможных потоков вывода
+#[derive(Debug)]
 enum OutputTarget {
     Stdout(io::Stdout),
     Stderr(io::Stderr),
 }
 
-/*
-struct StdioWriterImpl {
-    target: Option<io::Stdout>,
-}
- */
 /// Структура для реализации низового вывода в тот или иной поток
 struct StdioWriterImpl {
     target: Option<OutputTarget>,
@@ -158,13 +144,6 @@ impl<'a> MakeWriter<'a> for StdioWriter  {
         let level = meta.level() ;
 
         /*
-        let target = if *level <= Level::INFO {
-            Some(OutputTarget::Stdout(io::stdout()))
-        } else {
-            Some(OutputTarget::Stderr(io::stderr()))
-        };
-         */
-        /*
           Отсортированный список значений перечисления Level
           в порядке убывания важности
             [Level(Error), 
@@ -174,7 +153,9 @@ impl<'a> MakeWriter<'a> for StdioWriter  {
              Level(Trace)]
          */
         let target = match *level {
-            Level::ERROR | Level::WARN => Some(OutputTarget::Stderr(io::stderr())),
+            Level::ERROR | Level::WARN => {
+                    Some(OutputTarget::Stderr(io::stderr()))
+                },
             _ => Some(OutputTarget::Stdout(io::stdout())),
         };
 
@@ -182,8 +163,10 @@ impl<'a> MakeWriter<'a> for StdioWriter  {
     }
 }
 
+
 /// Инициализация глобального логгера
 pub fn init_logger() {
+    
     LOGGER
      // Получает содержимое ячейки, инициализируя его значением f(), 
      // если ячейка не была инициализирована.
@@ -218,14 +201,14 @@ pub fn init_logger() {
                     .with_timer(Rfc3339Nanos)
                     // Используйте полный формат JSON, но с преобразованными в плоский 
                     // формат полями события.
-                    .flatten_event(
-                            //false
-                            true    // для выравнивания группы "fields"
-                        )
+                    // для выравнивания группы "fields"
+                    .flatten_event(true)
+                    //.format_event(ctx, writer, event) 
             )
             // Объединяет себя с фильтром, возвращая отфильтрованный слой.
-            .with_filter(EnvFilter::from_default_env())
+            //.with_filter(EnvFilter::from_default_env())
             ;
+
 
         // Инициализируем подписчика
         tracing_subscriber::registry()
@@ -237,17 +220,13 @@ pub fn init_logger() {
     });
 }
 
-/// Макрос для логирования с автоматическим определением файла лога
-#[macro_export]
+
+/// Базовый макрос для логирования
 macro_rules! log {
     ($level:expr, $msg:expr $(, $field:expr => $value:expr )*) => {
         {
-            //let file = $crate::logger::get_log_filename(module_path!());
-            //println!("level: {:?}", $level) ;
             tracing::event!(
-                //target: module_path!(),
                 $level,
-                lvl = %$level, 
                 file = "app.log",
                 msg = $msg
                 $(, $field = $value )*
@@ -256,59 +235,63 @@ macro_rules! log {
     };
 }
 
-/// Удобные макросы для разных уровней логирования
+// Экспортируем макрос для использования внутри крейта по пути
+pub(crate) use log;
+
+/// Макрос для вывода ошибок
 #[macro_export]
 macro_rules! log_error {
     ($msg:expr $(, $field:expr => $value:expr )*) => {
-        log!(tracing::Level::ERROR, $msg $(, $field => $value )*);
+        crate::app_log::log!(tracing::Level::ERROR, $msg $(, $field => $value )*);
     };
 }
 
+/// Макрос для вывода предупреждений
 #[macro_export]
 macro_rules! log_warn {
     ($msg:expr $(, $field:expr => $value:expr )*) => {
-        log!(tracing::Level::WARN, $msg $(, $field => $value )*);
+        crate::app_log::log!(tracing::Level::WARN, $msg $(, $field => $value )*);
     };
 }
 
+/// Макрос для вывода информации
 #[macro_export]
 macro_rules! log_info {
     ($msg:expr $(, $field:expr => $value:expr )*) => {
-        log!(tracing::Level::INFO, $msg $(, $field => $value )*);
+        crate::app_log::log!(tracing::Level::INFO, $msg $(, $field => $value )*);
     };
 }
 
+/// Макрос для вывода отдадочной информации
 #[macro_export]
 macro_rules! log_debug {
     ($msg:expr $(, $field:expr => $value:expr )*) => {
-        log!(tracing::Level::DEBUG, $msg $(, $field => $value )*);
+        crate::app_log::log!(tracing::Level::DEBUG, $msg $(, $field => $value )*);
     };
 }
 
+/// Макрос для вывода трассировочной информации
 #[macro_export]
 macro_rules! log_trace {
     ($msg:expr $(, $field:expr => $value:expr )*) => {
-        log!(tracing::Level::TRACE, $msg $(, $field => $value )*);
+        crate::app_log::log!(tracing::Level::TRACE, $msg $(, $field => $value )*);
     };
 }
 }
 
 fn main() {
-    use logger ;
+    // импорт глобального логгера
+    use app_log ;
 
-    /*
-    let mut v = vec![
-                logger::Level::DEBUG,
-                Level::ERROR,
-                Level::INFO,
-                Level::TRACE,
-                Level::WARN,
-                            ] ;
-        println!("v: {:?}", {v.sort() ;v}) ;
-    */
+    // инициализация глобального логгера
+    app_log::init_logger();
 
-    logger::init_logger();
+    // вызовы глобального логгера с разными уровнями отслеживания
+    log_info!("http","method" => "POST", "path" => "/some") ;
+    log_error!("Error occurred") ;
+    log_warn!("Application started", "version" => "1.0.0") ;
+    log_trace!("Application started", "version" => "1.0.0") ;
+    log_debug!("Application started", "version" => "1.0.0") ;
 
-    //log_info!("Application started", "version" => "1.0.0") ;
-    log_error!("Application started", "version" => "1.0.0") ;
 }
+
