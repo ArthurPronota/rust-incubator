@@ -1,0 +1,5 @@
+{"timestamp":"2026-02-13T12:10:12.647258000Z","level":"INFO","method":"GET","path":"/"}
+{"timestamp":"2026-02-13T12:10:12.647292200Z","level":"INFO","method":"POST","path":"/"}
+{"timestamp":"2026-02-13T12:36:55.199697200Z","level":"INFO","method":"GET","path":"/"}
+{"timestamp":"2026-02-13T12:36:55.199731700Z","level":"INFO","method":"POST","path":"/"}
+{"timestamp":"2026-02-13T12:36:55.199738900Z","level":"INFO","message":"abc"}

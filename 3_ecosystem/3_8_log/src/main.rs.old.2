@@ -284,9 +284,34 @@ pub mod access_log {
 
 //use std::collections::HashMap;
 
+/*
+use std::sync::{
+            Arc, 
+            RwLock
+        };
+ */
+use tracing::{
+        event, 
+        Level, 
+        span, 
+        Span
+    };
+
+/*
+    use tracing_subscriber::{
+            fmt::{
+                self, 
+                MakeWriter, 
+                time::FormatTime,
+            }, 
+            prelude::*, 
+            util::SubscriberInitExt,
+    };
+
+*/
 
 use tracing_subscriber::{
-            fmt::{
+            fmt:: {
                 self,
                 time::FormatTime
             }, 
@@ -304,12 +329,12 @@ use tracing_appender::non_blocking::WorkerGuard;
 // (диапазонов и событий) от точек мониторинга подписчику, который их 
 // собирает. Он служит центральным узлом в экосистеме трассировки, 
 // абстрагируя конкретную реализацию подписчика.
-// use tracing::Dispatch;
-/*
+use tracing::Dispatch;
+
 pub struct MultiSubscriber {
     subscribers: Vec<Dispatch>,
 }
- */
+
     use chrono::{
             Utc,
             SecondsFormat
@@ -338,43 +363,23 @@ pub struct MultiSubscriber {
         }
     }
 
-
-/// Структура локального логгера
-pub struct LocalLogger<'a> {
-    target: &'a str,  // String,    // target
-    path:   &'a str,  // String,    // path file
-    guard:  Option::<WorkerGuard>,  // guard
+/// Управление несколькими логгерами через разные target
+pub struct MultiLogger {
+    guards: Vec<WorkerGuard>,
 }
 
-// Реализация локального логгера
-impl<'a> LocalLogger<'a> {
-
-    // Cоздание нового логгера
-    pub fn new(target: &'a str, path: &'a str) -> Self {
-        Self { 
-            target: target,     // target.to_string(),
-            path:   path,       // path.to_string(),
-            guard:  Option::<WorkerGuard>::None,
-        }
+impl MultiLogger {
+    pub fn new() -> Self {
+        Self { guards: Vec::new() }
     }
     
-    /// Инициализация нового логгер
-    pub fn init(
-                &mut self,
-                /*
-                target: &str,
-                path: &str
-                 */
-            ) -> Result<tracing::subscriber::DefaultGuard, std::io::Error> {
+    /// Добавляет новый логгер с уникальным target
+    pub fn add_logger(&mut self, target: &str, path: &str) -> Result<tracing::subscriber::DefaultGuard, /*Box<dyn std::error::Error>*/ std::io::Error> {
         // Создаем файловый writer
         let file = std::fs::OpenOptions::new()
             .create(true)
             .append(true)
-            .open(
-                //path
-                self.path
-            )
-            ?;
+            .open(path)?;
         
         let (
             // (writer): Он реализует интерфейсы std::io::Write и 
@@ -395,13 +400,12 @@ impl<'a> LocalLogger<'a> {
             // записи логов, повышая производительность.        
             tracing_appender::non_blocking(file);
 
-        // сохраняем guard в структуре до завершения работы программы
-        // для нормального завершения записи всех логов         
-        self.guard = Some(guard) ;
+        // сохраняем guard в массиве до завершения работы программы
+        // для нормального завершения записи всех логов
+        self.guards.push(guard);
 
         // создаём строку на основе target
-        let target_copy = self.target.to_string() ;
-
+        let target_s = target.to_string() ;
 
         // Создаем слой с фильтром по target
         let layer =
@@ -419,7 +423,7 @@ impl<'a> LocalLogger<'a> {
             // слоем для записи событий.            
             .with_writer(non_blocking)
             .with_filter(tracing_subscriber::filter::filter_fn(move |metadata| {
-                metadata.target() == &target_copy
+                metadata.target() == &target_s
             }));
 
         // полписчик событий
@@ -435,7 +439,6 @@ impl<'a> LocalLogger<'a> {
         // Функция tracing::subscriber::set_default в Rust устанавливает 
         // подписчика в качестве значения по умолчанию только для текущего
         // потока на время жизни возвращаемого DefaultGuard.
-        // До конца scope (RAII)
         Ok(tracing::subscriber::set_default(subscriber))
     }
 }
@@ -468,18 +471,21 @@ fn main() {
         //Span
     };
 
-    // Создание нового логгера
-    let mut logger = 
-                access_log::LocalLogger::new(
-                                "access_log",
-                                "./access.log"
-                            );
+    let mut logger = access_log::MultiLogger::new();
 
-    // Устанавливаем подписчика для текущей области видимости
-    let _gd = logger.init().unwrap() ;
+    /*
+    if let Err(err) = logger.add_logger("access_log", "./access.log") {
+        println!("err: {}", err) ;
+    }
+     */
+    let lg = logger.add_logger("access_log", "./access.log").unwrap() ;
+    /*
+    if let Err(err) = logger.add_logger("error_log", "./error.log") {
+        println!("err: {}", err) ;
+    }
+    */
 
     tracing::event!(target: "access_log", Level::INFO, method = "GET", path = "/");
     tracing::event!(target: "access_log", Level::INFO, method = "POST", path = "/");
-    tracing::event!(target: "access_log", Level::INFO, "abc");
 }
 
