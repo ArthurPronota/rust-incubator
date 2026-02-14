@@ -1,0 +1,32 @@
+{"timestamp":"2026-02-14T06:29:20.108501200Z","level":"INFO","method":"DELETE","path":"/","ans":"a"}
+{"timestamp":"2026-02-14T06:29:20.108519600Z","level":"INFO","method":"POST","path":"/"}
+{"timestamp":"2026-02-14T06:29:20.108525700Z","level":"INFO","message":"abc"}
+{"timestamp":"2026-02-14T06:29:20.108538700Z","level":"INFO","msg":"my mess","path":"/some","file":"access_log","file2":10}
+{"timestamp":"2026-02-14T06:29:20.108547200Z","level":"ERROR","msg":"Error occurred"}
+{"timestamp":"2026-02-14T06:29:20.108552300Z","level":"WARN","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T06:29:20.108558200Z","level":"TRACE","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T06:29:20.108564100Z","level":"DEBUG","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T06:36:14.091280800Z","level":"INFO","method":"DELETE","path":"/","ans":"a"}
+{"timestamp":"2026-02-14T06:36:14.091295900Z","level":"INFO","method":"POST","path":"/"}
+{"timestamp":"2026-02-14T06:36:14.091301800Z","level":"INFO","message":"abc"}
+{"timestamp":"2026-02-14T06:36:14.091313400Z","level":"INFO","msg":"my mess","path":"/some","file":"access_log","file2":10}
+{"timestamp":"2026-02-14T06:36:14.091322200Z","level":"ERROR","msg":"Error occurred"}
+{"timestamp":"2026-02-14T06:36:14.091327300Z","level":"WARN","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T06:36:14.091333600Z","level":"TRACE","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T06:36:14.091339900Z","level":"DEBUG","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T06:36:23.505754400Z","level":"INFO","method":"DELETE","path":"/","ans":"a"}
+{"timestamp":"2026-02-14T06:36:23.505787300Z","level":"INFO","method":"POST","path":"/"}
+{"timestamp":"2026-02-14T06:36:23.505800000Z","level":"INFO","message":"abc"}
+{"timestamp":"2026-02-14T06:36:23.505817900Z","level":"INFO","msg":"my mess","path":"/some","file":"access_log","file2":10}
+{"timestamp":"2026-02-14T06:36:23.505834600Z","level":"ERROR","msg":"Error occurred"}
+{"timestamp":"2026-02-14T06:36:23.505845300Z","level":"WARN","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T06:36:23.505857300Z","level":"TRACE","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T06:36:23.505869500Z","level":"DEBUG","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T06:42:10.222994100Z","level":"INFO","method":"DELETE","path":"/","ans":"a"}
+{"timestamp":"2026-02-14T06:42:10.223005900Z","level":"INFO","method":"POST","path":"/"}
+{"timestamp":"2026-02-14T06:42:10.223011700Z","level":"INFO","message":"abc"}
+{"timestamp":"2026-02-14T06:42:10.223021500Z","level":"INFO","msg":"my mess","path":"/some","file":"access_log","file2":10}
+{"timestamp":"2026-02-14T06:42:10.223029800Z","level":"ERROR","msg":"Error occurred"}
+{"timestamp":"2026-02-14T06:42:10.223035000Z","level":"WARN","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T06:42:10.223041000Z","level":"TRACE","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T06:42:10.223047000Z","level":"DEBUG","msg":"Application started","version":"1.0.0"}

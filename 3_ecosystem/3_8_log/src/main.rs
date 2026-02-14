@@ -32,7 +32,6 @@ pub mod app_log {
     /// Кастомный форматтер времени с наносекундами по RFC 3339
     struct Rfc3339Nanos;
 
-
     // Реализация FormatTime для структуры Rfc3339Nanos
     impl FormatTime for Rfc3339Nanos {
         fn format_time(&self, w: &mut fmt::format::Writer<'_>) -> std::fmt::Result {
@@ -226,7 +225,6 @@ pub mod app_log {
             {
                 tracing::event!(
                     $level,
-                    file = "app.log",
                     msg = $msg
                     $(, $field = $value )*
                 );
@@ -239,7 +237,7 @@ pub mod app_log {
 
     /// Макрос для вывода ошибок
     #[macro_export]
-    macro_rules! log_error {
+    macro_rules! glb_log_error {
         ($msg:expr $(, $field:expr => $value:expr )*) => {
             crate::app_log::log!(tracing::Level::ERROR, $msg $(, $field => $value )*);
         };
@@ -247,7 +245,7 @@ pub mod app_log {
 
     /// Макрос для вывода предупреждений
     #[macro_export]
-    macro_rules! log_warn {
+    macro_rules! glb_log_warn {
         ($msg:expr $(, $field:expr => $value:expr )*) => {
             crate::app_log::log!(tracing::Level::WARN, $msg $(, $field => $value )*);
         };
@@ -255,7 +253,7 @@ pub mod app_log {
 
     /// Макрос для вывода информации
     #[macro_export]
-    macro_rules! log_info {
+    macro_rules! glb_log_info {
         ($msg:expr $(, $field:expr => $value:expr )*) => {
             crate::app_log::log!(tracing::Level::INFO, $msg $(, $field => $value )*);
         };
@@ -263,7 +261,7 @@ pub mod app_log {
 
     /// Макрос для вывода отдадочной информации
     #[macro_export]
-    macro_rules! log_debug {
+    macro_rules! glb_log_debug {
         ($msg:expr $(, $field:expr => $value:expr )*) => {
             crate::app_log::log!(tracing::Level::DEBUG, $msg $(, $field => $value )*);
         };
@@ -271,7 +269,7 @@ pub mod app_log {
 
     /// Макрос для вывода трассировочной информации
     #[macro_export]
-    macro_rules! log_trace {
+    macro_rules! glb_log_trace {
         ($msg:expr $(, $field:expr => $value:expr )*) => {
             crate::app_log::log!(tracing::Level::TRACE, $msg $(, $field => $value )*);
         };
@@ -282,34 +280,221 @@ pub mod app_log {
 /// Локальный логгер
 pub mod access_log {
 
-//use std::collections::HashMap;
+    use tracing_subscriber::{
+                fmt::{
+                    self,
+                    time::FormatTime
+                }, 
+                layer::SubscriberExt, 
+                Layer
+            };
 
+    use tracing_appender::non_blocking::WorkerGuard;
 
-use tracing_subscriber::{
-            fmt::{
-                self,
-                time::FormatTime
-            }, 
-            layer::SubscriberExt, 
-            //registry, 
-            Layer
+    use chrono::{
+            Utc,
+            SecondsFormat
         };
 
-use tracing_appender::non_blocking::WorkerGuard;
+    /// Кастомный форматтер времени с наносекундами по RFC 3339
+    struct Rfc3339Nanos;
 
-//use once_cell::sync::Lazy;
+    // Реализация FormatTime для структуры Rfc3339Nanos
+    impl FormatTime for Rfc3339Nanos {
+        fn format_time(&self, w: &mut fmt::format::Writer<'_>) -> std::fmt::Result {
+            // Возвращает объект DateTime<Utc>, соответствующий текущей дате и 
+            // времени в формате UTC.
+            let now = Utc::now() ;
+            /*
+            let v = Utc::now().to_rfc3339_opts(SecondsFormat::Nanos, // формат времени в наносекундах
+                        true    // использовать TZ UTC
+                    ) ;
+             */
+            write!(w, 
+                   "{}",
+                // Возвращает строку даты и времени, соответствующую RFC 3339 и 
+                // ISO 8601, с субсекундами, отформатированными в соответствии с 
+                // функцией SecondsFormat.
+                now.to_rfc3339_opts(
+                        SecondsFormat::Nanos, // формат времени в наносекундах
+                        true    // использовать TZ UTC
+                    )
+                )
+        }
+    }
 
-// `tracing::Dispatch` представляет собой клонируемую ссылку на объект 
-// `tracing::Subscriber`, отвечающий за пересылку данных трассировки 
-// (диапазонов и событий) от точек мониторинга подписчику, который их 
-// собирает. Он служит центральным узлом в экосистеме трассировки, 
-// абстрагируя конкретную реализацию подписчика.
-// use tracing::Dispatch;
-/*
-pub struct MultiSubscriber {
-    subscribers: Vec<Dispatch>,
+
+    /// Структура локального логгера
+    pub struct LocalLogger<'a> {
+        target:     &'a str,  // String,    // target
+        path:       &'a str,  // String,    // path file
+        guard:      Option::<WorkerGuard>,  // guard
+    }
+
+    // Реализация локального логгера
+    impl<'a> LocalLogger<'a> {
+
+        // Cоздание нового логгера
+        pub fn new(target: &'a str, path: &'a str) -> Self {
+            Self { 
+                target: target,     // target.to_string(),
+                path:   path,       // path.to_string(),
+                guard:  Option::<WorkerGuard>::None,
+            }
+        }
+
+        /// Инициализация нового логгер
+        pub fn init(
+                    &mut self,
+                ) -> Result<tracing::subscriber::DefaultGuard, std::io::Error> {
+            // Создаем файловый writer
+            let file = std::fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(
+                    self.path
+                )?;
+        
+            let (
+                // (writer): Он реализует интерфейсы std::io::Write и 
+                // tracing_subscriber::fmt::writer::MakeWriter, что позволяет 
+                // использовать его с FmtSubscriber или Layer из tracing_subscriber.
+                // При записи данные ставятся в очередь для рабочего потока.
+                non_blocking,
+                // (guard): Это крайне важно. Он гарантирует, что все буферизованные 
+                // логи будут выведены в выходной поток при завершении программы.
+                // guard должен оставаться активным до завершения программы; 
+                // в противном случае буферизованные логи могут быть немедленно 
+                // отброшены, и никакие записи в журнал не будут сделаны.
+                guard
+            ) = 
+                // Создает неблокирующий поток для записи данных, запуская отдельный 
+                // поток логирования для обработки операций ввода-вывода. 
+                // Это предотвращает блокировку основных потоков приложения при 
+                // записи логов, повышая производительность.        
+                tracing_appender::non_blocking(file);
+
+            // сохраняем guard в структуре до завершения работы программы
+            // для нормального завершения записи всех логов         
+            self.guard = Some(guard) ;
+
+            // создаём строку на основе target
+            let target_copy = self.target.to_string() ;
+
+
+            // Создаем слой с фильтром по target
+            let layer =
+            // создаёт слой форматирования
+            fmt::layer()
+                .json()
+                .with_target(false)
+                .with_current_span(false)
+                .with_span_list(false)
+                .with_file(false)
+                .with_line_number(false)
+                .with_timer(Rfc3339Nanos)
+                .flatten_event(true)
+                // Задает объект MakeWriter, который будет использоваться создаваемым
+                // слоем для записи событий.            
+                .with_writer(non_blocking)
+                .with_filter(tracing_subscriber::filter::filter_fn(move |metadata| {
+                    metadata.target() == &target_copy
+                }));
+
+            // полписчик событий
+            let subscriber = 
+                    // Функция создаёт подписчика добавлая слой layer к реестру.
+                    // Она является основой, на которую добавляются различные 
+                    // уровни функциональности трассировки
+                    tracing_subscriber::registry()
+                        // Оборачивает себя предоставленным слоем.
+                        .with(layer)
+                        ;
+
+            /* Установка подписчика как глобального по умолчанию
+            tracing::subscriber::set_global_default(subscriber) ;
+            */
+
+            // Функция tracing::subscriber::set_default в Rust устанавливает 
+            // подписчика в качестве значения по умолчанию только для текущего
+            // потока на время жизни возвращаемого DefaultGuard.
+            // До конца scope (RAII)
+            Ok(tracing::subscriber::set_default(subscriber))
+        }
+    }
+
+    /// Базовый макрос для логирования (без экспорта)
+    macro_rules! log {
+        ($target:expr, $level:expr, $msg:expr $(, $field:expr => $value:expr )*) => {
+            {
+                tracing::event!(
+                    target: $target,    // "target:" это имя параметра, устанавливаентся в меиаданных
+                    $level,
+                    msg = $msg
+                    $(, $field = $value )*
+                );
+            }
+        };
+    }
+
+    // Экспортируем макрос log для использования внутри крейта по пути
+    pub(crate) use log;
+
+    /// Макрос для вывода ошибок
+    #[macro_export]
+    macro_rules! loc_log_error {
+        ($target:expr, $msg:expr $(, $field:expr => $value:expr )*) => {
+            crate::access_log::log!($target, tracing::Level::ERROR, $msg $(, $field => $value )*);
+        };
+    }
+
+    /// Макрос для вывода предупреждений
+    #[macro_export]
+    macro_rules! loc_log_warn {
+        ($target:expr, $msg:expr $(, $field:expr => $value:expr )*) => {
+            crate::access_log::log!($target, tracing::Level::WARN, $msg $(, $field => $value )*);
+        };
+    }
+
+    /// Макрос для вывода информации
+    #[macro_export]
+    macro_rules! loc_log_info {
+        ($target:expr, $msg:expr $(, $field:expr => $value:expr )*) => {
+            crate::access_log::log!($target, tracing::Level::INFO, $msg $(, $field => $value )*);
+        };
+    }
+
+    /// Макрос для вывода отдадочной информации
+    #[macro_export]
+    macro_rules! loc_log_debug {
+        ($target:expr, $msg:expr $(, $field:expr => $value:expr )*) => {
+            crate::access_log::log!($target, tracing::Level::DEBUG, $msg $(, $field => $value )*);
+        };
+    }
+
+    /// Макрос для вывода трассировочной информации
+    #[macro_export]
+    macro_rules! loc_log_trace {
+        ($target:expr, $msg:expr $(, $field:expr => $value:expr )*) => {
+            crate::access_log::log!($target, tracing::Level::TRACE, $msg $(, $field => $value )*);
+        };
+    }    
 }
- */
+
+/// Локальный логгер
+pub mod access_log2 {
+
+    use tracing_subscriber::{
+                fmt::{
+                    self,
+                    time::FormatTime
+                }, 
+                layer::SubscriberExt, 
+                //Layer
+            };
+
+    use tracing_appender::non_blocking::WorkerGuard;
+
     use chrono::{
             Utc,
             SecondsFormat
@@ -338,109 +523,155 @@ pub struct MultiSubscriber {
         }
     }
 
+    /// Структура локального логгера
+    pub struct LocalLogger<'a> {
+        path:       &'a str,  // String,    // path file
+        guard:      Option::<WorkerGuard>,  // guard
+    }
 
-/// Структура локального логгера
-pub struct LocalLogger<'a> {
-    target: &'a str,  // String,    // target
-    path:   &'a str,  // String,    // path file
-    guard:  Option::<WorkerGuard>,  // guard
-}
+    // Реализация локального логгера
+    impl<'a> LocalLogger<'a> {
 
-// Реализация локального логгера
-impl<'a> LocalLogger<'a> {
+        // Cоздание нового логгера
+        pub fn new(path: &'a str) -> Self {
+            Self { 
+                path:   path,       // path.to_string(),
+                guard:  Option::<WorkerGuard>::None,
+            }
+        }
 
-    // Cоздание нового логгера
-    pub fn new(target: &'a str, path: &'a str) -> Self {
-        Self { 
-            target: target,     // target.to_string(),
-            path:   path,       // path.to_string(),
-            guard:  Option::<WorkerGuard>::None,
+        /// Инициализация нового логгер
+        pub fn init(
+                    &mut self,
+                ) -> Result<tracing::subscriber::DefaultGuard, std::io::Error> {
+            // Создаем файловый writer
+            let file = std::fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(
+                    self.path
+                )?;
+        
+            let (
+                // (writer): Он реализует интерфейсы std::io::Write и 
+                // tracing_subscriber::fmt::writer::MakeWriter, что позволяет 
+                // использовать его с FmtSubscriber или Layer из tracing_subscriber.
+                // При записи данные ставятся в очередь для рабочего потока.
+                non_blocking,
+                // (guard): Это крайне важно. Он гарантирует, что все буферизованные 
+                // логи будут выведены в выходной поток при завершении программы.
+                // guard должен оставаться активным до завершения программы; 
+                // в противном случае буферизованные логи могут быть немедленно 
+                // отброшены, и никакие записи в журнал не будут сделаны.
+                guard
+            ) = 
+                // Создает неблокирующий поток для записи данных, запуская отдельный 
+                // поток логирования для обработки операций ввода-вывода. 
+                // Это предотвращает блокировку основных потоков приложения при 
+                // записи логов, повышая производительность.        
+                tracing_appender::non_blocking(file);
+
+            // сохраняем guard в структуре до завершения работы программы
+            // для нормального завершения записи всех логов         
+            self.guard = Some(guard) ;
+
+            // Создаем слой с фильтром по target
+            let layer =
+            // создаёт слой форматирования
+            fmt::layer()
+                .json()
+                .with_target(false)
+                .with_current_span(false)
+                .with_span_list(false)
+                .with_file(false)
+                .with_line_number(false)
+                .with_timer(Rfc3339Nanos)
+                .flatten_event(true)
+                // Задает объект MakeWriter, который будет использоваться создаваемым
+                // слоем для записи событий.            
+                .with_writer(non_blocking)
+                /*
+                .with_filter(tracing_subscriber::filter::filter_fn(move |metadata| {
+                    metadata.target() == &target_copy
+                }))
+                 */
+                ;
+
+            // полписчик событий
+            let subscriber = 
+                    // Функция создаёт подписчика добавлая слой layer к реестру.
+                    // Она является основой, на которую добавляются различные 
+                    // уровни функциональности трассировки
+                    tracing_subscriber::registry()
+                        // Оборачивает себя предоставленным слоем.
+                        .with(layer)
+                        ;
+
+            // Функция tracing::subscriber::set_default в Rust устанавливает 
+            // подписчика в качестве значения по умолчанию только для текущего
+            // потока на время жизни возвращаемого DefaultGuard.
+            // До конца scope (RAII)
+            Ok(tracing::subscriber::set_default(subscriber))
         }
     }
-    
-    /// Инициализация нового логгер
-    pub fn init(
-                &mut self,
-                /*
-                target: &str,
-                path: &str
-                 */
-            ) -> Result<tracing::subscriber::DefaultGuard, std::io::Error> {
-        // Создаем файловый writer
-        let file = std::fs::OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(
-                //path
-                self.path
-            )
-            ?;
-        
-        let (
-            // (writer): Он реализует интерфейсы std::io::Write и 
-            // tracing_subscriber::fmt::writer::MakeWriter, что позволяет 
-            // использовать его с FmtSubscriber или Layer из tracing_subscriber.
-            // При записи данные ставятся в очередь для рабочего потока.
-            non_blocking,
-            // (guard): Это крайне важно. Он гарантирует, что все буферизованные 
-            // логи будут выведены в выходной поток при завершении программы.
-            // guard должен оставаться активным до завершения программы; 
-            // в противном случае буферизованные логи могут быть немедленно 
-            // отброшены, и никакие записи в журнал не будут сделаны.
-            guard
-        ) = 
-            // Создает неблокирующий поток для записи данных, запуская отдельный 
-            // поток логирования для обработки операций ввода-вывода. 
-            // Это предотвращает блокировку основных потоков приложения при 
-            // записи логов, повышая производительность.        
-            tracing_appender::non_blocking(file);
 
-        // сохраняем guard в структуре до завершения работы программы
-        // для нормального завершения записи всех логов         
-        self.guard = Some(guard) ;
-
-        // создаём строку на основе target
-        let target_copy = self.target.to_string() ;
-
-
-        // Создаем слой с фильтром по target
-        let layer =
-           // создаёт слой форматирования
-           fmt::layer()
-            .json()
-            .with_target(false)
-            .with_current_span(false)
-            .with_span_list(false)
-            .with_file(false)
-            .with_line_number(false)
-            .with_timer(Rfc3339Nanos)
-            .flatten_event(true)
-            // Задает объект MakeWriter, который будет использоваться создаваемым
-            // слоем для записи событий.            
-            .with_writer(non_blocking)
-            .with_filter(tracing_subscriber::filter::filter_fn(move |metadata| {
-                metadata.target() == &target_copy
-            }));
-
-        // полписчик событий
-        let subscriber = 
-                // Функция создаёт подписчика добавлая слой layer к реестру.
-                // Она является основой, на которую добавляются различные 
-                // уровни функциональности трассировки
-                tracing_subscriber::registry()
-                    // Оборачивает себя предоставленным слоем.
-                    .with(layer)
-                    ;
-
-        // Функция tracing::subscriber::set_default в Rust устанавливает 
-        // подписчика в качестве значения по умолчанию только для текущего
-        // потока на время жизни возвращаемого DefaultGuard.
-        // До конца scope (RAII)
-        Ok(tracing::subscriber::set_default(subscriber))
+    /// Базовый макрос для логирования (без экспорта)
+    macro_rules! log {
+        ($level:expr, $msg:expr $(, $field:expr => $value:expr )*) => {
+            {
+                tracing::event!(
+                    $level,
+                    msg = $msg
+                    $(, $field = $value )*
+                );
+            }
+        };
     }
+
+    // Экспортируем макрос log для использования внутри крейта по пути
+    pub(crate) use log;
+
+    /// Макрос для вывода ошибок
+    #[macro_export]
+    macro_rules! loc_log2_error {
+        ($msg:expr $(, $field:expr => $value:expr )*) => {
+            crate::access_log2::log!(tracing::Level::ERROR, $msg $(, $field => $value )*);
+        };
+    }
+
+    /// Макрос для вывода предупреждений
+    #[macro_export]
+    macro_rules! loc_log2_warn {
+        ($msg:expr $(, $field:expr => $value:expr )*) => {
+            crate::access_log2::log!(tracing::Level::WARN, $msg $(, $field => $value )*);
+        };
+    }
+
+    /// Макрос для вывода информации
+    #[macro_export]
+    macro_rules! loc_log2_info {
+        ($msg:expr $(, $field:expr => $value:expr )*) => {
+            crate::access_log2::log!(tracing::Level::INFO, $msg $(, $field => $value )*);
+        };
+    }
+
+    /// Макрос для вывода отдадочной информации
+    #[macro_export]
+    macro_rules! loc_log2_debug {
+        ($msg:expr $(, $field:expr => $value:expr )*) => {
+            crate::access_log2::log!(tracing::Level::DEBUG, $msg $(, $field => $value )*);
+        };
+    }
+
+    /// Макрос для вывода трассировочной информации
+    #[macro_export]
+    macro_rules! loc_log2_trace {
+        ($msg:expr $(, $field:expr => $value:expr )*) => {
+            crate::access_log2::log!(tracing::Level::TRACE, $msg $(, $field => $value )*);
+        };
+    }    
 }
 
-}
 
 fn main() {
 
@@ -451,35 +682,98 @@ fn main() {
     app_log::init_logger();
 
     // вызовы глобального логгера с разными уровнями отслеживания
-    log_info!("http","method" => "POST", "path" => "/some") ;
-    log_error!("Error occurred") ;
-    log_warn!("Application started", "version" => "1.0.0") ;
-    log_trace!("Application started", "version" => "1.0.0") ;
-    log_debug!("Application started", "version" => "1.0.0") ;
+    glb_log_info!("http", "file" => "app.log", "method" => "POST", "path" => "/some") ;
+    glb_log_error!("Error occurred") ;
+    glb_log_warn!("Application started", "version" => "1.0.0") ;
+    glb_log_trace!("Application started", "version" => "1.0.0") ;
+    glb_log_debug!("Application started", "version" => "1.0.0") ;
 
-    // -----------------------------------
+    // Локальный логгер с target
+    {
+        // импорт локального логгера
+        use access_log ;
+    
+        // импорт для обобщённого вызова событий
+        use tracing::Level;
+    
 
-    use access_log ;
-
-    use tracing::{
-        event, 
-        Level, 
-        //span, 
-        //Span
-    };
-
-    // Создание нового логгера
-    let mut logger = 
-                access_log::LocalLogger::new(
+        // Создание нового локального логгера
+        let mut logger = 
+                    access_log::LocalLogger::new(
                                 "access_log",
                                 "./access.log"
                             );
 
-    // Устанавливаем подписчика для текущей области видимости
-    let _gd = logger.init().unwrap() ;
+        // Устанавливаем подписчика для текущей области видимости
+        let _gd = logger.init().unwrap() ;
 
-    tracing::event!(target: "access_log", Level::INFO, method = "GET", path = "/");
-    tracing::event!(target: "access_log", Level::INFO, method = "POST", path = "/");
-    tracing::event!(target: "access_log", Level::INFO, "abc");
+        let v = "a".to_string() ;
+
+        // вызовы локального логгера с разными уровнями отслеживания
+        tracing::event!(target: "access_log", Level::INFO, method = "DELETE", path = "/", ans = v);
+        tracing::event!(target: "access_log", Level::INFO, method = "POST", path = "/");
+        tracing::event!(target: "access_log", Level::INFO, "abc");
+
+        let mess = "my mess".to_owned() ;
+        let val = "access_log".to_owned() ;
+        let num = 10 ;
+
+        // вызовы локального логгера с разными уровнями отслеживания
+        loc_log_info!("access_log", 
+                       mess,
+                       "path" => "/some",
+                       "file" => val,
+                       "file2" => num
+                    ) ;
+        loc_log_error!("access_log", "Error occurred") ;
+        loc_log_warn!("access_log", "Application started", "version" => "1.0.0") ;
+        loc_log_trace!("access_log", "Application started", "version" => "1.0.0") ;
+        loc_log_debug!("access_log", "Application started", "version" => "1.0.0") ;
+    }
+
+    // этот код не работает, т.к. он вне зоны видимости DefaultGuard
+    loc_log_debug!("access_log", "NewApplication started", "version" => "1.0.0") ;
+
+    // Локальный логгер без target
+    {
+        // импорт локального логгера
+        use access_log2 ;
+    
+        // импорт для обобщённого вызова событий
+        use tracing::Level;
+    
+
+        // Создание нового локального логгера
+        let mut logger = 
+                    access_log2::LocalLogger::new(
+                                "./access2.log"
+                            );
+
+        // Устанавливаем подписчика для текущей области видимости
+        let _gd = logger.init().unwrap() ;
+
+        let v = "a".to_string() ;
+
+        // вызовы локального логгера с разными уровнями отслеживания
+        tracing::event!(target: "access_log", Level::INFO, method = "DELETE", path = "/", ans = v);
+        tracing::event!(target: "access_log", Level::INFO, method = "POST", path = "/");
+        tracing::event!(target: "access_log", Level::INFO, "abc");
+
+        let mess = "my mess".to_owned() ;
+        let val = "access_log".to_owned() ;
+        let num = 10 ;
+
+        // вызовы локального логгера с разными уровнями отслеживания
+        loc_log2_info!(mess,
+                       "path" => "/some",
+                       "file" => val,
+                       "file2" => num
+                    ) ;
+        loc_log2_error!("Error occurred") ;
+        loc_log2_warn!("Application started", "version" => "1.0.0") ;
+        loc_log2_trace!("Application started", "version" => "1.0.0") ;
+        loc_log2_debug!("Application started", "version" => "1.0.0") ;
+    }
+
+    glb_log_debug!("Process started", "version" => "2.0.0") ;
 }
-
