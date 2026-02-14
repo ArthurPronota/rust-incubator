@@ -1,8 +1,8 @@
-{"timestamp":"2026-02-14T07:27:26.085819900Z","level":"INFO","method":"DELETE","path":"/","ans":"a"}
-{"timestamp":"2026-02-14T07:27:26.085863400Z","level":"INFO","method":"POST","path":"/"}
-{"timestamp":"2026-02-14T07:27:26.085873300Z","level":"INFO","message":"abc"}
-{"timestamp":"2026-02-14T07:27:26.085880800Z","level":"INFO","msg":"my mess","path":"/some","file":"access_log","file2":10}
-{"timestamp":"2026-02-14T07:27:26.085900600Z","level":"ERROR","msg":"Error occurred"}
-{"timestamp":"2026-02-14T07:27:26.085906100Z","level":"WARN","msg":"Application started","version":"1.0.0"}
-{"timestamp":"2026-02-14T07:27:26.085912600Z","level":"TRACE","msg":"Application started","version":"1.0.0"}
-{"timestamp":"2026-02-14T07:27:26.085921300Z","level":"DEBUG","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T07:29:06.923230200Z","level":"INFO","method":"DELETE","path":"/","ans":"a"}
+{"timestamp":"2026-02-14T07:29:06.923265500Z","level":"INFO","method":"POST","path":"/"}
+{"timestamp":"2026-02-14T07:29:06.923275000Z","level":"INFO","message":"abc"}
+{"timestamp":"2026-02-14T07:29:06.923282200Z","level":"INFO","msg":"my mess","path":"/some","file":"access_log","file2":10}
+{"timestamp":"2026-02-14T07:29:06.923301500Z","level":"ERROR","msg":"Error occurred"}
+{"timestamp":"2026-02-14T07:29:06.923307000Z","level":"WARN","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T07:29:06.923313800Z","level":"TRACE","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-14T07:29:06.923326900Z","level":"DEBUG","msg":"Application started","version":"1.0.0"}
