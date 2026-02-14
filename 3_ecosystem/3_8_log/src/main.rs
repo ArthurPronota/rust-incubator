@@ -1,3 +1,15 @@
+/*
+    1) В логгере создаётся подписчик.
+    2) tracing::event!(...) - излучает событие
+    3) подписчик обрабатывает событие
+
+    Созданы
+    1) Глобальный логгер: app_log
+    2) Локальный логгер с targer:  access_log
+    3) Локальный логгер без targer:  access_log2
+
+*/
+
 /// Глобальный логгер
 pub mod app_log {
     // Примитив синхронизации, в который номинально можно записать данные 
@@ -284,7 +296,7 @@ pub mod app_log {
 }
 
 
-/// Локальный логгер
+/// Локальный логгер с targer
 pub mod access_log {
 
     use tracing_subscriber::{
@@ -497,7 +509,7 @@ pub mod access_log {
     }    
 }
 
-/// Локальный логгер
+/// Локальный логгер без targer
 pub mod access_log2 {
 
     use tracing_subscriber::{
@@ -770,7 +782,6 @@ fn main() {
         // импорт для обобщённого вызова событий
         use tracing::Level;
     
-
         // Создание нового локального логгера
         let mut logger = 
                     access_log2::LocalLogger::new(
