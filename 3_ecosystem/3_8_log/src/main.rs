@@ -793,12 +793,12 @@ fn main() {
         // Устанавливаем подписчика для текущей области видимости
         let _gd = logger.init().unwrap() ;
 
-        let v = "a".to_string() ;
+        let v = "aM".to_string() ;
 
         // вызовы локального логгера с разными уровнями отслеживания
-        tracing::event!(target: "access_log", Level::INFO, method = "DELETE", path = "/", ans = v);
-        tracing::event!(target: "access_log", Level::INFO, method = "POST", path = "/");
-        tracing::event!(target: "access_log", Level::INFO, "abc");
+        tracing::event!(Level::INFO, method = "DELETE", path = "/", ans = v);
+        tracing::event!(Level::INFO, method = "POST", path = "/");
+        tracing::event!(Level::INFO, "abc");
 
         let mess = "my mess".to_owned() ;
         let val = "access_log".to_owned() ;
