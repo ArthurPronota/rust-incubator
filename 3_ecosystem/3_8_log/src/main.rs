@@ -59,26 +59,30 @@ pub mod app_log {
     }
 
     /// Структура для реализации низового вывода в тот или иной поток
-    struct StdioWriterImpl {
+    struct StdMixWriterImpl {
         target: Option<OutputTarget>,
     }
 
-    /// реализация io::Write для структуры StdioWriterImpl
-    impl io::Write for StdioWriterImpl {
+    /// реализация io::Write для структуры StdMixWriterImpl
+    impl io::Write for StdMixWriterImpl {
         fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
             match &self.target {
-                /*
-                Some(w) => 
-                    w
-                    // Блокирует этот обработчик к стандартному  выходному потоку,
-                    // возвращая гаоантии пригодности к записи
-                    .lock()
-                    // Записывает буфер в этот write, возвращая 
-                    // количество записанных байтов.
-                    .write(buf),
-                */
-                Some(OutputTarget::Stdout(w)) => w.lock().write(buf),
-                Some(OutputTarget::Stderr(w)) => w.lock().write(buf),
+                Some(OutputTarget::Stdout(w)) => 
+                        w
+                         // Блокирует этот обработчик к стандартному  выходному потоку,
+                         // возвращая гаоантии пригодности к записи
+                         .lock()
+                         // Записывает буфер в этот write, возвращая
+                         // количество записанных байтов.
+                         .write(buf),
+                Some(OutputTarget::Stderr(w)) => 
+                        w
+                         // Блокирует этот обработчик к стандартному  выходному потоку,
+                         // возвращая гаоантии пригодности к записи
+                         .lock()
+                         // Записывает буфер в этот write, возвращая
+                         // количество записанных байтов.
+                         .write(buf),
                 None => 
                     io::stdout()
                     // Блокирует этот обработчик к стандартному выходному потоку,
@@ -92,21 +96,24 @@ pub mod app_log {
 
         fn flush(&mut self) -> io::Result<()> {
             match &self.target {
-                /*
-                Some(w) => 
-
-                w
-                // Блокирует этот обработчик к стандартному выходному потоку,
-                // возвращая гаоантии пригодности к записи
-                    .lock()
-                // Очищает этот выходной поток, гарантируя, что все промежуточно 
-                // буферизованные данные достигнут места назначения.
-                    .flush(),
-                    */
                 // вывод в Stdout
-                Some(OutputTarget::Stdout(w)) => w.lock().flush(),
+                Some(OutputTarget::Stdout(w)) => 
+                    w
+                     // Блокирует этот обработчик к стандартному выходному потоку,
+                     // возвращая гаоантии пригодности к записи
+                     .lock()
+                     // Очищает этот выходной поток, гарантируя, что все промежуточно 
+                     // буферизованные данные достигнут места назначения.
+                     .flush(),
                 // вывод в Stderr
-                Some(OutputTarget::Stderr(w)) => w.lock().flush(),
+                Some(OutputTarget::Stderr(w)) => 
+                    w
+                     // Блокирует этот обработчик к стандартному выходному потоку,
+                     // возвращая гаоантии пригодности к записи                     
+                     .lock()
+                     // Очищает этот выходной поток, гарантируя, что все промежуточно
+                     // буферизованные данные достигнут места назначения.
+                     .flush(),
                 // для всего остального вывод в Stdout
                 None => io::stdout()
                 // Блокирует этот обработчик к стандартному выходному потоку,
@@ -121,14 +128,14 @@ pub mod app_log {
 
     /// Кастомный writer, который направляет WARN и ERROR в stderr,
     /// остальное в stdout
-    struct StdioWriter;
+    struct StdMixWriter;
 
-    impl<'a> MakeWriter<'a> for StdioWriter  {
-        type Writer = StdioWriterImpl;
+    impl<'a> MakeWriter<'a> for StdMixWriter  {
+        type Writer = StdMixWriterImpl;
 
         // Возвращает экземпляр класса Writer.
         fn make_writer(&'a self) -> Self::Writer {
-            StdioWriterImpl {
+            StdMixWriterImpl {
                 target: None,
             }
         }
@@ -156,7 +163,7 @@ pub mod app_log {
                 _ => Some(OutputTarget::Stdout(io::stdout())),
             };
 
-            StdioWriterImpl{target}
+            StdMixWriterImpl{target}
         }
     }
 
@@ -174,7 +181,7 @@ pub mod app_log {
               fmt::layer()
                 // Задает объект MakeWriter, который будет использоваться создаваемым
                 // слоем для записи событий.
-                .with_writer(StdioWriter)
+                .with_writer(StdMixWriter)
                 // Задает форматтер событий, который будет использоваться создаваемым
                 // слоем для форматирования событий.
                 .event_format(
@@ -305,11 +312,7 @@ pub mod access_log {
             // Возвращает объект DateTime<Utc>, соответствующий текущей дате и 
             // времени в формате UTC.
             let now = Utc::now() ;
-            /*
-            let v = Utc::now().to_rfc3339_opts(SecondsFormat::Nanos, // формат времени в наносекундах
-                        true    // использовать TZ UTC
-                    ) ;
-             */
+
             write!(w, 
                    "{}",
                 // Возвращает строку даты и времени, соответствующую RFC 3339 и 
@@ -326,9 +329,9 @@ pub mod access_log {
 
     /// Структура локального логгера
     pub struct LocalLogger<'a> {
-        target:     &'a str,  // String,    // target
-        path:       &'a str,  // String,    // path file
-        guard:      Option::<WorkerGuard>,  // guard
+        target:     &'a str,
+        path:       &'a str,
+        guard:      Option::<WorkerGuard>,
     }
 
     // Реализация локального логгера
@@ -386,17 +389,30 @@ pub mod access_log {
             let layer =
             // создаёт слой форматирования
             fmt::layer()
+                // Используйте полный формат JSON.
                 .json()
+                // Определяет, отображается ли целевой объект события.
                 .with_target(false)
+                // Определяет, будет ли форматтер включать текущий элемент <span> 
+                // в форматируемые события.                
                 .with_current_span(false)
+                // Определяет, будет ли форматтер включать список (от корня до листа)
+                // всех введенных в данный момент тегов <span> в форматируемые события.                
                 .with_span_list(false)
+                // Определяет, отображается ли путь к файлу исходного кода события.
                 .with_file(false)
+                // Определяет, отображается ли номер строки исходного кода события.
                 .with_line_number(false)
+                // Используйте указанный таймер для меток времени сообщений журнала.
                 .with_timer(Rfc3339Nanos)
+                // Используйте полный формат JSON, но с преобразованными в плоский 
+                // формат полями события.
+                // для выравнивания группы "fields"                
                 .flatten_event(true)
                 // Задает объект MakeWriter, который будет использоваться создаваемым
                 // слоем для записи событий.            
                 .with_writer(non_blocking)
+                // Условие фильтрации (по target)
                 .with_filter(tracing_subscriber::filter::filter_fn(move |metadata| {
                     metadata.target() == &target_copy
                 }));
@@ -525,8 +541,8 @@ pub mod access_log2 {
 
     /// Структура локального логгера
     pub struct LocalLogger<'a> {
-        path:       &'a str,  // String,    // path file
-        guard:      Option::<WorkerGuard>,  // guard
+        path:       &'a str,
+        guard:      Option::<WorkerGuard>,
     }
 
     // Реализация локального логгера
@@ -579,16 +595,28 @@ pub mod access_log2 {
             let layer =
             // создаёт слой форматирования
             fmt::layer()
+                // Используйте полный формат JSON.
                 .json()
+                // Определяет, отображается ли целевой объект события.
                 .with_target(false)
+                // Определяет, будет ли форматтер включать текущий элемент <span> 
+                // в форматируемые события.                
                 .with_current_span(false)
+                // Определяет, будет ли форматтер включать список (от корня до листа)
+                // всех введенных в данный момент тегов <span> в форматируемые события.                
                 .with_span_list(false)
+                // Определяет, отображается ли путь к файлу исходного кода события.                
                 .with_file(false)
+                // Определяет, отображается ли номер строки исходного кода события.
                 .with_line_number(false)
+                // Используйте указанный таймер для меток времени сообщений журнала.
                 .with_timer(Rfc3339Nanos)
+                // Используйте полный формат JSON, но с преобразованными в плоский 
+                // формат полями события.
+                // для выравнивания группы "fields"                
                 .flatten_event(true)
                 // Задает объект MakeWriter, который будет использоваться создаваемым
-                // слоем для записи событий.            
+                // слоем для записи событий.
                 .with_writer(non_blocking)
                 /*
                 .with_filter(tracing_subscriber::filter::filter_fn(move |metadata| {
