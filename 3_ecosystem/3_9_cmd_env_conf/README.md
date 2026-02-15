@@ -10,13 +10,12 @@ __Estimated time__: 1 day
 
 [Rust] предоставляет простой итератор [`std::env::Arg`] для доступа к аргументам командной строки, передаваемым программе.
 
-However, most of the time you require more advanced tool for that, which provides `--help` and `--version` flags out-of-the-box and a _convenient way to setup and describe custom options/flags to build your own_ [CLI (command-line interface)][CLI]. For such cases there is the well-known [`clap`] crate in [Rust] ecosystem.
 
 Однако в большинстве случаев для этого требуется более продвинутый инструмент, который предоставляет флаги `--help` и `--version` «из коробки», а также удобный способ настройки и описания пользовательских параметров/флагов для создания собственного [CLI (интерфейса командной строки)][CLI]. Для таких случаев существует хорошо известный крейт [`clap`] в экосистеме [Rust].
 
-It has the [`derive` Cargo feature][6] (formerly, [`structopt`] crate) allowing to define [CLI] in a _declarative and clean way_.
+В нем есть [`derive` Cargo feature][6] (ранее — крейт [`structopt`]), позволяющая определять [CLI] _декларативным и чистым способом_.
 
-To better understand and be familiar with [CLI] tools in [Rust] ecosystem, read through:
+Чтобы лучше понять и освоить инструменты командной строки [CLI] в экосистеме [Rust], ознакомьтесь со следующими материалами:
 - [Rust Book: 12.1. Accepting Command Line Arguments][1]
 - [Official `std::env::Arg` docs][`std::env::Arg`]
 - [Official `clap` crate docs][`clap`]
