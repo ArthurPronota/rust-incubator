@@ -53,11 +53,10 @@ __Estimated time__: 1 day
 
 
 > Параметр `Config` позволяет задать набор параметров по умолчанию, а затем расширить их путем объединения конфигурационных данных из различных источников:
-
-> - Environment variables
-
+> - Переменные окружающей среды
 
 > - String literals in well-known formats
+
 > - Another `Config` instance
 > - Files: TOML, JSON, YAML, INI, RON, JSON5 and custom ones defined with `Format` trait
 > - Manual, programmatic override (via a `.set` method on the `Config` instance)
