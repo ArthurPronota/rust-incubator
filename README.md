@@ -140,7 +140,8 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [Что такое структурированное логирование? Какие преимущества оно предоставляет?](3_ecosystem/3_8_log/README.md#что-такое-структурированное-логирование-какие-преимущества-оно-предоставляет)
         - [Почему крейт `tracing` хорош для логирования? Чем он предпочтительнее крейтов `slog` и `log`?](3_ecosystem/3_8_log/README.md#почему-крейт-tracing-хорош-для-логирования-чем-он-предпочтительнее-крейтов-slog-и-log)
         - [Что такое трассировка? Почему она полезна для обеспечения наблюдаемости?](3_ecosystem/3_8_log#что-такое-трассировка-почему-она-полезна-для-обеспечения-наблюдаемости)
-    - [ ] [3.9. Command-line arguments, environment variables and configs][Step 3.9] (1 day)
+    - [ ] [Шаг 3.9: Аргументы командной строки, переменные среды и конфигурации][Step 3.9] (1 day)
+    
     - [ ] [3.10. Multithreading and parallelism][Step 3.10] (1 day)
     - [ ] [3.11. Async I/O, futures and actors][Step 3.11] (2 days)
 - [ ] [4. Backend ecosystem][Step 4] (3 days, after all sub-steps)

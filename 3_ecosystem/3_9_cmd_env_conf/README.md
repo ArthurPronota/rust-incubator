@@ -1,4 +1,4 @@
-Step 3.9: Command-line arguments, environment variables and configs
+Шаг 3.9: Аргументы командной строки, переменные среды и конфигурации
 ===================================================================
 
 __Estimated time__: 1 day
