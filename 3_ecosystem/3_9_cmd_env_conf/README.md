@@ -49,7 +49,7 @@ __Estimated time__: 1 day
 
 ## Configuration
 
-For dealing with configurations there is the well-known [`config`] crate in [Rust] ecosystem, which simplifies creation and usage of hierarchical typed configuration structures in a [12-factor] way.
+Для работы с конфигурациями в экосистеме [Rust] существует хорошо известный крейт [`config`], который упрощает создание и использование иерархически типизированных структур конфигурации в соответствии с принципами [12-factor] архитектуры.
 
 > `Config` lets you set a set of default parameters and then extend them via merging in configuration from a variety of sources:
 > - Environment variables
