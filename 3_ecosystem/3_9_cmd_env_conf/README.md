@@ -57,13 +57,12 @@ __Estimated time__: 1 day
 > - Строковые литералы в общеизвестных форматах
 > - Ещё один экземпляр `Config`
 > - Файлы: TOML, JSON, YAML, INI, RON, JSON5 и пользовательские, определенные с помощью trat `Format`.
-
-> - Manual, programmatic override (via a `.set` method on the `Config` instance)
+> - Ручное, программное переопределение (через метод `.set` в экземпляре `Config`)
 >
-> Additionally, `Config` supports:
-> - Live watching and re-reading of configuration files
-> - Deep access into the merged configuration via a path syntax
-> - Deserialization via `serde` of the configuration or any subset defined via a path
+> Кроме того, `Config` поддерживает:
+> - Просмотр и повторное чтение конфигурационных файлов в режиме реального времени
+> - Углубленный доступ к объединенной конфигурации через синтаксис пути.
+> - Десериализация конфигурации или любого ее подмножества, определенного через путь, с помощью `serde`.
 
 To better understand and be familiar with [`config`] crate's design, concepts, usage and features, read through:
 - [Official `config` crate docs][`config`]
