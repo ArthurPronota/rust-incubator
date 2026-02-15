@@ -56,8 +56,8 @@ __Estimated time__: 1 day
 > - Переменные окружающей среды
 > - Строковые литералы в общеизвестных форматах
 > - Ещё один экземпляр `Config`
+> - Файлы: TOML, JSON, YAML, INI, RON, JSON5 и пользовательские, определенные с помощью trat `Format`.
 
-> - Files: TOML, JSON, YAML, INI, RON, JSON5 and custom ones defined with `Format` trait
 > - Manual, programmatic override (via a `.set` method on the `Config` instance)
 >
 > Additionally, `Config` supports:
