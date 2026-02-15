@@ -35,12 +35,10 @@ __Estimated time__: 1 day
 
 Стоит отметить, что крейт [`clap`] также [способен анализировать переменные окружения][7], что очень удобно, когда речь идет о поддержке [CLI] с помощью [переменных окружения][2].
 
-Finally, [`dotenv`] crate should be mentioned. It sets [environment variables][2] basing on [`.env` file][8] contents, which is widely used convention to simplify environment configuration and to omit declaring all the required environment variables by hand each time when running some program. This one is especially _useful in development_ (consider also [`rs-env`] and [`direnv`] for better development experience).
-
 Наконец, следует упомянуть крейт [`dotenv`]. Он устанавливает [переменные окружения][2] на основе содержимого [`.env` файла][8], что является широко распространенным соглашением для упрощения настройки окружения и позволяет избежать ручного объявления всех необходимых переменных окружения каждый раз при запуске какой-либо программы. Этот крейт особенно _полезен в разработке_ (рассмотрите также [`rs-env`] и [`direnv`] для лучшего опыта разработки).
 
 
-To better understand and be familiar with [environment variables][2] tools in [Rust] ecosystem, read through:
+Чтобы лучше понять и ознакомиться с инструментами [переменные среды][2] в экосистеме [Rust], прочтите следующее:
 - [Rust Book: 12.5. Working with Environment Variables][3]
 - [Official `std::env` docs][`std::env`]
 - [Official `envy` crate docs][`envy`]
