@@ -29,13 +29,16 @@ __Estimated time__: 1 day
 
 [Rust] предоставляет общие примитивы в [`std::env`] для работы с [переменными окружения][2] в виде строк.
 
-However, most of the time you want to operate with typed data, not with raw strings. Similarly to [`clap`] for CLI, there is the [`envy`] crate in [Rust] ecosystem, which uses [`serde`] as facade and allows to read data from [environment variables][2] in a _declarative and clean way_ (due to [serde attributes][4] support).
 
 Однако в большинстве случаев вам нужно работать с типизированными данными, а не с необработанными строками. Аналогично [`clap`] для CLI, в экосистеме [Rust] существует крейт [`envy`], который использует [`serde`] в качестве фасада и позволяет считывать данные из [переменных окружения][2] _декларативным и чистым способом_ (благодаря поддержке [атрибутов serde][4]).
 
-It's worth mentioning, that [`clap`] crate is [able to parse from environment variables][7] too, which is super handy when it comes to backing your [CLI] with [environment variables][2].
+
+Стоит отметить, что крейт [`clap`] также [способен анализировать переменные окружения][7], что очень удобно, когда речь идет о поддержке [CLI] с помощью [переменных окружения][2].
 
 Finally, [`dotenv`] crate should be mentioned. It sets [environment variables][2] basing on [`.env` file][8] contents, which is widely used convention to simplify environment configuration and to omit declaring all the required environment variables by hand each time when running some program. This one is especially _useful in development_ (consider also [`rs-env`] and [`direnv`] for better development experience).
+
+Наконец, следует упомянуть крейт [`dotenv`]. Он устанавливает [переменные окружения][2] на основе содержимого [`.env` файла][8], что является широко распространенным соглашением для упрощения настройки окружения и позволяет избежать ручного объявления всех необходимых переменных окружения каждый раз при запуске какой-либо программы. Этот крейт особенно _полезен в разработке_ (рассмотрите также [`rs-env`] и [`direnv`] для лучшего опыта разработки).
+
 
 To better understand and be familiar with [environment variables][2] tools in [Rust] ecosystem, read through:
 - [Rust Book: 12.5. Working with Environment Variables][3]
