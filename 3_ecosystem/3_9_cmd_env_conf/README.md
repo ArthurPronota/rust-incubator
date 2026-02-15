@@ -104,8 +104,7 @@ OPTIONS:
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- What are the benefits of having strongly-type configuration?
-- [В чём преимущества строгой типизации конфигурации?]()
+- [В чём преимущества строгой типизации конфигурации?](#в-чём-преимущества-строгой-типизации-конфигурации)
 - Why environment variables are useful for configuring an application? What is the main use-case for them?
 - How is [`config`] crate really useful? Why should we it and cannot just deserialize a file into structs via [`serde`]?
 
