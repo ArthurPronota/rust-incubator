@@ -51,8 +51,12 @@ __Estimated time__: 1 day
 
 Для работы с конфигурациями в экосистеме [Rust] существует хорошо известный крейт [`config`], который упрощает создание и использование иерархически типизированных структур конфигурации в соответствии с принципами [12-factor] архитектуры.
 
-> `Config` lets you set a set of default parameters and then extend them via merging in configuration from a variety of sources:
+
+> Параметр `Config` позволяет задать набор параметров по умолчанию, а затем расширить их путем объединения конфигурационных данных из различных источников:
+
 > - Environment variables
+
+
 > - String literals in well-known formats
 > - Another `Config` instance
 > - Files: TOML, JSON, YAML, INI, RON, JSON5 and custom ones defined with `Format` trait
