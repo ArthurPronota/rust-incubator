@@ -64,7 +64,7 @@ __Estimated time__: 1 day
 > - Углубленный доступ к объединенной конфигурации через синтаксис пути.
 > - Десериализация конфигурации или любого ее подмножества, определенного через путь, с помощью `serde`.
 
-To better understand and be familiar with [`config`] crate's design, concepts, usage and features, read through:
+Чтобы лучше понять и ознакомиться с дизайном, концепциями, использованием и функциями крейта [`config`], прочтите следующие материалы:
 - [Official `config` crate docs][`config`]
 - [`config` crate examples][5]
 
@@ -103,13 +103,28 @@ OPTIONS:
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - What are the benefits of having strongly-type configuration?
+- [В чём преимущества строгой типизации конфигурации?]()
 - Why environment variables are useful for configuring an application? What is the main use-case for them?
 - How is [`config`] crate really useful? Why should we it and cannot just deserialize a file into structs via [`serde`]?
 
+<hr>
+
+### В чём преимущества строгой типизации конфигурации?
+
+Строгая типизация конфигурации в Rust превращает «динамический хаос» текстовых файлов в статические гарантии безопасности вашего приложения.
+Основные преимущества заключаются в следующем:
+
+1. #### Ошибки при запуске, а не во время работы (Fail-Fast)
+
+Вместо того чтобы упасть через два часа работы из-за того, что в конфиге вместо числа пришла строка, приложение упадет мгновенно при старте.
+
+- _Как это работает_: Библиотеки вроде serde проверяют соответствие типов (например, u16 для порта) прямо в момент парсинга.
 
 
+
+<hr>
 
 [`clap`]: https://docs.rs/clap
 [`config`]: https://docs.rs/config
