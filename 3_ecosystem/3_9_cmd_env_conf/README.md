@@ -26,9 +26,12 @@ __Estimated time__: 1 day
 
 ## Environment variables
 
-[Rust] provides common primitives in [`std::env`] for working with [environment variables][2] as strings.
+
+[Rust] предоставляет общие примитивы в [`std::env`] для работы с [переменными окружения][2] в виде строк.
 
 However, most of the time you want to operate with typed data, not with raw strings. Similarly to [`clap`] for CLI, there is the [`envy`] crate in [Rust] ecosystem, which uses [`serde`] as facade and allows to read data from [environment variables][2] in a _declarative and clean way_ (due to [serde attributes][4] support).
+
+Однако в большинстве случаев вам нужно работать с типизированными данными, а не с необработанными строками. Аналогично [`clap`] для CLI, в экосистеме [Rust] существует крейт [`envy`], который использует [`serde`] в качестве фасада и позволяет считывать данные из [переменных окружения][2] декларативным и чистым способом_ (благодаря поддержке [атрибутов serde][4]).
 
 It's worth mentioning, that [`clap`] crate is [able to parse from environment variables][7] too, which is super handy when it comes to backing your [CLI] with [environment variables][2].
 
