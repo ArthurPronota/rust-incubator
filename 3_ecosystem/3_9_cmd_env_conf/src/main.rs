@@ -511,4 +511,61 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+// ------ Пример конфигурационного файла config.toml -----
+
+debug = true
+
+[server]
+host = "0.0.0.0"
+port = 3000
+timeout = 60
+max_body_size = 2097152
+ssl_enabled = true
+ssl_cert_path = "/etc/ssl/cert.pem"
+ssl_key_path = "/etc/ssl/key.pem"
+
+[logging]
+level = "debug"
+file_path = "/var/log/app.log"
+format = "json"
+max_size = 10485760
+backups = 7
+
+[database]
+url = "postgres://localhost"
+name = "myapp_prod"
+username = "admin"
+password = "secret123"
+max_connections = 20
+connection_timeout = 10
+
+# Произвольные дополнительные параметры
+environment = "production"
+region = "us-east-1"
+
+// ----- 1. Без аргументов (используются значения по умолчанию)
+
+$ cargo run
+
+// ----- 2. С указанием файла конфигурации
+
+$ cargo run -- --conf custom.toml
+
+// ----- 3. С флагом debug
+
+$ cargo run -- --debug
+
+// ----- 4. С переменными окружения
+
+$ export CONF_SERVER_PORT=9999
+$ export CONF_DATABASE_URL="postgres://remote"
+$ export CONF_DEBUG=true
+$ cargo run
+
+// ---- 5. Комбинация всего
+
+$ export CONF_SERVER_TIMEOUT=120
+$ export CONF_LOGGING_FORMAT="json"
+$ cargo run -- --conf prod.toml --debug
+
 */
