@@ -3,3 +3,7 @@ name = "step_3_9"
 version = "0.1.0"
 edition = "2024"
 publish = false
+
+[dependencies]
+clap = "4.5.58"
+serde = "1.0.228"
