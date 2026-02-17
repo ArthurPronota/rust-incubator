@@ -1,10 +1,27 @@
+/*
+    Contact: https://artaudiochats.t.me/
+    
+    Command step_3_9: `{flags}` template variable was removed in clap3, they are now included in `{options}`
+
+ */
+
 use clap::Parser;
+/*
+use clap::Args;
+use clap::Subcommand;
+ */
+use clap::ArgAction;
+
+
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
+
+
 /// Конфигурация режима работы.
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct ModeConfig {
     /// Режим отладки
     debug:  bool,
@@ -19,6 +36,7 @@ impl Default for ModeConfig {
 }
 
 /// Конфигурация сервера приложения
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct ServerConfig {
     /// URL-адрес, по которому данное приложение доступно извне.
     pub external_url: String,
@@ -52,6 +70,7 @@ impl Default for ServerConfig {
 }
 
 /// Конфигурация сервера MySql
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct DbMysqlConfig {
     
     /// Хост сервера базы данных MySQL.
@@ -87,6 +106,7 @@ impl Default for DbMysqlConfig {
 }
 
 /// Конфигурация количества соединений с MySql
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct DbMysqlConnectionsConfig {
     /// Максимально допустимое количество соединений в пуле неактивных соединений.
     max_idle:   u16,
@@ -104,6 +124,7 @@ impl Default for DbMysqlConnectionsConfig {
 
 
 /// Логи приложения в порядке убывания
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub enum LogApp {
     error,
     warn,
@@ -113,6 +134,7 @@ pub enum LogApp {
 }
 
 /// Конфигурация максимально допустимого уровень записей в логе приложения.
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct LogAppConfig {
     /// Максимальный уровень лога в приложении
     level:  LogApp,
@@ -127,6 +149,7 @@ impl Default for LogAppConfig {
 }
 
 /// Конфигурация запуска фоновой задачи мониторинга.
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct BackgroundWatchdogConfig {
     /// Период времени для запуска фоновой задачи мониторинга.
     pub period: String,
@@ -151,6 +174,9 @@ impl Default for BackgroundWatchdogConfig {
 }
 
 /// Общая конфигурация
+#[derive(Default, Debug)]
+#[derive(Deserialize, Serialize)]
+#[serde(default)]
 pub struct Config {
     pub mode:       ModeConfig,
     pub server:     ServerConfig,
@@ -161,9 +187,143 @@ pub struct Config {
 }
 
 
-fn main() {
-    println!("Implement me!");
+/// Аргументы CLI
+#[derive(
+    Parser, //  генерирует код для разбора std::env::args()
+    Debug
+)]
+#[clap(
+    // метаданные программы - name
+    name = "step_3_9",
+    // метаданные программы - version, позволяет выводить -V или --vesion
+    version = "0.1.0",
+    // наблон полсказки при выводе помощи
+    help_template = "\
+{name} {version}
+Prints its configuration to STDOUT.
+
+USAGE:
+    {usage}
+
+OPTIONS:
+{options}
+"
+)]
+struct CliArgs {
+    // Enables debug mode
+    #[clap(
+        // Позволяет вызвать -d
+        short = 'd',
+        // Позволяет вызвать --debug
+        long = "debug",
+        help = "Enables debug output",
+    )]
+    debug: bool,
+
+    /// Путь к конфигурационному файлу
+    #[clap(
+        // Позволяет вызвать -c
+        short = 'c',
+        // Позволяет вызвать --conf
+        long = "conf",
+        // Если аргумента нет, clap проверит переменную окружения CONF_FILE
+        env = "CONF_FILE",
+        // Значение аргумента, если он отсутствует.
+        default_value = "config.toml",
+        help = "Path to configuration file",
+    )]
+    conf_file: PathBuf,
 }
+
+#[derive(Debug)]
+/// Загрузка конфигурации
+pub struct ConfigLoader {
+    args:   CliArgs,
+}
+
+/// Публичный перечисляемый тип для ошибок конфигурации
+/// для 3-х типов ошибок
+#[derive(
+    Debug, 
+    thiserror::Error    // генерирует реализацию трейта std::error::Error
+)]
+pub enum ConfigError {
+    // Определяет сообщение об ошибке
+    // {0} подставляется на место первого аргумента (std::io::Error)
+    #[error("Failed to read config file: {0}")]
+    // Хранит оригинальную ошибку ввода-вывода
+    // #[from] автоматически реализует From<std::io::Error>
+    FileReadError(#[from] std::io::Error),
+    
+    // Определяет сообщение об ошибке parse TOML
+    // {0} подставляется на место первого аргумента (toml::de::Error)
+    #[error("Failed to parse TOML: {0}")]
+    // #[from] автоматически реализует From<toml::de::Error>
+    TomlParseError(#[from] toml::de::Error),
+    
+    // Определяет сообщение об ошибке Environment variable (переменная не найдена или содержит невалидный Unicode)
+    // {0} подставляется на место первого аргумента (std::env::VarError)
+    #[error("Environment variable error: {0}")]
+    // #[from] автоматически реализует From<std::env::VarError>
+    EnvVarError(#[from] std::env::VarError),
+}
+
+
+// Реализация загрузкии конфигурации
+impl ConfigLoader {
+
+    /// Разбор и заполнение значений аргуметов от CLI
+    pub fn new() ->Self {
+        Self { 
+            args: CliArgs::parse(), // разбор от std::env::args_os(), завершение работы при ошибке.
+        }
+    }
+
+    /// Загрузка конфигурации из файла
+    pub fn load_from_file(&self) ->Result<Option<Config>, ConfigError> {
+
+        // Проверка наличия конфигурационного файла
+        if !self
+            .args
+            .conf_file
+            .exists() {
+          return Ok(None);
+        }
+
+        let file_content = fs::read_to_string(&self.args.conf_file)? ;
+
+        println!("{}", file_content) ;
+
+        let conf_from_file = toml::from_str::<Config>(&file_content)? ;
+
+        Ok(Some(conf_from_file))
+    }
+
+
+    /// Загрузка конфигурации всеми досиупеыми способами.
+    pub fn load(&self) ->Result<Config, ConfigError> {
+        // Загрузка парамеров конфигурации данными установленными в программе по умолчанию.
+        let mut conf = Config::default() ;
+
+        // Загрузка парамеров из конфигурационного файла toml по умолчанию
+        if let Some(cfg_toml) = self.load_from_file()? {
+            println!("cfg_toml: {:#?}\n", cfg_toml) ;
+        }
+
+        Ok(conf)
+    }
+}
+
+fn main() {
+    let loader = ConfigLoader::new();
+
+    println!("loader: {:?}", loader) ;
+
+    let config = loader.load().unwrap() ;
+
+    println!("{:#?}", config) ;
+}
+
 /*
 
 use clap::Parser;
