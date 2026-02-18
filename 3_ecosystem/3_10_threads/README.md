@@ -230,7 +230,7 @@ fn main() {
 
     // --- ПАРАЛЛЕЛЬНО (Rayon) ---
     let start = Instant::now();
-    let res2: Vec<u64> = data.par_iter() // 2. Всего четыре символа 'par_' меняет всё!
+    let res2: Vec<u64> = data.par_iter() // 2. Всего четыре символа 'par_' меняют всё!
         .map(|&x| x * x)
         .collect();
     println!("Параллельный итератор: {:?}", start.elapsed());
