@@ -41,7 +41,7 @@ __Estimated time__: 1 day
 Несмотря на это, существует также крейт [`crossbeam`], предоставляющий более функциональные и оптимизированные примитивы параллелизма и синхронизации. Наиболее примечательным является [`crossbeam-channel`] как [улучшение][15] реализаций канала `std`.
 
 
-To better understand and be familiar with [Rust]'s synchronization primitives design, concepts, usage, and features, read through:
+Чтобы лучше понять и ознакомиться с принципами работы, концепциями, использованием и особенностями примитивов синхронизации в [Rust], прочтите следующие материалы:
 - [Rust Book: 16.2. Using Message Passing to Transfer Data Between Threads][16]
 - [Rust Book: 16.3. Shared-State Concurrency][13]
 - [Rust Blog: Fearless Concurrency with Rust][2]
@@ -63,11 +63,14 @@ To better understand and be familiar with [Rust]'s synchronization primitives de
 
 ## Parallelism
 
-The important concept to understand is [how concurrency and parallelism differ][21].
+Важно понимать концепцию [различия между параллельным и многопоточным выполнением][21].
 
-[Rust] ecosystem has support for parallelism in form of [`rayon`], [`dpc-pariter`] and [`fork_union`] crates, which make it easy to convert a sequential iterator to _execute in parallel threads_.
+
+Экосистема [Rust] поддерживает параллелизм в виде библиотек [`rayon`], [`dpc-pariter`] и [`fork_union`], которые упрощают преобразование последовательного итератора для _выполнения в параллельных потоках_.
 
 Another way to perform parallel data processing _without using [threads][3]_ is [SIMD] instructions usage. If an algorithm is parallelizable enough, applying [SIMD] instructions may [increase performance drastically][24]. [Rust] ecosystem provides basic support for [SIMD] instructions in a form of [`packed_simd`] crate.
+
+Еще один способ параллельной обработки данных _без использования [потоков][3]_ — это использование инструкций [SIMD]. Если алгоритм достаточно распараллеливаем, применение инструкций [SIMD] может [значительно повысить производительность][24]. Экосистема [Rust] обеспечивает базовую поддержку инструкций [SIMD] в виде крейта [`packed_simd`].
 
 To better understand and be familiar with parallelism in [Rust], read through:
 - [Nicky Meuleman: Concurrent vs parallel][28]
