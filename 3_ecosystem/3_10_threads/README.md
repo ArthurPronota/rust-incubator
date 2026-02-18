@@ -103,8 +103,8 @@ Write a program with the following workflow:
 
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- What is concurrency? What is parallelism? How do they relate to each other and how do they differ?
-- [Что такое параллелизм? Что такое конкуренция? Как они связаны друг с другом и чем отличаются?]()
+
+- [Что такое параллелизм? Что такое конкуренция? Как они связаны друг с другом и чем отличаются?](https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem/3_10_threads#что-такое-параллелизм-что-такое-конкуренция-как-они-связаны-друг-с-другом-и-чем-отличаются)
 
 - How parallelism is represented in [Rust]? Which are common crates for using it?
 - What are the main ways of threads synchronization in [Rust]? Which advantages and disadvantages does each one have? What are the use-cases for each one?
