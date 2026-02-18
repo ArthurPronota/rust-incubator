@@ -126,6 +126,23 @@ OPTIONS:
     -c, --conf <conf>         Path to configuration file [env: CONF_FILE=]  [default: config.toml]
 ```
 
+Внешний вид help устарел, т.к. используем крейт clap версии "4.5.5". С версии 3 в clap все FLAGS перенесены в OPTIONS.
+
+Новый внешний вид посощи выглядит  так:
+```bash
+step_3_9 0.1.0
+Prints its configuration to STDOUT.
+
+USAGE:
+    step_3_9.exe [OPTIONS]
+
+OPTIONS:
+  -d, --debug             Enables debug output
+  -c, --conf <CONF_FILE>  Path to configuration file [env: CONF_FILE=] [default: config.toml]
+  -h, --help              Print help
+  -V, --version           Print version
+```
+
 
 ## Questions
 

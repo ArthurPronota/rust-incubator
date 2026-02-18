@@ -2,21 +2,16 @@
     Contact: https://artaudiochats.t.me/
     
     Command step_3_9: `{flags}` template variable was removed in clap3, they are now included in `{options}`
+    set CONF_MYSQL_PASS=my_root
 
  */
 
 use clap::Parser;
-/*
-use clap::Args;
-use clap::Subcommand;
- */
-use clap::ArgAction;
-
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
+use std::str::FromStr;
 
 
 
@@ -88,6 +83,8 @@ pub struct DbMysqlConfig {
     /// Пароль пользователя базы данных MySQL, используемый для аутентификации на сервере MySQL.
     pub pass:   String,
 
+    /// Ограничения количества соединений с MySql
+    pub connections:    DbMysqlConnectionsConfig,
 }
 
 /// Реализация значений по умолчанию для DbMysqlConfig
@@ -101,6 +98,7 @@ impl Default for DbMysqlConfig {
             dating: "default".to_string(),
             user: "root".to_string(),
             pass: "".to_string(),
+            connections: DbMysqlConnectionsConfig::default(),
         }
     }
 }
@@ -124,13 +122,31 @@ impl Default for DbMysqlConnectionsConfig {
 
 
 /// Логи приложения в порядке убывания
-#[derive(serde::Serialize, serde::Deserialize, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+// Приведение всех полей при сериализации к нижнему регистру
+#[serde(rename_all = "lowercase")]
 pub enum LogApp {
-    error,
-    warn,
-    info,
-    debug,
-    trace,
+    Error,
+    Warn,
+    Info,
+    Debug,
+    Trace,
+}
+
+// реализация преобразования from String to LogApp
+impl FromStr for LogApp {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "error" => Ok(LogApp::Error),
+            "warn" => Ok(LogApp::Warn),
+            "info" => Ok(LogApp::Info),
+            "debug" => Ok(LogApp::Debug),
+            "trace" => Ok(LogApp::Trace),
+            v => Err(format!("Invalid value: {} for LogApp", v)),
+        }
+    }
 }
 
 /// Конфигурация максимально допустимого уровень записей в логе приложения.
@@ -144,7 +160,7 @@ pub struct LogAppConfig {
 impl Default for LogAppConfig {
     // Возвращает "значение по умолчанию" для заданного типа.
     fn default() -> Self {
-        Self { level: LogApp::info }
+        Self { level: LogApp::Info }
     }
 }
 
@@ -173,6 +189,24 @@ impl Default for BackgroundWatchdogConfig {
     }
 }
 
+/// Родительский тип DbConfig
+#[derive(Deserialize, Serialize, Debug, Default)]
+pub struct DbConfig {
+    pub mysql:  DbMysqlConfig,
+}
+
+/// Родительский тип LogConfig
+#[derive(Serialize, Default, Debug, Deserialize)]
+pub struct LogConfig {
+    pub app:    LogAppConfig,
+}
+
+/// Родительский тип BackgroundConfig
+#[derive(Default, Serialize, Debug, Deserialize)]
+pub struct BackgroundConfig {
+    pub watchdog:   BackgroundWatchdogConfig,
+}
+
 /// Общая конфигурация
 #[derive(Default, Debug)]
 #[derive(Deserialize, Serialize)]
@@ -180,10 +214,9 @@ impl Default for BackgroundWatchdogConfig {
 pub struct Config {
     pub mode:       ModeConfig,
     pub server:     ServerConfig,
-    pub mysql:      DbMysqlConfig,
-    pub mysql_connections:   DbMysqlConnectionsConfig,
-    pub log_app:    LogAppConfig,
-    pub background_watchdog:   BackgroundWatchdogConfig,
+    pub db:         DbConfig,  
+    pub log:        LogConfig,
+    pub background: BackgroundConfig,
 }
 
 
@@ -197,7 +230,7 @@ pub struct Config {
     name = "step_3_9",
     // метаданные программы - version, позволяет выводить -V или --vesion
     version = "0.1.0",
-    // наблон полсказки при выводе помощи
+    // шаблон полсказки при выводе помощи
     help_template = "\
 {name} {version}
 Prints its configuration to STDOUT.
@@ -210,12 +243,13 @@ OPTIONS:
 "
 )]
 struct CliArgs {
-    // Enables debug mode
+    // Признак debug режима
     #[clap(
         // Позволяет вызвать -d
         short = 'd',
         // Позволяет вызвать --debug
         long = "debug",
+        // Задает описание аргумента для краткой справки (-h).
         help = "Enables debug output",
     )]
     debug: bool,
@@ -230,6 +264,7 @@ struct CliArgs {
         env = "CONF_FILE",
         // Значение аргумента, если он отсутствует.
         default_value = "config.toml",
+        // Задает описание аргумента для краткой справки (-h).
         help = "Path to configuration file",
     )]
     conf_file: PathBuf,
@@ -241,7 +276,7 @@ pub struct ConfigLoader {
     args:   CliArgs,
 }
 
-/// Публичный перечисляемый тип для ошибок конфигурации
+/// Перечисляемый тип ошибок конфигурации
 /// для 3-х типов ошибок
 #[derive(
     Debug, 
@@ -252,19 +287,19 @@ pub enum ConfigError {
     // {0} подставляется на место первого аргумента (std::io::Error)
     #[error("Failed to read config file: {0}")]
     // Хранит оригинальную ошибку ввода-вывода
-    // #[from] автоматически реализует From<std::io::Error>
+    // #[from] автоматически реализует преобразование From<std::io::Error>
     FileReadError(#[from] std::io::Error),
     
     // Определяет сообщение об ошибке parse TOML
     // {0} подставляется на место первого аргумента (toml::de::Error)
     #[error("Failed to parse TOML: {0}")]
-    // #[from] автоматически реализует From<toml::de::Error>
+    // #[from] автоматически реализует преобразование From<toml::de::Error>
     TomlParseError(#[from] toml::de::Error),
     
     // Определяет сообщение об ошибке Environment variable (переменная не найдена или содержит невалидный Unicode)
     // {0} подставляется на место первого аргумента (std::env::VarError)
     #[error("Environment variable error: {0}")]
-    // #[from] автоматически реализует From<std::env::VarError>
+    // #[from] автоматически реализует преобразование From<std::env::VarError>
     EnvVarError(#[from] std::env::VarError),
 }
 
@@ -290,24 +325,62 @@ impl ConfigLoader {
           return Ok(None);
         }
 
+        // получение контента конфигурационного файла
         let file_content = fs::read_to_string(&self.args.conf_file)? ;
 
-        println!("{}", file_content) ;
-
+        // десеариализовать контент конфигурационного файла в структуру конфигурации
         let conf_from_file = toml::from_str::<Config>(&file_content)? ;
 
         Ok(Some(conf_from_file))
     }
 
+    /// Загрузка из переменных окружения
+    pub fn load_from_env(&self, cfg: &mut Config) ->Result<(), ConfigError> {
+
+        for (key, val) in std::env::vars() {
+            // имя переменной начинается с CONF_
+            if key.starts_with("CONF_") {
+                println!("key: {}, val: {}", key, val) ;
+                match &key[5..] {
+                    "DEBUG" => cfg.mode.debug = val.parse().unwrap_or(cfg.mode.debug),
+                    "EXTERNAL_URL" => cfg.server.external_url = (!val.is_empty()).then(|| val).unwrap_or_else(|| cfg.server.external_url.clone()),
+                    "HTTP_PORT" => cfg.server.http_port = val.parse().unwrap_or(cfg.server.http_port),
+                    "GRPC_PORT" => cfg.server.grpc_port = val.parse().unwrap_or(cfg.server.grpc_port),
+                    "HEALTHZ_PORT" => cfg.server.healthz_port = val.parse().unwrap_or(cfg.server.healthz_port),
+                    "METRICS_PORT" => cfg.server.metrics_port = val.parse().unwrap_or(cfg.server.metrics_port),
+                    "MYSQL_HOST" => cfg.db.mysql.host = (!val.is_empty()).then(|| val).unwrap_or_else(|| cfg.db.mysql.host.clone()),
+                    "MYSQL_PORT" => cfg.db.mysql.port = val.parse().unwrap_or(cfg.db.mysql.port),
+                    "MYSQL_DATING" => cfg.db.mysql.dating = (!val.is_empty()).then(|| val).unwrap_or_else(|| cfg.db.mysql.dating.clone()),
+                    "MYSQL_PASS" => cfg.db.mysql.pass = (!val.is_empty()).then(|| val).unwrap_or_else(|| cfg.db.mysql.pass.clone()),
+                    "MYSQL_CONNECTIONS_MAX_IDLE" => cfg.db.mysql.connections.max_idle = val.parse().unwrap_or(cfg.db.mysql.connections.max_idle),
+                    "MYSQL_CONNECTIONS_MAX_OPEN" => cfg.db.mysql.connections.max_open = val.parse().unwrap_or(cfg.db.mysql.connections.max_open),
+                    "LOG_APP_LEVEL" => cfg.log.app.level = val.parse().unwrap_or(cfg.log.app.level.clone()),
+                    _ => {}, 
+                }
+            }
+        }
+
+        Ok(())
+    }
+
 
     /// Загрузка конфигурации всеми досиупеыми способами.
     pub fn load(&self) ->Result<Config, ConfigError> {
-        // Загрузка парамеров конфигурации данными установленными в программе по умолчанию.
+        // 1. Загрузка парамеров конфигурации данными установленными в программе по умолчанию.
         let mut conf = Config::default() ;
 
-        // Загрузка парамеров из конфигурационного файла toml по умолчанию
+        // 2. Загрузка парамеров из конфигурационного файла toml по умолчанию
         if let Some(cfg_toml) = self.load_from_file()? {
-            println!("cfg_toml: {:#?}\n", cfg_toml) ;
+            //println!("cfg_toml: {:#?}\n", cfg_toml) ;
+            conf = cfg_toml ;
+        }
+
+        // 3. Загрузка параметров из переменных окружения
+        self.load_from_env(&mut conf)? ;
+
+        // 4. Модификация режима работы
+        if self.args.debug {
+            conf.mode.debug = self.args.debug ;
         }
 
         Ok(conf)
@@ -317,440 +390,7 @@ impl ConfigLoader {
 fn main() {
     let loader = ConfigLoader::new();
 
-    println!("loader: {:?}", loader) ;
-
     let config = loader.load().unwrap() ;
 
     println!("{:#?}", config) ;
 }
-
-/*
-
-use clap::Parser;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::fs;
-use std::path::PathBuf;
-
-// ==================== СТРУКТУРЫ КОНФИГУРАЦИИ ====================
-
-/// Корневая структура конфигурации
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(default)]
-pub struct Config {
-    /// Режим отладки
-    pub debug: bool,
-    
-    /// Настройки сервера
-    pub server: ServerConfig,
-    
-    /// Настройки логирования
-    pub logging: LoggingConfig,
-    
-    /// Настройки базы данных
-    pub database: DatabaseConfig,
-    
-    /// Произвольные дополнительные параметры
-    #[serde(flatten)]
-    pub extra: HashMap<String, toml::Value>,
-}
-
-/// Настройки сервера
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(default)]
-pub struct ServerConfig {
-    /// Хост сервера
-    pub host: String,
-    
-    /// Порт сервера
-    pub port: u16,
-    
-    /// Таймаут в секундах
-    pub timeout: u64,
-    
-    /// Максимальный размер тела запроса в байтах
-    pub max_body_size: usize,
-    
-    /// Включить SSL
-    pub ssl_enabled: bool,
-    
-    /// Путь к SSL сертификату
-    pub ssl_cert_path: Option<String>,
-    
-    /// Путь к SSL ключу
-    pub ssl_key_path: Option<String>,
-}
-
-/// Настройки логирования
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(default)]
-pub struct LoggingConfig {
-    /// Уровень логирования (debug, info, warn, error)
-    pub level: String,
-    
-    /// Путь к файлу лога
-    pub file_path: Option<String>,
-    
-    /// Формат логов (json, text)
-    pub format: String,
-    
-    /// Максимальный размер файла лога в байтах
-    pub max_size: u64,
-    
-    /// Количество резервных копий
-    pub backups: u32,
-}
-
-/// Настройки базы данных
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(default)]
-pub struct DatabaseConfig {
-    /// URL подключения к базе данных
-    pub url: String,
-    
-    /// Имя базы данных
-    pub name: String,
-    
-    /// Имя пользователя
-    pub username: String,
-    
-    /// Пароль
-    pub password: String,
-    
-    /// Максимальное количество соединений в пуле
-    pub max_connections: u32,
-    
-    /// Таймаут подключения в секундах
-    pub connection_timeout: u64,
-}
-
-// ==================== РЕАЛИЗАЦИЯ ЗНАЧЕНИЙ ПО УМОЛЧАНИЮ ====================
-
-impl Default for Config {
-    fn default() -> Self {
-        Self {
-            debug: false,
-            server: ServerConfig::default(),
-            logging: LoggingConfig::default(),
-            database: DatabaseConfig::default(),
-            extra: HashMap::new(),
-        }
-    }
-}
-
-impl Default for ServerConfig {
-    fn default() -> Self {
-        Self {
-            host: "127.0.0.1".to_string(),
-            port: 8080,
-            timeout: 30,
-            max_body_size: 1024 * 1024, // 1MB
-            ssl_enabled: false,
-            ssl_cert_path: None,
-            ssl_key_path: None,
-        }
-    }
-}
-
-impl Default for LoggingConfig {
-    fn default() -> Self {
-        Self {
-            level: "info".to_string(),
-            file_path: None,
-            format: "text".to_string(),
-            max_size: 10 * 1024 * 1024, // 10MB
-            backups: 5,
-        }
-    }
-}
-
-impl Default for DatabaseConfig {
-    fn default() -> Self {
-        Self {
-            url: "localhost".to_string(),
-            name: "app".to_string(),
-            username: "user".to_string(),
-            password: "password".to_string(),
-            max_connections: 10,
-            connection_timeout: 5,
-        }
-    }
-}
-
-// ==================== CLI АРГУМЕНТЫ ====================
-
-/// Prints its configuration to STDOUT.
-#[derive(Parser, Debug)]
-#[clap(name = "step_3_9", version = "0.1.0", author)]
-struct CliArgs {
-    /// Enables debug mode
-    #[clap(short = 'd', long = "debug")]
-    debug: bool,
-    
-    /// Path to configuration file
-    #[clap(short = 'c', long = "conf", env = "CONF_FILE", default_value = "config.toml")]
-    conf_file: PathBuf,
-}
-
-// ==================== ЗАГРУЗЧИК КОНФИГУРАЦИИ ====================
-
-#[derive(Debug, thiserror::Error)]
-pub enum ConfigError {
-    #[error("Failed to read config file: {0}")]
-    FileReadError(#[from] std::io::Error),
-    
-    #[error("Failed to parse TOML: {0}")]
-    TomlParseError(#[from] toml::de::Error),
-    
-    #[error("Environment variable error: {0}")]
-    EnvVarError(#[from] std::env::VarError),
-}
-
-pub struct ConfigLoader {
-    args: CliArgs,
-}
-
-impl ConfigLoader {
-    pub fn new() -> Self {
-        Self {
-            args: CliArgs::parse(),
-        }
-    }
-    
-    /// Загружает конфигурацию с применением правил приоритета
-    pub fn load(&self) -> Result<Config, ConfigError> {
-        // 1. Начинаем со значений по умолчанию
-        let mut config = Config::default();
-        
-        println!("1. Default config: {:?}", config);
-        
-        // 2. Загружаем из TOML файла (переопределяет значения по умолчанию)
-        if let Some(file_config) = self.load_from_file()? {
-            config = self.merge_configs(config, file_config);
-            println!("2. After TOML file: {:?}", config);
-        }
-        
-        // 3. Загружаем из переменных окружения с префиксом CONF_ (высший приоритет)
-        config = self.apply_env_vars(config)?;
-        println!("3. After env vars: {:?}", config);
-        
-        // 4. CLI флаг --debug имеет наивысший приоритет
-        if self.args.debug {
-            config.debug = true;
-            println!("4. CLI --debug flag applied");
-        }
-        
-        Ok(config)
-    }
-    
-    /// Загружает конфигурацию из TOML файла
-    fn load_from_file(&self) -> Result<Option<Config>, ConfigError> {
-        if !self.args.conf_file.exists() {
-            println!("Config file not found: {:?}, using defaults", self.args.conf_file);
-            return Ok(None);
-        }
-        
-        let contents = fs::read_to_string(&self.args.conf_file)?;
-        let file_config: Config = toml::from_str(&contents)?;
-        
-        println!("Loaded config from file: {:?}", self.args.conf_file);
-        Ok(Some(file_config))
-    }
-    
-    /// Применяет переменные окружения с префиксом CONF_
-    fn apply_env_vars(&self, mut config: Config) -> Result<Config, ConfigError> {
-        // Проходим по всем переменным окружения
-        for (key, value) in std::env::vars() {
-            if key.starts_with("CONF_") {
-                let config_key = &key[5..]; // Убираем префикс "CONF_"
-                self.apply_env_value(&mut config, config_key, &value)?;
-            }
-        }
-        
-        Ok(config)
-    }
-    
-    /// Применяет значение из переменной окружения к конфигурации
-    fn apply_env_value(&self, config: &mut Config, key: &str, value: &str) -> Result<(), ConfigError> {
-        match key {
-            // Корневые поля
-            "DEBUG" => config.debug = value.parse().unwrap_or(false),
-            
-            // Поля сервера
-            "SERVER_HOST" => config.server.host = value.to_string(),
-            "SERVER_PORT" => config.server.port = value.parse().unwrap_or(config.server.port),
-            "SERVER_TIMEOUT" => config.server.timeout = value.parse().unwrap_or(config.server.timeout),
-            "SERVER_MAX_BODY_SIZE" => config.server.max_body_size = value.parse().unwrap_or(config.server.max_body_size),
-            "SERVER_SSL_ENABLED" => config.server.ssl_enabled = value.parse().unwrap_or(false),
-            "SERVER_SSL_CERT_PATH" => config.server.ssl_cert_path = Some(value.to_string()),
-            "SERVER_SSL_KEY_PATH" => config.server.ssl_key_path = Some(value.to_string()),
-            
-            // Поля логирования
-            "LOGGING_LEVEL" => config.logging.level = value.to_string(),
-            "LOGGING_FILE_PATH" => config.logging.file_path = Some(value.to_string()),
-            "LOGGING_FORMAT" => config.logging.format = value.to_string(),
-            "LOGGING_MAX_SIZE" => config.logging.max_size = value.parse().unwrap_or(config.logging.max_size),
-            "LOGGING_BACKUPS" => config.logging.backups = value.parse().unwrap_or(config.logging.backups),
-            
-            // Поля базы данных
-            "DATABASE_URL" => config.database.url = value.to_string(),
-            "DATABASE_NAME" => config.database.name = value.to_string(),
-            "DATABASE_USERNAME" => config.database.username = value.to_string(),
-            "DATABASE_PASSWORD" => config.database.password = value.to_string(),
-            "DATABASE_MAX_CONNECTIONS" => config.database.max_connections = value.parse().unwrap_or(config.database.max_connections),
-            "DATABASE_CONNECTION_TIMEOUT" => config.database.connection_timeout = value.parse().unwrap_or(config.database.connection_timeout),
-            
-            // Неизвестные ключи сохраняем в extra
-            _ => {
-                config.extra.insert(key.to_string(), toml::Value::String(value.to_string()));
-            }
-        }
-        
-        Ok(())
-    }
-    
-    /// Объединяет две конфигурации (приоритет у второй)
-    fn merge_configs(&self, base: Config, override_config: Config) -> Config {
-        Config {
-            debug: override_config.debug,
-            server: self.merge_server(base.server, override_config.server),
-            logging: self.merge_logging(base.logging, override_config.logging),
-            database: self.merge_database(base.database, override_config.database),
-            extra: base.extra.into_iter().chain(override_config.extra).collect(),
-        }
-    }
-    
-    fn merge_server(&self, base: ServerConfig, over: ServerConfig) -> ServerConfig {
-        ServerConfig {
-            host: over.host,
-            port: over.port,
-            timeout: over.timeout,
-            max_body_size: over.max_body_size,
-            ssl_enabled: over.ssl_enabled,
-            ssl_cert_path: over.ssl_cert_path.or(base.ssl_cert_path),
-            ssl_key_path: over.ssl_key_path.or(base.ssl_key_path),
-        }
-    }
-    
-    fn merge_logging(&self, base: LoggingConfig, over: LoggingConfig) -> LoggingConfig {
-        LoggingConfig {
-            level: over.level,
-            file_path: over.file_path.or(base.file_path),
-            format: over.format,
-            max_size: over.max_size,
-            backups: over.backups,
-        }
-    }
-    
-    fn merge_database(&self, base: DatabaseConfig, over: DatabaseConfig) -> DatabaseConfig {
-        DatabaseConfig {
-            url: over.url,
-            name: over.name,
-            username: over.username,
-            password: over.password,
-            max_connections: over.max_connections,
-            connection_timeout: over.connection_timeout,
-        }
-    }
-}
-
-// ==================== ОСНОВНАЯ ПРОГРАММА ====================
-
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("=== Конфигурация приложения ===\n");
-    
-    let loader = ConfigLoader::new();
-    let config = loader.load()?;
-    
-    println!("\n=== Финальная конфигурация ===");
-    println!("{:#?}", config);
-    
-    println!("\n=== JSON формат ===");
-    println!("{}", serde_json::to_string_pretty(&config)?);
-    
-    Ok(())
-}
-
-// ------ Пример конфигурационного файла config.toml -----
-
-debug = true
-
-[server]
-host = "0.0.0.0"
-port = 3000
-timeout = 60
-max_body_size = 2097152
-ssl_enabled = true
-ssl_cert_path = "/etc/ssl/cert.pem"
-ssl_key_path = "/etc/ssl/key.pem"
-
-[logging]
-level = "debug"
-file_path = "/var/log/app.log"
-format = "json"
-max_size = 10485760
-backups = 7
-
-[database]
-url = "postgres://localhost"
-name = "myapp_prod"
-username = "admin"
-password = "secret123"
-max_connections = 20
-connection_timeout = 10
-
-# Произвольные дополнительные параметры
-environment = "production"
-region = "us-east-1"
-
-// ----- 1. Без аргументов (используются значения по умолчанию)
-
-$ cargo run
-
-// ----- 2. С указанием файла конфигурации
-
-$ cargo run -- --conf custom.toml
-
-// ----- 3. С флагом debug
-
-$ cargo run -- --debug
-
-// ----- 4. С переменными окружения
-
-$ export CONF_SERVER_PORT=9999
-$ export CONF_DATABASE_URL="postgres://remote"
-$ export CONF_DEBUG=true
-$ cargo run
-
-// ---- 5. Комбинация всего
-
-$ export CONF_SERVER_TIMEOUT=120
-$ export CONF_LOGGING_FORMAT="json"
-$ cargo run -- --conf prod.toml --debug
-
-// -------------------
-
-Ключевые особенности:
-
-1. Приоритет конфигурации (от низшего к высшему):
-
-    - Значения по умолчанию в коде
-    - TOML файл
-    - Переменные окружения с префиксом CONF_
-    - CLI флаг --debug (специальный случай)
-
-2. Типизированная иерархическая структура с вложенными конфигами
-
-3. Поддержка произвольных полей через extra: HashMap<String, toml::Value>
-
-4. Интеграция с clap для парсинга CLI аргументов
-
-5. Детальный вывод процесса загрузки для отладки
-
-6. Поддержка всех требований из задания:
-    - Флаг -d, --debug
-    - Опция -c, --conf <conf> с переменной окружения CONF_FILE
-    - Помощь -h, --help
-    - Версия -V, --version
-
-*/
