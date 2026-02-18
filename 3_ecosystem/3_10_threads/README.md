@@ -3,15 +3,16 @@
 
 __Estimated time__: 1 day
 
-Одна из главных целей проектирования [Rust] — это [параллелизм][1]. [Rust] имеет [твердое мнение][2] по этому поводу, в то время как позволяет сосуществовать различным моделям параллельного выполнения.
-
+Одна из главных целей проектирования [Rust] — это [параллелизм][1]. [Rust] имеет [сильную позицию][2] по этому поводу, в то время как позволяет сосуществовать различным моделям параллельного выполнения.
 
 
 ## Threads
 
-[Rust] has built-in support for [native threads][3] in form of the [`std::thread`] module of its standard library.
+[Rust] имеет встроенную поддержку [собственных потоков][3] в виде модуля [`std::thread`] своей стандартной библиотеки.
 
-Traditionally, [threads][3] are used for solving [CPU-bound] problems, as they allow to execute tasks in parallel. However, in practice, threads are often used to solve [I/O-bound] problems too, especially when [asynchronous I/O][4] is not supported well (which is true for [Rust] `std` library at the moment).
+
+Традиционно [threads][3] используются для решения задач, ограниченных [CPU-bound], поскольку они позволяют выполнять задачи параллельно. Однако на практике потоки часто используются и для решения задач, ограниченных [I/O-bound], особенно когда [asynchronous I/O][4] плохо поддерживается (что в настоящее время справедливо для `std` библиотеки [Rust]).
+
 
 [`crossbeam`] crate also provides implementation of [scoped threads][5], which allow to borrow values from a stack. They are also available in form of [`std::thread::scope`], as of [Rust] 1.63. 
 
