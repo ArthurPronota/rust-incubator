@@ -27,18 +27,19 @@ __Estimated time__: 1 day
 
 ## Synchronization
 
-The [threads synchronization][11] is a wide topic, but generally it's done via [atomic operations][12], shared state with an [exclusive access][13], or by [threads communication][14]. [Rust] has built-in support for all of them.
-
 [Синхронизация потоков][11] — это обширная тема, но обычно она осуществляется посредством [атомарных операций][12], общего состояния с [эксклюзивным доступом][13] или посредством [обмена данными между потоками][14]. В [Rust] есть встроенная поддержка всех этих способов.
 
 
-[Atomic operations][12] are represented by [`std::sync::atomic`] module of [Rust] standard library (and, additionally, [`atomic`] crate).
+[Атомарные операции][12] представлены модулем [`std::sync::atomic`] стандартной библиотеки [Rust] (а также, дополнительно, крейтом [`atomic`]).
 
-[Exclusive access][13] may be controlled via primitives of [`std::sync`] module of [Rust] standard library.
 
-Threads communication is commonly represented via [channels][14] and is implemented in [`std::sync::mpsc`] module of [Rust] standard library. 
+[Эксклюзивный доступ][13] может контролироваться с помощью примитивов модуля [`std::sync`] стандартной библиотеки [Rust].
 
-Despite that, there is also the [`crossbeam`] crate, providing more feature-rich and optimized concurrency and synchronization primitives. The most notable is [`crossbeam-channel`] as [an enhancement][15] of `std` channel implementations.
+Взаимодействие потоков обычно представляется через [каналы][14] и реализовано в модуле [`std::sync::mpsc`] стандартной библиотеки [Rust].
+
+
+Несмотря на это, существует также крейт [`crossbeam`], предоставляющий более функциональные и оптимизированные примитивы параллелизма и синхронизации. Наиболее примечательным является [`crossbeam-channel`] как [улучшение][15] реализаций канала `std`.
+
 
 To better understand and be familiar with [Rust]'s synchronization primitives design, concepts, usage, and features, read through:
 - [Rust Book: 16.2. Using Message Passing to Transfer Data Between Threads][16]
