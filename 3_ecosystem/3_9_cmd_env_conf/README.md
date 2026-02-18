@@ -104,6 +104,7 @@ OPTIONS:
 
 Новый внешний вид помощи выглядит так:
 ```bash
+$ cargo run -- --help
 step_3_9 0.1.0
 Prints its configuration to STDOUT.
 
