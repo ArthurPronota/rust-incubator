@@ -144,7 +144,8 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [В чём преимущества строгой типизации конфигурации?](3_ecosystem/3_9_cmd_env_conf#в-чём-преимущества-строгой-типизации-конфигурации)
         - [Почему переменные окружения полезны для настройки приложения? В чём их основное назначение?](3_ecosystem/3_9_cmd_env_conf#почему-переменные-окружения-полезны-для-настройки-приложения-в-чём-их-основное-назначение)
         - [В чём польза crate `config`? Зачем его использовать, если нельзя просто десериализовать файл в структуры с помощью `serde`?](3_ecosystem/3_9_cmd_env_conf#в-чём-польза-crate-config-зачем-его-использовать-если-нельзя-просто-десериализовать-файл-в-структуры-с-помощью-serde)
-    - [ ] [3.10. Multithreading and parallelism][Step 3.10] (1 day)
+    - [ ] [Шаг 3.10: Многопоточность и параллелизм][Step 3.10] (1 day)
+    
     - [ ] [3.11. Async I/O, futures and actors][Step 3.11] (2 days)
 - [ ] [4. Backend ecosystem][Step 4] (3 days, after all sub-steps)
     - [ ] [4.1. Databases, connection pools and ORMs][Step 4.1] (1 day)
