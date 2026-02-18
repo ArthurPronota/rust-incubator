@@ -220,14 +220,14 @@ use std::time::Instant;
 fn main() {
     let mut data: Vec<u64> = (0..1_000_000).collect();
 
-    // --- ПОСЛЕДОВАТЕЛЬНО ---
+    // ПОСЛЕДОВАТЕЛЬНО
     let start = Instant::now();
     let res1: Vec<u64> = data.iter()
         .map(|&x| x * x)
         .collect();
     println!("Обычный итератор: {:?}", start.elapsed());
 
-    // --- ПАРАЛЛЕЛЬНО (Rayon) ---
+    // ПАРАЛЛЕЛЬНО (Rayon)
     let start = Instant::now();
     let res2: Vec<u64> = data.par_iter() // 2. Всего четыре символа 'par_' меняют всё!
         .map(|&x| x * x)
