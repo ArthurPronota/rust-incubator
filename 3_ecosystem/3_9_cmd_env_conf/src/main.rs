@@ -1,8 +1,19 @@
 /*
     Contact: https://artaudiochats.t.me/
     
-    Command step_3_9: `{flags}` template variable was removed in clap3, they are now included in `{options}`
-    set CONF_MYSQL_PASS=my_root
+    Внешний вид help устарел, т.к. используем крейт clap версии "4.5.5". 
+    С версии 3 в clap все FLAGS перенесены в OPTIONS.
+    Ошибка при попытке установть FLAGS:
+        Command step_3_9: `{flags}` template variable was removed in clap3, they are now included in `{options}`
+
+    Пример установки переменной окружения:
+        set CONF_MYSQL_PASS=my_root
+
+    Добавлен новый файл конфигурации:   config2.toml
+
+    Получение помощи:   cargo run -- -h
+    
+    Пример запуска: cargo run -- -c config2.toml
 
  */
 
