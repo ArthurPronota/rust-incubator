@@ -73,32 +73,6 @@ __Estimated time__: 1 day
 
 ## Task
 
-Write a simple program which prints out its actual configuration. Configuration should be implemented as a typed hierarchical structure, which is able to parse from a specified file and/or environment variables. 
-
-The following priority should be applied (in ascending order) when merging:
-1. Default values declared directly in [Rust] sources;
-2. Values read from TOML file;
-3. Values set by environment variables with `CONF_` prefix.
-
-[CLI] of the program should look like:
-```
-$ cargo run -- --help
-step_3_9 0.1.0
-Prints its configuration to STDOUT.
-
-USAGE:
-    step_3_9 [FLAGS] [OPTIONS]
-
-FLAGS:
-    -d, --debug      Enables debug mode
-    -h, --help       Prints help information
-    -V, --version    Prints version information
-
-OPTIONS:
-    -c, --conf <conf>         Path to configuration file [env: CONF_FILE=]  [default: config.toml]
-```
-
-
 Напишите простую программу, которая выводит свою фактическую конфигурацию. Конфигурация должна быть реализована в виде типизированной иерархической структуры, способной анализировать данные из указанного файла и/или переменных окружения.
 
 При слиянии следует применять следующий приоритет (в порядке возрастания):
@@ -128,7 +102,7 @@ OPTIONS:
 
 Внешний вид help устарел, т.к. используем крейт clap версии "4.5.5". С версии 3 в clap все FLAGS перенесены в OPTIONS.
 
-Новый внешний вид посощи выглядит  так:
+Новый внешний вид помощи выглядит так:
 ```bash
 step_3_9 0.1.0
 Prints its configuration to STDOUT.
