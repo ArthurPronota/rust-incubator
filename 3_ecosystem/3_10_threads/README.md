@@ -1,10 +1,9 @@
-Step 3.10: Multithreading and parallelism
+Шаг 3.10: Многопоточность и параллелизм
 =========================================
 
 __Estimated time__: 1 day
 
-One of main [Rust]'s design goals is a [concurrency][1]. [Rust] has a [strong opinion][2] about that, while allows different concurrent models to coexist.
-
+Одна из главных целей проектирования [Rust] — это [параллелизм][1]. [Rust] имеет [твердое мнение][2] по этому поводу, в то время как позволяет сосуществовать различным моделям параллельного выполнения.
 
 
 
