@@ -29,6 +29,9 @@ __Estimated time__: 1 day
 
 The [threads synchronization][11] is a wide topic, but generally it's done via [atomic operations][12], shared state with an [exclusive access][13], or by [threads communication][14]. [Rust] has built-in support for all of them.
 
+[Синхронизация потоков][11] — это обширная тема, но обычно она осуществляется посредством [атомарных операций][12], общего состояния с [эксклюзивным доступом][13] или посредством [обмена данными между потоками][14]. В [Rust] есть встроенная поддержка всех этих способов.
+
+
 [Atomic operations][12] are represented by [`std::sync::atomic`] module of [Rust] standard library (and, additionally, [`atomic`] crate).
 
 [Exclusive access][13] may be controlled via primitives of [`std::sync`] module of [Rust] standard library.
