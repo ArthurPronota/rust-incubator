@@ -1,3 +1,0 @@
-level: Level(Error)
-1) level: ERROR
-{"timestamp":"2026-02-12T02:09:09.414170000Z","level":"ERROR","file":"app.log","msg":"Application started","version":"1.0.0"}

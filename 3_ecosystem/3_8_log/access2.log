@@ -6,3 +6,11 @@
 {"timestamp":"2026-02-14T10:40:42.139039200Z","level":"WARN","msg":"Application started","version":"1.0.0"}
 {"timestamp":"2026-02-14T10:40:42.139044400Z","level":"TRACE","msg":"Application started","version":"1.0.0"}
 {"timestamp":"2026-02-14T10:40:42.139049700Z","level":"DEBUG","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-18T05:47:22.343573600Z","level":"INFO","method":"DELETE","path":"/","ans":"aM"}
+{"timestamp":"2026-02-18T05:47:22.343589600Z","level":"INFO","method":"POST","path":"/"}
+{"timestamp":"2026-02-18T05:47:22.343595700Z","level":"INFO","message":"abc"}
+{"timestamp":"2026-02-18T05:47:22.343606800Z","level":"INFO","msg":"my mess","path":"/some","file":"access_log","file2":10}
+{"timestamp":"2026-02-18T05:47:22.343614700Z","level":"ERROR","msg":"Error occurred"}
+{"timestamp":"2026-02-18T05:47:22.343619700Z","level":"WARN","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-18T05:47:22.343625600Z","level":"TRACE","msg":"Application started","version":"1.0.0"}
+{"timestamp":"2026-02-18T05:47:22.343631400Z","level":"DEBUG","msg":"Application started","version":"1.0.0"}
