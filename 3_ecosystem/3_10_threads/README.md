@@ -14,9 +14,9 @@ __Estimated time__: 1 day
 Традиционно [threads][3] используются для решения задач, ограниченных [CPU-bound], поскольку они позволяют выполнять задачи параллельно. Однако на практике потоки часто используются и для решения задач, ограниченных [I/O-bound], особенно когда [asynchronous I/O][4] плохо поддерживается (что в настоящее время справедливо для `std` библиотеки [Rust]).
 
 
-[`crossbeam`] crate also provides implementation of [scoped threads][5], which allow to borrow values from a stack. They are also available in form of [`std::thread::scope`], as of [Rust] 1.63. 
+Крейт [`crossbeam`] также предоставляет реализацию [scoped threads][5], которые позволяют заимствовать значения из стека. Они также доступны в виде [`std::thread::scope`], начиная с [Rust] 1.63.
 
-To better understand [Rust]'s threads design, concepts, usage, and features (especially [TLS][4] is important and widely used one), read through:
+Чтобы лучше понять проектирование потоков в [Rust], концепции, использование и особенности (особенно важна и широко используется [TLS][4]), прочтите следующее:
 - [Rust Book: 16.1. Using Threads to Run Code Simultaneously][6]
 - [Rust By Example: 20.1. Threads][7]
 - [Official `std::thread` docs][`std::thread`]
