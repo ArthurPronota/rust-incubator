@@ -15,6 +15,13 @@
     
     Пример запуска: cargo run -- -c config2.toml
 
+    Если определить переменную окружения CONF_FILE то файл конфигурации 
+    будет браться по заданному пути, этот путь будет отражатся в помощи.
+    1. Установка CONF_FILE
+        set CONF_FILE=config2.toml
+    2. Запруск с получением конфигурации из config2.toml
+        cargo run
+
  */
 
 use clap::Parser;
@@ -134,7 +141,7 @@ impl Default for DbMysqlConnectionsConfig {
 
 /// Логи приложения в порядке убывания
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
-// Приведение всех полей при сериализации к нижнему регистру
+// Приведение всех полей при десериализации к нижнему регистру
 #[serde(rename_all = "lowercase")]
 pub enum LogApp {
     Error,
