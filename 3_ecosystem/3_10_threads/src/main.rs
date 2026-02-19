@@ -16,7 +16,6 @@ fn main() {
         let mut rnd = rand::thread_rng() ;
 
         loop {
-            println!("loop") ;
             if let Err(err) = 
                         tr.send(
                             (0..MATRIX_SIZE)
@@ -28,7 +27,6 @@ fn main() {
                                         .collect::<Vec<u8>>()
                                 )
                                 .collect::<Vec<_>>()                        
-                            //m
                         ) {
                 eprintln!("Error sending matrix: {}", err) ;
                 break ;
