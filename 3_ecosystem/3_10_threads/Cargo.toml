@@ -3,3 +3,7 @@ name = "step_3_10"
 version = "0.1.0"
 edition = "2024"
 publish = false
+
+[dependencies]
+rand = "0.8"
+rayon = "1.11.0"
