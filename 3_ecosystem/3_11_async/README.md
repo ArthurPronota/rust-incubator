@@ -42,11 +42,9 @@ __Estimated time__: 2 days
 [Rust] автоматически [превразает асинхронные функции и блоки в функции, возвращающие `Future`][17], применяя правильные [правила пожизненного захвата и исключения][18] для эргономики синтаксиса.
 
 
-Though, [`async` keyword in not supported in trait methods yet][2], there is the [`async-trait`] crate, which allows this for traits by desugaring into a [`Box`]ed [`Future`] (the main downside of which is being non-transparent over auto-traits like `Send`/`Sync`).
-
 Хотя [ключевое слово `async` пока не поддерживается в методах трейтов][2], существует крейт `async-trait`, который позволяет это сделать для трейтов, преобразуя их в `Future` в блочном формате (главный недостаток которого — непрозрачность по отношению к автотрейтам, таким как `Send`/`Sync`).
 
-To better understand `async`/`.await` keywords design, desugaring, usage and features, read through:
+Для лучшего понимания принципов работы, десахаризации, использования и особенностей ключевых слов `async`/`.await`, ознакомьтесь со следующей информацией:
 - [Rust RFC 2394: `async_await`][16]
 - [Asynchronous Programming in Rust: 3. `async`/`.await`][21]
 - [Hayden Stainsby: how I finally understood async/await in Rust (part 1)][63]
@@ -56,15 +54,16 @@ To better understand `async`/`.await` keywords design, desugaring, usage and fea
 - [Tyler Madry: How Rust optimizes async/await II: Program analysis][30]
 
 
-### Tasks and `Waker`
+### Задачи и будящий (Tasks and `Waker`)
 
-Except the [future abstraction][8] itself, it's important to understand what is an [asynchronous task][22]:
-> Each time a future is polled, it is polled as part of a "task". Tasks are the top-level futures that have been submitted to an executor.
+Помимо самой [будущей абстракции][8], важно понимать, что такое [асинхронная задача][22]:
+> Каждый раз, когда опрашивается объект Future, это происходит в рамках «задачи». Задачи — это объекты Future верхнего уровня, которые были переданы исполнителю.
 
-When a task is suspended due to waiting some non-blocking operation to complete (it's used to call it "parked"), there should be a way to signal an executor to continue polling this task once the operation finishes. The [`Waker`] (being provided in the [`task::Context`]) serves exactly this purpose:
-> `Waker` provides a `wake()` method that can be used to tell the executor that the associated task should be awoken. When `wake()` is called, the executor knows that the task associated with the `Waker` is ready to make progress, and its future should be polled again.
+Когда задача приостанавливается из-за ожидания завершения какой-либо неблокирующей операции (это называется «припарковано»), должен существовать способ сообщить исполнителю о необходимости продолжить опрос этой задачи после завершения операции. Объект [`Waker`] (предоставляемый в [`task::Context`]) служит именно этой цели:
 
-To better understand [`Waker`]'s design, usage and features, read through:
+> `Waker` предоставляет метод `wake()`, который можно использовать для того, чтобы сообщить исполнителю о необходимости пробуждения связанной с ним задачи. При вызове метода `wake()` исполнитель знает, что задача, связанная с `Waker`, готова к выполнению, и ее будущее следует проверить еще раз.
+
+Чтобы лучше понять дизайн, использование и особенности [`Waker`], ознакомьтесь со следующими материалами:
 - [Official `std::task::Waker` docs][`Waker`]
 - [Asynchronous Programming in Rust: 2.2. Task Wakeups with `Waker`][22]
 - [Hayden Stainsby: how I finally understood async/await in Rust (part 2)][64]
@@ -88,29 +87,34 @@ To better understand [`Waker`]'s design, usage and features, read through:
 
 ## Async I/O
 
-Async I/O in [Rust] is possible due to two main ingredients: __[non-blocking I/O operations][1]__ provided by operating system and an __asynchronous runtime__, which wraps those operations into usable asynchronous abstractions and provides an [event loop][48] for executing and driving them to completion.
+Асинхронный ввод-вывод в [Rust] возможен благодаря двум основным компонентам: __[неблокирующим операциям ввода-вывода][1]__, предоставляемым операционной системой, и __асинхронной среде выполнения__, которая оборачивает эти операции в удобные асинхронные абстракции и предоставляет [цикл событий][48] для их выполнения и доведения до завершения.
 
 
 ### Non-blocking I/O
 
-The async programming is not possible without support for [non-blocking I/O][1], which is represented by various [API]s on different operating systems, for example: [epoll] on [Linux] (or promising [io_uring]), [kqueue] on [macOS]/[iOS], [IOCP] on [Windows].
+Асинхронное программирование невозможно без поддержки [неблокирующего ввода-вывода][1], которая представлена ​​различными [API] в разных операционных системах, например: [epoll] в [Linux] (или многообещающий [io_uring]), [kqueue] в [macOS]/[iOS], [IOCP] в [Windows].
 
-The low-level crates, like [`mio`] (powering [`tokio`]) and [`polling`] (powering [`async-std`]), provide a single multi-platform unified interface to the majority of those [API]s. There are also low-level crates, specialized on a concrete [API], like [`io-uring`].
 
-To better understand this topic, read through:
+Низкоуровневые крейты, такие как [`mio`] (обеспечивающий работу [`tokio`]) и [`polling`] (обеспечивающий работу [`async-std`]), предоставляют единый многоплатформенный унифицированный интерфейс для большинства этих [API]. Существуют также низкоуровневые крейты, специализированные на конкретном [API], например [`io-uring`].
+
+
+Для лучшего понимания этой темы, ознакомьтесь со следующими материалами:
 - [Official `mio` crate docs][`mio`]
 - [Official `polling` crate docs][`polling`]
 
 
 ### Runtime
 
-The high-level crates, like [`tokio`] (pioneer and most mature, by far) and [`async-std`] (not to be confused by its name, it's neither official, nor `std`-related, just a name chosen by authors), provide not only an [executor implementation][32] for executing [`Future`]s, but also high-level [API]s for [non-blocking I/O][1], [timers][`tokio::time`], and [synchronization primitives][`tokio::sync`] for use in asynchronous contexts ([usual synchronization primitives cannot be used across `.await` points][34] as they will block the whole executor in its current [thread][33]).
+Высокоуровневые крейты, такие как [`tokio`] (первый и наиболее зрелый на сегодняшний день) и [`async-std`] (не путать с его названием, оно не является официальным и не связано с `std`, это просто название, выбранное авторами), предоставляют не только [реализацию исполнителя][32] для выполнения [`Future`], но и высокоуровневые [API] для [неблокирующего ввода-вывода][1], [таймеров][`tokio::time`] и [примитивов синхронизации][`tokio::sync`] для использования в асинхронных контекстах ([обычные примитивы синхронизации нельзя использовать между точками `.await`][34], поскольку они заблокируют весь исполнитель в его текущем [потоке][33]).
 
-All [Rust] asynchronous runtimes for [`Future`]s implement the idea of [cooperative multitasking][35], meaning that the tasks ([`Future`]s in our case) yield control back to their runtime voluntarily (on `.await` points in our case), in contrast with [preemptive multitasking][36] where the runtime can suspend and take control back whenever it decides to (like in [OS threads][33] or [Erlang VM][37]). This gives the benefit of precise control on what is executed and how, but has the disadvantage of requiring to take great care about how [asynchronous tasks][22] are organized (like [avoiding blocking][39] them with synchronous or [CPU-bound] operations and [yielding manually][38] in busy loops).
 
-Also, important to classify [Rust] asynchronous runtimes in the following manner:
-- __Single-thread__ runtimes, __scheduling and executing [`Future`]s only on the current [thread][33]__ they're run on.  
-  _Examples: [`tokio`'s current-thread scheduler][40], [`tokio-uring`], [`futures::executor::LocalPool`]._
+Все асинхронные среды выполнения [Rust] для [`Future`] реализуют идею [кооперативной многозадачности][35], что означает, что задачи (в нашем случае [`Future`]) добровольно передают управление своей среде выполнения (в нашем случае в точках `.await`), в отличие от [вытесняющей многозадачности][36], где среда выполнения может приостанавливать и брать управление обратно, когда ей это нужно (как в [потоках ОС][33] или [виртуальной машине Erlang][37]). Это дает преимущество точного контроля над тем, что и как выполняется, но имеет недостаток, заключающийся в необходимости проявлять большую осторожность в организации [асинхронных задач][22] (например, [избегать блокировки][39] их синхронными или [процессорно-зависимыми] операциями и [передавать управление вручную][38] в занятых циклах).
+
+
+Также важно классифицировать асинхронные среды выполнения [Rust] следующим образом:
+- __Однопоточные среды__ выполнения, __планирующие и выполняющие [`Future`] только в текущем [потоке][33]__, в котором они выполняются.
+_Примеры: [планировщик текущего потока` tokio][40], [`tokio-uring`], [`futures::executor::LocalPool`]_.
+
 - __Multi-thread__ runtimes, scheduling and executing [`Future`]s on a [thread pool][41]:
     - With __[work-stealing][42]__, where [`Future`]s are __both scheduled and executed on different [threads][33]__, so one [thread][33] can [steal and execute `Future`s initally scheduled on another thread][43], and as the result, workload is distributed more evenly in cost of synchronization overhead ([`Future`]s are required to be [`Send`]).  
       _Examples: [`tokio`'s multi-thread scheduler][44], [`async-executor`] of [`async-std`], [`futures::executor::ThreadPool`]._
