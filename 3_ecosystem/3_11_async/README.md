@@ -18,13 +18,12 @@ __Estimated time__: 2 days
 
 1. Фьючерсы [основаны на опросе][10], а не на отправке. Это означает, что после создания фьючерс не будет автоматически выполняться на месте, а должен быть явно выполнен каким-либо исполнителем (средой выполнения/циклом событий для фьючерсов). __Фьючерс ничего не делает, если его не опрашивают__, поэтому обычно представляет собой [ленивое вычисление][12].
 
-2. Futures are [zero cost][11]. This means that the code written on futures compiles down to something equivalent (or better than) a “hand-rolled” implementation, which would typically use manual state machines and careful memory management.
+2. Futures имеют [нулевая стоимость][11]. Это означает, что код, написанный на фьючерсах, компилируется в нечто эквивалентное (или лучшее), чем «ручная» реализация, которая обычно использует ручные конечные автоматы и тщательное управление памятью.
 
 
+В [Rust] предоставляются только базовые определения трейтов в модуле [`std::future`]. Чтобы использовать возможности фьючерсов во всей их полноте, рассмотрите возможность использования крейта [`futures`] (и/или аналогичных, таких как [`futures-lite`], [`futures-time`] и т. д.).
 
-[Rust] provides only basic trait definitions in the [`std::future`] module of its standard library. To use futures with all its power, consider to use the [`futures`] crate (and/or similar ones like [`futures-lite`], [`futures-time`], etc).
-
-To understand [Rust] futures concepts and design better, read through:
+Чтобы лучше понять концепции и дизайн [Rust] futures, ознакомьтесь со следующими материалами:
 - [Aaron Turon: Zero-cost futures in Rust][11]
 - [Aaron Turon: Designing futures for Rust][9]
 - [Rust RFC 2592: `futures_api`][13]
