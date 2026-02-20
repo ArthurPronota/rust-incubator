@@ -219,6 +219,8 @@ It must read a list of links from the `<file>`, and then concurrently download a
 - [Что такое асинхронная задача? Чем она отличается от `Future`?](#что-такое-асинхронная-задача-чем-она-отличается-от-future)
 
 - What is a [`Waker`]? How does it work? Why is it required?
+- [Что такое `Waker`? Как он работает? Зачем он нужен?]()
+
 - What is an asynchronous runtime? From which parts does it usually consist?
 - What kind of multitasking is represented by [`Future`]s in [Rust]? Which advantages and disadvantages does it have?
 - What kinds of asynchronous runtimes do exist in [Rust] regarding multithreading? Which advantages and disadvantages does each one have?
@@ -455,6 +457,15 @@ __Задача (Task)__ — это «запущенная» Future. Это ан�
 
 __Итог__: Используйте Future для последовательных шагов внутри одной логики, и Задачи — для независимых параллельных действий.
 
+<hr>
+
+### Что такое `Waker`? Как он работает? Зачем он нужен?
+
+В Rust Waker — это «будильник» асинхронной системы. Он служит мостом между Реактором (который замечает, что событие, например сетевой пакет, пришло) и Исполнителем (Executor), который запускает ваш код.
+
+```text
+Reactor -> Waker -> Executor
+```
 
 <hr>
 
