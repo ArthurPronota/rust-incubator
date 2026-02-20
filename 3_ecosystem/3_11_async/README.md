@@ -215,6 +215,8 @@ It must read a list of links from the `<file>`, and then concurrently download a
 - [Что такое `Future`? Зачем он нам нужен? Как он работает в Rust и чем его семантика отличается от других языков программирования? Что делает его нулевым по стоимости?](#что-такое-future-зачем-он-нам-нужен-как-он-работает-в-rust-и-чем-его-семантика-отличается-от-других-языков-программирования-что-делает-его-нулевым-по-стоимости)
 
 - What is `async`/`.await`? How do they desugar into a [`Future`]? Why are they vital for ergonomics?
+- [Что такое `async`/`.await`? Как они преобразуют `future` в `future`? Почему они так важны для эргономики?]()
+
 - What is an asynchronous task? How does it compare to a [`Future`]?
 - What is a [`Waker`]? How does it work? Why is it required?
 - What is an asynchronous runtime? From which parts does it usually consist?
@@ -359,6 +361,12 @@ __Future__ — это значение, которое еще не готово,
 Чтобы Executor не опрашивал Future в бесконечном цикле (тратя CPU), существует Waker.
 
 Когда сетевая карта получает пакет, она посылает сигнал, который через цепочку вызовов доходит до Waker. Тот говорит Исполнителю: «Эй, задача №5 готова, вызови её .poll() еще раз!».
+
+<hr>
+
+### Что такое `async`/`.await`? Как они преобразуют `future` в `future`? Почему они так важны для эргономики?
+
+
 
 <hr>
 
