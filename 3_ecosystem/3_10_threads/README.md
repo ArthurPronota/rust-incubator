@@ -90,12 +90,6 @@ __Estimated time__: 1 day
 
 ## Task
 
-Write a program with the following workflow:
-- `Producer` is a separate thread, which continuously generates square matrixes of random `u8` elements and size `4096`.
-- `Consumer` is a separate thread, which takes a generated matrix, counts sum of all its elements and prints the sum to STDOUT.
-- There are only 1 `Producer` and 2 `Consumer`s.
-- Counting sum of matrix elements should be parallelized.
-
 Напишите программу со следующим алгоритмом выполнения:
 - `Producer` — это отдельный поток, который непрерывно генерирует квадратные матрицы случайных элементов `u8` размером `4096`.
 - `Consumer` — это отдельный поток, который принимает сгенерированную матрицу, подсчитывает сумму всех её элементов и выводит сумму в STDOUT.
