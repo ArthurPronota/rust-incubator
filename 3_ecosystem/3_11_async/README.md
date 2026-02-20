@@ -34,13 +34,17 @@ __Estimated time__: 2 days
 
 ### `async`/`.await`
 
-[`async`/`.await` keywords][16] make async programming much more intuitive, ergonomic, and [solves numerous problems with types and borrows][19] (which may be quite tricky when using raw [`futures`]).
+[Ключевые слова `async`/`.await`][16] делают асинхронное программирование гораздо более интуитивным, эргономичным и [решают множество проблем с типами и заимствованиями][19] (что может быть довольно сложно при использовании сырых [`futures`]).
 
-> Use `async` in front of `fn`, `closure`, or a `block` to turn the marked code into a `Future`. As such the code will not be run immediately, but will only be evaluated when the returned `Future` is `.await`ed.
 
-[Rust] automatically [desugars `async` functions and blocks into the ones returning a `Future`][17], applying the correct [lifetime capturing and elision rules][18] for the syntax ergonomics.
+> Используйте `async` перед `fn`, `closure` или `block`, чтобы преобразовать помеченный код в `Future`. Таким образом, код не будет выполняться немедленно, а будет оцениваться только после того, как возвращенный `Future` будет выполнен с помощью `.await`.
 
-Though, [`async` keyword in not supported in trait methods yet][2], there is the [`async-trait`] crate, which allows this for traits by desugaring into a [`Box`]ed [`Future`] (the main downside of which is being non-transparent over auto-traits like `Send`/`Sync`). 
+[Rust] автоматически [превразает асинхронные функции и блоки в функции, возвращающие `Future`][17], применяя правильные [правила пожизненного захвата и исключения][18] для эргономики синтаксиса.
+
+
+Though, [`async` keyword in not supported in trait methods yet][2], there is the [`async-trait`] crate, which allows this for traits by desugaring into a [`Box`]ed [`Future`] (the main downside of which is being non-transparent over auto-traits like `Send`/`Sync`).
+
+Хотя [ключевое слово `async` пока не поддерживается в методах трейтов][2], существует крейт `async-trait`, который позволяет это сделать для трейтов, преобразуя их в `Future` в блочном формате (главный недостаток которого — непрозрачность по отношению к автотрейтам, таким как `Send`/`Sync`).
 
 To better understand `async`/`.await` keywords design, desugaring, usage and features, read through:
 - [Rust RFC 2394: `async_await`][16]
