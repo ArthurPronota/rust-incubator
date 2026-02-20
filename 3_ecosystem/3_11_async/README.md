@@ -30,8 +30,7 @@ __Estimated time__: 2 days
 - [Asynchronous Programming in Rust: 2.1. The `Future` Trait][20]
 - [Conrad Ludgate: Let's talk about this async][14]
 
-It's important to mention, that before [futures design has been stabilized][13], for quite a long period of time [Rust] ecosystem used [`futures@0.1`] crate, which resulted in a big part of ecosystem being built on top of them. Hopefully, as for now, only quite few outdated or dead crates still do use [`futures@0.1`], and, fortunately, they still can be used simultaneously with the modern [`std::future`]-based ecosystem by using the [compatibility layer][15].
-
+Важно отметить, что до стабилизации [дизайна futures][13] в течение довольно длительного времени в экосистеме [Rust] использовался крейт [`futures@0.1`], что привело к тому, что большая часть экосистемы была построена на его основе. К счастью, на данный момент лишь немногие устаревшие или неработающие крейты все еще используют [`futures@0.1`], и, к счастью, их все еще можно использовать одновременно с современной экосистемой на основе [`std::future`] с помощью [слоя совместимости][15].
 
 ### `async`/`.await`
 
