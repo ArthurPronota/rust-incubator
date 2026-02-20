@@ -216,8 +216,7 @@ It must read a list of links from the `<file>`, and then concurrently download a
 
 - [Что такое `async`/`.await`? Как они преобразуют `future` в `future`? Почему они так важны для эргономики?](#что-такое-asyncawait-как-они-преобразуют-future-в-future-почему-они-так-важны-для-эргономики)
 
-- What is an asynchronous task? How does it compare to a [`Future`]?
-- [Что такое асинхронная задача? Чем она отличается от `Future`?]()
+- [Что такое асинхронная задача? Чем она отличается от `Future`?](#что-такое-асинхронная-задача-чем-она-отличается-от-future)
 
 - What is a [`Waker`]? How does it work? Why is it required?
 - What is an asynchronous runtime? From which parts does it usually consist?
