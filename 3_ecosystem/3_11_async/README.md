@@ -213,7 +213,7 @@ It must read a list of links from the `<file>`, and then concurrently download a
 - [Как работает неблокирующий ввод-вывод? Чем он отличается от блокирующего ввода-вывода?](#как-работает-неблокирующий-ввод-вывод-чем-он-отличается-от-блокирующего-ввода-вывода)
 
 - What is a [`Future`]? Why do we need it? How does it work in [Rust] and how do its semantics differ from other programming languages? What makes it zero-cost?
-- [Что такое `Future`? Зачем он нам нужен? Как он работает в Rust и чем его семантика отличается от других языков программирования? Что делает его нулевым по стоимости?]()
+- [Что такое `Future`? Зачем он нам нужен? Как он работает в Rust и чем его семантика отличается от других языков программирования? Что делает его нулевым по стоимости?](#что-такое-future-зачем-он-нам-нужен-как-он-работает-в-rust-и-чем-его-семантика-отличается-от-других-языков-программирования-что-делает-его-нулевым-по-стоимости)
 
 - What is `async`/`.await`? How do they desugar into a [`Future`]? Why are they vital for ergonomics?
 - What is an asynchronous task? How does it compare to a [`Future`]?
