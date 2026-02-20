@@ -14,7 +14,8 @@ __Estimated time__: 2 days
 
 ## `Future`
 
-The basic primitive of async story in [Rust] is a [future abstraction][8] (also often called "promise" in some other programming languages). There are two major concepts which differ [Rust implementation of futures][9] from other programming languages:
+Основной примитив асинхронного процесса в [Rust] — это [future abstraction][8] (также часто называемая «promise» в некоторых других языках программирования). Существуют две основные концепции, которые отличают [реализацию фьючерсов в Rust][9] от других языков программирования:
+
 1. Futures are [poll-based][10] rather than push-based. This means that after creation, a future is not going to be executed automatically in-place, but rather should be explicitly executed by some executor (runtime/event-loop for futures). __Future does nothing unless polled__, so generally represents a [lazy computation][12].
 2. Futures are [zero cost][11]. This means that the code written on futures compiles down to something equivalent (or better than) a “hand-rolled” implementation, which would typically use manual state machines and careful memory management.
 
