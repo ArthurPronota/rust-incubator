@@ -208,7 +208,7 @@ It must read a list of links from the `<file>`, and then concurrently download a
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - What is asynchronous programming? How does it relate to multithreading? Which problems does it solve? What are the prerequisites for its existing?
-- [Что такое асинхронное программирование? Как оно связано с многопоточностью? Какие проблемы оно решает? Каковы предпосылки для его существования?]()
+- [Что такое асинхронное программирование? Как оно связано с многопоточностью? Какие проблемы оно решает? Каковы предпосылки для его существования?](#что-такое-асинхронное-программирование-как-оно-связано-с-многопоточностью-какие-проблемы-оно-решает-каковы-предпосылки-для-его-существования)
 
 - How does non-blocking I/O works? How does it differs from blocking I/O?
 - What is a [`Future`]? Why do we need it? How does it work in [Rust] and how do its semantics differ from other programming languages? What makes it zero-cost?
