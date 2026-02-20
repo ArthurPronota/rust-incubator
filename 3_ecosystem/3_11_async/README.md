@@ -112,6 +112,9 @@ __Estimated time__: 2 days
 
 
 Также важно классифицировать асинхронные среды выполнения [Rust] следующим образом:
+- __Single-thread__ runtimes, __scheduling and executing [`Future`]s only on the current [thread][33]__ they're run on.  
+  _Examples: [`tokio`'s current-thread scheduler][40], [`tokio-uring`], [`futures::executor::LocalPool`]._
+  
 - __Однопоточные среды__ выполнения, __планирующие и выполняющие [`Future`] только в текущем [потоке][33]__, в котором они выполняются.
 _Примеры: [планировщик текущего потока` tokio][40], [`tokio-uring`], [`futures::executor::LocalPool`]_.
 
