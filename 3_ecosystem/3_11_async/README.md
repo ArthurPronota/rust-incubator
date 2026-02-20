@@ -120,16 +120,17 @@ _Примеры: [`планировщик текущего потока` tokio][
 - __Многопоточные__ среды выполнения, планирование и выполнение [`Future`] в [пуле потоков][41]:
     - При __[work-stealing][42]__, когда [`Future`] планируются и выполняются на разных [потоках][33]__, так что один [поток][33] может [забрать и выполнить `Future`, изначально запланированный на другом потоке][43], и в результате рабочая нагрузка распределяется более равномерно по стоимости накладных расходов на синхронизацию ([`Future`] необходимо [`Send`]).
 
-      _Examples: [`tokio`'s multi-thread scheduler][44], [`async-executor`] of [`async-std`], [`futures::executor::ThreadPool`]._
-      
       _Примеры: [многопоточный планировщик `tokio`][44], [`async-executor`] из [`async-std`], [`futures::executor::ThreadPool`]_.
 
-    - Using __[thread-per-core][45]__ model, where [`Future`]s are __scheduled on different [threads][33], but never leave their [thread][33] until executed completely__, and so, avoid any synchronization overhead ([`Future`]s are not required to be [`Send`]).  
-      _Examples: [`actix-rt`] built on top of multiple [`tokio`'s current-thread schedulers][40], [`glommio`]._
+    - Использование модели __[поток на ядро][45]__, где [`Future`] планируются на разных [потоках][33], но никогда не покидают свой [поток][33] до полного выполнения__, и таким образом избегаются любые накладные расходы на синхронизацию ([`Future`] не обязательно будут[`Send`]).
 
-Unfortunately, at the moment, there is no meaningful way to abstract over multiple asynchronous runtimes in [Rust]. That's why authors of the libraries using [non-blocking I/O][1] either stick with a single concrete runtime only ([`tokio`], mostly), or support multiple runtimes via [Cargo features][46].
+      _Примеры: [`actix-rt`], построенный на основе нескольких планировщиков текущих потоков [`tokio`][40], [`glommio`]_.
 
-To better understand this topic, read through:
+
+К сожалению, на данный момент в [Rust] нет эффективного способа абстрагироваться от нескольких асинхронных сред выполнения. Поэтому авторы библиотек, использующих [неблокирующий ввод-вывод][1], либо придерживаются только одной конкретной среды выполнения ([`tokio`], в основном), либо поддерживают несколько сред выполнения с помощью [функций Cargo][46].
+
+
+Для лучшего понимания этой темы, ознакомьтесь со следующими материалами:
 - [Official `tokio` crate docs][`tokio`]
 - [Official `async-std` crate docs][`async-std`]
 - [Tokio Tutorial][47]
@@ -146,26 +147,33 @@ To better understand this topic, read through:
 
 ## Actors
 
-[Actor model][49] is another very spread and famous [concurrency programming paradigm][50]. It fits quite good for solving major concurrent communication problems, so many languages adopted it as their main [concurrency paradigm][50] (the most famous implementations are [Akka][51] and [Erlang][52]).
+[Модель акторов][49] — это еще одна очень распространенная и известная [парадигма параллельного программирования][50]. Она довольно хорошо подходит для решения основных задач параллельной коммуникации, поэтому многие языки приняли ее в качестве своей основной [парадигмы параллельного программирования][50] (самые известные реализации — [Akka][51] и [Erlang][52]).
 
-> [Actor model][53] was put forth by [Carl Hewitt] in 1973 and it adopts the philosophy that everything is an actor. This is similar to the everything is an object philosophy used by some object-oriented programming languages.
+
+> [Модель акторов][53] была предложена [Карлом Хьюиттом] в 1973 году и основана на философии, согласно которой всё является актором. Это похоже на философию «всё является объектом», используемую в некоторых объектно-ориентированных языках программирования.
 >
-> It is inherently asynchronous, a message sender will not block whether the reader is ready to pull from the mailbox or not, instead the message goes into a queue usually called a "mailbox". Which is convenient, but it's a bit harder to reason about and mailboxes potentially have to hold a lot of messages.
+> Это по своей сути асинхронный процесс: отправитель сообщения не блокирует отправку, независимо от того, готов ли получатель получить сообщение из почтового ящика или нет; вместо этого сообщение помещается в очередь, обычно называемую «почтовым ящиком». Это удобно, но несколько сложнее для понимания, и почтовые ящики потенциально должны вмещать большое количество сообщений.
 >
-> Each process has a single mailbox, messages are put into the receiver's mailbox by the sender, and fetched by the receiver.
+> Каждый процесс имеет один почтовый ящик; сообщения отправляются отправителем в почтовый ящик получателя, а получатель их извлекает.
 
-It's somewhat very similar to and interchangeable with [Communicating Sequential Processes (CSP) model][54], as operates on the same level of abstractions, but the main [difference][55] can be described like this:
-> [Actors model][49] represents identifiable processes (actors) with non-identifiable communication (message delivery), while [CSP model][54] represents non-identifiable processes with identifiable communication (channels). To deliver a message in [actors model][49] we should "name" the actor, while in [CSP model][54] we should "name" the channel.
+Она в некоторой степени очень похожа на модель [Communicating Sequential Processes (CSP)][54] и взаимозаменяема с ней, поскольку работает на том же уровне абстракции, но основное [различие][55] можно описать следующим образом:
 
-In [Rust], [actor abstraction][49] is __mainly useful for expressing some long-living state__ to communicate with (like [background worker][56] or [WebSocket connection][57], for example).
+> [Модель акторов][49] представляет идентифицируемые процессы (акторов) с неидентифицируемой коммуникацией (доставкой сообщений), тогда как [модель CSP][54] представляет неидентифицируемые процессы с идентифицируемой коммуникацией (каналами). Для доставки сообщения в [модели акторов][49] мы должны «назвать» актора, тогда как в [модели CSP][54] мы должны «назвать» канал.
 
-The most famous [actors][49] implementation in [Rust] is [`actix`]. At the time it was designed, it also served as __a "glue" to unite sync and async worlds__, providing both sync and async [actors][49] implementations. Nowadays, however, using [`spawn_blocking()`][39] is usually a more convenient alternative for this.
 
-[`quickwit-actors`] is another simple implementation of [actors][49], with its own advantages, built [specifically for Quickwit needs][62].
+В [Rust] [абстракция актора][49] __в основном полезна для выражения некоторого долгоживущего состояния__ для взаимодействия (например, [фоновый рабочий процесс][56] или [соединение WebSocket][57]).
 
-More general-purpose and complex [actors system][49] implementations (similar to [Akka]) are [`bastion`], [`riker`] and [`hydra`].
 
-To better understand [actors'][49] design, concepts, usage and implementations, read through:
+Самая известная реализация [акторов][49] в [Rust] — это [`actix`]. В момент её разработки она также служила __связующим звеном для объединения синхронных и асинхронных миров__, предоставляя как синхронные, так и асинхронные реализации [акторов][49]. Однако сегодня использование [`spawn_blocking()`][39] обычно является более удобной альтернативой.
+
+
+[`quickwit-actors`] — это еще одна простая реализация [actors][49], обладающая собственными преимуществами, созданная [специально для нужд Quickwit][62].
+
+
+Более универсальные и сложные реализации [системы акторов][49] (подобные [Akka]) — это [`bastion`], [`riker`] и [`hydra`].
+
+
+Чтобы лучше понять дизайн, концепции, использование и реализацию [актеров][49], прочтите следующее:
 - [Karan Pratap Singh: CSP vs Actor model for concurrency][55]
 - [Official `actix` crate docs][`actix`]
 - [Official `actix` user guide][58]
@@ -197,8 +205,11 @@ It must read a list of links from the `<file>`, and then concurrently download a
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - What is asynchronous programming? How does it relate to multithreading? Which problems does it solve? What are the prerequisites for its existing?
+- [Что такое асинхронное программирование? Как оно связано с многопоточностью? Какие проблемы оно решает? Каковы предпосылки для его существования?]()
+
 - How does non-blocking I/O works? How does it differs from blocking I/O?
 - What is a [`Future`]? Why do we need it? How does it work in [Rust] and how do its semantics differ from other programming languages? What makes it zero-cost?
 - What is `async`/`.await`? How do they desugar into a [`Future`]? Why are they vital for ergonomics?
@@ -210,8 +221,15 @@ After completing everything above, you should be able to answer (and understand 
 - Why blocking an asynchronous runtime is bad? How to avoid it in practice?
 - What are the key points of actor model concurrency paradigm? How may it be useful in [Rust]?
 
+<hr>
+
+### Что такое асинхронное программирование? Как оно связано с многопоточностью? Какие проблемы оно решает? Каковы предпосылки для его существования?
+
+Асинхронное программирование в Rust — это парадигма, позволяющая одному потоку процессора одновременно управлять множеством задач, которые большую часть времени чего-то ждут (сеть, диск, таймер).
 
 
+
+<hr>
 
 [`actix`]: https://docs.rs/actix
 [`actix-rt`]: https://docs.rs/actix-rt
