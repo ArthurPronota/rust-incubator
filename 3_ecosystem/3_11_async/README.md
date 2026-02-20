@@ -9,9 +9,7 @@ __Estimated time__: 2 days
 На данный момент в стандартной библиотеке [Rust] нет асинхронных примитивов, поэтому «по умолчанию» ввод-вывод `std` работает синхронно (блокирует текущий [thread][33]). Однако он предоставляет [core abstractions][`std::future`] для их создания, с помощью которых crates экосистемы (например, [`tokio`]) реализуют и предоставляют примитивы для [async I/O][1].
 
 
-It's important to note, that async story in [Rust] is [still][2] [maturing][3]. That's why things could be [quite cumbersome][5] at the moment, often [causing frustration][6] (especially, when it [comes to abstractions][7]). [wg-async][4] (async working group) works on making this easier, simpler, more ergonomic and powerful in the future.
-
-
+Важно отметить, что асинхронная разработка в [Rust] [все еще][2] [находится в стадии развития][3]. Именно поэтому сейчас все может быть [довольно громоздким][5], часто [вызывая разочарование][6] (особенно, когда дело касается [абстракций][7]). [wg-async][4] (рабочая группа по асинхронной разработке) работает над тем, чтобы сделать это проще, удобнее, эргономичнее и мощнее в будущем.
 
 
 ## `Future`
