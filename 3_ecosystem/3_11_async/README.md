@@ -3,11 +3,11 @@
 
 __Estimated time__: 2 days
 
-While [threads](../3_10_threads) represent a solution for [CPU-bound] problems, for [I/O-bound] problems, traditionally, the solution is [async (non-blocking) I/O][1].
-
 В то время как [threads](../3_10_threads) представляют собой решение для проблем, связанных с процессором, для проблем, связанных с вводом-выводом, традиционно решением является [async (non-blocking) I/O][1].
 
-As of now, [Rust] has no async primitives in its standard library yet, so "by default" `std` I/O works in a synchronous manner (blocks the current [thread][33]). However, it provides [core abstractions][`std::future`] for building ones, using which, ecosystem crates (like [`tokio`]) implement and provide primitives for [async I/O][1].
+
+На данный момент в стандартной библиотеке [Rust] нет асинхронных примитивов, поэтому «по умолчанию» ввод-вывод `std` работает синхронно (блокирует текущий [thread][33]). Однако он предоставляет [core abstractions][`std::future`] для их создания, с помощью которых crates экосистемы (например, [`tokio`]) реализуют и предоставляют примитивы для [async I/O][1].
+
 
 It's important to note, that async story in [Rust] is [still][2] [maturing][3]. That's why things could be [quite cumbersome][5] at the moment, often [causing frustration][6] (especially, when it [comes to abstractions][7]). [wg-async][4] (async working group) works on making this easier, simpler, more ergonomic and powerful in the future.
 
