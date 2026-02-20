@@ -112,13 +112,12 @@ __Estimated time__: 2 days
 
 
 Также важно классифицировать асинхронные среды выполнения [Rust] следующим образом:
-- __Single-thread__ runtimes, __scheduling and executing [`Future`]s only on the current [thread][33]__ they're run on.  
-  _Examples: [`tokio`'s current-thread scheduler][40], [`tokio-uring`], [`futures::executor::LocalPool`]._
 
 - __Однопоточные среды__ выполнения, __планирующие и выполняющие [`Future`] только в текущем [потоке][33]__, в котором они выполняются.
 _Примеры: [`планировщик текущего потока` tokio][40], [`tokio-uring`], [`futures::executor::LocalPool`]_.
 
 - __Multi-thread__ runtimes, scheduling and executing [`Future`]s on a [thread pool][41]:
+- __Многопоточные__ среды выполнения, планирование и выполнение [`Future`] в [пуле потоков][41]:
     - With __[work-stealing][42]__, where [`Future`]s are __both scheduled and executed on different [threads][33]__, so one [thread][33] can [steal and execute `Future`s initally scheduled on another thread][43], and as the result, workload is distributed more evenly in cost of synchronization overhead ([`Future`]s are required to be [`Send`]).  
       _Examples: [`tokio`'s multi-thread scheduler][44], [`async-executor`] of [`async-std`], [`futures::executor::ThreadPool`]._
     - Using __[thread-per-core][45]__ model, where [`Future`]s are __scheduled on different [threads][33], but never leave their [thread][33] until executed completely__, and so, avoid any synchronization overhead ([`Future`]s are not required to be [`Send`]).  
