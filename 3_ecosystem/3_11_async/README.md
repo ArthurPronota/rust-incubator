@@ -210,8 +210,7 @@ It must read a list of links from the `<file>`, and then concurrently download a
 
 - [Что такое асинхронное программирование? Как оно связано с многопоточностью? Какие проблемы оно решает? Каковы предпосылки для его существования?](#что-такое-асинхронное-программирование-как-оно-связано-с-многопоточностью-какие-проблемы-оно-решает-каковы-предпосылки-для-его-существования)
 
-- How does non-blocking I/O works? How does it differs from blocking I/O?
-- [Как работает неблокирующий ввод-вывод? Чем он отличается от блокирующего ввода-вывода?]()
+- [Как работает неблокирующий ввод-вывод? Чем он отличается от блокирующего ввода-вывода?](#как-работает-неблокирующий-ввод-вывод-чем-он-отличается-от-блокирующего-ввода-вывода)
 
 - What is a [`Future`]? Why do we need it? How does it work in [Rust] and how do its semantics differ from other programming languages? What makes it zero-cost?
 - What is `async`/`.await`? How do they desugar into a [`Future`]? Why are they vital for ergonomics?
