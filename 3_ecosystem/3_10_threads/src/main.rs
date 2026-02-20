@@ -36,7 +36,7 @@ use crossbeam_channel::bounded ;
 
 // количество потредителей матриц
 const NUM_CONSUMERS: usize = 2 ;
-// размер матрицы
+// размер квадратной матрицы
 const MATRIX_SIZE: usize = 4096 ;
 
 fn main() {
