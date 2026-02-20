@@ -1,4 +1,4 @@
-Step 3.11: Async I/O, futures and actors
+Шаг 3.11: Асинхронный ввод-вывод, фьючерсы (futures) и акторы (actors)
 ========================================
 
 __Estimated time__: 2 days
