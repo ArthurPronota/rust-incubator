@@ -583,13 +583,49 @@ async fn main() {
 }
 ```
 
+1. Использование Runtime (Явное создание)
+
+Если вы хотите запустить асинхронный код из обычной синхронной функции main, вам нужно вручную создать экземпляр рантайма Tokio и вызвать метод block_on.
+
+```rust
+use tokio::runtime::Runtime;
+
+fn main() {
+    // 1. Создаем многопоточный рантайм (Multi-thread)
+    let rt = Runtime::new().unwrap();
+
+    // 2. Блокируем текущий поток до завершения асинхронной задачи
+    rt.block_on(async {
+        let data = fetch_data().as_ref();
+        println!("{:?}", data);
+    });
+}
+```
+
+2. Использование Builder (Тонкая настройка)
+
+Если вам нужен только один поток (например, для простых утилит), используйте current_thread.
+
+```rust
+use tokio::runtime::Builder;
+
+fn main() {
+    let rt = Builder::new_current_thread()
+        .enable_all() // Включает таймеры и сетевой драйвер (Реактор)
+        .build()
+        .unwrap();
+
+    rt.block_on(fetch_data());
+}
+```
+
 __Итог__: Runtime — это невидимый дирижер. Исполнитель дает задачи музыкантам (потокам), Реактор следит за нотами (I/O), а Таймер задает темп.
 
 #### Архитектура Async Runtime
 
 ```mermaid
 graph TD
-    subgraph "Пользовательский код\n (Async/Await)"
+    subgraph "Пользовательский код (Async/Await)"
         Task1[Task A]
         Task2[Task B]
     end
