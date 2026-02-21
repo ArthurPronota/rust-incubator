@@ -224,8 +224,12 @@ It must read a list of links from the `<file>`, and then concurrently download a
 - [Что такое асинхронная среда выполнения? Из каких частей она обычно состоит?](#что-такое-асинхронная-среда-выполнения-из-каких-частей-она-обычно-состоит)
 
 - What kind of multitasking is represented by [`Future`]s in [Rust]? Which advantages and disadvantages does it have?
+
+
 - What kinds of asynchronous runtimes do exist in [Rust] regarding multithreading? Which advantages and disadvantages does each one have?
+
 - Why blocking an asynchronous runtime is bad? How to avoid it in practice?
+
 - What are the key points of actor model concurrency paradigm? How may it be useful in [Rust]?
 
 <hr>
@@ -624,7 +628,7 @@ __Итог__: Runtime — это невидимый дирижер. Исполн
 
 ```mermaid
 graph TD
-    subgraph "Пользовательский код (Async/Await)"
+    subgraph "Пользовательский код (Async / Await)"
         Task1[Task A]
         Task2[Task B]
     end
