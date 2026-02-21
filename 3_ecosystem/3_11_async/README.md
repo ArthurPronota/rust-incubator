@@ -859,6 +859,7 @@ __Итог__: Асинхронный поток — это общее досто
 
 Вот как выглядит архитектура типичного актора:
 
+```
 flowchart LR
     subgraph A1 [Актор А]
         direction TB
@@ -879,7 +880,7 @@ flowchart LR
     style A2 fill:#4a6fa5,color:#fff
     style S1 fill:#2d3e5f,color:#fff
     style S2 fill:#2d3e5f,color:#fff
-
+```
 
 #### 1. Ключевые моменты парадигмы акторов
 
