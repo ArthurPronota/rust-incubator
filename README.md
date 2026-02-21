@@ -156,6 +156,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [Что такое асинхронная задача? Чем она отличается от `Future`?](3_ecosystem/3_11_async#что-такое-асинхронная-задача-чем-она-отличается-от-future)
         - [Что такое `Waker`? Как он работает? Зачем он нужен?](3_ecosystem/3_11_async#что-такое-waker-как-он-работает-зачем-он-нужен)
         - [Что такое асинхронная среда выполнения? Из каких частей она обычно состоит?](3_ecosystem/3_11_async#что-такое-асинхронная-среда-выполнения-из-каких-частей-она-обычно-состоит)
+        - [Какой тип многозадачности представлен `Future` в Rust? Какие у них преимущества и недостатки?](3_ecosystem/3_11_async#какой-тип-многозадачности-представлен-future-в-rust-какие-у-них-преимущества-и-недостатки)
 - [ ] [4. Backend ecosystem][Step 4] (3 days, after all sub-steps)
     - [ ] [4.1. Databases, connection pools and ORMs][Step 4.1] (1 day)
     - [ ] [4.2. HTTP servers and clients][Step 4.2] (1 day)

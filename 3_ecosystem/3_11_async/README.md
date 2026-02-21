@@ -223,7 +223,7 @@ It must read a list of links from the `<file>`, and then concurrently download a
 
 - [Что такое асинхронная среда выполнения? Из каких частей она обычно состоит?](#что-такое-асинхронная-среда-выполнения-из-каких-частей-она-обычно-состоит)
 
-- [Какой тип многозадачности представлен `Future` в Rust? Какие у них преимущества и недостатки?]()
+- [Какой тип многозадачности представлен `Future` в Rust? Какие у них преимущества и недостатки?](#какой-тип-многозадачности-представлен-future-в-rust-какие-у-них-преимущества-и-недостатки)
 
 
 - What kinds of asynchronous runtimes do exist in [Rust] regarding multithreading? Which advantages and disadvantages does each one have?
