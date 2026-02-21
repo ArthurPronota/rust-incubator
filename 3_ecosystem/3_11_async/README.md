@@ -589,7 +589,8 @@ __Итог__: Runtime — это невидимый дирижер. Исполн
 
 ```mermaid
 graph TD
-    subgraph "Пользовательский код (Async/Await)"
+    subgraph "Пользовательский код 
+    (Async/Await)"
         Task1[Task A]
         Task2[Task B]
     end
@@ -631,6 +632,7 @@ graph TD
     Worker2 -->|sleep_until| Wheel
     Wheel -->|timeout expired| Queue
 ```
+
 <hr>
 
 [`actix`]: https://docs.rs/actix
