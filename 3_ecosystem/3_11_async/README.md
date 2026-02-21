@@ -218,11 +218,10 @@ It must read a list of links from the `<file>`, and then concurrently download a
 
 - [Что такое асинхронная задача? Чем она отличается от `Future`?](#что-такое-асинхронная-задача-чем-она-отличается-от-future)
 
-- What is a [`Waker`]? How does it work? Why is it required?
-- [Что такое `Waker`? Как он работает? Зачем он нужен?]()
 
-- What is an asynchronous runtime? From which parts does it usually consist?
-- [Что такое асинхронная среда выполнения? Из каких частей она обычно состоит?]()
+- [Что такое `Waker`? Как он работает? Зачем он нужен?](#что-такое-waker-как-он-работает-зачем-он-нужен)
+
+- [Что такое асинхронная среда выполнения? Из каких частей она обычно состоит?](#что-такое-асинхронная-среда-выполнения-из-каких-частей-она-обычно-состоит)
 
 - What kind of multitasking is represented by [`Future`]s in [Rust]? Which advantages and disadvantages does it have?
 - What kinds of asynchronous runtimes do exist in [Rust] regarding multithreading? Which advantages and disadvantages does each one have?
