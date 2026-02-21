@@ -225,8 +225,7 @@ It must read a list of links from the `<file>`, and then concurrently download a
 
 - [Какой тип многозадачности представлен `Future` в Rust? Какие у них преимущества и недостатки?](#какой-тип-многозадачности-представлен-future-в-rust-какие-у-них-преимущества-и-недостатки)
 
-- What kinds of asynchronous runtimes do exist in [Rust] regarding multithreading? Which advantages and disadvantages does each one have?
-- [Какие типы асинхронных сред выполнения существуют в Rust для многопоточности? Каковы преимущества и недостатки каждой из них?]()
+- [Какие типы асинхронных сред выполнения существуют в Rust для многопоточности? Каковы преимущества и недостатки каждой из них?](#какие-типы-асинхронных-сред-выполнения-существуют-в-rust-для-многопоточности-каковы-преимущества-и-недостатки-каждой-из-них)
 
 
 - Why blocking an asynchronous runtime is bad? How to avoid it in practice?
