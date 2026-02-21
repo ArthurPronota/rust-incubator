@@ -628,7 +628,7 @@ __Итог__: Runtime — это невидимый дирижер. Исполн
 
 ```mermaid
 graph TD
-    subgraph "Пользовательский код (Async / Await)"
+    subgraph "User code (Async / Await)"
         Task1[Task A]
         Task2[Task B]
     end
