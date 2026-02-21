@@ -651,7 +651,7 @@ graph TD
         end
     end
 
-    subgraph "OS (Операционная система)"
+    subgraph "OS"
         Network[Сетевой стек / Sockets]
         Filesystem[Файловая система]
     end
