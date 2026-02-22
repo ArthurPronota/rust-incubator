@@ -212,7 +212,11 @@ _Примечание:_
 ```bash
 /users/user/rust-incubator $ cargo run -p step_3_11
 ```
-
+- Добавление конкретной версии crate:
+    Пример добавление crate num_cpus версии 1.0
+```bash
+cargo add num_cpus@1.0
+```
 ## Questions
 
 
