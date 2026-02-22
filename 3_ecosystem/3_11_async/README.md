@@ -192,17 +192,6 @@ _Примеры: [`планировщик текущего потока` tokio][
 
 ## Task
 
-Implement an async-driven [CLI] tool, which downloads specified web pages:
-```bash
-cargo run -p step_3_11 -- [--max-threads=<number>] <file>
-```
-It must read a list of links from the `<file>`, and then concurrently download a content of each link into a separate `.html` file (named by a link).
-
-`--max-threads` argument must control the maximum number of _simultaneously running threads_ in the program (should default to CPUs number).
-
-
-
-
 Реализуйте асинхронно-управляемый инструмент командной строки [CLI], который загружает указанные веб-страницы:
 ```bash
 cargo run -p step_3_11 -- [--max-threads=<number>] <file>
