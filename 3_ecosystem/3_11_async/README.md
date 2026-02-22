@@ -210,7 +210,7 @@ _Примечание:_
 Пример запуска программы из корневого директория rust-incubator:
 
 ```bash
-rust-incubator $ cargo run -p step_3_11
+/users/user/rust-incubator $ cargo run -p step_3_11
 ```
 
 ## Questions
