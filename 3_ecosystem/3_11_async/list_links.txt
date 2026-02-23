@@ -1,0 +1,5 @@
+https://doc.rust-lang.org/stable/rust-by-example/                
+https://rust-unofficial.github.io/patterns/intro.html
+https://doc.rust-lang.org/edition-guide/introduction.html
+https://rust-lang.github.io/api-guidelines/print.html
+https://rust-random.github.io/book/            

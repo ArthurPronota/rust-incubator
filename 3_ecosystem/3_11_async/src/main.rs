@@ -1,6 +1,11 @@
-use clap::Parser ;
+use clap::{Error, Parser} ;
 use num_cpus ;
 use std::path::PathBuf ;
+
+use std::fs ;
+use tokio::task ;
+use reqwest::Client ;
+use futures::stream::{self, StreamExt} ;
 
 /// Структура содержащая разобранные аргументы CLI
 #[derive(
@@ -42,12 +47,71 @@ struct Args {
     file:   PathBuf,
 }
 
-fn main() {
+// загрузка страниц
+async fn download_pages(
+            client: &Client,
+            url: &[String],
+            max_concurrents: usize
+        ) ->Result<(), Box<dyn std::error::Error>> {
+
+    let results = stream::iter(url) 
+            .map(|url| {
+                let client = client.clone() ;
+                let url = url.clone() ;
+                task::spawn(async move {
+
+                })
+            })
+            .buffer_unordered(max_concurrents)
+            .collect::<Vec<_>>()
+            .await
+            ;
+    for result in results {
+        match result {
+            Ok(v) => {},
+            Err(err) => {},
+        }
+    }
+    Ok(())
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>>{
     let args = Args::parse();
 
     //println!("{}", num_cpus::get_physical()) ;
 
     println!("args: {:?}", args) ;
+
+    // Проверка наличия файла со ссылками
+    if ! args.file.exists() {
+        return Err(format!("Not found file: {:?}", args.file).into()) ;
+    }
+
+    // получаем  контент файла
+    let contents = fs::read_to_string(args.file)? ;
+
+    // заполняем вектор url из содержимого файла
+    let urls = contents
+                        .lines()
+                        .filter(|line| !line.trim().is_empty())
+                        .map(|line| line.trim().to_string())
+                        .filter(|line| line.starts_with("https://") || line.starts_with("http://"))
+                        .collect::<Vec<_>>()
+                        ;
+    if urls.is_empty() {
+        return Err(format!("There are no URLs to load pages.").into()) ;
+    }
+
+    // Асинхронный клиент для отправки запросов.
+    let client = Client::builder()
+                    .timeout(std::time::Duration::from_secs(30))
+                    .build()? ;
+
+    download_pages(&client, &urls, args.max_threads).await? ;
+
+    // Нормальное завершение работы
+    Ok(())
 }
 
 /*
