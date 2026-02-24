@@ -1,4 +1,4 @@
-Step 3: Common ecosystem
+Шаг 3: Общая экосистема
 ========================
 
 __Estimated time__: 2 days
