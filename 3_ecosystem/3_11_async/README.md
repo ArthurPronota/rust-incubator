@@ -218,6 +218,85 @@ _Примечание:_
 ```bash
 cargo add num_cpus@1.0
 ```
+
+```mermaid
+flowchart TB
+    subgraph main [Функция main]
+        direction TB
+        A[Старт main] --> B[Парсинг аргументов Args::parse]
+        B --> C{Проверка файла}
+        C -->|Ошибка| D[return Err]
+        C -->|OK| E[Создание директории fs::create_dir_all]
+        E --> F[Чтение файла fs::read_to_string]
+        F --> G[Парсинг URL]
+        G --> H{URL есть?}
+        H -->|Нет| I[return Err]
+        H -->|Да| J[Создание HTTP клиента Client::builder]
+        J --> K[Вызов download_pages]
+    end
+
+    subgraph download_pages [Функция download_pages]
+        direction TB
+        K --> L[stream::iter urls]
+        L --> M[.map создание задач]
+        M --> N[.buffer_unordered]
+        N --> O{.collect::Vec .await}
+        O -->|Ожидание всех задач| P[Получение results]
+        P --> Q[Цикл обработки результатов]
+        Q --> R[Возврат в main]
+    end
+
+    subgraph tasks [Задачи tokio::spawn]
+        direction TB
+        S[Запуск задач по URLs] --> T{Ждать завершения?}
+        
+        subgraph task1 [Задача 1]
+            direction LR
+            T1[Старт задачи] --> U1[download_page .await]
+            U1 --> V1[Завершение задачи]
+        end
+        
+        subgraph task2 [Задача 2]
+            direction LR
+            T2[Старт задачи] --> U2[download_page .await]
+            U2 --> V2[Завершение задачи]
+        end
+        
+        subgraph taskN [Задача N]
+            direction LR
+            TN[Старт задачи] --> UN[download_page .await]
+            UN --> VN[Завершение задачи]
+        end
+        
+        T --> task1
+        T --> task2
+        T --> taskN
+    end
+
+    subgraph download_page [Функция download_page]
+        direction TB
+        U1 --> W[Формирование имени файла]
+        U2 --> W
+        UN --> W
+        W --> X[client.get.send .await]
+        X --> Y{Проверка статуса}
+        Y -->|Ошибка| Z[return Err]
+        Y -->|OK| AA[response.text .await]
+        AA --> AB[tokio::fs::write .await]
+        AB --> AC[return Ok]
+    end
+
+    O --> tasks
+    tasks --> O
+    AC --> V1
+    AC --> V2
+    AC --> VN
+    V1 --> O
+    V2 --> O
+    VN --> O
+    
+    R --> S1[Конец main]
+```
 ## Questions
 
 
