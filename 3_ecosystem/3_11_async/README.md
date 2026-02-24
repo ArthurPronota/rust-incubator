@@ -219,6 +219,8 @@ _Примечание:_
 cargo add num_cpus@1.0
 ```
 
+#### Диаграмма работы программы:
+
 ```mermaid
 flowchart TB
     subgraph main [Функция main]
