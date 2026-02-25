@@ -10,7 +10,7 @@ __Estimated time__: 2 days
 
 После выполнения этих заданий вы сможете ответить на следующие вопросы:
 
- - [Какие возможности тестирования предлагает Rust и когда их следует использовать? Почему следует придерживаться стиля BDD?](#какие-возможности-тестирования-предлагает-rust-и-когда-их-следует-использовать-почему-следует-придерживаться-стиля-bdd)
+ - [Какие возможности тестирования предлагает Rust и когда их следует использовать? Почему следует придерживаться стиля BDD?][23]
 
 - What are macros? How do they differ? What benefits does their usage give? When should I write one?
 - How to work with date and time in [Rust]? How should I store time? How should I return it to other applications?
@@ -83,6 +83,13 @@ If you have enough time after implementing base requirements, consider to add th
         
   - Когда: Для поиска пограничных случаев (edge cases), о которых вы даже не догадывались.
 
+#### 2. Почему стоит придерживаться стиля BDD?
+
+BDD (Behavior-Driven Development:) — это разработка основанная поведение. В Rust для этого часто используют крейт cucumber или k8s-openapi для сложных систем.
+
+Преимущества BDD:
+
+
 
 <hr>
 
@@ -98,3 +105,5 @@ If you have enough time after implementing base requirements, consider to add th
 
 [21]: https://picvario.com/what-is-image-metadata-role-and-benefits
 [22]: https://en.wikipedia.org/wiki/Environment_variable
+
+[23]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#какие-возможности-тестирования-предлагает-rust-и-когда-их-следует-использовать-почему-следует-придерживаться-стиля-bdd
