@@ -11,8 +11,7 @@ __Estimated time__: 2 days
 После выполнения этих заданий вы сможете ответить на следующие вопросы:
 
  - [Какие возможности тестирования предлагает Rust и когда их следует использовать? Почему следует придерживаться стиля BDD?][23]
-- What are macros? How do they differ? What benefits does their usage give? When should I write one?
-- [Что такое макросы? Чем они отличаются? Какие преимущества дает их использование? Когда следует писать макрос?]
+- [Что такое макросы? Чем они отличаются? Какие преимущества дает их использование? Когда следует писать макрос?][24]
 
 - How to work with date and time in [Rust]? How should I store time? How should I return it to other applications?
 - How are regular expressions used in [Rust]? When are they not enough? How can I write a custom parser in [Rust]?
@@ -367,3 +366,4 @@ graph LR
 [22]: https://en.wikipedia.org/wiki/Environment_variable
 
 [23]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#какие-возможности-тестирования-предлагает-rust-и-когда-их-следует-использовать-почему-следует-придерживаться-стиля-bdd
+[24]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-такое-макросы-чем-они-отличаются-какие-преимущества-дает-их-использование-когда-следует-писать-макрос
