@@ -16,8 +16,7 @@ __Estimated time__: 2 days
 - [Как используются регулярные выражения в Rust? Когда их недостаточно? Как написать собственный парсер в Rust?][26]
 - [В чём заключаются различия между итераторами и коллекциями в Rust? Каково назначение неизменяемых коллекций? Почему важно использовать параллельные коллекции?][27]
 - [Что следует использовать для сериализации в Rust? Почему это хорошо или плохо?][28]
-- How can I generate randomness in [Rust]? Which guarantees of random generator should I choose and when?
-- [Как генерировать случайные числа в Rust? Какие гарантии генератора случайных чисел следует выбирать и когда?][]
+- [Как генерировать случайные числа в Rust? Какие гарантии генератора случайных чисел следует выбирать и когда?][29]
 
 - What should I use for password hashing in [Rust]? How can I encrypt a message with [Rust]? How should I compare secret values and why?
 - How logging is organized in [Rust] ecosystem? Why should I care about structured logging?
@@ -638,3 +637,4 @@ serde = { version = "1.0", features = ["derive"] }
 [26]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-используются-регулярные-выражения-в-rust-когда-их-недостаточно-как-написать-собственный-парсер-в-rust
 [27]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#в-чём-заключаются-различия-между-итераторами-и-коллекциями-в-rust-каково-назначение-неизменяемых-коллекций-почему-важно-использовать-параллельные-коллекции
 [28]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-следует-использовать-для-сериализации-в-rust-почему-это-хорошо-или-плохо
+[29]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-генерировать-случайные-числа-в-rust-какие-гарантии-генератора-случайных-чисел-следует-выбирать-и-когда
