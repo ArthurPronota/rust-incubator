@@ -418,3 +418,4 @@ graph LR
 
 [23]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#какие-возможности-тестирования-предлагает-rust-и-когда-их-следует-использовать-почему-следует-придерживаться-стиля-bdd
 [24]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-такое-макросы-чем-они-отличаются-какие-преимущества-дает-их-использование-когда-следует-писать-макрос
+[25]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-работать-с-датой-и-временем-в-rust-как-хранить-время-как-передавать-его-другим-приложениям
