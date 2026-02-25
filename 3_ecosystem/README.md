@@ -121,10 +121,31 @@ my_app/
     └── my_test.rs  <-- Интеграционный тест здесь
 ```
 
-    Код в src/lib.rs
+    Код в src/lib.rs  (Библиотека)
 ```rust
 pub fn add_numbers(a: i32, b: i32) -> i32 {
     a + b
+}
+```
+    Код в tests/my_test.rs (Тест)
+```rust
+// Импортируем нашу библиотеку как внешний пользователь
+use my_app::add_numbers;
+
+#[test]
+fn test_integration_add() {
+    // Вызываем публичную функцию
+    let result = add_numbers(10, 20);
+    
+    // Проверяем результат
+    assert_eq!(result, 30);
+}
+
+#[test]
+fn test_with_setup() {
+    // Здесь обычно инициализируют окружение, например БД или логи
+    let data = 5;
+    assert!(add_numbers(data, 5) > 0);
 }
 ```
 
