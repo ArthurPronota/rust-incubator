@@ -16,8 +16,9 @@ __Estimated time__: 2 days
 - [Как используются регулярные выражения в Rust? Когда их недостаточно? Как написать собственный парсер в Rust?][26]
 - [В чём заключаются различия между итераторами и коллекциями в Rust? Каково назначение неизменяемых коллекций? Почему важно использовать параллельные коллекции?][27]
 - [Что следует использовать для сериализации в Rust? Почему это хорошо или плохо?][28]
-
 - How can I generate randomness in [Rust]? Which guarantees of random generator should I choose and when?
+- [Как генерировать случайные числа в Rust? Какие гарантии генератора случайных чисел следует выбирать и когда?][]
+
 - What should I use for password hashing in [Rust]? How can I encrypt a message with [Rust]? How should I compare secret values and why?
 - How logging is organized in [Rust] ecosystem? Why should I care about structured logging?
 - What should I use for building [CLI] interface in [Rust]? How can I organize a configuration for my application and why?
@@ -612,6 +613,9 @@ Serde — это фреймворк для эффективной и униве�
 ```toml
 serde = { version = "1.0", features = ["derive"] }
 ```
+<hr>
+
+### Как генерировать случайные числа в Rust? Какие гарантии генератора случайных чисел следует выбирать и когда?
 
 <hr>
 
