@@ -616,6 +616,51 @@ serde = { version = "1.0", features = ["derive"] }
 
 ### Как генерировать случайные числа в Rust? Какие гарантии генератора случайных чисел следует выбирать и когда?
 
+В Rust генерация случайных чисел не встроена в стандартную библиотеку (std), чтобы не раздувать бинарные файлы. Стандартом де-факто является крейт [rand](https://docs.rs/rand/latest/rand/).
+
+#### 1. Как генерировать числа на практике
+
+Самый быстрый способ получить случайное значение — использовать `thread_rng()`.
+
+Cargo.toml
+```toml
+[package]
+name = "step_3"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+rand = "0.8.0"
+```
+
+```rust
+use rand::{self, prelude::*};
+
+fn main() {
+    let mut rng = rand::thread_rng();
+
+    // 1. Случайное число (целое или с плавающей точкой)
+    let n: u32 = rng.gen_range(0..100);
+    println!("n: {}", n) ;
+
+    let x: f64 = rng.r#gen(); // от 0.0 до 1.0
+    println!("x: {}", x) ;
+
+    // 2. Случайный выбор из списка
+    let choices = ["Rust", "Go", "C++"];
+    if let Some(&lang) = choices.choose(&mut rng) {
+        println!("Выбран язык: {}", lang);
+    }
+
+    // 3. Перемешивание вектора
+    let mut nums = vec![1, 2, 3, 4, 5];
+    nums.shuffle(&mut rng);
+    println!("{:?}", nums) ;
+}
+```
+
+
 <hr>
 
 [BDD]: https://en.wikipedia.org/wiki/Behavior-driven_development
