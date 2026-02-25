@@ -7,8 +7,11 @@ __Estimated time__: 2 days
 
 > ❗️Перед выполнением этого шага необходимо выполнить все его подшаги.
 
-After doing them you should be able to answer the following questions:
-- What testing capabilities does [Rust] offer and when should I use them? Why should I follow [BDD] style?
+
+После выполнения этих заданий вы сможете ответить на следующие вопросы:
+
+ - [Какие возможности тестирования предлагает Rust и когда их следует использовать? Почему следует придерживаться стиля BDD?]()
+
 - What are macros? How do they differ? What benefits does their usage give? When should I write one?
 - How to work with date and time in [Rust]? How should I store time? How should I return it to other applications?
 - How are regular expressions used in [Rust]? When are they not enough? How can I write a custom parser in [Rust]?
@@ -45,7 +48,24 @@ If you have enough time after implementing base requirements, consider to add th
 - Add comprehensive documentation to your code.
 
 
+<hr>
 
+### Какие возможности тестирования предлагает Rust и когда их следует использовать? Почему следует придерживаться стиля BDD?
+
+В Rust тестирование — это не надстройка, а часть языка. Система типов и владения исключает целые классы багов, а встроенные инструменты позволяют закрыть пирамиду тестирования без внешних зависимостей.
+
+#### 1. Возможности тестирования в Rust
+
+    А. Модульные тесты (Unit Tests)
+        
+        Пишутся в том же файле, что и код, в специальном модуле `#[cfg(test)] mod tests`.
+
+- Когда: Для проверки логики отдельных функций, особенно приватных.
+- Плюс: Доступ к приватным полям и методам.
+
+
+
+<hr>
 
 [BDD]: https://en.wikipedia.org/wiki/Behavior-driven_development
 [CLI]: https://en.wikipedia.org/wiki/Command-line_interface
