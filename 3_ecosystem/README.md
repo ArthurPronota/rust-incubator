@@ -99,7 +99,6 @@ mod tests {
 }
 ```
     Запуск теста:
-    
 ```bash
 cargo test
 ```
