@@ -189,6 +189,41 @@ cargo test
         
   - Когда: Для поиска пограничных случаев (edge cases), о которых вы даже не догадывались.
 
+    Cargo.toml
+```toml
+[dev-dependencies]
+proptest = "1.6"
+```
+
+```rust
+use proptest::prelude::*;
+
+fn add(a: i32, b: i32) -> i32 {
+    // Представим, что здесь сложная логика
+    a.wrapping_add(b)
+}
+
+// 1. Используем макрос proptest!
+proptest! {
+    // 2. Описываем входные данные: "любые i32 для a и b"
+    #[test]
+    fn test_add_is_commutative(a in any::<i32>(), b in any::<i32>()) {
+        // 3. Проверяем свойство: коммутативность (от перестановки слагаемых сумма не меняется)
+        prop_assert_eq!(add(a, b), add(b, a));
+    }
+
+    #[test]
+    fn test_add_with_zero(a in any::<i32>()) {
+        // Свойство: прибавление нуля не меняет число
+        prop_assert_eq!(add(a, 0), a);
+    }
+}
+```
+    Заруск Property-based Test:
+```bash
+cargo test
+```
+
 #### 2. Почему стоит придерживаться стиля BDD?
 
 BDD (Behavior-Driven Development:) — это разработка основанная поведение. В Rust для этого часто используют крейт cucumber или k8s-openapi для сложных систем.
