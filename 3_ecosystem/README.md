@@ -128,6 +128,9 @@ pub fn add_numbers(a: i32, b: i32) -> i32 {
 }
 ```
     Код в tests/my_test.rs (Тест)
+
+    Интеграционные тесты работают только с библиотечными крейтами или со всем приложением в целом.
+
 ```rust
 // Импортируем нашу библиотеку как внешний пользователь
 use my_app::add_numbers;
@@ -148,7 +151,10 @@ fn test_with_setup() {
     assert!(add_numbers(data, 5) > 0);
 }
 ```
-
+    Запуск Integration Tests
+```bash
+cargo test
+```
 
     В. Документационные тесты (Doc-tests)
 
