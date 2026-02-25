@@ -14,8 +14,7 @@ __Estimated time__: 2 days
 - [Что такое макросы? Чем они отличаются? Какие преимущества дает их использование? Когда следует писать макрос?][24]
 - [Как работать с датой и временем в Rust? Как хранить время? Как передавать его другим приложениям?][25]
 - [Как используются регулярные выражения в Rust? Когда их недостаточно? Как написать собственный парсер в Rust?][26]
-- How do iterator and collection compare and differ in [Rust]? What is the purpose of immutable collections? Why should I care about using concurrent collections?
-- [В чём заключаются различия между итераторами и коллекциями в Rust? Каково назначение неизменяемых коллекций? Почему важно использовать параллельные коллекции?][]
+- [В чём заключаются различия между итераторами и коллекциями в Rust? Каково назначение неизменяемых коллекций? Почему важно использовать параллельные коллекции?][27]
 
 - What should I use for serialization in [Rust]? Why this is good or bad?
 - How can I generate randomness in [Rust]? Which guarantees of random generator should I choose and when?
@@ -540,3 +539,4 @@ __Итог__: Если структура текста сложнее одног
 [24]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-такое-макросы-чем-они-отличаются-какие-преимущества-дает-их-использование-когда-следует-писать-макрос
 [25]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-работать-с-датой-и-временем-в-rust-как-хранить-время-как-передавать-его-другим-приложениям
 [26]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-используются-регулярные-выражения-в-rust-когда-их-недостаточно-как-написать-собственный-парсер-в-rust
+[27]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#в-чём-заключаются-различия-между-итераторами-и-коллекциями-в-rust-каково-назначение-неизменяемых-коллекций-почему-важно-использовать-параллельные-коллекции
