@@ -63,6 +63,45 @@ If you have enough time after implementing base requirements, consider to add th
   - Когда: Для проверки логики отдельных функций, особенно приватных.
   - Плюс: Доступ к приватным полям и методам.
 
+```rust
+// 1. Основная функция, которую мы хотим протестировать
+pub fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+// 2. Модуль тестов. Атрибут #[cfg(test)] говорит Rust: 
+// "Компилируй это только тогда, когда запущена команда cargo test"
+#[cfg(test)]
+mod tests {
+    // Импортируем всё из внешнего модуля (нашу функцию add)
+    use super::*;
+
+    // 3. Конкретный тест
+    #[test]
+    fn test_add_positive_numbers() {
+        // Утверждение: результат должен быть равен 4
+        assert_eq!(add(2, 2), 4);
+    }
+
+    #[test]
+    fn test_add_negative_numbers() {
+        assert_eq!(add(-1, -1), -2);
+    }
+
+    // Тест, который ожидает панику (ошибку)
+    #[test]
+    #[should_panic(expected = "attempt to divide by zero")]
+    fn test_division_by_zero() {
+        let _ = 1 / 0;
+    }
+}
+```
+
+    Запуск теста:
+```bash
+cargo test
+```
+
     Б. Интеграционные тесты (Integration Tests)
 
         Располагаются в отдельной папке tests/ в корне проекта.
