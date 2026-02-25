@@ -95,7 +95,8 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [`Какие ограничения имеет механизм изоляции трейтов в [Rust]? Что он мог бы обеспечить, если бы поддерживался компилятором?`](2_idioms/2_6_sealing#%D0%BA%D0%B0%D0%BA%D0%B8%D0%B5-%D0%BE%D0%B3%D1%80%D0%B0%D0%BD%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D1%8F-%D0%B8%D0%BC%D0%B5%D0%B5%D1%82-%D0%BC%D0%B5%D1%85%D0%B0%D0%BD%D0%B8%D0%B7%D0%BC-%D0%B8%D0%B7%D0%BE%D0%BB%D1%8F%D1%86%D0%B8%D0%B8-%D1%82%D1%80%D0%B5%D0%B9%D1%82%D0%BE%D0%B2-%D0%B2-rust-%D1%87%D1%82%D0%BE-%D0%BE%D0%BD-%D0%BC%D0%BE%D0%B3-%D0%B1%D1%8B-%D0%BE%D0%B1%D0%B5%D1%81%D0%BF%D0%B5%D1%87%D0%B8%D1%82%D1%8C-%D0%B5%D1%81%D0%BB%D0%B8-%D0%B1%D1%8B-%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D0%B2%D0%B0%D0%BB%D1%81%D1%8F-%D0%BA%D0%BE%D0%BC%D0%BF%D0%B8%D0%BB%D1%8F%D1%82%D0%BE%D1%80%D0%BE%D0%BC)
 - [ ] [Шаг 3: Общая экосистема][Step 3] (2 days, after all sub-steps)
     - [Какие возможности тестирования предлагает Rust и когда их следует использовать? Почему следует придерживаться стиля BDD?][14]
-
+    - [Что такое макросы? Чем они отличаются? Какие преимущества дает их использование? Когда следует писать макрос?][15]
+    
         - [ ] [Шаг 3.1: Тестирование и имитация][Step 3.1] (1 day)
             - [`Что такое стиль TDD? Что такое стиль BDD? В чём заключается основной акцент в стиле BDD?`](3_ecosystem/3_1_testing#%D1%87%D1%82%D0%BE-%D1%82%D0%B0%D0%BA%D0%BE%D0%B5-%D1%81%D1%82%D0%B8%D0%BB%D1%8C-tdd-%D1%87%D1%82%D0%BE-%D1%82%D0%B0%D0%BA%D0%BE%D0%B5-%D1%81%D1%82%D0%B8%D0%BB%D1%8C-bdd-%D0%B2-%D1%87%D1%91%D0%BC-%D0%B7%D0%B0%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D0%B5%D1%82%D1%81%D1%8F-%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%BD%D0%BE%D0%B9-%D0%B0%D0%BA%D1%86%D0%B5%D0%BD%D1%82-%D0%B2-%D1%81%D1%82%D0%B8%D0%BB%D0%B5-bdd)
             - [`Что такое mocking (имитация)? Когда она полезна?`](3_ecosystem/3_1_testing#%D1%87%D1%82%D0%BE-%D1%82%D0%B0%D0%BA%D0%BE%D0%B5-mocking-%D0%B8%D0%BC%D0%B8%D1%82%D0%B0%D1%86%D0%B8%D1%8F-%D0%BA%D0%BE%D0%B3%D0%B4%D0%B0-%D0%BE%D0%BD%D0%B0-%D0%BF%D0%BE%D0%BB%D0%B5%D0%B7%D0%BD%D0%B0)
@@ -257,3 +258,4 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [13]: https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html
 
 [14]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#какие-возможности-тестирования-предлагает-rust-и-когда-их-следует-использовать-почему-следует-придерживаться-стиля-bdd
+[15]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-такое-макросы-чем-они-отличаются-какие-преимущества-дает-их-использование-когда-следует-писать-макрос
