@@ -63,6 +63,8 @@ If you have enough time after implementing base requirements, consider to add th
   - Когда: Для проверки логики отдельных функций, особенно приватных.
   - Плюс: Доступ к приватным полям и методам.
 
+    Простой Unit Test:
+    
 ```rust
 // 1. Основная функция, которую мы хотим протестировать
 pub fn add(a: i32, b: i32) -> i32 {
