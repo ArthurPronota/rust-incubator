@@ -98,7 +98,8 @@ mod tests {
     }
 }
 ```
-    Запуск теста:
+
+    Запуск Unit Test:
 ```bash
 cargo test
 ```
