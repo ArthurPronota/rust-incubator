@@ -15,8 +15,7 @@ __Estimated time__: 2 days
 - [Как работать с датой и временем в Rust? Как хранить время? Как передавать его другим приложениям?][25]
 - [Как используются регулярные выражения в Rust? Когда их недостаточно? Как написать собственный парсер в Rust?][26]
 - [В чём заключаются различия между итераторами и коллекциями в Rust? Каково назначение неизменяемых коллекций? Почему важно использовать параллельные коллекции?][27]
-- What should I use for serialization in [Rust]? Why this is good or bad?
-- [Что следует использовать для сериализации в [Russ]? Почему это хорошо или плохо?][]
+- [Что следует использовать для сериализации в Rust? Почему это хорошо или плохо?][28]
 
 - How can I generate randomness in [Rust]? Which guarantees of random generator should I choose and when?
 - What should I use for password hashing in [Rust]? How can I encrypt a message with [Rust]? How should I compare secret values and why?
@@ -561,7 +560,7 @@ __Назначение:__ Коллекции нужны для структур�
 
 <hr>
 
-### Что следует использовать для сериализации в Russ? Почему это хорошо или плохо?
+### Что следует использовать для сериализации в Rust? Почему это хорошо или плохо?
 
 <hr>
 
@@ -583,3 +582,4 @@ __Назначение:__ Коллекции нужны для структур�
 [25]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-работать-с-датой-и-временем-в-rust-как-хранить-время-как-передавать-его-другим-приложениям
 [26]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-используются-регулярные-выражения-в-rust-когда-их-недостаточно-как-написать-собственный-парсер-в-rust
 [27]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#в-чём-заключаются-различия-между-итераторами-и-коллекциями-в-rust-каково-назначение-неизменяемых-коллекций-почему-важно-использовать-параллельные-коллекции
+[28]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-следует-использовать-для-сериализации-в-rust-почему-это-хорошо-или-плохо
