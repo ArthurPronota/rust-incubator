@@ -234,6 +234,18 @@ BDD (Behavior-Driven Development:) — это разработка основа�
   2. Фокус на требованиях: Вы тестируете не как реализована функция, а какую задачу она решает. Это делает тесты устойчивыми к рефакторингу.
   3. Живая спецификация: BDD-сценарии служат актуальным описанием того, как работает система.
 
+    Структуры проекта:
+```
+my_project/
+├── Cargo.toml
+├── src/lib.rs
+└── tests/
+    ├── cucumber.rs          <-- Код тестов
+    └── features/
+        └── calculator.feature <-- Описание поведения
+```
+
+    Описание функции, файл tests/features/calculator.feature:
 ```gherkin
 Feature: Калькулятор
 
@@ -242,8 +254,49 @@ Feature: Калькулятор
     And Я ввел число 5
     When Я нажимаю кнопку сложения
     Then Результат должен быть 15
-
 ```
+Cargo.toml:
+```toml
+[dev-dependencies]
+cucumber = "0.20"
+tokio = { version = "1", features = ["full"] } # Cucumber в Rust асинхронен
+```
+
+tests/cucumber.rs:
+```rust
+use cucumber::{given, when, then, World};
+
+// 1. "Мир" (World) — это состояние нашего теста между шагами
+#[derive(Debug, Default, World)]
+pub struct CalculatorWorld {
+    inputs: Vec<i32>,
+    result: i32,
+}
+
+// 2. Описываем шаги (Steps)
+#[given(expr = "Я ввел число {int}")]
+fn enter_number(world: &mut CalculatorWorld, num: i32) {
+    world.inputs.push(num);
+}
+
+#[when("Я нажимаю кнопку сложения")]
+fn click_add(world: &mut CalculatorWorld) {
+    world.result = world.inputs.iter().sum();
+}
+
+#[then(expr = "Результат должен быть {int}")]
+fn check_result(world: &mut CalculatorWorld, expected: i32) {
+    assert_eq!(world.result, expected);
+}
+
+// 3. Запуск рантайма
+#[tokio::main]
+async fn main() {
+    CalculatorWorld::run("tests/features").await;
+}
+```
+  Примечание:
+   - Ключевое слово And: В языке Gherkin (файлы .feature) слово And (или И в русской локализации) просто повторяет тип предыдущего шага.
 
 #### 3. Сводная таблица применения
 
