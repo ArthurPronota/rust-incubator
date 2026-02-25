@@ -12,8 +12,9 @@ __Estimated time__: 2 days
 
  - [Какие возможности тестирования предлагает Rust и когда их следует использовать? Почему следует придерживаться стиля BDD?][23]
 - [Что такое макросы? Чем они отличаются? Какие преимущества дает их использование? Когда следует писать макрос?][24]
-
 - How to work with date and time in [Rust]? How should I store time? How should I return it to other applications?
+- [Как работать с датой и временем в Rust? Как хранить время? Как передавать его другим приложениям?][25]
+
 - How are regular expressions used in [Rust]? When are they not enough? How can I write a custom parser in [Rust]?
 - How do iterator and collection compare and differ in [Rust]? What is the purpose of immutable collections? Why should I care about using concurrent collections?
 - What should I use for serialization in [Rust]? Why this is good or bad?
@@ -396,6 +397,11 @@ graph LR
 - Вы создаете DSL: Если стандартный синтаксис Rust слишком громоздок для вашей специфической задачи (например, парсинг сложных протоколов) [2.2].
 
 <hr>
+
+### Как работать с датой и временем в Rust? Как хранить время? Как передавать его другим приложениям?
+
+<hr>
+
 
 [BDD]: https://en.wikipedia.org/wiki/Behavior-driven_development
 [CLI]: https://en.wikipedia.org/wiki/Command-line_interface
