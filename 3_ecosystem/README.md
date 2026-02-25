@@ -81,7 +81,7 @@ If you have enough time after implementing base requirements, consider to add th
 
         Вместо конкретных значений вы задаете стратегию (например, «любая строка Unicode»).
         
-- Когда: Для поиска пограничных случаев (edge cases), о которых вы даже не догадывались.
+    - Когда: Для поиска пограничных случаев (edge cases), о которых вы даже не догадывались.
 
 
 <hr>
