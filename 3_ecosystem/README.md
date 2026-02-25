@@ -11,8 +11,9 @@ __Estimated time__: 2 days
 После выполнения этих заданий вы сможете ответить на следующие вопросы:
 
  - [Какие возможности тестирования предлагает Rust и когда их следует использовать? Почему следует придерживаться стиля BDD?][23]
-
 - What are macros? How do they differ? What benefits does their usage give? When should I write one?
+- [Что такое макросы? Чем они отличаются? Какие преимущества дает их использование? Когда следует писать макрос?]
+
 - How to work with date and time in [Rust]? How should I store time? How should I return it to other applications?
 - How are regular expressions used in [Rust]? When are they not enough? How can I write a custom parser in [Rust]?
 - How do iterator and collection compare and differ in [Rust]? What is the purpose of immutable collections? Why should I care about using concurrent collections?
@@ -346,6 +347,9 @@ graph LR
 
 Сначала полагайтесь на систему типов (чтобы ошибку нельзя было выразить в коде), затем на модульные тесты для логики, и в конце на интеграционные BDD-сценарии для проверки работы всей системы в сборе\.
 
+<hr>
+
+### Что такое макросы? Чем они отличаются? Какие преимущества дает их использование? Когда следует писать макрос?
 
 <hr>
 
