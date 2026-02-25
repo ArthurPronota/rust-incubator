@@ -3,9 +3,9 @@
 
 __Estimated time__: 2 days
 
-These steps describe common crates and tools in [Rust] ecosystem required for application and library development.
+В этих шагах описаны распространенные библиотеки и инструменты в экосистеме [Rust], необходимые для разработки приложений и библиотек.
 
-> ❗️Before completing this step you should complete all its sub-steps.
+> ❗️Перед выполнением этого шага необходимо выполнить все его подшаги.
 
 After doing them you should be able to answer the following questions:
 - What testing capabilities does [Rust] offer and when should I use them? Why should I follow [BDD] style?
