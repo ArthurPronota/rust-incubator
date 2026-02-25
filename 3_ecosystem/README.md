@@ -15,8 +15,9 @@ __Estimated time__: 2 days
 - [Как работать с датой и временем в Rust? Как хранить время? Как передавать его другим приложениям?][25]
 - [Как используются регулярные выражения в Rust? Когда их недостаточно? Как написать собственный парсер в Rust?][26]
 - [В чём заключаются различия между итераторами и коллекциями в Rust? Каково назначение неизменяемых коллекций? Почему важно использовать параллельные коллекции?][27]
-
 - What should I use for serialization in [Rust]? Why this is good or bad?
+- [Что следует использовать для сериализации в [Russ]? Почему это хорошо или плохо?][]
+
 - How can I generate randomness in [Rust]? Which guarantees of random generator should I choose and when?
 - What should I use for password hashing in [Rust]? How can I encrypt a message with [Rust]? How should I compare secret values and why?
 - How logging is organized in [Rust] ecosystem? Why should I care about structured logging?
@@ -560,6 +561,7 @@ __Назначение:__ Коллекции нужны для структур�
 
 <hr>
 
+### Что следует использовать для сериализации в Russ? Почему это хорошо или плохо?
 
 <hr>
 
