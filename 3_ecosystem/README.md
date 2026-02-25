@@ -560,6 +560,9 @@ __Назначение:__ Коллекции нужны для структур�
 
 <hr>
 
+
+<hr>
+
 [BDD]: https://en.wikipedia.org/wiki/Behavior-driven_development
 [CLI]: https://en.wikipedia.org/wiki/Command-line_interface
 [EOL]: https://en.wikipedia.org/wiki/Newline
