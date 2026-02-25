@@ -14,8 +14,9 @@ __Estimated time__: 2 days
 - [Что такое макросы? Чем они отличаются? Какие преимущества дает их использование? Когда следует писать макрос?][24]
 - [Как работать с датой и временем в Rust? Как хранить время? Как передавать его другим приложениям?][25]
 - [Как используются регулярные выражения в Rust? Когда их недостаточно? Как написать собственный парсер в Rust?][26]
-
 - How do iterator and collection compare and differ in [Rust]? What is the purpose of immutable collections? Why should I care about using concurrent collections?
+- [В чём заключаются различия между итераторами и коллекциями в Rust? Каково назначение неизменяемых коллекций? Почему важно использовать параллельные коллекции?][]
+
 - What should I use for serialization in [Rust]? Why this is good or bad?
 - How can I generate randomness in [Rust]? Which guarantees of random generator should I choose and when?
 - What should I use for password hashing in [Rust]? How can I encrypt a message with [Rust]? How should I compare secret values and why?
@@ -514,6 +515,10 @@ if let Some(caps) = re.captures(text) {
 |pest|Высокая|Средняя|Создание DSL и языков (JSON, SQL).|
 
 __Итог__: Если структура текста сложнее одного предложения или имеет вложенность — переходите на winnow. Это сэкономит недели отладки.
+
+<hr>
+
+### В чём заключаются различия между итераторами и коллекциями в Rust? Каково назначение неизменяемых коллекций? Почему важно использовать параллельные коллекции?
 
 
 <hr>
