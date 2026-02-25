@@ -10,7 +10,7 @@ __Estimated time__: 2 days
 
 После выполнения этих заданий вы сможете ответить на следующие вопросы:
 
- - [Какие возможности тестирования предлагает Rust и когда их следует использовать? Почему следует придерживаться стиля BDD?]()
+ - [Какие возможности тестирования предлагает Rust и когда их следует использовать? Почему следует придерживаться стиля BDD?](#какие-возможности-тестирования-предлагает-rust-и-когда-их-следует-использовать-почему-следует-придерживаться-стиля-bdd)
 
 - What are macros? How do they differ? What benefits does their usage give? When should I write one?
 - How to work with date and time in [Rust]? How should I store time? How should I return it to other applications?
