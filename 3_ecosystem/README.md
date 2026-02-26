@@ -18,8 +18,9 @@ __Estimated time__: 2 days
 - [Что следует использовать для сериализации в Rust? Почему это хорошо или плохо?][28]
 - [Как генерировать случайные числа в Rust? Какие гарантии генератора случайных чисел следует выбирать и когда?][29]
 - [Что следует использовать для хеширования паролей в Rust? Как зашифровать сообщение с помощью Rust? Как следует сравнивать секретные значения и почему?][30]
-
 - How logging is organized in [Rust] ecosystem? Why should I care about structured logging?
+- [Как организовано логирование в экосистеме Rust? Почему мне следует интересоваться структурированным логированием?][]
+
 - What should I use for building [CLI] interface in [Rust]? How can I organize a configuration for my application and why?
 - Why multithreading is required for [Rust] programs and what problems does it solve? How threads concurrency differs with parallelism? How can I parallelize code in [Rust]?
 - What is asynchronicity and what problems does it solve? How is it compared to threads concurrency? What is [Rust] solution for asynchronicity and why it has such design?
@@ -772,8 +773,12 @@ if input.ct_eq(secret).unwrap_u8() == 1 {
 
 Итог: Для паролей — Argon2, для шифрования — AEAD, для сравнения — subtle.
 
+<hr>
+
+### Как организовано логирование в экосистеме Rust? Почему мне следует интересоваться структурированным логированием?
 
 <hr>
+
 
 [BDD]: https://en.wikipedia.org/wiki/Behavior-driven_development
 [CLI]: https://en.wikipedia.org/wiki/Command-line_interface
