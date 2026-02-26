@@ -804,6 +804,12 @@ if input.ct_eq(secret).unwrap_u8() == 1 {
 User 42 logged in from 1.1.1.1
 ```
 
+  Структурированное логирование — это данные:
+
+```json
+{"event": "login", "user_id": 42, "ip": "1.1.1.1", "level": "INFO"}
+```
+
 <hr>
 
 
