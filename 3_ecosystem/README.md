@@ -742,6 +742,28 @@ let ciphertext = cipher.encrypt(nonce, b"secret message".as_ref()).unwrap();
 let plaintext = cipher.decrypt(nonce, ciphertext.as_ref()).unwrap();
 ```
 
+#### 3. Как сравнивать секретные значения?
+
+Секреты (токены, пароли, подписи) нужно сравнивать только за постоянное время (Constant-Time).
+
+- Почему: Обычное сравнение (==) обрывается на первом несовпадающем байте. Злоумышленник может замерить время ответа сервера и посимвольно угадать ваш секрет (Timing Attack).
+- Библиотека: [subtle](https://docs.rs/subtle/latest/subtle/)
+
+```rust
+use subtle::ConstantTimeEq;
+
+let secret = b"expected_token";
+let input = b"user_input_token";
+
+// ct_eq гарантирует, что сравнение всегда занимает одинаковое время
+if input.ct_eq(secret).unwrap_u8() == 1 {
+    println!("Доступ разрешен");
+}
+```
+
+Итог: Для паролей — Argon2, для шифрования — AEAD, для сравнения — subtle.
+
+
 <hr>
 
 [BDD]: https://en.wikipedia.org/wiki/Behavior-driven_development
