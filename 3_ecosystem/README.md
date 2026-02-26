@@ -700,6 +700,48 @@ fn main() {
 
 ### Что следует использовать для хеширования паролей в Rust? Как зашифровать сообщение с помощью Rust? Как следует сравнивать секретные значения и почему?
 
+В Rustгоду для безопасности паролей и данных используются специализированные библиотеки из проекта [RustCrypto](https://github.com/RustCrypto), так как стандартная библиотека (std) не содержит криптографических примитивов.
+
+#### 1. Что использовать для хеширования паролей?
+
+Никогда не используйте обычные хеш-функции (SHA-256, MD5). Используйте Argon2id — современный стандарт, устойчивый к перебору на GPU и ASIC.
+
+- Библиотека: [argon2](https://docs.rs/argon2/latest/argon2/)
+- Почему: Он «медленный» и требует много памяти, что делает атаку перебором (brute-force) экономически невыгодной.
+
+```rust
+use argon2::{Argon2, password_hash::{SaltString, PasswordHasher, PasswordVerifier, PasswordHash}, rand_core::OsRng};
+
+let password = b"my_super_password";
+let salt = SaltString::generate(&mut OsRng);
+
+// Хеширование
+let argon2 = Argon2::default();
+let password_hash = argon2.hash_password(password, &salt).unwrap().to_string();
+
+// Проверка
+let parsed_hash = PasswordHash::new(&password_hash).unwrap();
+assert!(argon2.verify_password(password, &parsed_hash).is_ok());
+```
+
+#### 2. Как зашифровать сообщение?
+
+Для шифрования сообщений (текста, файлов) используйте Authenticated Encryption (AEAD). Это гарантирует не только секретность, но и то, что данные не были изменены.
+
+- Алгоритм: AES-256-GCM или ChaCha20-Poly1305.
+- Библиотека: aes-gcm или chacha20poly1305 [2.1].
+
+```rust
+use chacha20poly1305::{ChaCha20Poly1305, Key, Nonce, aead::{Aead, KeyInit}};
+
+let key = Key::from_slice(b"an incredibly savvy secret key!"); // 32 байта
+let cipher = ChaCha20Poly1305::new(key);
+let nonce = Nonce::from_slice(b"unique nonce"); // 12 байт
+
+let ciphertext = cipher.encrypt(nonce, b"secret message".as_ref()).unwrap();
+let plaintext = cipher.decrypt(nonce, ciphertext.as_ref()).unwrap();
+```
+
 <hr>
 
 [BDD]: https://en.wikipedia.org/wiki/Behavior-driven_development
