@@ -810,6 +810,12 @@ User 42 logged in from 1.1.1.1
 {"event": "login", "user_id": 42, "ip": "1.1.1.1", "level": "INFO"}
 ```
 
+  В Rust это реализуется через передачу полей в макросы:
+
+```rust
+tracing::info!(user_id = 42, ip = "1.1.1.1", "User logged in");
+```
+
 <hr>
 
 
