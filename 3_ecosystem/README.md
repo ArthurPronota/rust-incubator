@@ -710,7 +710,16 @@ fn main() {
 - Почему: Он «медленный» и требует много памяти, что делает атаку перебором (brute-force) экономически невыгодной.
 
 ```rust
-use argon2::{Argon2, password_hash::{SaltString, PasswordHasher, PasswordVerifier, PasswordHash}, rand_core::OsRng};
+use argon2::{
+        Argon2,
+        password_hash::{
+                SaltString,
+                PasswordHasher,
+                PasswordVerifier,
+                PasswordHash
+            },
+        rand_core::OsRng
+    };
 
 let password = b"my_super_password";
 let salt = SaltString::generate(&mut OsRng);
