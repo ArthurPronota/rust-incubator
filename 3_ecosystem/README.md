@@ -17,8 +17,9 @@ __Estimated time__: 2 days
 - [В чём заключаются различия между итераторами и коллекциями в Rust? Каково назначение неизменяемых коллекций? Почему важно использовать параллельные коллекции?][27]
 - [Что следует использовать для сериализации в Rust? Почему это хорошо или плохо?][28]
 - [Как генерировать случайные числа в Rust? Какие гарантии генератора случайных чисел следует выбирать и когда?][29]
-
 - What should I use for password hashing in [Rust]? How can I encrypt a message with [Rust]? How should I compare secret values and why?
+- [Что следует использовать для хеширования паролей в Rust? Как зашифровать сообщение с помощью Rust? Как следует сравнивать секретные значения и почему?][]
+
 - How logging is organized in [Rust] ecosystem? Why should I care about structured logging?
 - What should I use for building [CLI] interface in [Rust]? How can I organize a configuration for my application and why?
 - Why multithreading is required for [Rust] programs and what problems does it solve? How threads concurrency differs with parallelism? How can I parallelize code in [Rust]?
@@ -696,6 +697,9 @@ fn main() {
 
 Никогда не используйте SmallRng для генерации паролей, ключей или даже ID заказов, если они должны быть секретными. Современные инструменты анализа могут вычислить внутреннее состояние такого генератора всего по нескольким выданным числам.
 
+<hr>
+
+### Что следует использовать для хеширования паролей в Rust? Как зашифровать сообщение с помощью Rust? Как следует сравнивать секретные значения и почему?
 
 <hr>
 
