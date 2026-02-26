@@ -20,8 +20,9 @@ __Estimated time__: 2 days
 - [Что следует использовать для хеширования паролей в Rust? Как зашифровать сообщение с помощью Rust? Как следует сравнивать секретные значения и почему?][30]
 - [Как организовано логирование в экосистеме Rust? Почему мне следует интересоваться структурированным логированием?][31]
 - [Что следует использовать для создания интерфейса командной строки (CLI) на Rust? Как организовать конфигурацию для моего приложения и зачем?][32]
-
 - Why multithreading is required for [Rust] programs and what problems does it solve? How threads concurrency differs with parallelism? How can I parallelize code in [Rust]?
+- [Почему многопоточность необходима для программ на Rust и какие проблемы она решает? Чем отличается многопоточность от параллельной обработки? Как можно распараллелить код на Rust?][]
+
 - What is asynchronicity and what problems does it solve? How is it compared to threads concurrency? What is [Rust] solution for asynchronicity and why it has such design?
 - What are actors? When are they useful?
 
@@ -894,6 +895,11 @@ struct Cli {
 #### Резюме:
 
 Идиоматично использовать clap для получения пути к конфигу, а затем config-rs для сборки финальной структуры настроек. Это делает ваше приложение Cloud-Native ready.
+
+<hr>
+
+### Почему многопоточность необходима для программ на Rust и какие проблемы она решает? Чем отличается многопоточность от параллельной обработки? Как можно распараллелить код на Rust?
+
 
 <hr>
 
