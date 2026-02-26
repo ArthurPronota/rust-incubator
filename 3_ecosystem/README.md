@@ -20,8 +20,7 @@ __Estimated time__: 2 days
 - [Что следует использовать для хеширования паролей в Rust? Как зашифровать сообщение с помощью Rust? Как следует сравнивать секретные значения и почему?][30]
 - [Как организовано логирование в экосистеме Rust? Почему мне следует интересоваться структурированным логированием?][31]
 - [Что следует использовать для создания интерфейса командной строки (CLI) на Rust? Как организовать конфигурацию для моего приложения и зачем?][32]
-- Why multithreading is required for [Rust] programs and what problems does it solve? How threads concurrency differs with parallelism? How can I parallelize code in [Rust]?
-- [Почему многопоточность необходима для программ на Rust и какие проблемы она решает? Чем отличается многопоточность от параллельной обработки? Как можно распараллелить код на Rust?][]
+- [Почему многопоточность необходима для программ на Rust и какие проблемы она решает? Чем отличается многопоточность от параллельной обработки? Как можно распараллелить код на Rust?][33]
 
 - What is asynchronicity and what problems does it solve? How is it compared to threads concurrency? What is [Rust] solution for asynchronicity and why it has such design?
 - What are actors? When are they useful?
@@ -926,3 +925,4 @@ struct Cli {
 [30]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-следует-использовать-для-хеширования-паролей-в-rust-как-зашифровать-сообщение-с-помощью-rust-как-следует-сравнивать-секретные-значения-и-почему
 [31]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-организовано-логирование-в-экосистеме-rust-почему-мне-следует-интересоваться-структурированным-логированием
 [32]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-следует-использовать-для-создания-интерфейса-командной-строки-cli-на-rust-как-организовать-конфигурацию-для-моего-приложения-и-зачем
+[33]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#почему-многопоточность-необходима-для-программ-на-rust-и-какие-проблемы-она-решает-чем-отличается-многопоточность-от-параллельной-обработки-как-можно-распараллелить-код-на-rust
