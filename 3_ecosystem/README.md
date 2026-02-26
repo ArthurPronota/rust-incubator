@@ -19,8 +19,9 @@ __Estimated time__: 2 days
 - [Как генерировать случайные числа в Rust? Какие гарантии генератора случайных чисел следует выбирать и когда?][29]
 - [Что следует использовать для хеширования паролей в Rust? Как зашифровать сообщение с помощью Rust? Как следует сравнивать секретные значения и почему?][30]
 - [Как организовано логирование в экосистеме Rust? Почему мне следует интересоваться структурированным логированием?][31]
-
 - What should I use for building [CLI] interface in [Rust]? How can I organize a configuration for my application and why?
+- [Что следует использовать для создания интерфейса командной строки (CLI) на Rust? Как организовать конфигурацию для моего приложения и зачем?][]
+
 - Why multithreading is required for [Rust] programs and what problems does it solve? How threads concurrency differs with parallelism? How can I parallelize code in [Rust]?
 - What is asynchronicity and what problems does it solve? How is it compared to threads concurrency? What is [Rust] solution for asynchronicity and why it has such design?
 - What are actors? When are they useful?
@@ -836,6 +837,11 @@ __Итог:__ Для любого серьезного проекта выбир
 
 <hr>
 
+### Что следует использовать для создания интерфейса командной строки (CLI) на Rust? Как организовать конфигурацию для моего приложения и зачем?
+
+
+
+<hr>
 
 [BDD]: https://en.wikipedia.org/wiki/Behavior-driven_development
 [CLI]: https://en.wikipedia.org/wiki/Command-line_interface
