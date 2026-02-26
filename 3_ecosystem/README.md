@@ -44,6 +44,9 @@ If you have enough time after implementing base requirements, consider to add th
 - Add comprehensive documentation to your code.
 
 
+Напишите инструмент [CLI] для удаления [метаданных] изображений [JPEG][21] и уменьшения их размера (упрощенный аналог [tinyjpg.com]).
+
+
 <hr>
 
 ### Какие возможности тестирования предлагает Rust и когда их следует использовать? Почему следует придерживаться стиля BDD?
