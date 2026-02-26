@@ -17,8 +17,7 @@ __Estimated time__: 2 days
 - [В чём заключаются различия между итераторами и коллекциями в Rust? Каково назначение неизменяемых коллекций? Почему важно использовать параллельные коллекции?][27]
 - [Что следует использовать для сериализации в Rust? Почему это хорошо или плохо?][28]
 - [Как генерировать случайные числа в Rust? Какие гарантии генератора случайных чисел следует выбирать и когда?][29]
-- What should I use for password hashing in [Rust]? How can I encrypt a message with [Rust]? How should I compare secret values and why?
-- [Что следует использовать для хеширования паролей в Rust? Как зашифровать сообщение с помощью Rust? Как следует сравнивать секретные значения и почему?][]
+- [Что следует использовать для хеширования паролей в Rust? Как зашифровать сообщение с помощью Rust? Как следует сравнивать секретные значения и почему?][30]
 
 - How logging is organized in [Rust] ecosystem? Why should I care about structured logging?
 - What should I use for building [CLI] interface in [Rust]? How can I organize a configuration for my application and why?
@@ -723,3 +722,4 @@ fn main() {
 [27]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#в-чём-заключаются-различия-между-итераторами-и-коллекциями-в-rust-каково-назначение-неизменяемых-коллекций-почему-важно-использовать-параллельные-коллекции
 [28]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-следует-использовать-для-сериализации-в-rust-почему-это-хорошо-или-плохо
 [29]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-генерировать-случайные-числа-в-rust-какие-гарантии-генератора-случайных-чисел-следует-выбирать-и-когда
+[30]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-следует-использовать-для-хеширования-паролей-в-rust-как-зашифровать-сообщение-с-помощью-rust-как-следует-сравнивать-секретные-значения-и-почему
