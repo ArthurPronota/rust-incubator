@@ -5,4 +5,8 @@ edition = "2024"
 publish = false
 
 [dependencies]
-rand = "0.8.0"
+#rand = "0.8.0"
+#clap = { version = "4.0", features = ["derive", "env"] }
+clap = { version = "4.5.60", features = ["derive", "env"] }
+num_cpus = "1.17.0"
+
