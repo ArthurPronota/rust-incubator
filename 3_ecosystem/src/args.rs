@@ -1,5 +1,19 @@
 use clap::Parser ;
-use std::path::PathBuf ;
+use std::{
+        fs, 
+        io::{
+            self, 
+            BufRead
+        },
+        time::Instant,
+        path::PathBuf
+    } ;
+use log::{
+        //debug,
+        info,
+        error
+    };
+use anyhow::{Result} ;
 //use num_cpus ;
 
 // Аргументы CLI
@@ -104,4 +118,71 @@ pub struct Args {
 /// Разбор параметров CLI
 pub fn get_args() ->Args {
     Args::parse()
+}
+
+/// Получить список всех изображений изо всех доступных источниклв:
+/// 1. командная строка 
+/// 2. файл с изображениями
+/// 3. STDIN
+/// 
+/// Если получаем данные из STDIN напрямую (без перенаправления из файла)
+/// в конце ввода нажать на Ctrl+D
+pub fn get_list_all_images(cl_arg: &Args) ->Result<Vec<String>>{
+
+    let start_time = Instant::now();
+
+    // результирующий список изображений
+    let mut list_images = vec![];
+    
+    // Получение изображений из перечня командной строки
+    if let Some(v) = &cl_arg.images {
+        list_images.extend(
+        v
+            .iter()
+            .filter(|x| !x.trim().is_empty())
+            .map(|x| x.trim().to_string())
+            .collect::<Vec<_>>()
+        ) ;
+    }
+
+    // Получение изображений из файла с изображениями
+    if let Some(f_img) = &cl_arg.imgs_file {
+        // Файл существует
+        if f_img.exists() {
+            list_images.extend(
+                fs::read_to_string(f_img)?
+                    .lines()
+                    .filter(|x| !x.trim().is_empty())
+                    .map(|x| x.trim().to_string())
+                    .collect::<Vec<_>>()
+            ) ;
+        } 
+        // файла не существует
+        else {
+            error!("The image file: {:?} does not exist.", f_img) ;
+        }
+    }
+
+    // Получить список изображений из STDIN
+    if cl_arg.img_stdin {
+        list_images.extend(            
+            io::stdin()
+            .lock()
+            .lines()
+            .filter(|x| x.is_ok())
+            .map(|x| x.unwrap())
+            .filter(|x| !x.trim().is_empty())
+            .map(|x| x.trim().to_string())
+            .collect::<Vec<_>>()
+        ) ;
+    }
+
+    list_images.sort();
+    
+    list_images.dedup();
+
+    let elapsed = start_time.elapsed();
+    info!("Total processing get_list_all_images(): {:?}", elapsed);
+
+    Ok(list_images)
 }

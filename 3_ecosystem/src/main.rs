@@ -1,10 +1,26 @@
 mod args ;
 
+use std::time::Instant ;
+use log::{
+        //debug,
+        info,
+        // error
+};
 
 fn main() {
-    // Полйчить аргументы командной строки
+    let start_time = Instant::now();
+
+    // Инициализирует глобальный логгер с помощью env logger.
+    // Поддержка переменной окружения RUST_LOG
+    env_logger::init();
+
+    // Получить аргументы командной строки
     let args = args::get_args() ;
     println!("args: {:?}", args) ;
+
+
+    let elapsed = start_time.elapsed();
+    info!("Total processing time: {:?}", elapsed);
 }
 /*
 // Структура проекта
@@ -1148,6 +1164,7 @@ RUST_LOG="warn,my_crate::module1=info,my_crate::module2=debug" ./my_app
 Отключение логирования: Используйте псевдо-уровень off, чтобы полностью отключить вывод для всего приложения или конкретного модуля .
 
 bash
-RUST_LOG=off ./my_app
+seset RUST_LOG=debug
+cargo run
 Доступные уровни логирования (от наиболее до наименее подробного): error, warn, info, debug, trace . Регистр букв в названиях уровней не имеет значения .    
  */
