@@ -160,6 +160,7 @@ pub fn get_list_all_images(cl_arg: &Args) ->Result<Vec<String>>{
         // файла не существует
         else {
             error!("The image file: {:?} does not exist.", f_img) ;
+            //return Err(anyhow!("The image file: {:?} does not exist.", f_img)) ;
         }
     }
 

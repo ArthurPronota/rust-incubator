@@ -3,11 +3,17 @@ mod args ;
 use std::time::Instant ;
 use log::{
         //debug,
-        info,
+        error, info
         // error
 };
 
-fn main() {
+/// Вывод в лог: Total processing time ...
+fn tot_proc_time(st_time: &Instant) {
+    let elapsed = st_time.elapsed();
+    info!("Total processing time: {:?}", elapsed);
+}
+
+fn main() ->anyhow::Result<()>{
     let start_time = Instant::now();
 
     // Инициализирует глобальный логгер с помощью env logger.
@@ -18,11 +24,30 @@ fn main() {
     let args = args::get_args() ;
     println!("args: {:?}", args) ;
 
+    // Софрмировать список изображений для загрузки
+    let list_images = match args::get_list_all_images(&args) {
+        Ok(v) => v,
+        Err(err) => {
+            error!("{}", err) ;
+            return Err(err);
+        }
+    } ;
+    println!("list_images: {}\n{:#?}", list_images.len(), list_images) ;
 
-    let elapsed = start_time.elapsed();
-    info!("Total processing time: {:?}", elapsed);
+
+
+    tot_proc_time(&start_time) ;
+
+    Ok(())
 }
 /*
+Запуск:
+cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 rust.png" -f imgs_file.txt
+Или так:
+more from_stdin.txt|cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 rust.png" -f imgs_file.txt --stdin
+Или так:
+cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 rust.png" -f imgs_file.txt --stdin < from_stdin.txt
+
 // Структура проекта
 image-optimizer/
 ├── Cargo.toml
