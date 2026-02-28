@@ -42,11 +42,11 @@ fn main() ->anyhow::Result<()>{
 }
 /*
 Запуск:
-cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 rust.png" -f imgs_file.txt
+cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt
 Или так:
-more from_stdin.txt|cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 rust.png" -f imgs_file.txt --stdin
+more tmp_contents\from_stdin.txt|cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --stdin
 Или так:
-cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 rust.png" -f imgs_file.txt --stdin < from_stdin.txt
+cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --stdin < tmp_contents\from_stdin.txt
 
 // Структура проекта
 image-optimizer/
