@@ -1,4 +1,5 @@
 mod args ;
+mod conf_load;
 
 use std::time::Instant ;
 use log::{
@@ -34,7 +35,8 @@ fn main() ->anyhow::Result<()>{
     } ;
     println!("list_images: {}\n{:#?}", list_images.len(), list_images) ;
 
-
+    let conf_now = conf_load::load_config(&args)? ;
+    println!("conf_now: {:#?}", conf_now) ;
 
     tot_proc_time(&start_time) ;
 
@@ -42,11 +44,11 @@ fn main() ->anyhow::Result<()>{
 }
 /*
 Запуск:
-cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt
+cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --config-file tmp_contents\config.toml
 Или так:
-more tmp_contents\from_stdin.txt|cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --stdin
+more tmp_contents\from_stdin.txt|cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --config-file tmp_contents\config.toml --stdin
 Или так:
-cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --stdin < tmp_contents\from_stdin.txt
+cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --stdin --config-file tmp_contents\config.toml < tmp_contents\from_stdin.txt
 
 // Структура проекта
 image-optimizer/

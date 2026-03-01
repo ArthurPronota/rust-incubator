@@ -23,7 +23,7 @@ use anyhow::{Result} ;
     Debug
 )]
 pub struct Args {
-    /// List of images as URLs or files: https://o.i/img1.jpg c:\img2.png
+    /// Список ImgUrls или файлов Imgs в CL
     #[clap(
         // Задает сокращенную версию аргумента.
         //short = 'i',
@@ -37,42 +37,46 @@ pub struct Args {
         value_delimiter = ' ',
         // Указывает количество аргументов, обрабатываемых за одно вхождение.
         num_args = 1..,
+        help = "List of images as URLs or files: https://o.i/img1.jpg c:\\img2.png",
      )
     ]
     images: Option<Vec<String>>,
 
-    /// Path to the file containing the list of images.
+    /// Путь к файлу содержащему список картинок в виде URLs или files
     #[clap(
         short = 'f',
         long = "images-file",
         value_name = "FILE",
+        help = "Path to the file containing the list of images (Urls,files).",
      )
     ]
     imgs_file:  Option<PathBuf>,
 
-    /// Number of images processed concurrency (1..10000)
+    /// Количество одновременно обрабатываемых картинок от 1 до 10_000
     #[clap(
         short = 'c',
         long = "img-concurrency",
         value_name = "NUMBER",
         env = "IMG_CONCURRENCY",
         //default_value_t = (num_cpus::get() as u16).into(),
-        value_parser = clap::value_parser!(u16).range(1..=10000),
+        value_parser = clap::value_parser!(u16).range(1..=10_000),
+        help = "Number of images processed concurrency (1..10_000)",
      )
     ]
-    img_concurrency:    Option<u16>,
+    pub img_concurrency:    Option<u16>,
 
-    /// Output directory for storing processed images.
+    /// Выходной директорий для хранения оброботанных картинок.
     #[clap(
         short = 'o',
         long = "output-dir",
         value_name = "DIR",
         env = "IMG_OUTPUT_DIR",
+        help = "Output directory for storing processed images.",
      )
     ]
-    img_output_dir:     Option<PathBuf>,
+    pub img_output_dir:     Option<PathBuf>,
 
-    /// Output quality of processed images (1..100)
+    /// Качество обрабатываемых картинок от 1 до 100
     #[clap(
         short = 'q',
         long = "quality-img",
@@ -80,35 +84,49 @@ pub struct Args {
         env = "IMG_QUALITY",
         value_parser = clap::value_parser!(u8).range(1..=100),
         //default_value_t = 60,
+        help = "Output quality of processed images (1..100).",
      )
     ]
-    img_quality:        Option<u8>,
+    pub img_quality:        Option<u8>,
 
-    /// Rate limit for image downloads (KiB)
+    /// Ограничение скорости загрузки изображений в KiB
     #[clap(
         short = 'r',
         long = "rlim",
         value_name = "NUMBER",
         env = "IMG_RATE_LIMIT",
         value_parser = clap::value_parser!(u32).range(1..),
+        help = "Rate limit for image downloads (KiB).",
     )]
-    rate_limit:     Option<u32>,
+    pub rate_limit:     Option<u32>,
 
-    /// Timeout for loading one image (1..255)
+    /// Timeout для загрузки одного изображения в секундах от 1 до 255.
     #[clap(
         short = 't',
         long = "timeout",
         value_name = "NUMBER",
         env = "IMG_TIMEOUT",
         value_parser = clap::value_parser!(u8).range(1..255),
+        help = "Timeout for loading one image in seconds (1..255)",
      )
     ]
-    time_out:       Option<u8>,
+    pub time_out:       Option<u8>,
 
-    /// Read a list of images from STDIN
-    // Если нет параметра то false, если естьто true
+    /// Путь к конфигурационному файлу
+    #[clap(
+        long = "config-file",
+        help = "Path to the configuration file",
+        value_name = "FILE",
+     )
+    ]
+    pub config_file_path:   Option<PathBuf>,
+
+    /// Читать список изображений из STDIN
+    /// 
+    /// Если нет параметра то false, если естьто true
     #[clap(
         long = "stdin",
+        help = "Read a list of images from STDIN",
      )
     ]
     img_stdin:      bool,
