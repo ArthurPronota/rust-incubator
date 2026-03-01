@@ -40,7 +40,7 @@ pub struct ConfigLoad {
 
     /// Timeout для загрузки одного изображения в секундах от 1 до 255.
     #[validate(range(min = 1, max = 255))]
-    time_out:       u8,
+    pub time_out:       u8,
 }
 
 // Создание значения по умолчанию для ConfigLoad

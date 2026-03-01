@@ -1,12 +1,24 @@
 mod args ;
 mod conf_load;
+mod downloader ;
 
 use std::time::Instant ;
 use log::{
         //debug,
-        error, info
+        error, 
+        info, 
+        //warn,
         // error
 };
+
+use futures::stream::{
+        self,
+        StreamExt,
+} ;
+
+use tokio::task ;
+
+use std::process ;
 
 /// Вывод в лог: Total processing time ...
 fn tot_proc_time(st_time: &Instant) {
@@ -14,7 +26,7 @@ fn tot_proc_time(st_time: &Instant) {
     info!("Total processing time: {:?}", elapsed);
 }
 
-fn main() ->anyhow::Result<()>{
+fn main() /*->anyhow::Result<()>*/{
     let start_time = Instant::now();
 
     // Инициализирует глобальный логгер с помощью env logger.
@@ -25,22 +37,71 @@ fn main() ->anyhow::Result<()>{
     let args = args::get_args() ;
     println!("args: {:?}", args) ;
 
+    // сформировать текущую конфигурацию
+    let conf_now = match conf_load::load_config(&args) {
+        Ok(v) => v,
+        Err(err) => {
+            error!("{}", err) ;
+            //return Err(err);
+            process::exit(1) ;
+        }
+    } ;
+    println!("conf_now: {:#?}", conf_now) ;
+
+
     // Софрмировать список изображений для загрузки
     let list_images = match args::get_list_all_images(&args) {
         Ok(v) => v,
         Err(err) => {
             error!("{}", err) ;
-            return Err(err);
+            //return Err(err);
+            process::exit(1) ;
         }
     } ;
     println!("list_images: {}\n{:#?}", list_images.len(), list_images) ;
 
-    let conf_now = conf_load::load_config(&args)? ;
-    println!("conf_now: {:#?}", conf_now) ;
+    if list_images.is_empty() {
+        error!("No images to process") ;
+        //return Ok(());
+        process::exit(1) ;
+    }
+
+    /*
+    // Создание асинхронного HTTP клиента
+    let client = match reqwest::Client::builder() 
+                            .connect_timeout(std::time::Duration::from_secs(conf_now.time_out as u64))
+                            .timeout(std::time::Duration::from_secs(conf_now.time_out as u64))
+                            .build() {
+        Ok(v) => v,
+        Err(err) => {
+            error!("{}", err) ;
+            //return Err(err.into());
+            process::exit(1) ;
+        }
+    } ;
+     */
+
+    /*
+    async fn download_pages(
+     */
+
+    let res_load = 
+            stream::iter(&list_images)
+                .map(|u_f_in| {
+                    //let client = client.clone() ;
+                    let u_f = u_f_in.to_string() ;
+
+                    task::spawn(async move {
+
+                    })
+                 }
+                ) ;
+
+
 
     tot_proc_time(&start_time) ;
 
-    Ok(())
+    //Ok(())
 }
 /*
 Запуск:
