@@ -14,7 +14,7 @@ use image::{
     };
 
 
-// является ли path_to_img url
+// Является ли path_to_img url
 fn path_to_img_is_url(path_to_img: &str) ->bool {
     if path_to_img.starts_with("http://") || path_to_img.starts_with("http://") {
         true
@@ -31,8 +31,7 @@ async fn download_img(
 
     let start = Instant::now();
 
-    // Это url
-    let img_bytes = if path_to_img_is_url(path_to_img) {
+    let img_bytes = if path_to_img_is_url(path_to_img) { // Это url
 
         // Создание асинхронного HTTP клиента
         let http_client = match reqwest::Client::builder() 
@@ -57,7 +56,8 @@ async fn download_img(
             .await?
             .to_vec()
     } else {  // Это файл
-        tokio::fs::read(&path_to_img).await?
+        tokio::fs::read(&path_to_img)
+            .await?
     } ;
 
     let img = image::load_from_memory(&img_bytes)?;
