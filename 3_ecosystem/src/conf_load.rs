@@ -18,20 +18,21 @@ use anyhow::Result ;
     //Serialize,
     Deserialize,
     Validate,
-    Debug
+    Debug,
+    Clone,
  )
 ]
 pub struct ConfigLoad {
     /// Количество одновременно обрабатываемых картинок от 1 до 10_000
     #[validate(range(min = 1, max = 10_000))]
-    img_concurrency:    u16,
+    pub img_concurrency:    u16,
     
     /// Выходной директорий для хранения оброботанных картинок.
     img_output_dir:     PathBuf,
 
     /// Качество обрабатываемых картинок от 1 до 100
     #[validate(range(min = 1, max = 100))]
-    img_quality:        u8,
+    pub img_quality:        u8,
 
     /// Ограничение скорости загрузки изображений в KiB
     /// 
@@ -47,7 +48,7 @@ pub struct ConfigLoad {
 impl Default for ConfigLoad {
     fn default() -> Self {
         Self { 
-            img_concurrency: 10, 
+            img_concurrency: 1, // 10, 
             img_output_dir: "img_output".into(), 
             img_quality: 30, 
             rate_limit: 0, 

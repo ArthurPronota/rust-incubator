@@ -26,7 +26,8 @@ fn tot_proc_time(st_time: &Instant) {
     info!("Total processing time: {:?}", elapsed);
 }
 
-fn main() /*->anyhow::Result<()>*/{
+#[tokio::main]
+async fn main() /*->anyhow::Result<()>*/{
     let start_time = Instant::now();
 
     // Инициализирует глобальный логгер с помощью env logger.
@@ -85,19 +86,39 @@ fn main() /*->anyhow::Result<()>*/{
     async fn download_pages(
      */
 
-    let res_load = 
+    let res_loaded = 
             stream::iter(&list_images)
                 .map(|u_f_in| {
                     //let client = client.clone() ;
                     let u_f = u_f_in.to_string() ;
-
+                    let conf_clone = conf_now.clone() ;
                     task::spawn(async move {
-
+                        downloader::download_img(
+                                        &u_f,
+                                        &conf_clone
+                                    )
+                                    .await
                     })
                  }
-                ) ;
+                ) 
+                .buffer_unordered(conf_now.img_concurrency as usize)
+                .collect::<Vec<_>>()
+                .await
+                ;
 
-
+    for result in res_loaded {
+        match result {
+            Ok(Ok(v)) => {
+                info!("Img loaded.") ;
+            },
+            Ok(Err(err)) => {
+                error!("Error load Img: {}", err) ;
+            },
+            Err(err) => {
+                error!("Execution error: {}", err) ;
+            },
+        }
+    }
 
     tot_proc_time(&start_time) ;
 
