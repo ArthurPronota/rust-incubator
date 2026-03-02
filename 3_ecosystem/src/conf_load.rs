@@ -28,7 +28,7 @@ pub struct ConfigLoad {
     pub img_concurrency:    u16,
     
     /// Выходной директорий для хранения оброботанных картинок.
-    img_output_dir:     PathBuf,
+    pub img_output_dir:     PathBuf,
 
     /// Качество обрабатываемых картинок от 1 до 100
     #[validate(range(min = 1, max = 100))]
