@@ -3,14 +3,14 @@ use crate::conf_load::ConfigLoad ;
 use std::time::Instant;
 
 use anyhow::{
-        Error,
+        //Error,
         Result
     } ;
 
 use image::{
         self,
         ImageFormat,
-        ImageOutputFormat
+        //ImageOutputFormat
     };
 
 use mozjpeg::{
@@ -28,6 +28,8 @@ use sha2::{
         Sha256, 
         Digest
     };
+
+use log::info ;
 
 // Является ли path_to_img url
 fn path_to_img_is_url(path_to_img: &str) ->bool {
@@ -49,11 +51,7 @@ pub async fn download_img(
 
     let start = Instant::now();
 
-    println!("1) path_to_img: {}", path_to_img) ;
-
-    let img_bytes = if path_to_img_is_url(path_to_img) { // Это url
-
-        println!("2)") ;
+    let mut img_bytes = if path_to_img_is_url(path_to_img) { // Это url
 
         // Создание асинхронного HTTP клиента
         let http_client = match reqwest::Client::builder() 
@@ -64,27 +62,20 @@ pub async fn download_img(
             Err(err) => return Err(err.into())
         } ;
 
-        println!("3)") ;
-
         let resp = http_client
                     .get(path_to_img)
                     .send()
                     .await? ;
 
-        println!("4)") ;
-
         if ! resp.status().is_success() {
             return Err(anyhow::anyhow!("Error loading URL: {}, code: {}", path_to_img, resp.status()));
         }
-
-        println!("5)") ;
 
         resp
             .bytes()
             .await?
             .to_vec()
     } else {  // Это файл
-        println!("6)") ;
         match tokio::fs::read(path_to_img).await {
             Ok(v) => v,
             Err(err) => {
@@ -92,8 +83,6 @@ pub async fn download_img(
             }
         }
     } ;
-
-    println!("7)") ;
 
     let img_format = match image::guess_format(&img_bytes) {
         Ok(imf) if imf == ImageFormat::Jpeg || imf == ImageFormat::Png=> imf,
@@ -105,57 +94,60 @@ pub async fn download_img(
         }
     } ;
 
-    let img_bytes_out = match img_format {
-        ImageFormat::Jpeg => {
+    if conf_now.img_quality != 100 {
+        // let img_bytes_out 
+        img_bytes = match img_format {
+            ImageFormat::Jpeg => {
 
-            let img = 
-                        image::load_from_memory(&img_bytes)
-                            .map_err(|err|
-                                anyhow::anyhow!("{} from: {}", err, path_to_img)
-                            )? ;
+                let img = 
+                            image::load_from_memory(&img_bytes)
+                                .map_err(|err|
+                                    anyhow::anyhow!("{} from: {}", err, path_to_img)
+                                )? ;
 
-            let rgb_img = img.to_rgb8() ;
-            let (width, height) = rgb_img.dimensions() ;
-            let pixels = rgb_img.as_raw() ;
+                let rgb_img = img.to_rgb8() ;
+                let (width, height) = rgb_img.dimensions() ;
+                let pixels = rgb_img.as_raw() ;
 
-            let mut comp = Compress::new(ColorSpace::JCS_RGB) ;
-            comp.set_size(width as usize, height as usize);
-            comp.set_quality(conf_now.img_quality as f32) ;
+                let mut comp = Compress::new(ColorSpace::JCS_RGB) ;
+                comp.set_size(width as usize, height as usize);
+                comp.set_quality(conf_now.img_quality as f32) ;
             
-            let mut comp_started = 
-                        comp
-                            .start_compress(Vec::new())
-                            .map_err(|err|
-                                anyhow::anyhow!("{} from: {}", err, path_to_img)
-                            )? ;
+                let mut comp_started = 
+                            comp
+                                .start_compress(Vec::new())
+                                .map_err(|err|
+                                    anyhow::anyhow!("{} from: {}", err, path_to_img)
+                                )? ;
             
-            comp_started
-                .write_scanlines(pixels)
-                .map_err(|err|
-                    anyhow::anyhow!("{} from: {}", err, path_to_img)
-                )? ;
+                comp_started
+                    .write_scanlines(pixels)
+                    .map_err(|err|
+                        anyhow::anyhow!("{} from: {}", err, path_to_img)
+                    )? ;
 
-            comp_started
-                .finish()
-                .map_err(|err| 
-                    anyhow::anyhow!("{} from: {}", err, path_to_img)
-                )?
-        },
-        ImageFormat::Png => {
+                comp_started
+                    .finish()
+                    .map_err(|err| 
+                        anyhow::anyhow!("{} from: {}", err, path_to_img)
+                    )?
+            },
+            ImageFormat::Png => {
 
-            let mut options_img = Options::from_preset((conf_now.img_quality as u64 * 7 / 100) as u8) ;
+                let mut options_img = Options::from_preset((conf_now.img_quality as u64 * 7 / 100) as u8) ;
 
-            options_img.interlace = None ;
+                options_img.interlace = None ;
 
-            optimize_from_memory(&img_bytes, &options_img)
-                .map_err(|err|
-                  anyhow::anyhow!("{} from: {}", err, path_to_img)  
-                )?
-        },
-        _ => {
-            return Err(anyhow::anyhow!("Unsupported image format: {:?} from {}", img_format, path_to_img)) ;            
-        },
-    } ;
+                optimize_from_memory(&img_bytes, &options_img)
+                    .map_err(|err|
+                        anyhow::anyhow!("{} from: {}", err, path_to_img)  
+                    )?
+            },
+            _ => {
+                return Err(anyhow::anyhow!("Unsupported image format: {:?} from {}", img_format, path_to_img)) ;            
+            },
+        } ;
+    }
 
     // создатём имя выходного файла
     let mut hasher = Sha256::new() ;
@@ -164,7 +156,14 @@ pub async fn download_img(
 
     let result_hasher = hasher.finalize() ;
 
-    let out_file_path = conf_now.img_output_dir.join(hex::encode(result_hasher)) ;
+    let out_file_path = conf_now
+                                    .img_output_dir
+                                    .join(
+                                        format!("{}.{}",
+                                            hex::encode(result_hasher),
+                                            img_format.extensions_str()[0].to_lowercase()
+                                        )
+                                    ) ;
 
     let mut out_file = 
                 tokio::fs::File::create(&out_file_path)
@@ -173,35 +172,18 @@ pub async fn download_img(
                         anyhow::anyhow!("{}, cannot create file: {:?}", err, out_file_path)
                     )?;
 
-    tokio::io::copy(&mut &img_bytes_out[..], &mut out_file)
+    tokio::io::copy(
+                //&mut &img_bytes_out[..], 
+                &mut &img_bytes[..],
+                &mut out_file
+            )
             .await
             .map_err(|err|
-                anyhow::anyhow!("{}, cannot ciopy data to file: {:?}", err, out_file_path)
+                anyhow::anyhow!("{}, cannot copy data to file: {:?}", err, out_file_path)
             )?;
-    /*
-    let mut out_file = 
-                tokio::fs::File::create(
-                    &conf_now.img_output_dir.join(path)
-                )
-                .await
-                .map_err(|err|
-                    anyhow::anyhow!("")
-                )
-                ?
-                ;
-     */
 
-    /*
-let raw_bytes = resp.bytes().await?;
-
-// 2. Сжали через mozjpeg
-let processed_jpeg = compress_image_mozjpeg(&raw_bytes, conf_now.img_quality)?;
-
-// 3. Сохранили результат
-let mut out_file = tokio::fs::File::create(conf_now.img_output_dir.join("result.jpg")).await?;
-tokio::io::copy(&mut &processed_jpeg[..], &mut out_file).await?;    
-     */
-    println!("8)") ;
+    let elapsed = start.elapsed();
+    info!("Processed {} in {:?}", path_to_img, elapsed);
 
     Ok(())
 }

@@ -108,8 +108,8 @@ async fn main() /*->anyhow::Result<()>*/{
 
     for result in res_loaded {
         match result {
-            Ok(Ok(v)) => {
-                info!("Img loaded.") ;
+            Ok(Ok(_)) => {
+                //info!("Img loaded.") ;
             },
             Ok(Err(err)) => {
                 error!("Error load Img: {}", err) ;
@@ -1273,7 +1273,7 @@ RUST_LOG="warn,my_crate::module1=info,my_crate::module2=debug" ./my_app
 Отключение логирования: Используйте псевдо-уровень off, чтобы полностью отключить вывод для всего приложения или конкретного модуля .
 
 bash
-seset RUST_LOG=debug
+set RUST_LOG=debug
 cargo run
 Доступные уровни логирования (от наиболее до наименее подробного): error, warn, info, debug, trace . Регистр букв в названиях уровней не имеет значения .    
  */
