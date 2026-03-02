@@ -100,7 +100,7 @@ pub async fn download_img(
 
         },
         ImageFormat::Png => {
-            
+
         },
         _ => {
             return Err(anyhow::anyhow!("Unsupported image format: {:?} from {}", img_format, path_to_img)) ;            
@@ -112,7 +112,6 @@ pub async fn download_img(
         // let img_bytes_out 
         img_bytes = match img_format {
             ImageFormat::Jpeg => {
-
                 let img = 
                             image::load_from_memory(&img_bytes)
                                 .map_err(|err|
@@ -147,7 +146,6 @@ pub async fn download_img(
                     )?
             },
             ImageFormat::Png => {
-
                 let mut options_img = Options::from_preset((conf_now.img_quality as u64 * 7 / 100) as u8) ;
 
                 options_img.interlace = None ;

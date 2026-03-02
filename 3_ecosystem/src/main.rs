@@ -1276,4 +1276,42 @@ bash
 set RUST_LOG=debug
 cargo run
 Доступные уровни логирования (от наиболее до наименее подробного): error, warn, info, debug, trace . Регистр букв в названиях уровней не имеет значения .    
+
+
+// -------------------------------
+
+2. Пример кода: Удаление всех метаданных без потери качества из Jpeg
+
+
+[dependencies]
+img_parts = "0.3"
+anyhow = "1.0"
+
+// -------------------------------
+
+use img_parts::jpeg::Jpeg;
+use img_parts::ImageIRC; // Трейт для работы с сегментами
+use anyhow::{Context, Result};
+
+pub fn strip_metadata(input_bytes: &[u8]) -> Result<Vec<u8>> {
+    // 1. Парсим структуру JPEG из байтов
+    let mut jpeg = Jpeg::from_bytes(input_bytes.to_vec().into())
+        .map_err(|e| anyhow::anyhow!("Ошибка парсинга JPEG: {}", e))?;
+
+    // 2. Очищаем сегменты с метаданными
+    // APP0 обычно содержит информацию о формате (JFIF), его лучше оставить.
+    // APP1-APP15 содержат EXIF, профили камер, GPS и прочее.
+    jpeg.segments_mut().retain(|segment| {
+        let marker = segment.marker();
+        // Оставляем только важные для отображения маркеры
+        // 0xFFE1 - это APP1 (EXIF), его удаляем точно.
+        marker < 0xFFE1 || marker > 0xFFEF 
+    });
+
+    // 3. Собираем файл обратно в байты
+    let stripped_bytes = jpeg.encoder().encode_to_vec();
+    
+    Ok(stripped_bytes)
+}
+
  */
