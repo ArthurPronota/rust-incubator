@@ -94,6 +94,20 @@ pub async fn download_img(
         }
     } ;
 
+    // удаление метаданных из файла изображения
+    match img_format {
+        ImageFormat::Jpeg => {
+
+        },
+        ImageFormat::Png => {
+            
+        },
+        _ => {
+            return Err(anyhow::anyhow!("Unsupported image format: {:?} from {}", img_format, path_to_img)) ;            
+        },        
+    }
+    
+    // изменение качества изображения
     if conf_now.img_quality != 100 {
         // let img_bytes_out 
         img_bytes = match img_format {
