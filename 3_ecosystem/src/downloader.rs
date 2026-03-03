@@ -39,12 +39,6 @@ use sha2::{
 
 use log::info ;
 
-/*
-use img_parts::{
-        ImageICC, jpeg::{Jpeg, JpegSegment}
-} ;
- */
-
 use web_image_meta::{
             jpeg,
             png,
@@ -93,32 +87,6 @@ pub async fn download_img(
                 .await?
                 .to_vec()
         } else {
-            /*
-            use tokio::io::AsyncReadExt;
-            use throttled_reader::ThrottledReader;
-            use futures_util::TryStreamExt;
-            use futures::TryStreamExt;
-
-            let bytes_stream = 
-                    resp
-                        .bytes_stream()
-                        .map_err(|err|
-                            std::io::Error::new(std::io::ErrorKind::Other, err)
-                            //anyhow::anyhow!("{}", err)
-                        ) ;
-            let reader = tokio_util::io::StreamReader::new(bytes_stream);
-            
-            let mut throttled_reader = ThrottledReader::new(reader) ;
-
-            let mut buffer = Vec::new();
-
-            throttled_reader.read(buf)
-
-            throttled_reader.read_to_end(&mut buffer).await? ;
-
-            buffer
-            */
-
             let mut stream = resp.bytes_stream() ;
             let mut downloaded = 0 ;
             let start = Instant::now() ;
@@ -278,4 +246,24 @@ pub async fn download_img(
     info!("Processed {} in {:?}", path_to_img, elapsed);
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::* ;
+
+    #[test]
+    fn check_https_url() {
+        assert_eq!(path_to_img_is_url("https://site.org/"), true) ;
+    }
+
+    #[test]
+    fn check_http_url() {
+        assert_eq!(path_to_img_is_url("http://site.org/"), true) ;
+    }
+
+    #[test]
+    fn check_file() {
+        assert_eq!(path_to_img_is_url(r"c:\o.txt"), false) ;        
+    }
 }

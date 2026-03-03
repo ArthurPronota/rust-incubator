@@ -205,3 +205,47 @@ pub fn get_list_all_images(cl_arg: &Args) ->Result<Vec<String>>{
 
     Ok(list_images)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::* ;
+
+    #[test]
+    fn check_empty_list_img() {
+        let args = Args {
+                images: None,
+                imgs_file: None,
+                img_concurrency: None,
+                img_output_dir: None,
+                img_quality: None,
+                rate_limit: None,
+                time_out:   None,
+                config_file_path: None,
+                img_stdin:  false,
+        } ;
+
+        let v = get_list_all_images(&args).unwrap() ;
+
+        assert_eq!(v, Vec::<String>::new()) ;
+    }
+
+    #[test]
+    fn check_not_empty_list_img() {
+        let args = Args {
+                images: Some(vec!["file1.txt".to_owned(), "file2.txt".to_owned(),"file1.txt".to_owned(),]),  //None,
+                imgs_file: None,
+                img_concurrency: None,
+                img_output_dir: None,
+                img_quality: None,
+                rate_limit: None,
+                time_out:   None,
+                config_file_path: None,
+                img_stdin:  false,
+        } ;
+
+        let v = get_list_all_images(&args).unwrap() ;
+
+        assert_eq!(v, vec!["file1.txt".to_owned(), "file2.txt".to_owned()]) ;
+    }
+
+}
