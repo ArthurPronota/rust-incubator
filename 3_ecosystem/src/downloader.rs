@@ -4,7 +4,7 @@ use std::time::Instant;
 
 use anyhow::{
         //Error,
-        Result
+        Result,
     } ;
 
 use image::{
@@ -31,6 +31,17 @@ use sha2::{
 
 use log::info ;
 
+/*
+use img_parts::{
+        ImageICC, jpeg::{Jpeg, JpegSegment}
+} ;
+ */
+
+use web_image_meta::{
+            jpeg,
+            png,
+        } ;
+
 // Является ли path_to_img url
 fn path_to_img_is_url(path_to_img: &str) ->bool {
     if path_to_img.starts_with("https://") || path_to_img.starts_with("http://") {
@@ -44,10 +55,7 @@ fn path_to_img_is_url(path_to_img: &str) ->bool {
 pub async fn download_img(
             path_to_img: &str,
             conf_now: &ConfigLoad
-         ) ->Result
-                <
-                ()
-                > {
+         ) ->Result<()> {
 
     let start = Instant::now();
 
@@ -95,18 +103,24 @@ pub async fn download_img(
     } ;
 
     // удаление метаданных из файла изображения
-    match img_format {
+    img_bytes = match img_format {
         ImageFormat::Jpeg => {
-
+            jpeg::clean_metadata(&img_bytes)
+                .map_err(|err|
+                    anyhow::anyhow!("{} from: {}", err, path_to_img)
+                )?
         },
         ImageFormat::Png => {
-
+            png::clean_chunks(&img_bytes)
+                .map_err(|err|
+                    anyhow::anyhow!("{} from: {}", err, path_to_img)
+                )?
         },
         _ => {
             return Err(anyhow::anyhow!("Unsupported image format: {:?} from {}", img_format, path_to_img)) ;            
-        },        
-    }
-    
+        },
+    } ;
+
     // изменение качества изображения
     if conf_now.img_quality != 100 {
         // let img_bytes_out 
