@@ -126,11 +126,11 @@ async fn main() /*->anyhow::Result<()>*/{
 }
 /*
 Запуск:
-cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --config-file tmp_contents\config.toml
+cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --config-file tmp_contents\config.toml -r 1
 Или так:
-more tmp_contents\from_stdin.txt|cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --config-file tmp_contents\config.toml --stdin
+more tmp_contents\from_stdin.txt|cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --config-file tmp_contents\config.toml --stdin -r 1
 Или так:
-cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --stdin --config-file tmp_contents\config.toml < tmp_contents\from_stdin.txt
+cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --stdin --config-file tmp_contents\config.toml -r 1 < tmp_contents\from_stdin.txt
 
 // Структура проекта
 image-optimizer/
