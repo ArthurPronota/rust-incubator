@@ -96,7 +96,7 @@ pub struct Args {
         value_name = "NUMBER",
         env = "IMG_RATE_LIMIT",
         value_parser = clap::value_parser!(u32).range(0..),
-        help = "Rate limit for image downloads (KiB).",
+        help = "Rate limit for image downloads (KiB). If 0 then no restrictions",
     )]
     pub rate_limit:     Option<u32>,
 
