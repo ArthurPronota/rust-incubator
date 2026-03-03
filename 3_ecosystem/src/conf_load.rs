@@ -48,7 +48,7 @@ pub struct ConfigLoad {
 impl Default for ConfigLoad {
     fn default() -> Self {
         Self { 
-            img_concurrency: 1, // 10, 
+            img_concurrency: 10, 
             img_output_dir: "img_output".into(), 
             img_quality: 30, 
             rate_limit: 0, 

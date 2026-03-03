@@ -267,3 +267,19 @@ mod tests {
         assert_eq!(path_to_img_is_url(r"c:\o.txt"), false) ;        
     }
 }
+
+
+#[tokio::test]
+async fn check_download_img() {
+    //use crate::conf_load::ConfigLoad ;
+    let conf = ConfigLoad::default() ;
+
+    let v = download_img(
+        "https://rust-lang.org/static/images/rust-social-wide.jpg", 
+        &conf
+    )
+    .await
+    .unwrap() ;
+    
+    assert_eq!(v, ())
+}
