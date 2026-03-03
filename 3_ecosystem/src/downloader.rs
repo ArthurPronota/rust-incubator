@@ -42,7 +42,7 @@ use web_image_meta::{
             png,
         } ;
 
-// Является ли path_to_img url
+/// Является ли path_to_img url
 fn path_to_img_is_url(path_to_img: &str) ->bool {
     if path_to_img.starts_with("https://") || path_to_img.starts_with("http://") {
         true

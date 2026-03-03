@@ -1315,3 +1315,45 @@ pub fn strip_metadata(input_bytes: &[u8]) -> Result<Vec<u8>> {
 }
 
  */
+/*
+
+Реализация через ThrottledReader
+Этот метод позволяет ограничить скорость чтения для каждого конкретного запроса, что дает максимальную гибкость (например, разные лимиты для разных пользователей).
+Добавьте в Cargo.toml:
+toml
+[dependencies]
+reqwest = { version = "0.13", features = ["stream"] }
+throttled-reader = "0.1"
+tokio = { version = "1", features = ["full"] }
+futures-util = "0.3" # Нужен для обработки ошибок потока
+Use code with caution.
+
+Пример кода для вашего проекта:
+rust
+use reqwest::Client;
+use tokio::io::AsyncReadExt;
+use throttled_reader::ThrottledReader;
+use futures_util::TryStreamExt;
+
+async fn download_file(client: &Client, url: &str, kib_limit: u32) -> anyhow::Result<Vec<u8>> {
+    // 1. Отправляем запрос
+    let resp = client.get(url).send().await?;
+    
+    // 2. Превращаем тело ответа в AsyncRead (через StreamReader)
+    let bytes_stream = resp.bytes_stream().map_err(|e| {
+        std::io::Error::new(std::io::ErrorKind::Other, e)
+    });
+    let reader = tokio_util::io::StreamReader::new(bytes_stream);
+
+    // 3. Оборачиваем в ограничитель (превращаем KiB в байты в секунду)
+    // Если 0 — ограничение не применяется
+    let mut throttled_reader = ThrottledReader::new(reader, kib_limit * 1024);
+
+    let mut buffer = Vec::new();
+    // 4. Читаем данные (скорость будет ограничена автоматически)
+    throttled_reader.read_to_end(&mut buffer).await?;
+    
+    Ok(buffer)
+}
+
+*/
