@@ -37,7 +37,7 @@ pub struct ConfigLoad {
     /// Ограничение скорости загрузки изображений в KiB
     /// 
     /// 0 - отсутствие ограничений
-    rate_limit:     u32,
+    pub rate_limit:     u32,
 
     /// Timeout для загрузки одного изображения в секундах от 1 до 255.
     #[validate(range(min = 1, max = 255))]

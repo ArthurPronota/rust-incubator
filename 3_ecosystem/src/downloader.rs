@@ -1,12 +1,13 @@
 use crate::conf_load::ConfigLoad ;
 
-use std::time::Instant;
+use std::{process, str::Bytes, time::{Duration, Instant}};
 
 use anyhow::{
         //Error,
         Result,
     } ;
 
+use futures::StreamExt;
 use image::{
         self,
         ImageFormat,
@@ -79,10 +80,68 @@ pub async fn download_img(
             return Err(anyhow::anyhow!("Error loading URL: {}, code: {}", path_to_img, resp.status()));
         }
 
-        resp
-            .bytes()
-            .await?
-            .to_vec()
+        if conf_now.rate_limit == 0 { // нет ограничений по скорости загрузки
+            resp
+                .bytes()
+                .await?
+                .to_vec()
+        } else {
+            /*
+            use tokio::io::AsyncReadExt;
+            use throttled_reader::ThrottledReader;
+            use futures_util::TryStreamExt;
+            use futures::TryStreamExt;
+
+            let bytes_stream = 
+                    resp
+                        .bytes_stream()
+                        .map_err(|err|
+                            std::io::Error::new(std::io::ErrorKind::Other, err)
+                            //anyhow::anyhow!("{}", err)
+                        ) ;
+            let reader = tokio_util::io::StreamReader::new(bytes_stream);
+            
+            let mut throttled_reader = ThrottledReader::new(reader) ;
+
+            let mut buffer = Vec::new();
+
+            throttled_reader.read(buf)
+
+            throttled_reader.read_to_end(&mut buffer).await? ;
+
+            buffer
+            */
+
+            let mut stream = resp.bytes_stream() ;
+            let mut downloaded = 0 ;
+            let start = Instant::now() ;
+
+            let mut all_data = Vec::new();
+
+            while let Some(chunk) = stream.next().await {
+                let chunk = 
+                        chunk
+                            .map_err(|err|
+                                anyhow::anyhow!("{} from: {}", err, path_to_img)
+                            ) ? ;
+                downloaded += chunk.len() ;
+
+                all_data.extend_from_slice(&chunk);
+
+                let elapsed = start.elapsed().as_secs_f64();
+                let expected_bytes = (elapsed * (conf_now.rate_limit * 1024) as f64) as usize ;
+                if downloaded > expected_bytes {
+                    tokio::time::sleep(
+                        Duration::from_secs_f64(
+                            (downloaded - expected_bytes) as f64 / (conf_now.rate_limit * 1024) as f64
+                        )
+                    )
+                    .await ;
+                }
+            }
+
+            all_data
+        }
     } else {  // Это файл
         match tokio::fs::read(path_to_img).await {
             Ok(v) => v,
