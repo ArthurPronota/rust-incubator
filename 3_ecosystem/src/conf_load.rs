@@ -1,11 +1,12 @@
 use serde::{
-        //Serialize,
-        Deserialize
+        Deserialize // Трейт для десериализации
     } ;
 
 use std::{
-    fs, path::{
-        Path, PathBuf
+    fs, 
+    path::{
+        Path, 
+        PathBuf
     }
 } ;
 
@@ -15,7 +16,6 @@ use anyhow::Result ;
 
 /// Конфигурация загрузки
 #[derive(
-    //Serialize,
     Deserialize,
     Validate,
     Debug,

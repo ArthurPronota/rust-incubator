@@ -9,12 +9,12 @@ use std::{
         path::PathBuf
     } ;
 use log::{
-        //debug,
         info,
         error
     };
+
 use anyhow::{Result} ;
-//use num_cpus ;
+
 
 // Аргументы CLI
 #[derive(
