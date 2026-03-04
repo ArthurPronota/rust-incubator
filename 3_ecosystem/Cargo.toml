@@ -3,31 +3,24 @@ name = "step_3"
 version = "0.1.0"
 edition = "2024"
 publish = false
+homepage = "https://artaudiochats.t.me/"
+authors = ["Arthur Pronota <yhgvnhjk.986ght.jhgt543@gmail.com>"]
 
 [dependencies]
 anyhow = "1.0.102"
-#rand = "0.8.0"
-#clap = { version = "4.0", features = ["derive", "env"] }
 clap = { version = "4.5.60", features = ["derive", "env"] }
 env_logger = "0.11.9"
 log = "0.4.29"
 num_cpus = "1.17.0"
 serde = { version = "1.0.228", features = ["derive"]}
 validator = { version = "0.20.0", features = ["derive"]}
-toml = "0.8"
-reqwest = { version = "0.11", features = ["json", "stream"] }
+toml = "1.0"
+reqwest = { version = "0.12.28", features = ["json", "stream"] }
 futures = "0.3.32"
 tokio = { version = "1.0", features = ["full"] }
-image = "0.24"
+image = "0.25"
 mozjpeg = "0.10.13"
-oxipng = "9.1"
+oxipng = "10.1"
 sha2 = "0.10"
 hex = "0.4"
 web-image-meta = "0.2.1"
-# futures-util = "0.3"
-# throttled-reader = "1.0.0"
-# tokio-util = "0.7.18"
-# img-parts = "0.4.0"
-# png = "0.18.1"
-# mozjpeg = "0.2"  # Better JPEG compression
-# png = "0.17"
