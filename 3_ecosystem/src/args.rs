@@ -1,19 +1,24 @@
-use clap::Parser ;
+use clap::Parser ;  // derive-макрос для парсинга аргументов командной строки
+
 use std::{
-        fs, 
+        fs,     // Модуль для работы с файловой системой
+        // Модуль ввода-вывода
         io::{
             self, 
-            BufRead
+            BufRead // Трейт для буферизированного чтения
         },
-        time::Instant,
-        path::PathBuf
+        time::Instant,  // Трейт для измерения времени
+        path::PathBuf   // Владеемый путь к файлу
     } ;
+
+// Библиотека для работы с логами предоставляет единый API для ведения логов.
 use log::{
-        info,
-        error
+        info,   // Логирование информационных сообщений
+        error   // Логирование ошибок
     };
 
-use anyhow::{Result} ;
+// Универсальный тип результата
+use anyhow::Result ;
 
 
 // Аргументы CLI
@@ -146,7 +151,8 @@ pub fn get_args() ->Args {
 /// Если получаем данные из STDIN напрямую (без перенаправления из файла)
 /// в конце ввода нажать на Ctrl+D
 pub fn get_list_all_images(cl_arg: &Args) ->Result<Vec<String>>{
-
+    
+    // Возвращает момент времени, соответствующий текущему состоянию.
     let start_time = Instant::now();
 
     // результирующий список изображений
@@ -154,24 +160,38 @@ pub fn get_list_all_images(cl_arg: &Args) ->Result<Vec<String>>{
     
     // Получение изображений из перечня командной строки
     if let Some(v) = &cl_arg.images {
+        // добавить пути к img в list_images
         list_images.extend(
         v
             .iter()
+            // путь к img не пуст
             .filter(|x| !x.trim().is_empty())
+            // сконвертировать путь к img в String
             .map(|x| x.trim().to_string())
+            // сформировать вектор
             .collect::<Vec<_>>()
         ) ;
     }
 
-    // Получение изображений из файла с изображениями
+    // Получение изображений из файла с путями изображений
     if let Some(f_img) = &cl_arg.imgs_file {
         // Файл существует
         if f_img.exists() {
+            // добавить пути к img в list_images
             list_images.extend(
-                fs::read_to_string(f_img)?
+                // читать данные из файла
+                fs::read_to_string(f_img)
+                    // преобразует текущую ошибку в anyhow формат
+                    .map_err(|err|
+                        anyhow::anyhow!("{} from: {:?}", err, f_img)
+                    )?
+                    // Возвращает итератор по строкам, представленным в виде срезов.
                     .lines()
+                    // путь к img не пуст
                     .filter(|x| !x.trim().is_empty())
+                    // сконвертировать путь к img в String
                     .map(|x| x.trim().to_string())
+                    // сформировать вектор
                     .collect::<Vec<_>>()
             ) ;
         } 
@@ -184,32 +204,45 @@ pub fn get_list_all_images(cl_arg: &Args) ->Result<Vec<String>>{
 
     // Получить список изображений из STDIN
     if cl_arg.img_stdin {
+        // добавить пути к img в list_images
         list_images.extend(            
             io::stdin()
+            // Привязывает этот дескриптор к стандартному входному потоку,
             .lock()
+            // Возвращает итератор по строкам, представленным в виде срезов.
             .lines()
+            // Результат чтения OK
             .filter(|x| x.is_ok())
+            // Получить значение из Ok
             .map(|x| x.unwrap())
+            // путь к img не пуст
             .filter(|x| !x.trim().is_empty())
+            // сконвертировать путь к img в String
             .map(|x| x.trim().to_string())
+            // сформировать вектор
             .collect::<Vec<_>>()
         ) ;
     }
 
+    // отсортировать вектор с перечнем изображений
     list_images.sort();
     
+    // Удаляет последовательно повторяющиеся элементы в векторе.
     list_images.dedup();
 
+    // Запись итогового времени выполнения в логи.
     let elapsed = start_time.elapsed();
     info!("Total processing get_list_all_images(): {:?}", elapsed);
 
     Ok(list_images)
 }
 
+/// Тесты агрументов
 #[cfg(test)]
 mod tests {
     use super::* ;
 
+    /// Проверка пустого списка изображений
     #[test]
     fn check_empty_list_img() {
         let args = Args {
@@ -229,6 +262,7 @@ mod tests {
         assert_eq!(v, Vec::<String>::new()) ;
     }
 
+    /// Проверка не пустого списка изображений
     #[test]
     fn check_not_empty_list_img() {
         let args = Args {

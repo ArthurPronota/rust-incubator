@@ -34,23 +34,27 @@ more tmp_contents\from_stdin.txt|cargo run -- -i "https://avatars.mds.yandex.net
 Или так:
 cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --stdin --config-file tmp_contents\config.toml -r 1 < tmp_contents\from_stdin.txt
 
+C:\Users\user\work\MyWorks\Rust\rust-incubator\3_ecosystem\src\main.rs
+
+
+
 // Структура проекта
-image-optimizer/
-├── Cargo.toml
-├── .env.example
+3_ecosystem/
+├── Cargo.toml              <- конфигурация программы
 ├── src/
-│   ├── main.rs
-│   ├── cli.rs
-│   ├── config.rs
-│   ├── processor.rs
-│   ├── downloader.rs
-│   └── error.rs
-├── tests/
-│   ├── integration_test.rs
-│   └── test_images/
-├── examples/
-│   └── basic_usage.rs
-└── README.md
+│   ├── main.rs             <- точка входа в программу
+│   ├── conf_load.rs        <- модуль конфигурации
+│   ├── args.rs             <- модуль обработки агрементов CLI
+│   └── downloader.rs       <- модуль загрузки изображений
+├── tmp_contents/           <- директорий для хранения некоторыз бащовых данных
+│   ├── config.toml         <- конфигурационный файл формата toml
+│   ├── from_stdin.txt      <- файл со списоком img для stdin
+│   ├── imgs_file.txt       <- файл со списоком img
+│   ├── images.jpeg         <- файл img
+│   ├── images2.png         <- файл img
+│   └── rust.png            <- файл img
+├── img_output/             <- директорий для хранения загруженных и обработанных img
+└── README.md               <- файл с документацией
 
 */
 
