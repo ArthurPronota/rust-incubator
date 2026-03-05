@@ -208,6 +208,9 @@ ORM скрывает детали SQL за методами структур. В
 |Уровень|Инструмент|Как это выглядит?|
 |-------|----------|-----------------|
 |ORM|Diesel, SeaORM|users.filter(name.eq("Ivan")).first(&conn)|
+|Query Builder|SeaQuery, Kornuta|Программная сборка SQL: .select().from("users").where(...)|
+|Raw SQL / SQL-first|SQLx|sqlx::query!("SELECT * FROM users WHERE name = ?", name)|
+
 
 <hr>
 
