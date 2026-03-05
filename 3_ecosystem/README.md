@@ -66,7 +66,7 @@ flowchart TD
     
     K -->|Нет| M[Создание асинхронных задач для каждого изображения]
     
-    M --> N[stream:iter(list_images)]
+    M --> N[stream::iter list_images]
     N --> O[.map создает задачи для каждого изображения]
     O --> P[.buffer_unordered параллельное выполнение]
     
