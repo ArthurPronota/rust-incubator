@@ -94,6 +94,8 @@ __Estimated time__: 1 day
 
 ## Миграции
 
+__Миграции баз данных это система "контроля версий" для вашей базы данных, которая позволяет команде разработчиков синхронно и безопасно обновлять структуру БД.__
+
 Для [миграции баз данных][61] в экосистеме [Rust] существует [множество инструментов][62].
 
 
@@ -101,10 +103,9 @@ __Estimated time__: 1 day
 
 Для пользователей [`sqlx`] инструмент [`sqlx-cli`] [предоставляет миграции][64] «из коробки», а также может использоваться [напрямую в коде приложения][65].
 
+[`refinery`] и [`migrant`] — это ещё один автономный [Rust] инструмент для [миграций][61], позволяющий использовать его как в командной строке, так и в ["коде приложения"][66]. Интересной особенностью крейта [`refinery`] является то, что он также позволяет писать [миграции" в "коде приложения"][61] с помощью построителя миграций схемы [`barrel`].
 
-[`refinery`] and [`migrant`] are another standalone [Rust] tools for [migrations][61], allowing both [CLI] and ["in-application-code"][66] usage. The interesting part about the [`refinery`] crate is that it also allows to write "in-application-code" [migrations][61] via the [`barrel`] schema migration builder.
-
-To be familiar with [migrations][61] tools, their similarities and differences, read through:
+Чтобы ознакомиться с инструментами [миграции][61], их сходствами и различиями, прочтите следующее:
 - [Official `diesel_migrations` crate docs][`diesel_migrations`]
 - [Official `diesel_cli` crate docs][`diesel_cli`]
 - [Official `diesel` crate guides: Getting Started][63]
