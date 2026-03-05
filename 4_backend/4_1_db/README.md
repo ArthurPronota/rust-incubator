@@ -76,20 +76,19 @@ __Estimated time__: 1 day
 Самым первым [ORM][41], созданным в [Rust], был крейт [`diesel`]. Даже сейчас он поддерживает [только синхронные][43] соединения (как и до появления [асинхронного ввода-вывода][3] в [Rust]). Однако, благодаря расширению [`diesel-async`], его все еще можно использовать с асинхронными соединениями.
 
 
-[`sea-orm`] (built on top of [`sea-query`]) is an alternative feature-rich and [mature][46] implementation of the [ORM] pattern in [Rust], focused on [dynamic querying to avoid complexity of static checks ("fighting the ORM")][47].
+[`sea-orm`] (построенный на основе [`sea-query`]) — это альтернативная, многофункциональная и [зрелая][46] реализация паттерна [ORM] в [Rust], ориентированная на [динамические запросы, чтобы избежать сложности статических проверок ("борьба с ORM")][47].
 
-[`ormx`] is a lightweight extension of the [`sqlx`] crate, aimed to provide it with [ORM][41]-like features.
+[`ormx`] — это облегченное расширение крейта [`sqlx`], призванное предоставить ему возможности, аналогичные [ORM][41].
 
-[`rustorm`] is a very simple and [SQL]-centered [ORM][41], focused on easing conversions of database types to their appropriate [Rust] types.
+[`rustorm`] — это очень простой и ориентированный на [SQL] [ORM][41], предназначенный для упрощения преобразования типов баз данных в соответствующие типы [Rust].
 
-To better understand [ORMs'][41] design, concepts, usage and features, read through:
+Чтобы лучше понять дизайн, концепции, использование и функции [ORM][41], прочтите следующее:
 - [Official `diesel` crate docs][`diesel`]
 - [Official `diesel` crate guides][44]
 - [Official `sea-orm` crate docs][`sea-orm`]
 - [Official `sea-orm` crate guides][45]
 - [Official `ormx` crate docs][`ormx`]
 - [Official `rustorm` crate docs][`rustorm`]
-
 
 
 
