@@ -186,6 +186,8 @@ let pool = MySqlPoolOptions::new()
 let row = sqlx::query("SELECT ...").fetch_one(&pool).await?; 
 ```
 
+___Итог___: Пул соединений — это обязательный элемент любого серверного приложения на Rust, который делает его быстрым и стабильным под нагрузкой.
+
 <hr>
 
 [`async-std`]: https://docs.rs/async-std
