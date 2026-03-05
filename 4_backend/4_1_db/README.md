@@ -1,4 +1,4 @@
-Step 4.1: Databases, connection pools and ORMs
+Шаг 4.1: Базы данных, пулы соединений и ORM
 ==============================================
 
 __Estimated time__: 1 day
