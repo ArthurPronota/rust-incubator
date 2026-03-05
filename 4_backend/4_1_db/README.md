@@ -6,9 +6,9 @@ __Estimated time__: 1 day
 Текущая ситуация с интеграцией баз данных в экосистему [Rust] хорошо иллюстрируется в [разделе «Awesome Rust»][1] и в [теме «Database» раздела «Are we web yet?»][2]: большинство драйверов полностью реализованы на [Rust], и лишь немногие используют существующие библиотеки в качестве оберток, и, конечно же, большинство из них используют [асинхронный ввод-вывод][3].
 
 
-## Connection pool
+## Пул соединений (Connection pool)
 
-The important concept to understand is a [connection pool][11] pattern. It's widely adopted in situations where a program represents a long-running application (like [daemons][12] or [servers][13]). The key point is that __instead of creating a new connection to database every time__ we need to interact with, we'd __rather pre-create a [pool][14] of such connections and reuse them__. As connection creation is quite an expensive operation, applying this pattern leads to huge performance improvements.
+Важно понимать концепцию [пула соединений][11]. Она широко используется в ситуациях, когда программа представляет собой долго работающее приложение (например, [демоны][12] или [серверы][13]). Ключевой момент заключается в том, что __вместо создания нового соединения с базой данных каждый раз__ нам нужно взаимодействовать с ней, мы __предпочтительно предварительно создаем [пул][14] таких соединений и повторно используем их__. Поскольку создание соединения — довольно ресурсоемкая операция, применение этого шаблона приводит к значительному повышению производительности.
 
 Fortunately, [Rust] ecosystem provides generic implementations of database-agnostic [connection pool][1] in both flavours: synchronous and asynchronous.
 
