@@ -48,32 +48,27 @@ __Estimated time__: 1 day
 
 ## Конструктор запросов
 
-Query builder is effectively a __[builder pattern][81] applied for building [SQL]__ (or other [data query languages][82]) queries, and __allowing to write them as a regular [Rust] code__ (and so, [using an embedded DSL instead of external DSL][83]).
+Построитель запросов — это, по сути, __шаблон проектирования [81], применяемый для построения запросов [SQL]__ (или других языков запросов данных [82]), __позволяющий писать их как обычный код [Rust]__ (и, следовательно, [используя встроенный DSL (Domain-specific language) вместо внешнего DSL][83]).
 
-Построитель запросов — это, по сути, __шаблон проектирования [81], применяемый для построения запросов [SQL]__ (или других языков запросов данных [82]), __позволяющий писать их как обычный код [Rust]__ (и, следовательно, [используя встроенный DSL вместо внешнего DSL][83]).
+Каноническая реализация этого шаблона в экосистеме [Rust] представлена ​​крейтами [`sea-query`] и [`sql_query_builder`].
 
+С другой стороны, [`barrel`] crate позволяет писать [миграции схемы][61], а не запрашивать данные.
 
-The canonical implementation of this pattern in [Rust] ecosystem is represented by [`sea-query`] and [`sql_query_builder`] crates.
-
-[`barrel`] crate, on the other hand, allows to write [schema migrations][61], rather than querying data.
-
-For more details, read through:
+Для получения более подробной информации ознакомьтесь с:
 - [Official `sea-query` crate docs][`sea-query`]
 - [Official `sql_query_builder` crate docs][`sql_query_builder`]
 - [Official `barrel` crate docs][`barrel`]
 
 
-### Non-[DSL] toolkit
+### Не-[DSL] инструментарий
 
-[`sqlx`] crate, while being a feature-rich toolkit for [SQL], takes a [completely opposite approach][91] here: it focuses on writing pure [SQL] queries (no custom [DSL], no [query building](#query-builder)), which are statically checked to be correct at compile-time.
+[`sqlx`] crate, будучи многофункциональным инструментом для [SQL], здесь использует [совершенно противоположный подход][91]: он фокусируется на написании чистых [SQL] запросов (без пользовательского [DSL], без [построения запросов](#query-builder)), корректность которых статически проверяется во время компиляции.
 
-To better understand [`sqlx`]'s design, concepts, usage and features, read through:
+Чтобы лучше понять архитектуру, концепции, использование и возможности [`sqlx`], ознакомьтесь со следующими материалами:
 - [Official `sqlx` crate docs][`sqlx`]
 
 
-
-
-## ORM
+## ORM: Object-Relational Mapping (Объектно-реляционное отображение)
 
 Regarding the [ORM pattern][41], there are [multiple][42] feature-rich and mature implementation in [Rust] ecosystem at the moment. Every one has its own unique design, advantages and disadvantages.
 
