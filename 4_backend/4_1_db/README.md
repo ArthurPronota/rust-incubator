@@ -142,8 +142,7 @@ Consider to ensure [data consistency][202] in your database as much as possible.
 - [Что такое паттерн ORM? Чем он отличается от построения запросов? Какие преимущества они дают?][4102]
 - [Почему написание SQL-запросов без использования сторонних инструментов может быть целесообразным? В каких случаях это применимо и когда это предпочтительнее, чем использование ORM?][4103]
 - [Что такое миграции? Зачем их использовать? Как они работают?][4104]
-
-- Which kinds of migrations do exist? What are their advantages and disadvantages? When and which kind is preferred?  
+- [Какие виды миграции существуют? Каковы их преимущества и недостатки? Когда и какой вид миграции предпочтительнее?][4105]
 
 <hr>
 
@@ -309,6 +308,11 @@ ___Итог:___ Миграции превращают ручное управл�
 
 <hr>
 
+### <a name="q-305"> Какие виды миграции существуют? Каковы их преимущества и недостатки? Когда и какой вид миграции предпочтительнее?
+
+<hr>
+
+
 [`async-std`]: https://docs.rs/async-std
 [`barrel`]: https://docs.rs/barrel
 [`bb8`]: https://docs.rs/bb8
@@ -380,3 +384,4 @@ ___Итог:___ Миграции превращают ручное управл�
 [4102]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-302
 [4103]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-303
 [4104]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-304
+[4105]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-305
