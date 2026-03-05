@@ -139,8 +139,8 @@ Consider to ensure [data consistency][202] in your database as much as possible.
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - [Что такое шаблон пула соединений? Как он работает? Какие проблемы он решает?][301]
+- [Что такое паттерн ORM? Чем он отличается от построения запросов? Какие преимущества они дают?][302]
 
-- What is ORM pattern? How does it differ from query building? What benefits do they give?
 - Why writing raw SQL queries could be meaningful? Which are use-cases for it and when is it preferred over ORMs?
 - What are migrations? Why should we use them? How do they work? 
 - Which kinds of migrations do exist? What are their advantages and disadvantages? When and which kind is preferred?  
@@ -187,6 +187,12 @@ let row = sqlx::query("SELECT ...").fetch_one(&pool).await?;
 ```
 
 ___Итог___: Пул соединений — это обязательный элемент любого серверного приложения на Rust, который делает его быстрым и стабильным под нагрузкой.
+
+<hr>
+
+### <a name="q-302"></a> Что такое паттерн ORM? Чем он отличается от построения запросов? Какие преимущества они дают?
+
+
 
 <hr>
 
@@ -258,3 +264,4 @@ ___Итог___: Пул соединений — это обязательный 
 [202]: https://en.wikipedia.org/wiki/Consistency_(database_systems)
 
 [301]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-301
+[302]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-302
