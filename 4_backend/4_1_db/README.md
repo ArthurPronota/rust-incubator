@@ -70,9 +70,11 @@ __Estimated time__: 1 day
 
 ## ORM: Object-Relational Mapping (Объектно-реляционное отображение)
 
-Regarding the [ORM pattern][41], there are [multiple][42] feature-rich and mature implementation in [Rust] ecosystem at the moment. Every one has its own unique design, advantages and disadvantages.
+Что касается [паттерна ORM][41], то в экосистеме [Rust] на данный момент существует [множество][42] многофункциональных и зрелых реализаций. Каждая из них имеет свой уникальный дизайн, преимущества и недостатки.
 
-The very first [ORM][41] created in [Rust] was the [`diesel`] crate. Even now, it supports [only synchronous][43] connections (as was created before [async I/O][3] has landed in [Rust]). However, still may be used with asynchronous connections, thankfully to the [`diesel-async`] extension.
+
+Самым первым [ORM][41], созданным в [Rust], был крейт [`diesel`]. Даже сейчас он поддерживает [только синхронные][43] соединения (как и до появления [асинхронного ввода-вывода][3] в [Rust]). Однако, благодаря расширению [`diesel-async`], его все еще можно использовать с асинхронными соединениями.
+
 
 [`sea-orm`] (built on top of [`sea-query`]) is an alternative feature-rich and [mature][46] implementation of the [ORM] pattern in [Rust], focused on [dynamic querying to avoid complexity of static checks ("fighting the ORM")][47].
 
