@@ -1,7 +1,7 @@
 /*
     Contact: https://artaudiochats.t.me/
 
-    Структура проекта:
+    1. Структура проекта:
 
 3_ecosystem/
 ├── Cargo.toml              <- конфигурация программы
@@ -20,48 +20,59 @@
 ├── img_output/             <- директорий для хранения загруженных и обработанных img
 └── README.md               <- файл с документацией
 
+    2. Настройка уровней логирования:
+
+Уровни логирования настраиваются через переменную окружения RUST_LOG
+    a) Глобальный уровень: set RUST_LOG=info
+        Для всех модулей выводятся сообщения от уровня info и выше
+    b) Уровень по  умолчанию + уровни для отдельных модулей
+        set RUST_LOG=info,oxipng=error
+    c) Отключене логирования
+        set RUST_LOG=off
 
 
-Что можно настроить через RUST_LOG
-Синтаксис RUST_LOG довольно гибкий и позволяет точно управлять фильтрацией.
+    3. Помощи при запуске программы:   cargo run -- -h
 
-Глобальный уровень: Просто укажите уровень, например, RUST_LOG=info. Тогда будут выводиться все сообщения уровня info и выше (warn, error) из всех модулей проекта .
+Usage: step_3.exe [OPTIONS]
 
-bash
-RUST_LOG=info ./my_app
-Поуровнево для модулей: Можно задать разные уровни для разных модулей (крейтов). Формат такой: path::to::module=level. Уровень по умолчанию указывается первым .
+Options:
+  -i, --images <Img>...           List of images as URLs or files: https://o.i/img1.jpg c:\img2.png
+  -f, --images-file <FILE>        Path to the file containing the list of images (Urls,files).
+  -c, --img-concurrency <NUMBER>  Number of images processed concurrency (1..10_000) [env: IMG_CONCURRENCY=]
+  -o, --output-dir <DIR>          Output directory for storing processed images. [env: IMG_OUTPUT_DIR=]
+  -q, --quality-img <NUMBER>      Output quality of processed images (1..100). [env: IMG_QUALITY=]
+  -r, --rlim <NUMBER>             Rate limit for image downloads (KiB). If 0 then no restrictions [env: IMG_RATE_LIMIT=]
+  -t, --timeout <NUMBER>          Timeout for loading one image in seconds (1..255) [env: IMG_TIMEOUT=]
+      --config-file <FILE>        Path to the configuration file
+      --stdin                     Read a list of images from STDIN
+  -h, --help                      Print help (see more with '--help')
 
-bash
-RUST_LOG="warn,my_crate::module1=info,my_crate::module2=debug" ./my_app
-Эта команда установит:
+В полсказке указаны переменные окружения начинающиеся с MG_ для установки различных опций.
+Если опцмя не указана а соответствующая переменная окружения установлена то опция получает значение от переменной окружения.
 
-По умолчанию уровень warn для всех.
 
-Для my_crate::module1 — уровень info.
+    4. Запуск Unit Tests: cargo test
 
-Для my_crate::module2 — уровень debug.
+running 6 tests
+test args::tests::check_empty_list_img ... ok
+test downloader::tests::check_file ... ok
+test downloader::tests::check_http_url ... ok
+test downloader::tests::check_https_url ... ok
+test args::tests::check_not_empty_list_img ... ok
+test downloader::check_download_img ... ok
 
-Отключение логирования: Используйте псевдо-уровень off, чтобы полностью отключить вывод для всего приложения или конкретного модуля .
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.95s
 
-bash
-set RUST_LOG=debug
-cargo run
-Доступные уровни логирования (от наиболее до наименее подробного): error, warn, info, debug, trace . Регистр букв в названиях уровней не имеет значения .    
+    5. Запуск E2E (End To End) тестов:
 
-// --------------------------------------------
-
-Запуск:
+    5.1 С низкой скоростью загрузки:
 cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --config-file tmp_contents\config.toml -r 1
-Или так:
-more tmp_contents\from_stdin.txt|cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --config-file tmp_contents\config.toml --stdin -r 1
-Или так:
-cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --stdin --config-file tmp_contents\config.toml -r 1 < tmp_contents\from_stdin.txt
 
-C:\Users\user\work\MyWorks\Rust\rust-incubator\3_ecosystem\src\main.rs
+    5.2 С более ывсокой скоростью загрузки:
+more tmp_contents\from_stdin.txt|cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --config-file tmp_contents\config.toml --stdin -r 10
 
-
-
-
+    5.3 Без ограничения скорости загрузки:
+cargo run -- -i "https://avatars.mds.yandex.net/i?id=4964ba82da9ed35f073d39b81a0b98f2c913fc4c-5400140-images-thumbs&n=13 tmp_contents\rust.png" -f tmp_contents\imgs_file.txt --stdin --config-file tmp_contents\config.toml -r 0 < tmp_contents\from_stdin.txt
 
 */
 
