@@ -32,12 +32,13 @@ __Estimated time__: 1 day
 
 [`deadpool`] — это [альтернативная и очень зрелая][25] реализация шаблона [пула соединений][11], поддерживающая как [`tokio`], так и [`async-std`], обладающая [собственной обширной экосистемой][24].
 
+Другой альтернативной реализацией является крейт [`mobc`], вдохновленный крейтами [`deadpool`] и [`r2d2`]. Аналогично, он поддерживает как [`tokio`], так и [`async-std`] и предоставляет некоторые [мосты для распространенных драйверов][26].
 
-Another alternative implementation is the [`mobc`] crate, yet inspired by [`deadpool`] and [`r2d2`] crates. Similarly, supports both [`tokio`] and [`async-std`] and provides some [bridges for common drivers][26].
 
-[`qp`] (Quick Pool) is a very simple and [limited][29] implementation of the [connection pool][11] pattern, [utilizing lock-free primitives][27] and [focused on being performant][28].
+[`qp`] (Quick Pool) — это очень простая и [ограниченная][29] реализация шаблона [пула соединений][11], [использующая примитивы без блокировок][27] и [ориентированная на производительность][28].
 
-For more details, read through:
+
+Для получения более подробной информации ознакомьтесь с:
 - [Official `bb8` crate docs][`bb8`]
 - [Official `deadpool` crate docs][`deadpool`]
 - [Official `mobc` crate docs][`mobc`]
@@ -45,10 +46,12 @@ For more details, read through:
 
 
 
-
-## Query builder
+## Конструктор запросов
 
 Query builder is effectively a __[builder pattern][81] applied for building [SQL]__ (or other [data query languages][82]) queries, and __allowing to write them as a regular [Rust] code__ (and so, [using an embedded DSL instead of external DSL][83]).
+
+Построитель запросов — это, по сути, __шаблон проектирования [81], применяемый для построения запросов [SQL]__ (или других языков запросов данных [82]), __позволяющий писать их как обычный код [Rust]__ (и, следовательно, [используя встроенный DSL вместо внешнего DSL][83]).
+
 
 The canonical implementation of this pattern in [Rust] ecosystem is represented by [`sea-query`] and [`sql_query_builder`] crates.
 
