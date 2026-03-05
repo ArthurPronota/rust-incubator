@@ -483,7 +483,7 @@ __Важный нюанс для MySQL/MariaDB__
 [202]: https://en.wikipedia.org/wiki/Consistency_(database_systems)
 
 [4101]: #q-301
-[4102]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-302
-[4103]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-303
-[4104]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-304
-[4105]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-305
+[4102]: #q-302
+[4103]: #q-303
+[4104]: #q-304
+[4105]: #q-305

@@ -288,7 +288,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 
 
 [4101]: 4_backend/4_1_db#q-301
-[4102]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-302
-[4103]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-303
-[4104]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-304
-[4105]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-305
+[4102]: 4_backend/4_1_db#q-302
+[4103]: 4_backend/4_1_db#q-303
+[4104]: 4_backend/4_1_db#q-304
+[4105]: 4_backend/4_1_db#q-305
