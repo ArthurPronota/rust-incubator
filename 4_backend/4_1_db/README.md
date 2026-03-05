@@ -134,6 +134,9 @@ Consider to ensure [data consistency][202] in your database as much as possible.
 
 
 
+Создайте базу данных [SQL] ([PostgreSQL], [MySQL] или [SQLite], на ваш выбор), состоящую из следующих таблиц:
+- `users`: `id`, `name` и любые другие поля по вашему выбору;
+- `roles`: [`slug`][201] в качестве первичного ключа, поля `name` и `permissions` (конкретный формат по вашему выбору);
 
 ## Questions
 
