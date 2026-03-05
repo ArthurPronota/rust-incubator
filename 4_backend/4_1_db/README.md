@@ -30,8 +30,8 @@ __Estimated time__: 1 day
 Самым первым историческим примером был крейт [`bb8`]. Он является аналогом крейта [`r2d2`] для асинхронных соединений (только [`tokio`]) и изначально был основан на нем. Аналогично, уже существуют [реализованные мосты для распространенных драйверов][23].
 
 
+[`deadpool`] — это [альтернативная и очень зрелая][25] реализация шаблона [пула соединений][11], поддерживающая как [`tokio`], так и [`async-std`], обладающая [собственной обширной экосистемой][24].
 
-[`deadpool`] is an [alternative and very mature][25] implementation of the [connection pool][11] pattern, supporting both [`tokio`] and [`async-std`], provided with [its own large ecosystem][24].
 
 Another alternative implementation is the [`mobc`] crate, yet inspired by [`deadpool`] and [`r2d2`] crates. Similarly, supports both [`tokio`] and [`async-std`] and provides some [bridges for common drivers][26].
 
