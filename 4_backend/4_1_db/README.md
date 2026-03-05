@@ -92,13 +92,15 @@ __Estimated time__: 1 day
 
 
 
-## Migrations
+## Миграции
 
-For [database migrations][61] there are [multiple tools][62] in [Rust] ecosystem.
+Для [миграции баз данных][61] в экосистеме [Rust] существует [множество инструментов][62].
 
-For [`diesel`] users, the obvious choice is the [`diesel_migrations`] crate (which may be used directly via [`diesel_cli`]). Though, doesn't require the [`diesel`] itself to be used, and may be used as a fully separate tool.
 
-For [`sqlx`] users, similarly, the [`sqlx-cli`] tool [provides migrations][64] out-of-the-box, while also may be used [directly in the application code][65].
+Для пользователей [`diesel`] очевидным выбором является крейт [`diesel_migrations`] (который можно использовать напрямую через [`diesel_cli`]). Однако он не требует использования самого [`diesel`] и может использоваться как полностью отдельный инструмент.
+
+Для пользователей [`sqlx`] инструмент [`sqlx-cli`] [предоставляет миграции][64] «из коробки», а также может использоваться [напрямую в коде приложения][65].
+
 
 [`refinery`] and [`migrant`] are another standalone [Rust] tools for [migrations][61], allowing both [CLI] and ["in-application-code"][66] usage. The interesting part about the [`refinery`] crate is that it also allows to write "in-application-code" [migrations][61] via the [`barrel`] schema migration builder.
 
