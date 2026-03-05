@@ -15,9 +15,10 @@ __Estimated time__: 1 day
 Чтобы лучше понять [пул соединений][1], прочтите следующее:
  - [Чарли Кастер: Что такое объединение соединений и почему это важно][15]
 
-### Synchronous
+### Синхронный
 
-For synchronous connections there is the [`r2d2`] crate (the pioneer among such crates, existed far before [async I/O][3] has landed in [Rust]). You can easily adopt it for your specific use-case (or database) just by implementing [its traits][22]. Obviously, there are [implementations for common drivers][21] already.
+Для синхронных соединений существует крейт [`r2d2`] (пионер среди таких крейтов, существовавший задолго до появления [асинхронного ввода-вывода][3] в [Rust]). Вы можете легко адаптировать его для своего конкретного случая использования (или базы данных), просто реализовав [его трейты][22]. Очевидно, что [реализации для распространенных драйверов][21] уже существуют.
+
 
 For more details, read through:
 - [Official `r2d2` crate docs][`r2d2`]
