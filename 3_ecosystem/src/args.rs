@@ -63,7 +63,6 @@ pub struct Args {
         long = "img-concurrency",
         value_name = "NUMBER",
         env = "IMG_CONCURRENCY",
-        //default_value_t = (num_cpus::get() as u16).into(),
         value_parser = clap::value_parser!(u16).range(1..=10_000),
         help = "Number of images processed concurrency (1..10_000)",
      )
@@ -88,7 +87,6 @@ pub struct Args {
         value_name = "NUMBER",
         env = "IMG_QUALITY",
         value_parser = clap::value_parser!(u8).range(1..=100),
-        //default_value_t = 60,
         help = "Output quality of processed images (1..100).",
      )
     ]
