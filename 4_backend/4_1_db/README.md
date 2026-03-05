@@ -22,9 +22,10 @@ __Estimated time__: 1 day
 Для получения более подробной информации ознакомьтесь с:
 - [Официальная документация к библиотеке `r2d2`][`r2d2`]
 
-### Asynchronous
+### Асинхронный
 
-For asynchronous connections there are much more options in [Rust] ecosystem, due to historical reasons and bigger competitiveness (as the result of bigger [async I/O][3] popularity).
+Для асинхронных соединений в экосистеме [Rust] существует гораздо больше вариантов, обусловленных историческими причинами и большей конкуренцией (в результате большей популярности [асинхронного ввода-вывода][3]).
+
 
 The very first one, historically, was the [`bb8`] crate. It mirrors the [`r2d2`] crate for asynchronous connections ([`tokio`] only), and originally was based on it. Similarly, there are [implemented bridges for common drivers][23] already.
 
