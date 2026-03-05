@@ -27,7 +27,9 @@ __Estimated time__: 1 day
 Для асинхронных соединений в экосистеме [Rust] существует гораздо больше вариантов, обусловленных историческими причинами и большей конкуренцией (в результате большей популярности [асинхронного ввода-вывода][3]).
 
 
-The very first one, historically, was the [`bb8`] crate. It mirrors the [`r2d2`] crate for asynchronous connections ([`tokio`] only), and originally was based on it. Similarly, there are [implemented bridges for common drivers][23] already.
+Самым первым историческим примером был крейт [`bb8`]. Он является аналогом крейта [`r2d2`] для асинхронных соединений (только [`tokio`]) и изначально был основан на нем. Аналогично, уже существуют [реализованные мосты для распространенных драйверов][23].
+
+
 
 [`deadpool`] is an [alternative and very mature][25] implementation of the [connection pool][11] pattern, supporting both [`tokio`] and [`async-std`], provided with [its own large ecosystem][24].
 
