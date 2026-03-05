@@ -3,9 +3,7 @@
 
 __Estimated time__: 1 day
 
-The current situation with databases integration in [Rust] ecosystem is illustrated quite well in [this "Awesome Rust" section][1] and in ["Database" topic of "Are we web yet?"][2]: the majority of the drivers are implemented fully in [Rust], and only few wrap existing libraries, and of course, most of them use [async I/O][3].
-
-
+Текущая ситуация с интеграцией баз данных в экосистему [Rust] хорошо иллюстрируется в [разделе «Awesome Rust»][1] и в [теме «Database» раздела «Are we web yet?»][2]: большинство драйверов полностью реализованы на [Rust], и лишь немногие используют существующие библиотеки в качестве оберток, и, конечно же, большинство из них используют [асинхронный ввод-вывод][3].
 
 
 ## Connection pool
