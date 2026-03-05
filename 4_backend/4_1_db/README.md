@@ -141,8 +141,8 @@ Consider to ensure [data consistency][202] in your database as much as possible.
 - [Что такое шаблон пула соединений? Как он работает? Какие проблемы он решает?][4101]
 - [Что такое паттерн ORM? Чем он отличается от построения запросов? Какие преимущества они дают?][4102]
 - [Почему написание SQL-запросов без использования сторонних инструментов может быть целесообразным? В каких случаях это применимо и когда это предпочтительнее, чем использование ORM?][4103]
+- [Что такое миграции? Зачем их использовать? Как они работают?][4104]
 
-- What are migrations? Why should we use them? How do they work? 
 - Which kinds of migrations do exist? What are their advantages and disadvantages? When and which kind is preferred?  
 
 <hr>
@@ -262,7 +262,11 @@ ORM скрывает детали SQL за методами структур. В
 
 ___Итог___: Используйте SQL-first (через sqlx), если вы знаете SQL и хотите полного контроля. Используйте ORM, если ваша задача — быстро набросать прототип с простым CRUD (создать/читать/модифицировать/удалить запись) и вам не хочется писать повторяющийся SQL-код.
 
-<h4>
+<hr>
+
+### <a name="q-304"> Что такое миграции? Зачем их использовать? Как они работают?
+
+<hr>
 
 [`async-std`]: https://docs.rs/async-std
 [`barrel`]: https://docs.rs/barrel
@@ -334,3 +338,4 @@ ___Итог___: Используйте SQL-first (через sqlx), если в�
 [4101]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-301
 [4102]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-302
 [4103]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-303
+[4104]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-304

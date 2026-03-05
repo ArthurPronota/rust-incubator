@@ -178,6 +178,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [Что такое шаблон пула соединений? Как он работает? Какие проблемы он решает?][4101]
         - [Что такое паттерн ORM? Чем он отличается от построения запросов? Какие преимущества они дают?][4102]
         - [Почему написание SQL-запросов без использования сторонних инструментов может быть целесообразным? В каких случаях это применимо и когда это предпочтительнее, чем использование ORM?][4103]
+        - [Что такое миграции? Зачем их использовать? Как они работают?][4104]
     - [ ] [4.2. HTTP servers and clients][Step 4.2] (1 day)
     - [ ] [4.3. API servers, clients and tools][Step 4.3] (1 day)
 
@@ -288,3 +289,4 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [4101]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-301
 [4102]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-302
 [4103]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-303
+[4104]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-304
