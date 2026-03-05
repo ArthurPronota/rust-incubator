@@ -138,8 +138,7 @@ Consider to ensure [data consistency][202] in your database as much as possible.
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- What is connection pool pattern? How does it work? Which problems does it solve?
-- [Что такое шаблон пула соединений? Как он работает? Какие проблемы он решает?]
+- [Что такое шаблон пула соединений? Как он работает? Какие проблемы он решает?][301]
 
 - What is ORM pattern? How does it differ from query building? What benefits do they give?
 - Why writing raw SQL queries could be meaningful? Which are use-cases for it and when is it preferred over ORMs?
@@ -148,7 +147,10 @@ Consider to ensure [data consistency][202] in your database as much as possible.
 
 <hr>
 
-### Что такое шаблон пула соединений? Как он работает? Какие проблемы он решает?
+### <a name="q-301"></a> Что такое шаблон пула соединений? Как он работает? Какие проблемы он решает?
+
+В Rust шаблон пула соединений (Connection Pool) — это стратегия управления дорогостоящими ресурсами (базами данных, сетевыми сокетами), при которой вместо создания нового соединения для каждого запроса используется набор уже открытых, «подогретых» соединений.
+
 
 <hr>
 
@@ -218,3 +220,5 @@ Consider to ensure [data consistency][202] in your database as much as possible.
 [91]: https://github.com/launchbadge/sqlx#sqlx-is-not-an-orm
 [201]: https://en.wikipedia.org/wiki/Clean_URL#Slug 
 [202]: https://en.wikipedia.org/wiki/Consistency_(database_systems)
+
+[301]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-301
