@@ -175,6 +175,9 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
             - [В чём заключаются ключевые моменты парадигмы параллельного выполнения в рамках модели акторов? Какую пользу она может принести в Rust?](3_ecosystem/3_11_async#в-чём-заключаются-ключевые-моменты-парадигмы-параллельного-выполнения-в-рамках-модели-акторов-какую-пользу-она-может-принести-в-rust)
 - [ ] [4. Backend ecosystem][Step 4] (3 days, after all sub-steps)
     - [ ] [Шаг 4.1: Базы данных, пулы соединений и ORM][Step 4.1] (1 day)
+        - [Что такое шаблон пула соединений? Как он работает? Какие проблемы он решает?][4101]
+        - [Что такое паттерн ORM? Чем он отличается от построения запросов? Какие преимущества они дают?][4102]
+
     - [ ] [4.2. HTTP servers and clients][Step 4.2] (1 day)
     - [ ] [4.3. API servers, clients and tools][Step 4.3] (1 day)
 
@@ -280,3 +283,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [24]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#почему-многопоточность-необходима-для-программ-на-rust-и-какие-проблемы-она-решает-чем-отличается-многопоточность-от-параллельной-обработки-как-можно-распараллелить-код-на-rust
 [25]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-такое-асинхронность-и-какие-проблемы-она-решает-чем-она-отличается-от-параллельного-выполнения-потоков-какое-решение-для-асинхронности-предлагает-rust-и-почему-он-имеет-именно-такую-архитектуру
 [26]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-такое-акторы-когда-они-полезны
+
+
+[4101]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-301
+[4102]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-302

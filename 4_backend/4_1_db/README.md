@@ -138,8 +138,8 @@ Consider to ensure [data consistency][202] in your database as much as possible.
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- [Что такое шаблон пула соединений? Как он работает? Какие проблемы он решает?][301]
-- [Что такое паттерн ORM? Чем он отличается от построения запросов? Какие преимущества они дают?][302]
+- [Что такое шаблон пула соединений? Как он работает? Какие проблемы он решает?][4101]
+- [Что такое паттерн ORM? Чем он отличается от построения запросов? Какие преимущества они дают?][4102]
 
 - Why writing raw SQL queries could be meaningful? Which are use-cases for it and when is it preferred over ORMs?
 - What are migrations? Why should we use them? How do they work? 
@@ -301,5 +301,5 @@ ORM скрывает детали SQL за методами структур. В
 [201]: https://en.wikipedia.org/wiki/Clean_URL#Slug 
 [202]: https://en.wikipedia.org/wiki/Consistency_(database_systems)
 
-[301]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-301
-[302]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-302
+[4101]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-301
+[4102]: https://github.com/ArthurPronota/rust-incubator/tree/main/4_backend/4_1_db#q-302
