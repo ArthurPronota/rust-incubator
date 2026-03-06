@@ -7,3 +7,5 @@ publish = false
 [dependencies]
 anyhow = "1.0.102"
 dotenv = "0.15.0"
+clap = { version = "4.5.60", features = ["derive"] }
+sqlx = { version = "0.8.6", features = ["runtime-tokio-native-tls", "mysql", "macros"] }
