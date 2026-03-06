@@ -414,6 +414,7 @@ __Важный нюанс для MySQL/MariaDB__
 
 <hr>
 
+![alt text](image.png)
 
 [`async-std`]: https://docs.rs/async-std
 [`barrel`]: https://docs.rs/barrel

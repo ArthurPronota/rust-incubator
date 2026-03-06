@@ -798,3 +798,19 @@ cargo run -- role-delete user
 4. Уникальность: Email пользователя уникален, роль использует slug как первичный ключ .
 
 5. CRUD операции: Полная поддержка всех CRUD операций для обеих таблиц с проверками целостности .
+
+// ------------------------------
+
+    MySql v8.4.3
+
+Путь к папке, где будут располагаться базы данных:
+C:\ProgramData\MySQL\MySQL Server 8.4\
+
+Tcp/Ip
+Port:   3306
+X protocol Port:   33060
+
+My User:
+arthur
+
+Windows Service name:   MySQL84
