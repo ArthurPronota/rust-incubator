@@ -803,6 +803,8 @@ cargo run -- role-delete user
 
     MySql v8.4.3
 
+https://metanit.com/sql/mysql/
+
 Путь к папке, где будут располагаться базы данных:
 C:\ProgramData\MySQL\MySQL Server 8.4\
 
@@ -814,3 +816,21 @@ My User:
 arthur
 
 Windows Service name:   MySQL84
+
+MySQL Shell:
+C:\Program Files\MySQL\MySQL Shell 8.4\
+
+\sql
+\connect arthur@localhost:3306  ;
+
+ MySQL  localhost:3306 ssl  SQL > show databases ;
++--------------------+
+| Database           |
++--------------------+
+| 4_1_db             |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.0014 sec)

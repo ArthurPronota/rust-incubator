@@ -3,3 +3,7 @@ name = "step_4_1"
 version = "0.1.0"
 edition = "2024"
 publish = false
+
+[dependencies]
+anyhow = "1.0.102"
+dotenv = "0.15.0"
