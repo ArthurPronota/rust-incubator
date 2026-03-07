@@ -38,7 +38,10 @@ impl Database {
     /// Создать таблицы для программы
     pub async fn create_tables(&self) ->Result<()> {
 
-        let mut sql_stat = r#"
+        // вектор с командами создания необходимых таблиц
+        let sql_queries = vec![
+// Создать таблицу пользователей            
+r#"
 create table if not exists users (
     id_user	int unsigned not null primary key auto_increment,
     name varchar(255) not null,
@@ -47,19 +50,47 @@ create table if not exists users (
 ) 
 ENGINE=InnoDb 
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
-"# ;
+"#,
+// Создать таблицу ролей
+r#"
+create table if not exists roles (
+    slug varchar(50) not null primary key,
+    name varchar(255) not null,
+    permissions varchar(100) not null
+) 
+ENGINE=InnoDb
+CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+"#,
+// Создать таблицу соответсвия пользователя его правам
+r#"
+create table users_roles (
+    id_user int unsigned not null,
+    slug varchar(50) not null,
+    key `slug` (slug),
+    unique `id_user__slug` (id_user, slug),
+    constraint `users_roles__id_user` foreign key (id_user) references users (id_user) on delete cascade,
+    constraint `users_roles__slug` foreign key (slug) references roles (slug) on delete cascade
+) 
+ENGINE=InnoDb
+CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+"#,
+        ] ;
 
-        // Создать таблицу пользователей
-        sqlx::query(
-            sql_stat
-        )
-        .execute(&self.pool)
-        .await
-        .map_err(|err|
-            anyhow::anyhow!("{}, sql_statement: {}", err, sql_stat)
-        )? ;
-
-
+        for sql_query in sql_queries {
+            // Выполните один SQL-запрос в виде подготовленного запроса (с прозрачным кэшированием).
+            sqlx::query(
+                sql_query
+            )
+            // Выполните запрос и верните общее количество затронутых строк.
+            .execute(&self.pool)
+            // Приостановить выполнение до тех пор, пока результат выполнения 
+            // Future не будет готов.            
+            .await
+            // Отобразить ошибку в формат anyhow
+            .map_err(|err|
+                anyhow::anyhow!("{}, sql_statement: {}", err, sql_query)
+            )? ;
+        }
 
         Ok(())
     }

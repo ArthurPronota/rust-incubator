@@ -821,7 +821,7 @@ MySQL Shell:
 C:\Program Files\MySQL\MySQL Shell 8.4\
 
 \sql
-\connect arthur@localhost:3306  ;
+\connect arthur@localhost:3306
 
  MySQL  localhost:3306 ssl  SQL > show databases ;
 +--------------------+
@@ -834,3 +834,6 @@ C:\Program Files\MySQL\MySQL Shell 8.4\
 | sys                |
 +--------------------+
 5 rows in set (0.0014 sec)
+
+Вывести данные вертикально:
+show INDEX FROM users_roles \G

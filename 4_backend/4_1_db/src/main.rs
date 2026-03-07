@@ -9,7 +9,7 @@ cargo run -- create-user -h
 
 */
 mod args ;
-mod parser ;
+mod executor ;
 mod db ;
 
 use anyhow::Result ;
@@ -46,6 +46,8 @@ fn main() ->Result<()> {
     let cl_args = args::Args::parse() ;
 
     println!("v: {:?}", cl_args) ;
+
+    executor::execute_command(&cl_args) ;
 
     Ok(())
 }
