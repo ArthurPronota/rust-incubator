@@ -9,3 +9,8 @@ anyhow = "1.0.102"
 dotenv = "0.15.0"
 clap = { version = "4.5.60", features = ["derive"] }
 sqlx = { version = "0.8.6", features = ["runtime-tokio-native-tls", "mysql", "macros"] }
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+validator = { version = "0.20.0", features = ["derive"]}
+#garde = { version = "0.22.1", features = ["derive"]}
+#const_format = "0.2" # "0.2.35"

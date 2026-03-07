@@ -1,4 +1,8 @@
 use anyhow::Result ;
+use crate::users::{
+                self,
+                User,
+            } ;
 
 use sqlx::{
         mysql::MySqlPoolOptions,
@@ -40,17 +44,22 @@ impl Database {
 
         // вектор с командами создания необходимых таблиц
         let sql_queries = vec![
-// Создать таблицу пользователей            
+// Создать таблицу пользователей  
+format!(
 r#"
 create table if not exists users (
     id_user	int unsigned not null primary key auto_increment,
-    name varchar(255) not null,
-    email varchar(255) not null,
+    name varchar({}) not null,
+    email varchar({}) not null,
     unique key `email` (email)
 ) 
 ENGINE=InnoDb 
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 "#,
+users::MAX_LENGTH_NAME,
+users::MAX_LENGTH_EMAIL,
+),
+/*
 // Создать таблицу ролей
 r#"
 create table if not exists roles (
@@ -74,9 +83,10 @@ create table users_roles (
 ENGINE=InnoDb
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 "#,
+ */
         ] ;
 
-        for sql_query in sql_queries {
+        for sql_query in sql_queries.iter() {
             // Выполните один SQL-запрос в виде подготовленного запроса (с прозрачным кэшированием).
             sqlx::query(
                 sql_query
@@ -95,4 +105,41 @@ CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
         Ok(())
     }
 
+    /*
+    /// Создать пользователя
+    pub async fn create_user(&self, name: &str, email: &str) ->Result<User> {
+        
+        let mut user_new = User::default() ;
+
+        user_new.set_name(name)? ;
+        
+        user_new.set_email(email)? ;
+
+        let mut trans = 
+                self
+                    .pool
+                    // Устанавливает соединение и немедленно начинает новую транзакцию.
+                    .begin()
+                    .await? ;
+
+        let new_user = sqlx::query_as::<_, User>(
+            r#"
+            insert into users (name, email)
+            values (?, ?)
+            returning id_user, name, email
+            "#
+        )
+        .bind(user_new.name())
+        .bind(user_new.email())
+        .fetch_one(&mut *trans)
+        .await? ;
+
+        trans
+            // Подтверждает эту транзакцию или точку сохранения.
+            .commit()
+            .await? ;
+
+         Ok(new_user)
+    }
+     */
 }

@@ -6,11 +6,14 @@ cargo run -- -h
     Помощь для конкретной команды:
 cargo run -- create-user -h
 
+cargo run -- init-db
+
 
 */
 mod args ;
 mod executor ;
 mod db ;
+mod users ;
 
 use anyhow::Result ;
 use clap::Parser;
@@ -20,8 +23,9 @@ use std::{
 
 const DB_PATH_CONNECT: &str = "DB_PATH_CONNECT" ;
 
-fn main() ->Result<()> {
-
+#[tokio::main]
+async fn main() ->Result<()> {
+    // Путь к файлу с переменными ркружения и из значениями
     let env_file = Path::new(".env") ;
     if env_file.exists() {
         // Загрузка в переменные окружения сожержимого файла .env
@@ -47,7 +51,12 @@ fn main() ->Result<()> {
 
     println!("v: {:?}", cl_args) ;
 
-    executor::execute_command(&cl_args) ;
+    // Выполнить полученную команду
+    executor::any_command(
+                &cl_args, 
+                &db_path_conn
+      ) 
+      .await? ;
 
     Ok(())
 }

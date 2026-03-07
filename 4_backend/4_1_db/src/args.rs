@@ -3,7 +3,6 @@ use clap::{
     Subcommand      // Трейт для создания вложенных команд
 } ;
 
-
 #[derive(Subcommand, Debug)]
 pub enum Commands {
     /// Создание необхожимых таблиц
@@ -27,6 +26,7 @@ pub enum Commands {
          )
         ]
         name:   String,
+
         #[arg(
             name = "Email",
             help = "Email, unique",
