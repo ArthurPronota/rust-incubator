@@ -284,7 +284,6 @@ impl User {
 
         Ok(user_new)
     }
-    
 
     pub async fn find_for_email<'a>(email: &str, trans: &mut sqlx::MySqlConnection) ->Result<User> {
         
