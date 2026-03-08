@@ -111,6 +111,10 @@ CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
             )? ;
         }
 
+        // создать роль по умолчанию
+        roles::Role::create_default_role(&self)
+            .await? ;
+
         Ok(())
     }
 

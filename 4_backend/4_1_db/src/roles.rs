@@ -21,6 +21,9 @@ pub const MIN_LENGTH_PERMISSIONS: u64 = 1 ;
 
 pub const MAX_LENGTH_PERMISSIONS: u64 = 255 ;
 
+// slug по умолчанию
+const SLUG_DEFAULT: &str = "default" ;
+
 /// Роль
 #[derive(
     Default,
@@ -240,4 +243,13 @@ impl Role {
         Ok(new_role)
     }
 
+    pub async fn create_default_role(db: &Database) ->Result<Role> {
+        Self::create_role(
+                db,
+                SLUG_DEFAULT,
+                "Default role",
+                "access,read,write",
+            )
+            .await
+    }
 }
