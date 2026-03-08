@@ -8,12 +8,14 @@ cargo run -- create-user -h
 
 cargo run -- init-db
 
+cargo run -- create-role "read-data" "Reader" "read,write,access"
 
 */
 mod args ;
 mod executor ;
 mod db ;
 mod users ;
+mod roles ;
 
 use anyhow::Result ;
 use clap::Parser;

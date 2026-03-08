@@ -4,6 +4,10 @@ use crate::users::{
                 User,
             } ;
 
+use crate::roles::{
+                self,
+} ;
+
 use sqlx::{
         mysql::MySqlPoolOptions,
         MySqlPool
@@ -59,17 +63,22 @@ CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 users::MAX_LENGTH_NAME,
 users::MAX_LENGTH_EMAIL,
 ),
-/*
 // Создать таблицу ролей
+format!(
 r#"
 create table if not exists roles (
-    slug varchar(50) not null primary key,
-    name varchar(255) not null,
-    permissions varchar(100) not null
+    slug varchar({}) not null primary key,
+    name varchar({}) not null,
+    permissions varchar({}) not null
 ) 
 ENGINE=InnoDb
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 "#,
+roles::MAX_LENGTH_SLUG,
+roles::MAX_LENGTH_NAME,
+roles::MAX_LENGTH_PERMISSIONS,
+),
+/*
 // Создать таблицу соответсвия пользователя его правам
 r#"
 create table users_roles (

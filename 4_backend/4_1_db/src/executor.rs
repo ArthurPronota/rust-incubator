@@ -1,6 +1,7 @@
 use crate::args::{self, Commands} ;
 use crate::db ;
 use crate::users ;
+use crate::roles ;
 
 use anyhow::Result ;
 
@@ -25,8 +26,9 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
             println!("✅ User created successfully.") ;
         },
         Commands::CreateRole { slug, name, permissions } => {
-
-
+            roles::Role::create_role(&db_res, slug, name, &permissions.join(","))
+                .await? ;
+            println!("✅ Role created successfully.") ;
         },
     }
 

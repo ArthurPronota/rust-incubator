@@ -46,7 +46,9 @@ use crate::db::Database;
 use const_format::concatcp ;
  */
 
+/*
 type MySqlTrans<'a> = sqlx::Transaction<'a, sqlx::MySql> ;
+ */
 
 pub const MIN_LENGTH_NAME: u64 = 1 ;
 
@@ -127,7 +129,7 @@ impl User {
     }
 
     /// Проверка id_user
-    pub fn check_id_uswer(&self) ->Result<()> {
+    pub fn check_id_user(&self) ->Result<()> {
         match self.id_user() {
             id if id == 0 => return Err(anyhow::anyhow!("Invalid id_user: {}", id)),
             _ => Ok(())
