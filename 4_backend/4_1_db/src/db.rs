@@ -78,12 +78,12 @@ roles::MAX_LENGTH_SLUG,
 roles::MAX_LENGTH_NAME,
 roles::MAX_LENGTH_PERMISSIONS,
 ),
-/*
 // Создать таблицу соответсвия пользователя его правам
+format!(
 r#"
-create table users_roles (
+create table if not exists users_roles (
     id_user int unsigned not null,
-    slug varchar(50) not null,
+    slug varchar({}) not null,
     key `slug` (slug),
     unique `id_user__slug` (id_user, slug),
     constraint `users_roles__id_user` foreign key (id_user) references users (id_user) on delete cascade,
@@ -92,7 +92,8 @@ create table users_roles (
 ENGINE=InnoDb
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 "#,
- */
+roles::MAX_LENGTH_SLUG,
+),
         ] ;
 
         for sql_query in sql_queries.iter() {

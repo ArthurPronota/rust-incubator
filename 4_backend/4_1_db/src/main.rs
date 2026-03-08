@@ -16,6 +16,7 @@ mod executor ;
 mod db ;
 mod users ;
 mod roles ;
+mod users_roles;
 
 use anyhow::Result ;
 use clap::Parser;

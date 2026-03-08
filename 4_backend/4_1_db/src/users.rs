@@ -144,7 +144,7 @@ impl User {
             n if n.validate_length(
                             Some(MIN_LENGTH_NAME),
                             Some(MAX_LENGTH_NAME),
-                             None
+                            None
                         ) => n.to_owned(),
             n => return Err(anyhow::anyhow!("Invalid length: {} of user name: {}", n.chars().count(), n)),
         } ;
@@ -230,7 +230,6 @@ impl User {
 
     /// Создать пользователя в DB
     pub async fn create_user(
-                //&mut self,
                 db:    &Database,                
                 name:  &str,
                 email: &str,
@@ -249,18 +248,8 @@ impl User {
                     .begin()
                     .await? ;
 
-        sqlx::query(
-            r#"
-            insert into users (name, email)
-            values (?, ?)
-            "#
-        )
-        .bind(user_new.name())
-        .bind(user_new.email())
-        .execute(&mut *trans)
-        .await? ;
-
-        user_new = sqlx::query_as::<_, User>(
+        // Поиск пользователя перед его созданием
+        match sqlx::query_as::<_, User>(
             r#"
             select *
             from users
@@ -269,31 +258,64 @@ impl User {
         )
         .bind(user_new.email())
         .fetch_one(&mut *trans)
-        .await? ;
+        .await {
+            Ok(u) => { // пользователь найден
+                u.validate()? ;
+                Ok(u)
+            },
+            Err(sqlx::Error::RowNotFound) => {  // пользователь не найден
+                // создание пользователя
+                sqlx::query(
+                    r#"
+                    insert into users (name, email)
+                    values (?, ?)
+                    "#
+                )
+                .bind(user_new.name())
+                .bind(user_new.email())
+                .execute(&mut *trans)
+                .await? ;
 
-        user_new
-            .validate()
-            .map_err(|err|
-                anyhow::anyhow!("{}", err)
-            )? ;
+                // поиск созданного пользователя
+                user_new = sqlx::query_as::<_, User>(
+                    r#"
+                    select *
+                    from users
+                    where email = ?
+                    "#
+                )
+                .bind(user_new.email())
+                .fetch_one(&mut *trans)
+                .await? ;
 
-        //Self::f(&mut *trans) ;
+                user_new
+                    .validate()? ;
 
-        trans
-            // Подтверждает эту транзакцию или точку сохранения.
-            .commit()
-            .await? ;
+                //Self::f(&mut *trans) ;
 
-        Ok(user_new)
+                trans
+                    // Подтверждает эту транзакцию или точку сохранения.
+                    .commit()
+                    .await? ;
+
+                Ok(user_new)
+            },
+            Err(err) => Err(err.into()),
+        }
     }
 
-    pub async fn find_for_email<'a>(email: &str, trans: &mut sqlx::MySqlConnection) ->Result<User> {
-        
+    /// Поиск пользователя по email
+    pub async fn find_for_email(
+                        trans: &mut sqlx::MySqlConnection,        
+                        email: &str, 
+                    ) ->Result<Option<User>> {
+        // Проверка email
         if ! email.validate_email() {
             return Err(anyhow::anyhow!("Invalid email: {}", email)) ;
         }
 
-        let user_new = sqlx::query_as::<_, User>(
+        // Поиск пользователя по email
+        match sqlx::query_as::<_, User>(
             r#"
             select *
             from user
@@ -302,15 +324,13 @@ impl User {
         )
         .bind(email)
         .fetch_one(&mut *trans)
-        .await? ;
-
-        Ok(user_new)
+        .await {
+            Ok(u) => {  // пользователь найден
+                u.validate()? ;
+                Ok(Some(u))
+            },
+            Err(sqlx::Error::RowNotFound) => Ok(None),  // пользователь не найден
+            Err(err) => Err(err.into()),    // возникла ошибка
+        }
     }
-
-    /*
-    fn f(v: &mut sqlx::MySqlConnection) {
-
-    }
-     */
-
 }

@@ -1,5 +1,3 @@
-//use std::f64::consts::E;
-
 use anyhow::Result ;
 
 use sqlx::FromRow ;
@@ -192,7 +190,7 @@ impl Role {
                     name:           &str,
                     permissions:    &str,
                 ) ->Result<Role> {
-        
+        // сформировать роль по умалчанию
         let mut new_role = Role::default() ;
         
         new_role.set_slug(slug)? ;
@@ -204,43 +202,62 @@ impl Role {
         let mut trans = 
                     db
                         .pool
+                        // Устанавливает соединение и немедленно начинает новую транзакцию.
                         .begin()
                         .await? ;
 
-        sqlx::query(
-            r#"
-            insert into roles (slug, name, permissions)
-            values (?, ?, ?)
-            "#
-        )
-        .bind(new_role.slug())
-        .bind(new_role.name())
-        .bind(new_role.permissions())
-        .execute(&mut *trans)
-        .await? ;
+        // Проверка наличия создаваемой роли
+        match sqlx::query_as::<_, Role>(
+                    r#"
+                    select *
+                    from roles
+                    where slug = ?
+                    "#
+                )
+                .bind(new_role.slug())
+                .fetch_one(&mut *trans)
+                .await {
+            Ok(r) => {  // данные по роли извлечены
+                r.validate()? ; // проверка роли
+                Ok(r)   // возврат найденной роли
+            },
+            Err(sqlx::Error::RowNotFound) => {  // роль не найдена
+                // создание роли
+                sqlx::query(
+                    r#"
+                    insert into roles (slug, name, permissions)
+                    values (?, ?, ?)
+                    "#
+                )
+                .bind(new_role.slug())
+                .bind(new_role.name())
+                .bind(new_role.permissions())
+                .execute(&mut *trans)
+                .await? ;
 
-        new_role = sqlx::query_as::<_, Role>(
-            r#"
-                select *
-                from roles
-                where slug = ?
-            "#
-        )
-        .bind(new_role.slug())
-        .fetch_one(&mut *trans)
-        .await? ;
+                // получить данные по роли
+                new_role = sqlx::query_as::<_, Role>(
+                        r#"
+                        select *
+                        from roles
+                        where slug = ?
+                        "#
+                    )
+                    .bind(new_role.slug())
+                    .fetch_one(&mut *trans)
+                    .await? ;
 
-        new_role
-            .validate()
-            .map_err(|err| 
-                anyhow::anyhow!("{}", err)
-            )? ;
+                new_role
+                    .validate()? ;
 
-        trans
-            .commit()
-            .await? ;
+                trans
+                    .commit()
+                    .await? ;
 
-        Ok(new_role)
+                Ok(new_role)
+            },
+            Err(err) => Err(err.into()), // ошибка запроса
+        }
     }
 
     pub async fn create_default_role(db: &Database) ->Result<Role> {
