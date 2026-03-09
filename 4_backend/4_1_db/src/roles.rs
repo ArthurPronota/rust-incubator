@@ -20,7 +20,12 @@ pub const MIN_LENGTH_PERMISSIONS: u64 = 1 ;
 pub const MAX_LENGTH_PERMISSIONS: u64 = 255 ;
 
 // slug по умолчанию
-const SLUG_DEFAULT: &str = "default" ;
+pub const SLUG_DEFAULT: &str = "default" ;
+// name по умолчанию
+pub const NAME_DEFAULT: &str = "reader" ;
+// permission по умолчанию
+pub const PERMISSION_DEFAULT: &str = "read,write" ;
+
 
 /// Роль
 #[derive(
@@ -183,6 +188,93 @@ impl Role {
         self.set_permissions(&perm_new)
     }
 
+    pub async fn create_default_role(db: &Database) ->Result<Role> {
+        Self::create_role(
+                db,
+                SLUG_DEFAULT,
+                NAME_DEFAULT,
+                PERMISSION_DEFAULT,
+            )
+            .await
+    }
+
+    /// Поиск роли по slug
+    pub async fn find_slug(
+                    trans: &mut sqlx::MySqlConnection,
+                    slug:  &str,
+                 ) ->Result<Option<Role>> {
+        let mut tmp_role = Role::default() ;
+
+        tmp_role.set_slug(slug)? ;
+
+        match sqlx::query_as::<_, Role>(
+                r#"
+                select *
+                from roles
+                where slug = ?
+                "#
+            )
+            .bind(tmp_role.slug())
+            .fetch_one(&mut *trans)
+            .await {
+          Ok(r) => Ok(Some(r)),
+          Err(sqlx::Error::RowNotFound) => Ok(None),
+          Err(err) => Err(err.into())
+        }
+    }
+
+    /// Обязательный поиск роли по slug
+    pub async fn find_slug_raise(
+                    trans: &mut sqlx::MySqlConnection,
+                    slug:  &str,
+                 ) ->Result<Role> {
+        match Self::find_slug(trans, slug).await {
+            Ok(rr) => match rr {
+                Some(r) => Ok(r),
+                None => Err(anyhow::anyhow!("Not found role for slud: {}", slug)),
+            },
+            Err(err) => Err(err),
+        }
+    }
+
+    /// Вставить роль
+    pub async fn ins_role(
+                    trans: &mut sqlx::MySqlConnection,
+                    slug:           &str,
+                    name:           &str,
+                    permissions:    &str,
+                 ) ->Result<Role> {
+        let mut new_role = Role::default() ;
+        
+        new_role.set_slug(slug)? ;
+
+        new_role.set_name(name)? ;
+
+        new_role.set_permissions(permissions)? ;
+
+        match Self::find_slug(&mut *trans, slug).await? {
+            Some(r) => Ok(r),
+            None => {
+                sqlx::query(r#"
+                    insert into roles (slug, name, permissions)
+                    values (?, ?, ?)                
+                    "#
+                )
+                .bind(new_role.slug())
+                .bind(new_role.name())
+                .bind(new_role.permissions())
+                .execute(&mut *trans)
+                .await? ;
+
+                Self::find_slug_raise(
+                        &mut *trans,
+                        new_role.slug()
+                    )
+                    .await
+            },
+        }
+    }
+
     /// Создать роль
     pub async fn create_role(
                     db:             &Database,
@@ -206,67 +298,34 @@ impl Role {
                         .begin()
                         .await? ;
 
-        // Проверка наличия создаваемой роли
-        match sqlx::query_as::<_, Role>(
-                    r#"
-                    select *
-                    from roles
-                    where slug = ?
-                    "#
+        match Self::find_slug(
+                    &mut *trans,
+                    new_role.slug()
                 )
-                .bind(new_role.slug())
-                .fetch_one(&mut *trans)
-                .await {
-            Ok(r) => {  // данные по роли извлечены
-                r.validate()? ; // проверка роли
-                Ok(r)   // возврат найденной роли
-            },
-            Err(sqlx::Error::RowNotFound) => {  // роль не найдена
-                // создание роли
-                sqlx::query(
-                    r#"
-                    insert into roles (slug, name, permissions)
-                    values (?, ?, ?)
-                    "#
+                .await? {
+            Some(r) => Ok(r),
+            None => {
+                Self::ins_role(
+                    &mut *trans,
+                    new_role.slug(),
+                    new_role.name(),
+                    new_role.permissions(),
                 )
-                .bind(new_role.slug())
-                .bind(new_role.name())
-                .bind(new_role.permissions())
-                .execute(&mut *trans)
                 .await? ;
 
-                // получить данные по роли
-                new_role = sqlx::query_as::<_, Role>(
-                        r#"
-                        select *
-                        from roles
-                        where slug = ?
-                        "#
+                match Self::find_slug_raise(
+                        &mut *trans,
+                        new_role.slug()
                     )
-                    .bind(new_role.slug())
-                    .fetch_one(&mut *trans)
-                    .await? ;
-
-                new_role
-                    .validate()? ;
-
-                trans
-                    .commit()
-                    .await? ;
-
-                Ok(new_role)
+                    .await {
+                        Ok(r) => {
+                            trans.commit().await? ;
+                            Ok(r)
+                        },
+                        Err(err) => Err(err),
+                }
             },
-            Err(err) => Err(err.into()), // ошибка запроса
         }
-    }
+    }    
 
-    pub async fn create_default_role(db: &Database) ->Result<Role> {
-        Self::create_role(
-                db,
-                SLUG_DEFAULT,
-                "Default role",
-                "access,read,write",
-            )
-            .await
-    }
 }

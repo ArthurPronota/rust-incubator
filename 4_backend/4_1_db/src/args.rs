@@ -67,6 +67,30 @@ pub enum Commands {
         ]        
         permissions:    Vec<String>,
     },
+
+    /// Добвить роль к пользователю
+    #[clap(
+        name = "role-to-user",
+        about = "Add a role to a user",
+     )
+    ]
+    AddRoleToUser {
+        /// Код роли
+        #[arg(
+            name = "slug",
+            help = "Slug string of role",
+         )
+        ]
+        slug:       String,
+
+        /// Id user
+        #[arg(
+            name = "id_user",
+            help = "Id of user",
+         )
+        ]
+        id_user:    u32,
+    }
 }
 
 // Автоматически реализует трейт Parser

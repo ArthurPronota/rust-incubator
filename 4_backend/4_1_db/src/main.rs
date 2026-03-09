@@ -10,6 +10,10 @@ cargo run -- init-db
 
 cargo run -- create-role "read-data" "Reader" "read,write,access"
 
+cargo run -- create-role "manager-1" "Level 1 Manager" "access,read,write,approve"
+
+cargo run -- create-user "Arthur" "yhgvnhjk.986ght.jhgt543@gmail.com"
+
 */
 mod args ;
 mod executor ;

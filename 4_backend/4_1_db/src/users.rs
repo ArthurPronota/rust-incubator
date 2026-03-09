@@ -40,7 +40,7 @@ use validator::{
         ValidateLength,
     } ;
 
-use crate::db::Database;
+//use crate::db::Database;
 
 /*
 use const_format::concatcp ;
@@ -128,6 +128,7 @@ impl User {
         self.id_user
     }
 
+    /*
     /// Проверка id_user
     pub fn check_id_user(&self) ->Result<()> {
         match self.id_user() {
@@ -135,6 +136,7 @@ impl User {
             _ => Ok(())
         }
     }
+     */
 
     /// Установка name
     pub fn set_name(&mut self, name: &str) ->Result<()> {
@@ -228,6 +230,120 @@ impl User {
     }
      */
 
+    /// Поиск пользователя по id_user
+    pub async fn find_for_id_user(
+                    trans: &mut sqlx::MySqlConnection,
+                    id_user:    u32,
+                 ) ->Result<Option<User>> {
+        let mut tmp_user = User::default() ;
+
+        tmp_user.set_id_user(id_user)? ;
+
+        match sqlx::query_as::<_, User>(
+                r#"
+                select *
+                from users
+                where id_user = ?
+                "#
+            )
+            .bind(tmp_user.id_user())
+            .fetch_one(&mut *trans)
+            .await {
+                Ok(u) => Ok(Some(u)),
+                Err(sqlx::Error::RowNotFound) => Ok(None),
+                Err(err) => Err(err.into()),
+        }
+    }
+
+    /// Обязательный поиск пользователя по id_user
+    pub async fn find_for_id_user_raise(
+                    trans: &mut sqlx::MySqlConnection,
+                    id_user:    u32,
+                 ) ->Result<User> {
+        match Self::find_for_id_user(&mut *trans, id_user).await {
+            Ok(ur) => match ur {
+                Some(u ) => Ok(u),
+                None => Err(anyhow::anyhow!("Not found user for id_user: {}", id_user)),
+            },
+            Err(err) => Err(err),
+        }
+    }
+
+    /// Поиск пользователя по email
+    pub async fn find_for_email(
+                        trans: &mut sqlx::MySqlConnection,
+                        email: &str, 
+                    ) ->Result<Option<User>> {
+        let mut new_user = User::default() ;
+        
+        new_user.set_email(email)? ;
+
+        // Поиск пользователя по email
+        match sqlx::query_as::<_, User>(
+            r#"
+            select *
+            from users
+            where email = ?
+            "#
+        )
+        .bind(new_user.email())
+        .fetch_one(&mut *trans)
+        .await {
+            Ok(u) => {  // пользователь найден
+                u.validate()? ;
+                Ok(Some(u))
+            },
+            Err(sqlx::Error::RowNotFound) => Ok(None),  // пользователь не найден
+            Err(err) => Err(err.into()),    // возникла ошибка
+        }
+    }
+
+    /// Обязательный поиск пользователя по email
+    pub async fn find_for_email_raise(
+                        trans: &mut sqlx::MySqlConnection,
+                        email: &str, 
+                    ) ->Result<User> {
+        match Self::find_for_email(&mut *trans, email).await {
+            Ok(ur) => match ur {
+                Some(u ) => Ok(u),
+                None => Err(anyhow::anyhow!("Not found user for email: {}", email)),
+            },
+            Err(err) => Err(err),
+        }
+    }
+
+    /// Вставить пользователя
+    pub async fn ins_user(
+                    trans: &mut sqlx::MySqlConnection,
+                    name:  &str,
+                    email: &str,
+                 ) ->Result<User> {
+        let mut new_user = User::default() ;
+
+        new_user.set_email(email)? ;
+
+        new_user.set_name(name)? ;
+
+        match Self::find_for_email(&mut *trans, new_user.email()).await? {
+            Some(u) => Ok(u),
+            None => {
+                sqlx::query(
+                    r#"
+                    insert into users (name, email)
+                    values (?, ?)                    
+                    "#
+                )
+                .bind(new_user.name())
+                .bind(new_user.email())
+                .execute(&mut *trans)
+                .await? ;
+
+                Self::find_for_email_raise(&mut *trans, new_user.email()).await
+            },
+        }
+    }
+
+    /*
     /// Создать пользователя в DB
     pub async fn create_user(
                 db:    &Database,                
@@ -303,34 +419,5 @@ impl User {
             Err(err) => Err(err.into()),
         }
     }
-
-    /// Поиск пользователя по email
-    pub async fn find_for_email(
-                        trans: &mut sqlx::MySqlConnection,        
-                        email: &str, 
-                    ) ->Result<Option<User>> {
-        // Проверка email
-        if ! email.validate_email() {
-            return Err(anyhow::anyhow!("Invalid email: {}", email)) ;
-        }
-
-        // Поиск пользователя по email
-        match sqlx::query_as::<_, User>(
-            r#"
-            select *
-            from user
-            where email = ?
-            "#
-        )
-        .bind(email)
-        .fetch_one(&mut *trans)
-        .await {
-            Ok(u) => {  // пользователь найден
-                u.validate()? ;
-                Ok(Some(u))
-            },
-            Err(sqlx::Error::RowNotFound) => Ok(None),  // пользователь не найден
-            Err(err) => Err(err.into()),    // возникла ошибка
-        }
-    }
+     */
 }
