@@ -167,6 +167,80 @@ impl UsersRoles {
         }
     }
 
+    /// Получить все роли для пользователя
+    pub async fn find_all_user_roles(
+                    trans: &mut sqlx::MySqlConnection,
+                    id_user:    u32,
+                ) ->Result<Vec<UsersRoles>> {
+
+        let mut user_tmp = users::User::default() ;
+
+        user_tmp.set_id_user(id_user)? ;
+
+        Ok(sqlx::query_as::<_, UsersRoles>(
+            r#"
+                  select *
+                  from users_roles
+                  where id_user = ?
+                "#
+            )
+            .bind(id_user)
+            .fetch_all(&mut *trans)
+            .await? 
+        )    
+    }
+
+    /// Удалить роль у пользователя
+    pub async fn del_role_from_user(
+                    trans: &mut sqlx::MySqlConnection,
+                    id_user:    u32,
+                    slug:       &str,
+                 ) ->Result<()> {
+        let mut new_user_role = UsersRoles::default() ;
+
+        new_user_role.set_id_user(id_user)? ;
+
+        new_user_role.set_slug(slug)? ;
+
+        // Проверка пользователя по id_user
+        users::User::find_for_id_user_raise(&mut *trans, id_user).await? ;
+        // Проверка роли по slug
+        roles::Role::find_slug_raise(&mut *trans, slug).await? ;
+
+        let all_roles = 
+                Self::find_all_user_roles(&mut *trans, id_user)
+                        .await? ;
+
+        // У пользователя должна остаться хотя бы одна роль.
+        if all_roles.len() <= 1 {
+            return Err(anyhow::anyhow!("Invalid number: {} of roles for id_user: {}", all_roles.len(), new_user_role.id_user()));
+        }
+
+        if all_roles
+            .iter()
+            .filter(|v|
+                v.slug == new_user_role.slug()
+            )
+            .collect::<Vec<_>>()
+            .len() != 1 {
+              return Err(anyhow::anyhow!("There is no role: {} for id_user: {}", new_user_role.slug(), new_user_role.id_user()));
+        }
+
+        sqlx::query(
+            r#"
+            delete from users_roles
+            where id_user = ?
+            and slug = ?
+            "#
+        )
+        .bind(new_user_role.id_user())
+        .bind(new_user_role.slug())
+        .execute(&mut *trans)
+        .await? ;
+
+        Ok(())          
+    }
+
     /*
     /// Добавить роль к пользователю
     pub async fn add_role_to_user(

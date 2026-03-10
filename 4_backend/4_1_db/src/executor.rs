@@ -19,7 +19,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
             db_res
                 .create_tables()
                 .await ?;
-            println!("✅ Tables created successfully.") ;
+            println!("Tables created successfully.") ;
         },
         Commands::CreateUser { name, email } => {
             // Сформировать новую транзакцию
@@ -47,13 +47,13 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
 
             trans.commit().await? ;
 
-            println!("✅ User created successfully.") ;                
+            println!("User created successfully.") ;                
         },
         Commands::CreateRole { slug, name, permissions } => {
             roles::Role::create_role(&db_res, slug, name, &permissions.join(","))
                 .await? ;
 
-            println!("✅ Role created successfully.") ;
+            println!("Role created successfully.") ;
         },
         Commands::AddRoleToUser { slug, id_user } => {
             // Сформировать новую транзакцию
@@ -73,8 +73,48 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                     )
                     .await? ;
 
-            println!("✅ The role has been successfully added to the user.") ;
+            trans.commit().await? ;
+
+            println!("The role has been successfully added to the user.") ;
         },
+        Commands::RemoveRoleFromUser { slug, id_user } => {
+            // Сформировать новую транзакцию
+            let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+            users_roles::UsersRoles::del_role_from_user(
+                    &mut *trans,
+                    *id_user,
+                    slug
+                ).await? ;
+
+            trans.commit().await? ;
+
+            println!("The role has been successfully removed from the user.") ;
+        },
+        Commands::UpdateNameUser { new_name, id_user } => {
+            // Сформировать новую транзакцию
+            let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+            users::User::update_name(
+                    &mut *trans,
+                    new_name,
+                    *id_user
+                ).await? ;
+
+            trans.commit().await? ;
+
+            println!("Username changed successfully.") ;
+        }
     }
 
     Ok(())

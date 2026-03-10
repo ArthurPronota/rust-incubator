@@ -90,6 +90,53 @@ pub enum Commands {
          )
         ]
         id_user:    u32,
+    },
+
+    /// Удалить роль у пользователю
+    #[clap(
+        name = "remove-user-role",
+        about = "Remove a role from a user",
+     )
+    ]
+    RemoveRoleFromUser {
+        /// Код роли
+        #[arg(
+            name = "slug",
+            help = "Slug string of role",
+         )
+        ]
+        slug:       String,
+
+        /// Id user
+        #[arg(
+            name = "id_user",
+            help = "Id of user",
+         )
+        ]        
+        id_user:    u32,
+    },
+
+    /// Модифицировать имя у пользователю
+    #[clap(
+        name = "update-name-user",
+        about = "Modify user name",
+     )
+    ]    
+    UpdateNameUser {
+        #[arg(
+            name = "New username",
+            help = "Modified username",
+         )
+        ]
+        new_name:   String,
+
+        /// Id user
+        #[arg(
+            name = "id_user",
+            help = "Id of user",
+         )
+        ]        
+        id_user:    u32,        
     }
 }
 

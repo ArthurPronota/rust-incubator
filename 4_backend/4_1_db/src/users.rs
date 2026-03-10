@@ -343,6 +343,47 @@ impl User {
         }
     }
 
+
+    /// Модифицировать имя пользователя
+    pub async fn update_name(
+                    trans: &mut sqlx::MySqlConnection,
+                    name:       &str,
+                    id_user:    u32,
+                 ) ->Result<User> {
+
+        let mut tmp_user = User::default() ;
+
+        tmp_user.set_name(name)? ;
+
+        tmp_user.set_id_user(id_user)? ;
+
+        let exist_user = 
+                User::find_for_id_user_raise(&mut *trans, id_user).await? ;
+
+        if exist_user.name() == tmp_user.name() {
+            return Ok(exist_user) ;
+        }
+
+        sqlx::query(r#"
+                update users
+                set name = ?
+                where id_user = ?
+                "#
+            )
+            .bind(tmp_user.name())
+            .bind(tmp_user.id_user())
+            .execute(&mut *trans)
+            .await? ;
+
+        Ok(
+            User::find_for_id_user_raise(
+                    &mut *trans, 
+                    tmp_user.id_user()
+                )
+                .await?
+        )
+    }
+
     /*
     /// Создать пользователя в DB
     pub async fn create_user(
