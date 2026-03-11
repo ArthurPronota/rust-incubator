@@ -52,11 +52,11 @@ async fn main() ->Result<()> {
                         anyhow::anyhow!("{}, for var: {}", err, DB_PATH_CONNECT)
                     })? ;
 
-    println!("db_path_conn: {}", db_path_conn) ;
+    //println!("db_path_conn: {}", db_path_conn) ;
 
     let cl_args = args::Args::parse() ;
 
-    println!("v: {:?}", cl_args) ;
+    //println!("v: {:?}", cl_args) ;
 
     // Выполнить полученную команду
     executor::any_command(
