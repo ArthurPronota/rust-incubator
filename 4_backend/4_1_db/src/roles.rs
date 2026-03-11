@@ -1,10 +1,14 @@
-use anyhow::Result ;
+//use std::f64::consts::E;
+
+use anyhow::{Result} ;
 
 use sqlx::FromRow ;
 
 use validator::{Validate, ValidateLength} ;
 
-use crate::db::Database ;
+use crate::{db::Database, 
+            // users_roles::UsersRoles
+        } ;
 
 
 pub const MIN_LENGTH_SLUG: u64 = 1 ;
@@ -74,7 +78,21 @@ impl Role {
                             Some(MIN_LENGTH_SLUG), 
                             Some(MAX_LENGTH_SLUG),
                             None
-                        ) => sl.to_owned(),
+                        ) => {
+                // Проверка верхнего регистра в slug.
+                if sl != sl.to_lowercase() {
+                    return Err(anyhow::anyhow!("The slug is made in upper caseЖ {}", sl));
+                }
+
+                // Элемент слизняка пуст
+                if sl
+                    .split('-')
+                    .any(|v| v.is_empty()) {
+                  return Err(anyhow::anyhow!("Invalid slug value: {}", sl));
+                }
+
+                sl.to_owned()
+            },
             sl => return Err(anyhow::anyhow!("Invalid length: {} of slug", sl.chars().count())),
         } ;
 
@@ -154,6 +172,7 @@ impl Role {
         &self.permissions
     }
 
+    /*
     /// Прербпазовать permissions в Vec<String>
     pub fn from_permissions_to_vec(&self) ->Vec<String> {
         let mut vec_tmp = self
@@ -169,7 +188,9 @@ impl Role {
 
         vec_tmp
     }
+     */
 
+    /*
     /// Установка permissions из Vec
     pub fn set_permissions_from_vec(&mut self, v_perm: &Vec<String>) ->Result<()> {
 
@@ -187,7 +208,8 @@ impl Role {
 
         self.set_permissions(&perm_new)
     }
-
+     */
+    
     pub async fn create_default_role(db: &Database) ->Result<Role> {
         Self::create_role(
                 db,
@@ -272,6 +294,178 @@ impl Role {
                     )
                     .await
             },
+        }
+    }
+
+    /// Модифицировать name в роли
+    pub async fn update_name(
+                    trans: &mut sqlx::MySqlConnection,
+                    slug:           &str,
+                    name:           &str,
+                ) ->Result<Role> {
+        let mut role_tmp = Role::default() ;
+
+        role_tmp.set_slug(slug)? ;
+
+        role_tmp.set_name(name)? ;
+
+        let role_now = 
+                Self::find_slug_raise(
+                    &mut *trans,
+                    role_tmp.slug()
+                )
+                .await? ;
+
+        if role_now.name() == role_tmp.name() {
+            return Ok(role_now);
+        }
+
+        sqlx::query(
+            r#"
+                update roles
+                set name = ?
+                where slug = ?
+                "#
+            )
+            .bind(role_tmp.name())
+            .bind(role_tmp.slug())
+            .execute(&mut *trans)
+            .await? ;
+
+        Self::find_slug_raise(&mut *trans, role_tmp.slug())
+            .await
+    }
+
+    pub async fn update_permissions(
+                    trans: &mut sqlx::MySqlConnection,
+                    slug:           &str,
+                    permissions:    &str,
+                 ) ->Result<Role> {
+        let mut role_tmp = Role::default() ;
+
+        role_tmp.set_slug(slug)? ;
+
+        role_tmp.set_permissions(permissions)? ;
+
+        let role_now = 
+                Role::find_slug_raise(&mut *trans, role_tmp.slug())
+                .await? ;
+
+        if role_tmp.permissions() == role_now.permissions() {
+            return Ok(role_now) ;
+        }
+
+        sqlx::query(r#"
+                    update roles
+                    set permissions = ?
+                    where slug = ?
+                    "#
+                )
+                .bind(role_tmp.permissions())
+                .bind(role_tmp.slug())
+                .execute(&mut *trans)
+                .await? ;
+
+        Self::find_slug_raise(
+                    &mut *trans,
+                    role_tmp.slug()
+                )
+                .await
+    }
+
+    /// Удалить роль 
+    pub async fn delete_role(
+                    trans: &mut sqlx::MySqlConnection,
+                    slug:           &str,
+                 ) ->Result<()> {
+
+        let mut role_tmp = Role::default() ;
+
+        role_tmp.set_slug(slug)? ;
+
+        if role_tmp.slug() == SLUG_DEFAULT {
+            return Err(anyhow::anyhow!("The default role cannot be deleted."));
+        }
+
+        Role::find_slug_raise(
+                        &mut *trans,
+                        role_tmp.slug()
+                    )
+                    .await? ;
+
+/*
+                select id_user
+                from (
+                    select ur_2.id_user as id_user, count(*) as count_roles
+                    from users_roles ur_2
+                    where ur_2.id_user in (
+                        select ur_1.id_user
+                        from users_roles ur_1
+                        where ur_1.slug = "read-data"
+                    )
+                    group by ur_2.id_user
+                ) as res
+                where res.count_roles = 1
+
+select ur_2.id_user as id_user, count(*) as count_roles
+from users_roles ur_2
+where ur_2.id_user = 2
+group by ur_2.id_user
+
+
+*/
+        // В случа получения одного значения использовать список: (u32,)
+        match sqlx::query_as::<_, (u32,)>(
+            r#"
+                select id_user
+                from (
+                    select ur_2.id_user as id_user, count(*) as count_roles
+                    from users_roles ur_2
+                    where ur_2.id_user in (
+                        select ur_1.id_user
+                        from users_roles ur_1
+                        where ur_1.slug = ?
+                    )
+                    group by ur_2.id_user
+                ) as res
+                where res.count_roles = 1
+            "#
+            )
+            .bind(role_tmp.slug())
+            .fetch_optional(&mut *trans)
+            .await 
+        {
+            Ok(Some(row)) => {
+                Err(
+                    anyhow::anyhow!(
+                            "You cannot delete role: {} because it is the only one for id_user: {}", 
+                            role_tmp.slug(),
+                            row.0
+                    )
+                )
+            },
+            Ok(None) => {
+                sqlx::query(
+                    r#"
+                    delete from roles
+                    where slug = ?
+                    "#
+                )
+                .bind(role_tmp.slug())
+                .execute(&mut *trans)
+                .await? ;
+
+                match Role::find_slug(
+                            &mut *trans,
+                            role_tmp.slug()
+                    )   
+                    .await? 
+                {
+                   Some(_) => Err(anyhow::anyhow!("The role: {} has not been deleted", role_tmp.slug())),
+                   None => Ok(()),
+                }
+            },
+            Err(err) => Err(err.into()),
         }
     }
 

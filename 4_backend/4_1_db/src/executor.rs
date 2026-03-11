@@ -38,8 +38,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                                  .await? ;
 
             // Добавить для пользователя роль по умолчанию
-            let new_user_role = 
-                        users_roles::UsersRoles::ins_role_to_user(
+            users_roles::UsersRoles::ins_role_to_user(
                             &mut *trans,
                             new_user.id_user(),
                             roles::SLUG_DEFAULT
@@ -49,12 +48,42 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
 
             println!("User created successfully.") ;                
         },
+        Commands::DeleteUser { id_user } => {
+            // Сформировать новую транзакцию
+            let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+            users::User::delete_user(&mut *trans, *id_user).await? ;
+                      
+            trans.commit().await? ;
+
+            println!("The user has been deleted.") ;
+        },
         Commands::CreateRole { slug, name, permissions } => {
             roles::Role::create_role(&db_res, slug, name, &permissions.join(","))
                 .await? ;
 
             println!("Role created successfully.") ;
         },
+        Commands::DeleteRole { slug } => {
+            // Сформировать новую транзакцию
+            let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+            
+            roles::Role::delete_role(&mut *trans, slug).await? ;
+
+            trans.commit().await? ;
+
+            println!("The role has been successfully added to the user.") ;                                
+        }
         Commands::AddRoleToUser { slug, id_user } => {
             // Сформировать новую транзакцию
             let mut trans = 
@@ -65,8 +94,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                       .await? ;
 
             // Добавить роль для пользователя
-            let usr_roles = 
-                    users_roles::UsersRoles::ins_role_to_user(
+            users_roles::UsersRoles::ins_role_to_user(
                         &mut *trans,
                         *id_user,
                         slug
@@ -113,7 +141,63 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
 
             trans.commit().await? ;
 
-            println!("Username changed successfully.") ;
+            println!("User's name changed successfully.") ;
+        },
+        Commands::UpdateEmailUser { new_email, id_user } => {
+            // Сформировать новую транзакцию
+            let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+            users::User::update_email(
+                &mut *trans,
+                new_email,
+                *id_user
+            )
+            .await? ;
+
+            trans.commit().await? ;
+
+            println!("User's email changed successfully.") ;                      
+        },
+        Commands::UpdateNameRole { new_name, slug } => {
+            // Сформировать новую транзакцию
+            let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+            roles::Role::update_name(&mut *trans, slug, new_name)
+                .await? ;
+
+            trans.commit().await? ;
+
+            println!("Role name successfully changed.") ;
+        },
+        Commands::UpdatePermissionsRole { slug, new_permissions } => {
+            // Сформировать новую транзакцию
+            let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+            roles::Role::update_permissions(
+                        &mut *trans,
+                        slug, 
+                        &new_permissions.join(",")
+                    )
+                    .await? ;
+
+            trans.commit().await? ;
+
+            println!("Role permissions successfully changed.") ;
         }
     }
 

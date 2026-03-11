@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize} ;
 
-/*  Ручеая реализация FromRow обусловленная типом pub id_user: usize 
+/*  Ручная реализация FromRow обусловленная типом pub id_user: usize 
     для которого нет автоматического преобразования из MySql типа int unsigned
     в Rust тип usize
 
@@ -382,6 +382,73 @@ impl User {
                 )
                 .await?
         )
+    }
+
+    pub async fn update_email(
+                    trans: &mut sqlx::MySqlConnection,
+                    email:      &str,
+                    id_user:    u32,
+                 ) ->Result<User> {
+        let mut user_tmp = User::default() ;
+
+        user_tmp.set_email(email)? ;
+
+        user_tmp.set_id_user(id_user)? ;
+
+        let user_now = 
+                Self::find_for_id_user_raise(&mut *trans, id_user)
+                    .await? ;
+
+        if user_now.email() == user_tmp.email() {
+            return Ok(user_now);
+        }   
+
+        sqlx::query(r#"
+            update users
+            set email = ?
+            where id_user = ?
+        "#
+        )
+        .bind(user_tmp.email())
+        .bind(user_tmp.id_user())
+        .execute(&mut *trans)
+        .await? ;
+
+        User::find_for_id_user_raise(
+                &mut *trans,
+                user_tmp.id_user()
+            )
+            .await
+    }
+
+    pub async fn delete_user(
+                    trans: &mut sqlx::MySqlConnection,
+                    id_user:    u32,
+                 ) ->Result<()> {
+        let mut user_tmp = User::default() ;
+
+        user_tmp.set_id_user(id_user)? ;
+
+        User::find_for_id_user_raise(&mut *trans, user_tmp.id_user())
+            .await? ;
+
+        sqlx::query(r#"
+            delete from users
+            where id_user = ?
+        "#
+        )
+        .bind(user_tmp.id_user())
+        .execute(&mut *trans)
+        .await? ;
+
+        match Self::find_for_id_user(&mut *trans, user_tmp.id_user())
+            .await?
+        {
+            Some(_) => {
+                Err(anyhow::anyhow!("The user id_user: {} has not been deleted", user_tmp.id_user()))
+            },
+            None => Ok(()),
+        }
     }
 
     /*

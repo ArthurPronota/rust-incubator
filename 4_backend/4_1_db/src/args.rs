@@ -35,12 +35,74 @@ pub enum Commands {
         email:  String,
     },
 
+    /// Удаление пользователя
+    #[clap(
+        name = "delete-user",
+        about = "Delete user",
+     )
+    ]    
+    DeleteUser {
+        /// Id user
+        #[arg(
+            name = "id_user",
+            help = "Id of user",
+         )
+        ]
+        id_user:    u32,
+    },
+
+    /// Модифицировать имя у пользователю
+    #[clap(
+        name = "update-name-user",
+        about = "Modify user name",
+     )
+    ]
+    UpdateNameUser {
+        #[arg(
+            name = "New username",
+            help = "Modified username",
+         )
+        ]
+        new_name:   String,
+
+        /// Id user
+        #[arg(
+            name = "id_user",
+            help = "Id of user",
+         )
+        ]        
+        id_user:    u32,
+    },
+
+    /// Модифицировать email у пользователю
+    #[clap(
+        name = "update-email-user",
+        about = "Modify email name",
+     )
+    ]    
+    UpdateEmailUser {
+        #[arg(
+            name = "New user email",
+            help = "Modified user email",
+         )
+        ]
+        new_email:  String,
+
+        /// Id user
+        #[arg(
+            name = "id_user",
+            help = "Id of user",
+         )
+        ]        
+        id_user:    u32,        
+    },
+
     /// Создать роль
     #[clap(
         name = "create-role",
         about = "Create a new role",
      )
-    ] 
+    ]
     CreateRole {
         /// Slug: name-of-role
         #[arg(
@@ -66,6 +128,72 @@ pub enum Commands {
          )
         ]        
         permissions:    Vec<String>,
+    },
+
+    /// Удалить роль
+    #[clap(
+        name = "delete-role",
+        about = "Delete role",
+     )
+    ]
+    DeleteRole {
+        /// Slug: name-of-role
+        #[arg(
+            name = "slug",
+            help = "Slug string of role",
+         )
+        ]
+        slug:   String,
+    },
+
+    /// Модифицировать имя у пользователя
+    #[clap(
+        name = "update-name-role",
+        about = "Modify role name",
+     )
+    ]
+    UpdateNameRole {
+        /// Наименование роли
+        #[arg(
+            name = "New role name",
+            help = "Modified role name",
+         )
+        ]
+        new_name:   String,
+
+        /// Код роли
+        #[arg(
+            name = "slug",
+            help = "Slug string of role",
+         )
+        ]
+        slug:       String,
+    },
+
+    /// Модифицировать разрешения у пользователя
+    #[clap(
+        name = "update-perm-role",
+        about = "Modify role permissions",
+     )
+    ]    
+    UpdatePermissionsRole {
+        /// Код роли
+        #[arg(
+            name = "slug",
+            help = "Slug string of role",
+         )
+        ]
+        slug:       String,
+
+        /// Разрешения включенную в эту роль, разделённых запятой: r,i,d,u
+        /// Значения типа Vec<_> должны быть в конце списка аргументов иначе возникает ошибка.
+        #[arg(
+            name = "new-permissions",
+            help = "The new permissions for this role are comma separated.",
+            value_delimiter = ',',
+         )
+        ]        
+        new_permissions:    Vec<String>,
     },
 
     /// Добвить роль к пользователю
@@ -114,30 +242,7 @@ pub enum Commands {
          )
         ]        
         id_user:    u32,
-    },
-
-    /// Модифицировать имя у пользователю
-    #[clap(
-        name = "update-name-user",
-        about = "Modify user name",
-     )
-    ]    
-    UpdateNameUser {
-        #[arg(
-            name = "New username",
-            help = "Modified username",
-         )
-        ]
-        new_name:   String,
-
-        /// Id user
-        #[arg(
-            name = "id_user",
-            help = "Id of user",
-         )
-        ]        
-        id_user:    u32,        
-    }
+    },    
 }
 
 // Автоматически реализует трейт Parser
