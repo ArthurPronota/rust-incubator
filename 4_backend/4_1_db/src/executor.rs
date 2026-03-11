@@ -63,6 +63,39 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
 
             println!("The user has been deleted.") ;
         },
+        Commands::ShowUsersRoles { id_user } => {
+            // Сформировать новую транзакцию
+            let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+            match id_user {
+                Some(u) => {
+                    let ur = users::UserWithRole::get_data(
+                        &mut *trans,
+                        *u
+                    )
+                    .await? ;
+                    print!("{}", ur) ;
+                },
+                None => {
+                    for id_user in users::User::get_all_id_user(&mut *trans).await? {
+                        let ur = 
+                            users::UserWithRole::get_data(
+                                &mut *trans,
+                                id_user
+                            )
+                            .await? ;
+                        print!("{}", ur) ;
+                        println!("--------------------------------------------") ;
+                    }
+
+                }
+            }
+        },
         Commands::CreateRole { slug, name, permissions } => {
             roles::Role::create_role(&db_res, slug, name, &permissions.join(","))
                 .await? ;

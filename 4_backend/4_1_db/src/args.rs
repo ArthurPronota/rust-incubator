@@ -79,7 +79,7 @@ pub enum Commands {
         name = "update-email-user",
         about = "Modify email name",
      )
-    ]    
+    ]
     UpdateEmailUser {
         #[arg(
             name = "New user email",
@@ -93,8 +93,25 @@ pub enum Commands {
             name = "id_user",
             help = "Id of user",
          )
-        ]        
+        ]
         id_user:    u32,        
+    },
+
+
+    /// Показать пользователей и из роли
+    #[clap(
+        name = "show-users-roles",
+        about = "Show users and their roles",
+     )
+    ]    
+    ShowUsersRoles {
+        /// Id user
+        #[arg(
+            name = "id_user",
+            help = "Id of user, optional",
+         )
+        ]
+        id_user:    Option<u32>
     },
 
     /// Создать роль

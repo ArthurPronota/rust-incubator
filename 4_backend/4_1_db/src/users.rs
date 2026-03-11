@@ -40,6 +40,8 @@ use validator::{
         ValidateLength,
     } ;
 
+use crate::{roles::{self, Role}, users_roles};
+
 //use crate::db::Database;
 
 /*
@@ -384,6 +386,7 @@ impl User {
         )
     }
 
+    /// Модифицировать email для пользователя
     pub async fn update_email(
                     trans: &mut sqlx::MySqlConnection,
                     email:      &str,
@@ -421,6 +424,7 @@ impl User {
             .await
     }
 
+    /// Удалить пользователя
     pub async fn delete_user(
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
@@ -449,6 +453,23 @@ impl User {
             },
             None => Ok(()),
         }
+    }
+
+    /// Получить всех id_user
+    pub async fn get_all_id_user(trans: &mut sqlx::MySqlConnection,) ->Result<Vec<u32>> {
+        Ok(
+            sqlx::query_as::<_,(u32,)>(r#"
+                    select id_user
+                    from users
+                    order by id_user
+                    "#
+            )
+            .fetch_all(&mut *trans)
+            .await?
+            .iter()
+            .map(|&u| u.0)
+            .collect::<Vec<_>>() 
+        )
     }
 
     /*
@@ -528,4 +549,105 @@ impl User {
         }
     }
      */
+
+    /*
+        Commands::UserList { id } => {
+            if let Some(id) = id {
+                if let Some(user) = db.get_user_with_roles(id).await? {
+                    println!("{}", user);
+                } else {
+                    println!("User {} not found", id);
+                }
+            } else {
+                let users = db.list_users_with_roles().await?;
+                for user in users {
+                    println!("{}", user);
+                    println!("---");
+                }
+            }
+        }    
+     */
+}
+
+/// Пользователь с его ролями
+#[derive(Default)]
+pub struct UserWithRole {
+    user:   User,
+    list_roles: Vec<Role>
+}
+
+
+// Реализация Display для UserWithRole
+impl std::fmt::Display for UserWithRole {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(
+            f,
+            "User #{}: {} ({})", 
+            self.user.id_user(), 
+            self.user.name(),
+            self.user.email()
+        )? ;
+
+        writeln!(f, "Roles: ")? ;
+
+        if self.list_roles.is_empty() {
+            writeln!(f, "  No roles assigned")? ;
+        } else {
+            for rl in &self.list_roles {
+                writeln!(
+                    f,
+                    "  Role #{}: {} perm: {}",
+                    rl.slug(),
+                    rl.name(),
+                    rl.permissions(),
+                )? ;
+            }
+        }
+
+        Ok(())
+    }
+}
+
+impl UserWithRole {
+    /// Получить данные по пользователю и его роли
+    pub async fn get_data(
+                    trans: &mut sqlx::MySqlConnection,
+                    id_user: u32
+                 ) ->Result<UserWithRole> {
+        let mut user_with_roles = UserWithRole::default() ;
+
+        user_with_roles.user = 
+                User::find_for_id_user_raise(
+                    &mut *trans, 
+                    id_user
+                )
+                .await? ;
+
+        //user_with_roles.list_roles = 
+        let lr = users_roles::UsersRoles::find_all_user_roles(
+                &mut *trans,
+                id_user
+            )
+            .await? ;
+
+        for r in lr {
+            let role = 
+                    roles::Role::find_slug_raise(
+                        &mut *trans,
+                        r.slug()
+                    )
+                    .await? ;
+
+            user_with_roles.list_roles.push(role);
+        }
+
+        // сортировка ролей по slug
+        user_with_roles
+            .list_roles
+            .sort_by(|a, b|
+                a.slug().cmp(b.slug())
+            ) ;
+
+        Ok(user_with_roles)
+    }
 }
