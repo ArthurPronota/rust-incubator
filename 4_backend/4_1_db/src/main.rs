@@ -2,9 +2,30 @@
 
     Contact: https://artaudiochats.t.me/
 
-    Для работы программы необходим MySql версии 8.4.7
-    В файле .env указаны параметры соединения с MySql.
-    В переменную окружения DB_PATH_CONNECT можно так-же установить параметры соединения с MySql.
+        Общие положения:
+1) Для работы программы необходим MySql версии 8.4.7
+2) В файле .env указаны параметры соединения с MySql.
+3) В переменную окружения DB_PATH_CONNECT можно так-же установить параметры соединения с MySql.
+4) После создания пустой базы данных запустиие команду:
+    $ cargo run -- init-db
+5) Вся работа с DB выполняется в асинхронном режиме.
+
+        Структура проекта:
+    
+4_1_db/
+├── Cargo.toml              <- конфигурация программы
+├── src/                    <- директорий для хранения исходныъ кодов
+│   ├── main.rs             <- точка входа в программу
+│   ├── db.rs               <- модуль общей работы с DB
+│   ├── executor.rs         <- модуль обработки всех основных комманд
+│   ├── args.rs             <- модуль обработки агрементов CLI
+│   ├── roles.rs            <- модуль обработки ролей
+│   ├── users.rs            <- модуль обработки пользователей
+│   └── users_roles.rs      <- модуль обработки пользовательских ролей
+├── .env                    <- файл для формирования переменных окружения
+└── README.md               <- файл с документацией
+
+
 
     1. Общая помощь:
 $ cargo run -- -h
@@ -83,24 +104,27 @@ Role: #manager-1: Level 1 Manager perm: access,approve,read,write
 Role: #read-data: Reader perm: access,read,write
 --------------------------------------------
 $
+    8. Пример соединение с mysqlsh (опционально)
+\connect arthur@localhost:3306
 
 */
-mod args ;
-mod executor ;
-mod db ;
-mod users ;
-mod roles ;
-mod users_roles;
+mod args ;  // Модуль для работы с аргументами командной строки
+mod executor ;  // Модуль для выполнения основных операций
+mod db ;    // Модуль для работы с базой данных
+mod users ; // Модуль с моделями и логикой для пользователей
+mod roles ; // Модуль с моделями и логикой для ролей
+mod users_roles; // Модуль для связи пользователей и ролей (many-to-many)
 
-use anyhow::Result ;
-use clap::Parser;
+use anyhow::Result ;    // Упрощенная обработка ошибок
+use clap::Parser;   // Парсинг аргументов командной строки
 use std::{
-        path::Path
+        path::Path  // Работа с путями файловой системы
     } ;
 
+/// переменная окружения с путём соединения с DB
 const DB_PATH_CONNECT: &str = "DB_PATH_CONNECT" ;
 
-#[tokio::main]
+#[tokio::main]  // это макрос из крейта tokio, который превращает обычную асинхронную функцию main в исполняемый код.
 async fn main() ->Result<()> {
     // Путь к файлу с переменными ркружения и из значениями
     let env_file = Path::new(".env") ;
@@ -122,11 +146,8 @@ async fn main() ->Result<()> {
                         anyhow::anyhow!("{}, for var: {}", err, DB_PATH_CONNECT)
                     })? ;
 
-    //println!("db_path_conn: {}", db_path_conn) ;
-
+    // Получить агременты командной строки
     let cl_args = args::Args::parse() ;
-
-    //println!("v: {:?}", cl_args) ;
 
     // Выполнить полученную команду
     executor::any_command(
@@ -137,4 +158,3 @@ async fn main() ->Result<()> {
 
     Ok(())
 }
-
