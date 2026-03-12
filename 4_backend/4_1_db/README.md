@@ -118,22 +118,6 @@ __Миграции баз данных это система "контроля �
 
 ## Task
 
-Create an [SQL] database ([PostgreSQL], [MySQL] or [SQLite], on your choice) consisting of the following tables:
-- `users`: `id`, `name` and any other fields on your choice; 
-- `roles`: [`slug`][201] as a primary key, `name` and `permissions` (the concrete format on your choice) fields;
-- `users_roles`: `users.id` to `roles.slug` many-to-many relationship.
-
-Write a simple [CLI] application which allows to [CRUD] data in your database tables in the following ways:
-- create and delete `users` and `roles` (a `user` must always have an assigned `role`);
-- update fields of a single `user` or a `role`;
-- assign or unassign a `role` to/from a `user`;
-- list all `roles` or a single `role` by its `slug`;
-- list all `users` or a single `user` by its `id` (a `user` should be displayed with all the `roles` assigned to him).
-
-Consider to ensure [data consistency][202] in your database as much as possible.
-
-
-
 Создайте базу данных [SQL] ([PostgreSQL], [MySQL] или [SQLite], на ваш выбор), состоящую из следующих таблиц:
 - `users`: `id`, `name` и любые другие поля по вашему выбору;
 - `roles`: [`slug`][201] в качестве первичного ключа, поля `name` и `permissions` (конкретный формат по вашему выбору);
