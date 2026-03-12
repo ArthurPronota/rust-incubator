@@ -1,13 +1,13 @@
 use crate::args::{
-        self,
-        Commands
+        self,       // Импортирует сам модуль args
+        Commands    // Импортирует структуры Commands из модуля args
     } ;
-use crate::db ;
-use crate::users ;
-use crate::roles ;
-use crate::users_roles ;
+use crate::db ;     // Импортирует модуль db
+use crate::users ;  // Импортирует модуль users
+use crate::roles ;  // Импортирует модуль roles
+use crate::users_roles ;    // Импортирует модуль users_roles
 
-use anyhow::Result ;
+use anyhow::Result ;    // Импортирует тип Result из крейта anyhow
 
 /// Выполнить действие из аргументов командной строки
 pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
@@ -26,6 +26,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                 .await ?;
             println!("Database objects created successfully.") ;
         },
+        // Создание пользователя
         Commands::CreateUser { name, email } => {
             // Сформировать новую транзакцию
             let mut trans = 
@@ -34,7 +35,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                       // Устанавливает соединение и немедленно начинает новую транзакцию.
                       .begin()
                       .await? ;
-
+            // вставить нового пользователя
             let new_user = users::User::ins_user(
                                     &mut *trans,
                                     name,
@@ -53,6 +54,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
 
             println!("User created successfully.") ;                
         },
+        // Удаление пользователя
         Commands::DeleteUser { id_user } => {
             // Сформировать новую транзакцию
             let mut trans = 
@@ -61,13 +63,14 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                       // Устанавливает соединение и немедленно начинает новую транзакцию.
                       .begin()
                       .await? ;
-
+            // удалить пользователя
             users::User::delete_user(&mut *trans, *id_user).await? ;
-                      
+            // выполнить commit в DB
             trans.commit().await? ;
 
             println!("The user has been deleted.") ;
         },
+        // Показать пользователей и их роли
         Commands::ShowUsersRoles { id_user } => {
             // Сформировать новую транзакцию
             let mut trans = 
@@ -76,17 +79,18 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                       // Устанавливает соединение и немедленно начинает новую транзакцию.
                       .begin()
                       .await? ;
-
+            // проверка кода пользователя
             match id_user {
-                Some(u) => {
+                Some(u) => {    // код пользователя найден
+                    // поиск пользователя
                     let ur = users::UserWithRole::get_data(
                         &mut *trans,
                         *u
                     )
                     .await? ;
-                    print!("{}", ur) ;
+                    print!("{}", ur) ;  // перчать пользователя
                 },
-                None => {
+                None => {   // кода пользователя нет, печать всех пользователей
                     for id_user in users::User::get_all_id_user(&mut *trans).await? {
                         let ur = 
                             users::UserWithRole::get_data(
@@ -94,19 +98,21 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                                 id_user
                             )
                             .await? ;
-                        print!("{}", ur) ;
+                        print!("{}", ur) ;  // печать пользователя
                         println!("--------------------------------------------") ;
                     }
 
                 }
             }
         },
+        // Создать роль
         Commands::CreateRole { slug, name, permissions } => {
             roles::Role::create_role(&db_res, slug, name, &permissions.join(","))
                 .await? ;
 
             println!("Role created successfully.") ;
         },
+        // Удалить роль
         Commands::DeleteRole { slug } => {
             // Сформировать новую транзакцию
             let mut trans = 
@@ -115,13 +121,15 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                       // Устанавливает соединение и немедленно начинает новую транзакцию.
                       .begin()
                       .await? ;
-            
+            // удалить роль
             roles::Role::delete_role(&mut *trans, slug).await? ;
 
+            // выполнить commit
             trans.commit().await? ;
 
             println!("The role has been successfully added to the user.") ;                                
         },
+        // Показать роль
         Commands::ShowRoles { slug } => {
             // Сформировать новую транзакцию
             let mut trans = 
@@ -131,8 +139,9 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                       .begin()
                       .await? ;
 
+            // Пролверка кода роли
             match slug {
-                Some(slug) => {
+                Some(slug) => { // код роли найден, печать этой роли
                     println!(
                         "{}", 
                         roles::Role::find_slug_raise(
@@ -142,7 +151,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                             .await?                
                     ) ;
                 },
-                None => {
+                None => {   // код роли не найден, печатьвсех ролей
                     for sl in roles::Role::get_all_slugs(&mut *&mut trans).await? {
                         print!(
                             "{}", 
@@ -157,6 +166,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                 }
             }                    
         },
+        // Добавить роль к пользователю
         Commands::AddRoleToUser { slug, id_user } => {
             // Сформировать новую транзакцию
             let mut trans = 
@@ -173,11 +183,12 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                         slug
                     )
                     .await? ;
-
+            // выполнить commit
             trans.commit().await? ;
 
             println!("The role has been successfully added to the user.") ;
         },
+        // Удалить роль у пользователя
         Commands::RemoveRoleFromUser { slug, id_user } => {
             // Сформировать новую транзакцию
             let mut trans = 
@@ -186,17 +197,18 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                       // Устанавливает соединение и немедленно начинает новую транзакцию.
                       .begin()
                       .await? ;
-
+            // удаление роли у пользователя
             users_roles::UsersRoles::del_role_from_user(
                     &mut *trans,
                     *id_user,
                     slug
                 ).await? ;
-
+            // выпонить commit
             trans.commit().await? ;
 
             println!("The role has been successfully removed from the user.") ;
         },
+        // Модифицировать имя  у пользователя
         Commands::UpdateNameUser { new_name, id_user } => {
             // Сформировать новую транзакцию
             let mut trans = 
@@ -205,17 +217,18 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                       // Устанавливает соединение и немедленно начинает новую транзакцию.
                       .begin()
                       .await? ;
-
+            // Модифицировать имя пользователя
             users::User::update_name(
                     &mut *trans,
                     new_name,
                     *id_user
                 ).await? ;
-
+            // Выполнить commit
             trans.commit().await? ;
 
             println!("User's name changed successfully.") ;
         },
+        // Модифицировать email у пользователю
         Commands::UpdateEmailUser { new_email, id_user } => {
             // Сформировать новую транзакцию
             let mut trans = 
