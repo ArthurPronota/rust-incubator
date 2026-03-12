@@ -1,5 +1,7 @@
 //use std::f64::consts::E;
 
+//use core::sync;
+
 use anyhow::{Result} ;
 
 use sqlx::FromRow ;
@@ -65,6 +67,21 @@ pub struct Role {
       )
     ]
     permissions:    String,
+}
+
+// Реализация Display для Role
+impl std::fmt::Display for Role {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(
+            f,
+            "Role: #{}: {} perm: {}", 
+            self.slug(),
+            self.name(),
+            self.permissions(),
+        )? ;
+
+        Ok(())
+    }
 }
 
 impl Role {
@@ -520,6 +537,22 @@ group by ur_2.id_user
                 }
             },
         }
-    }    
+    }   
+
+    /// Получить все slugs
+    pub async fn get_all_slugs(
+                    trans: &mut sqlx::MySqlConnection,
+                 ) ->Result<Vec<String>> {
+        Ok(
+            sqlx::query_scalar::<_, String>(r#"
+                select slug
+                from roles
+                order by slug
+                "#
+            )
+            .fetch_all(&mut *trans)
+            .await?
+        )
+    }
 
 }

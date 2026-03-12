@@ -458,6 +458,8 @@ impl User {
     /// Получить всех id_user
     pub async fn get_all_id_user(trans: &mut sqlx::MySqlConnection,) ->Result<Vec<u32>> {
         Ok(
+            // Сделать так:
+            /*
             sqlx::query_as::<_,(u32,)>(r#"
                     select id_user
                     from users
@@ -469,6 +471,16 @@ impl User {
             .iter()
             .map(|&u| u.0)
             .collect::<Vec<_>>() 
+             */
+            // Более короткий вариант
+            sqlx::query_scalar(r#"
+            select id_user
+            from users
+            order by id_user
+            "#
+            )
+            .fetch_all(&mut *trans)
+            .await?
         )
     }
 

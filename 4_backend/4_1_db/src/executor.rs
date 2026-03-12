@@ -116,7 +116,42 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
             trans.commit().await? ;
 
             println!("The role has been successfully added to the user.") ;                                
-        }
+        },
+        Commands::ShowRoles { slug } => {
+            // Сформировать новую транзакцию
+            let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+            match slug {
+                Some(slug) => {
+                    println!(
+                        "{}", 
+                        roles::Role::find_slug_raise(
+                                &mut *trans,
+                                slug
+                            )
+                            .await?                
+                    ) ;
+                },
+                None => {
+                    for sl in roles::Role::get_all_slugs(&mut *&mut trans).await? {
+                        print!(
+                            "{}", 
+                            roles::Role::find_slug_raise(
+                                    &mut *trans,
+                                    &sl
+                            )
+                            .await?                
+                        ) ;
+                        println!("--------------------------------------------") ;
+                    }
+                }
+            }                    
+        },
         Commands::AddRoleToUser { slug, id_user } => {
             // Сформировать новую транзакцию
             let mut trans = 

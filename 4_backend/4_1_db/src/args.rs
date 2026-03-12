@@ -103,7 +103,7 @@ pub enum Commands {
         name = "show-users-roles",
         about = "Show users and their roles",
      )
-    ]    
+    ]
     ShowUsersRoles {
         /// Id user
         #[arg(
@@ -163,7 +163,7 @@ pub enum Commands {
         slug:   String,
     },
 
-    /// Модифицировать имя у пользователя
+    /// Модифицировать имя у роли
     #[clap(
         name = "update-name-role",
         about = "Modify role name",
@@ -187,7 +187,7 @@ pub enum Commands {
         slug:       String,
     },
 
-    /// Модифицировать разрешения у пользователя
+    /// Модифицировать разрешения у роли
     #[clap(
         name = "update-perm-role",
         about = "Modify role permissions",
@@ -211,6 +211,22 @@ pub enum Commands {
          )
         ]        
         new_permissions:    Vec<String>,
+    },
+
+    /// Показать роли
+    #[clap(
+        name = "show-roles",
+        about = "Show roles",
+     )
+    ]    
+    ShowRoles {
+        /// Slug: name-of-role
+        #[arg(
+            name = "slug",
+            help = "Slug string of role, optional",
+         )
+        ]
+        slug:   Option<String>,
     },
 
     /// Добвить роль к пользователю
