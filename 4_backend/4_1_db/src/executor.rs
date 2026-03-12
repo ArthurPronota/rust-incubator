@@ -50,6 +50,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                             roles::SLUG_DEFAULT
                         ).await? ;
 
+            // выполнить commit в DB
             trans.commit().await? ;
 
             println!("User created successfully.") ;                
@@ -139,14 +140,15 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                       .begin()
                       .await? ;
 
-            // Пролверка кода роли
+            // Проверка кода роли
             match slug {
                 Some(slug) => { // код роли найден, печать этой роли
                     println!(
                         "{}", 
                         roles::Role::find_slug_raise(
                                 &mut *trans,
-                                slug
+                                slug,
+                                false
                             )
                             .await?                
                     ) ;
@@ -157,7 +159,8 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                             "{}", 
                             roles::Role::find_slug_raise(
                                     &mut *trans,
-                                    &sl
+                                    &sl,
+                                    false
                             )
                             .await?                
                         ) ;
@@ -208,7 +211,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
 
             println!("The role has been successfully removed from the user.") ;
         },
-        // Модифицировать имя  у пользователя
+        // Модифицировать имя у пользователя
         Commands::UpdateNameUser { new_name, id_user } => {
             // Сформировать новую транзакцию
             let mut trans = 
@@ -238,6 +241,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                       .begin()
                       .await? ;
 
+            // Модифицировать имя у пользователя
             users::User::update_email(
                 &mut *trans,
                 new_email,
@@ -245,10 +249,12 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
             )
             .await? ;
 
+            // Выполнить commit
             trans.commit().await? ;
 
             println!("User's email changed successfully.") ;                      
         },
+        // Модифицировать наименование роли
         Commands::UpdateNameRole { new_name, slug } => {
             // Сформировать новую транзакцию
             let mut trans = 
@@ -258,13 +264,16 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                       .begin()
                       .await? ;
 
+            // Модифицировать name в роли
             roles::Role::update_name(&mut *trans, slug, new_name)
                 .await? ;
 
+            // Выполнить commit
             trans.commit().await? ;
 
             println!("Role name successfully changed.") ;
         },
+        // Модифицировать разрешения у роли
         Commands::UpdatePermissionsRole { slug, new_permissions } => {
             // Сформировать новую транзакцию
             let mut trans = 
@@ -274,6 +283,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                       .begin()
                       .await? ;
 
+            // Модифицировать разрешения у роли
             roles::Role::update_permissions(
                         &mut *trans,
                         slug, 
@@ -281,6 +291,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
                     )
                     .await? ;
 
+            // Выполнить commit
             trans.commit().await? ;
 
             println!("Role permissions successfully changed.") ;

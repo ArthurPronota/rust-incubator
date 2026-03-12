@@ -11,6 +11,8 @@ use crate::roles ;
 
 use crate::users ;
 
+use crate::db ;
+
 //use crate::db::Database ;
 //use crate::users::User;
 
@@ -75,6 +77,7 @@ impl UsersRoles {
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
                     slug:       &str,
+                    is_lock:    bool,
                  ) ->Result<Option<UsersRoles>> {
 
         let mut new_users_roles = UsersRoles::default() ;
@@ -84,11 +87,16 @@ impl UsersRoles {
         new_users_roles.set_slug(slug)? ;
 
         match sqlx::query_as::<_, UsersRoles>(
-                r#"
-                select *
-                from users_roles
-                where id_user = ? and slug = ?
-                "#
+                format!(
+                    r#"
+                    select *
+                    from users_roles
+                    where id_user = ? and slug = ?
+                    {}
+                    "#
+                    ,
+                    is_lock.then_some(db::FOR_UPDATE).unwrap_or("")
+                ).as_str()
             )
             .bind(new_users_roles.id_user())
             .bind(new_users_roles.slug())
@@ -105,8 +113,9 @@ impl UsersRoles {
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
                     slug:       &str,
+                    is_lock:    bool,
                  ) ->Result<UsersRoles> {
-        match Self::find(trans, id_user, slug).await {
+        match Self::find(trans, id_user, slug, is_lock).await {
             Ok(ur) => match ur {
                 Some(ur) => Ok(ur),
                 None => Err(anyhow::anyhow!("Not found user role for id_user: {}, slug: {}", id_user, slug)),
@@ -129,11 +138,11 @@ impl UsersRoles {
         new_users_roles.set_slug(slug)? ;
 
         // Проверка пользователя по id_user
-        users::User::find_for_id_user_raise(trans, new_users_roles.id_user()).await? ;
+        users::User::find_for_id_user_raise(trans, new_users_roles.id_user(), false).await? ;
         // Проверка роли по slug
-        roles::Role::find_slug_raise(trans, new_users_roles.slug()).await? ;
+        roles::Role::find_slug_raise(trans, new_users_roles.slug(), false).await? ;
 
-        match Self::find(trans, new_users_roles.id_user(), new_users_roles.slug()).await {
+        match Self::find(trans, new_users_roles.id_user(), new_users_roles.slug(), true).await {
             Ok(ur) => {
                 match ur {
                     Some(ur) => Ok(ur),
@@ -153,7 +162,8 @@ impl UsersRoles {
                         match Self::find_raise(
                                     trans,
                                     new_users_roles.id_user(),
-                                    new_users_roles.slug()
+                                    new_users_roles.slug(),
+                                    false
                                 ).await {
                             Ok(ur) => {
                                 Ok(ur)
@@ -203,9 +213,9 @@ impl UsersRoles {
         new_user_role.set_slug(slug)? ;
 
         // Проверка пользователя по id_user
-        users::User::find_for_id_user_raise(&mut *trans, id_user).await? ;
+        users::User::find_for_id_user_raise(&mut *trans, id_user, false).await? ;
         // Проверка роли по slug
-        roles::Role::find_slug_raise(&mut *trans, slug).await? ;
+        roles::Role::find_slug_raise(&mut *trans, slug, false).await? ;
 
         let all_roles = 
                 Self::find_all_user_roles(&mut *trans, id_user)

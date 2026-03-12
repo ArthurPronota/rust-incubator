@@ -13,6 +13,9 @@ use sqlx::{
         MySqlPool
 } ;
 
+/// часть выражения для блокировки строки
+pub const FOR_UPDATE: &str = "FOR UPDATE" ;
+
 /// Пул соединений с базой данных
 pub struct Database {
     pub pool:   MySqlPool,
@@ -137,7 +140,7 @@ DELIMITER ;
         roles::Role::create_default_role(&self)
             .await? ;
 
-        // Создать триггер контроля удаления роли по умолчанию
+        // Создать триггер контроля удаления роли
         use sqlx::Executor ;
 
         let mut trans = 
@@ -152,55 +155,45 @@ CREATE TRIGGER IF NOT EXISTS BEF_DEL_ROLE
 BEFORE DELETE ON roles
 FOR EACH ROW
 BEGIN
+    DECLARE v_user_exists INT UNSIGNED DEFAULT NULL ;
+    DECLARE v_mess_text VARCHAR(255) DEFAULT '' ;
 
     IF OLD.slug = 'default' THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Cannot delete default role' ;
-    END IF;
+    END IF ;
 
-END;        
+    select id_user
+        into v_user_exists
+        from (
+            select ur_2.id_user as id_user, count(*) as count_roles
+            from users_roles ur_2
+            where ur_2.id_user in (
+                select ur_1.id_user
+                from users_roles ur_1
+                where ur_1.slug = OLD.slug
+            )
+            group by ur_2.id_user
+        ) as res
+    where res.count_roles = 1 ;
+
+    IF v_user_exists IS NOT NULL THEN
+        SET v_mess_text = CONCAT(
+                'You cannot delete role: ',
+                OLD.slug,
+                ' because it is the only one for id_user: ',
+                v_user_exists
+            ) ;
+
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = v_mess_text ;
+    END IF ;
+
+END;
         "#
         )
         .await? ;
 
         Ok(())
     }
-
-    /*
-    /// Создать пользователя
-    pub async fn create_user(&self, name: &str, email: &str) ->Result<User> {
-        
-        let mut user_new = User::default() ;
-
-        user_new.set_name(name)? ;
-        
-        user_new.set_email(email)? ;
-
-        let mut trans = 
-                self
-                    .pool
-                    // Устанавливает соединение и немедленно начинает новую транзакцию.
-                    .begin()
-                    .await? ;
-
-        let new_user = sqlx::query_as::<_, User>(
-            r#"
-            insert into users (name, email)
-            values (?, ?)
-            returning id_user, name, email
-            "#
-        )
-        .bind(user_new.name())
-        .bind(user_new.email())
-        .fetch_one(&mut *trans)
-        .await? ;
-
-        trans
-            // Подтверждает эту транзакцию или точку сохранения.
-            .commit()
-            .await? ;
-
-         Ok(new_user)
-    }
-     */
 }

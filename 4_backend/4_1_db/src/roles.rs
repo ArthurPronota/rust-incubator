@@ -1,34 +1,41 @@
-//use std::f64::consts::E;
+use anyhow::Result ;    // крейт для гибкой обработки ошибок
 
-//use core::sync;
+use sqlx::FromRow ; // трейт для преобразования строки из базы данных в структуру Rust
 
-use anyhow::{Result} ;
+use validator::{
+        Validate,   // Основной трейт для валидации структур
+        ValidateLength  // Вспомогательный трейт для проверки длины (опционально)
+    } ;
 
-use sqlx::FromRow ;
+use crate::db::{
+        self,       // Импортирует сам модуль db
+        Database    // Импортирует тип Database из модуля db
+    } ;        
 
-use validator::{Validate, ValidateLength} ;
-
-use crate::{db::Database, 
-            // users_roles::UsersRoles
-        } ;
-
-
+/// Минимальная длина slug
 pub const MIN_LENGTH_SLUG: u64 = 1 ;
 
+/// Максимальная длина slug
 pub const MAX_LENGTH_SLUG: u64 = 50 ;
 
+/// Минимальная длина name
 pub const MIN_LENGTH_NAME: u64 = 1 ;
 
+/// Максимальная длина name
 pub const MAX_LENGTH_NAME: u64 = 255 ;
 
+/// Минимальная длина permissions
 pub const MIN_LENGTH_PERMISSIONS: u64 = 1 ;
 
+/// Максимальная длина permissions
 pub const MAX_LENGTH_PERMISSIONS: u64 = 255 ;
 
 // slug по умолчанию
 pub const SLUG_DEFAULT: &str = "default" ;
+
 // name по умолчанию
 pub const NAME_DEFAULT: &str = "reader" ;
+
 // permission по умолчанию
 pub const PERMISSION_DEFAULT: &str = "read,write" ;
 
@@ -40,7 +47,7 @@ pub const PERMISSION_DEFAULT: &str = "read,write" ;
     FromRow,
 )]
 pub struct Role {
-
+    /// код роли
     #[validate(
         length(
             min = MIN_LENGTH_SLUG,
@@ -50,6 +57,7 @@ pub struct Role {
     ]
     slug:           String,
 
+    /// наименование роли
     #[validate(
         length(
             min = MIN_LENGTH_NAME,
@@ -59,6 +67,7 @@ pub struct Role {
     ]
     name:           String,
 
+    /// разрешения для роли
     #[validate(
         length(
             min = MIN_LENGTH_PERMISSIONS,
@@ -121,7 +130,7 @@ impl Role {
         &self.slug
     }
 
-    /// Уситановить name
+    /// Установить name
     pub fn set_name(&mut self, name: &str) ->Result<()> {
         self.name = match name.trim() {
             n if n.is_empty() => return Err(anyhow::anyhow!("name is empty")),
@@ -189,44 +198,7 @@ impl Role {
         &self.permissions
     }
 
-    /*
-    /// Прербпазовать permissions в Vec<String>
-    pub fn from_permissions_to_vec(&self) ->Vec<String> {
-        let mut vec_tmp = self
-            .permissions
-            .split(",")
-            .filter(|v| ! v.trim().is_empty())
-            .map(|v| v.trim().to_owned())
-            .collect::<Vec<String>>() ;
-
-        vec_tmp.sort();
-
-        vec_tmp.dedup();
-
-        vec_tmp
-    }
-     */
-
-    /*
-    /// Установка permissions из Vec
-    pub fn set_permissions_from_vec(&mut self, v_perm: &Vec<String>) ->Result<()> {
-
-        let mut v_tmp_perm = 
-                    v_perm
-                        .iter()
-                        .filter(|v| !v.trim().is_empty())
-                        .map(|v| v.trim().to_owned())
-                        .collect::<Vec<String>>() ;
-
-        v_tmp_perm.sort();
-        v_tmp_perm.dedup();
-
-        let perm_new = v_tmp_perm.join(",") ;
-
-        self.set_permissions(&perm_new)
-    }
-     */
-    
+    /// Создать роль по умолчанию
     pub async fn create_default_role(db: &Database) ->Result<Role> {
         Self::create_role(
                 db,
@@ -241,17 +213,23 @@ impl Role {
     pub async fn find_slug(
                     trans: &mut sqlx::MySqlConnection,
                     slug:  &str,
+                    is_lock:    bool,   // блокировать строку
                  ) ->Result<Option<Role>> {
         let mut tmp_role = Role::default() ;
 
         tmp_role.set_slug(slug)? ;
 
         match sqlx::query_as::<_, Role>(
-                r#"
-                select *
-                from roles
-                where slug = ?
-                "#
+                format!(
+                    r#"
+                    select *
+                    from roles
+                    where slug = ?
+                    {}
+                    "#
+                    ,
+                    is_lock.then_some(db::FOR_UPDATE).unwrap_or("")
+                ).as_str()
             )
             .bind(tmp_role.slug())
             .fetch_one(&mut *trans)
@@ -266,8 +244,9 @@ impl Role {
     pub async fn find_slug_raise(
                     trans: &mut sqlx::MySqlConnection,
                     slug:  &str,
+                    is_lock:    bool,   // блокировать строку
                  ) ->Result<Role> {
-        match Self::find_slug(trans, slug).await {
+        match Self::find_slug(trans, slug, is_lock).await {
             Ok(rr) => match rr {
                 Some(r) => Ok(r),
                 None => Err(anyhow::anyhow!("Not found role for slud: {}", slug)),
@@ -291,7 +270,7 @@ impl Role {
 
         new_role.set_permissions(permissions)? ;
 
-        match Self::find_slug(&mut *trans, slug).await? {
+        match Self::find_slug(&mut *trans, slug, true).await? {
             Some(r) => Ok(r),
             None => {
                 sqlx::query(r#"
@@ -307,7 +286,8 @@ impl Role {
 
                 Self::find_slug_raise(
                         &mut *trans,
-                        new_role.slug()
+                        new_role.slug(),
+                        false
                     )
                     .await
             },
@@ -329,7 +309,8 @@ impl Role {
         let role_now = 
                 Self::find_slug_raise(
                     &mut *trans,
-                    role_tmp.slug()
+                    role_tmp.slug(),
+                    true
                 )
                 .await? ;
 
@@ -349,10 +330,11 @@ impl Role {
             .execute(&mut *trans)
             .await? ;
 
-        Self::find_slug_raise(&mut *trans, role_tmp.slug())
+        Self::find_slug_raise(&mut *trans, role_tmp.slug(), false)
             .await
     }
 
+    /// Модифицировать разрешения у роли
     pub async fn update_permissions(
                     trans: &mut sqlx::MySqlConnection,
                     slug:           &str,
@@ -365,7 +347,7 @@ impl Role {
         role_tmp.set_permissions(permissions)? ;
 
         let role_now = 
-                Role::find_slug_raise(&mut *trans, role_tmp.slug())
+                Role::find_slug_raise(&mut *trans, role_tmp.slug(), true)
                 .await? ;
 
         if role_tmp.permissions() == role_now.permissions() {
@@ -385,7 +367,8 @@ impl Role {
 
         Self::find_slug_raise(
                     &mut *trans,
-                    role_tmp.slug()
+                    role_tmp.slug(),
+                    false
                 )
                 .await
     }
@@ -406,31 +389,10 @@ impl Role {
 
         Role::find_slug_raise(
                         &mut *trans,
-                        role_tmp.slug()
+                        role_tmp.slug(),
+                        true
                     )
                     .await? ;
-
-/*
-                select id_user
-                from (
-                    select ur_2.id_user as id_user, count(*) as count_roles
-                    from users_roles ur_2
-                    where ur_2.id_user in (
-                        select ur_1.id_user
-                        from users_roles ur_1
-                        where ur_1.slug = "read-data"
-                    )
-                    group by ur_2.id_user
-                ) as res
-                where res.count_roles = 1
-
-select ur_2.id_user as id_user, count(*) as count_roles
-from users_roles ur_2
-where ur_2.id_user = 2
-group by ur_2.id_user
-
-
-*/
         // В случа получения одного значения использовать список: (u32,)
         match sqlx::query_as::<_, (u32,)>(
             r#"
@@ -474,7 +436,8 @@ group by ur_2.id_user
 
                 match Role::find_slug(
                             &mut *trans,
-                            role_tmp.slug()
+                            role_tmp.slug(),
+                            false
                     )   
                     .await? 
                 {
@@ -511,7 +474,8 @@ group by ur_2.id_user
 
         match Self::find_slug(
                     &mut *trans,
-                    new_role.slug()
+                    new_role.slug(),
+                    false
                 )
                 .await? {
             Some(r) => Ok(r),
@@ -526,7 +490,8 @@ group by ur_2.id_user
 
                 match Self::find_slug_raise(
                         &mut *trans,
-                        new_role.slug()
+                        new_role.slug(),
+                        false
                     )
                     .await {
                         Ok(r) => {

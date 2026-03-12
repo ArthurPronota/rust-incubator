@@ -1,4 +1,7 @@
-use serde::{Serialize, Deserialize} ;
+use serde::{
+        Serialize,  // Трейт для преобразования структуры в различные форматы (JSON, YAML, и т.д.)
+        Deserialize // Трейт для создания структуры из различных форматов
+    } ;
 
 /*  Ручная реализация FromRow обусловленная типом pub id_user: usize 
     для которого нет автоматического преобразования из MySql типа int unsigned
@@ -32,59 +35,51 @@ impl<'r> FromRow<'r, MySqlRow> for User {
 }
  */
 
-use anyhow::Result ;
-use sqlx::FromRow ;
+use anyhow::Result ;    // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
+use sqlx::FromRow ; // Импорт трейта FromRow из крейта sqlx для преобразования строк БД в структуры
 use validator::{
-        Validate,
-        ValidateEmail,
-        ValidateLength,
+        Validate,   // Основной трейт для валидации структур с методом validate()
+        ValidateEmail,  // Трейт для валидации email адресов (используется с #[validate(email)])
+        ValidateLength, // Трейт для валидации длины строк/коллекций (используется с #[validate(length)])
     } ;
 
-use crate::{roles::{self, Role}, users_roles};
+use crate::{
+        db, // Модуль для работы с базой данных (подключение, пул соединений)
+        roles::{    // Модуль для работы с ролями пользователей
+            self,   // Импорт самого модуля roles для доступа к его функциям (roles::get_default())
+            Role    // Импорт структуры Role для прямого использования без префикса roles::
+        },
+        users_roles // Модуль для работы со связями пользователей и ролей (таблица users_roles)
+};
 
-//use crate::db::Database;
-
-/*
-use const_format::concatcp ;
- */
-
-/*
-type MySqlTrans<'a> = sqlx::Transaction<'a, sqlx::MySql> ;
- */
-
+/// Минимальная длина наименование пользователя
 pub const MIN_LENGTH_NAME: u64 = 1 ;
 
+/// Максимальная длина наименование пользователя
 pub const MAX_LENGTH_NAME: u64 = 255 ;
 
-pub const MIN_LENGTH_EMAIL: u64 = 1 ;
+/// Минимальная длина email
+pub const MIN_LENGTH_EMAIL: u64 = 5 ;
 
+/// Максимальная длина email
 pub const MAX_LENGTH_EMAIL: u64 = 255 ;
 
-/*
-static INVLENGT_USER_NAME: &str = concatcp!(
-                    "Username must be between ",
-                    MIN_LENGTH_USER_NAME,
-                    " and ",
-                    MAX_LENGTH_USER_NAME,
-                    "characters long"
-                ) ;
- */
-
+/// Структура пользователя
 #[derive(
-    Debug,
-    Default,
-    //Clone,
-    Serialize,
-    Deserialize,
-    // автоматическая реализация для типа u32
-    FromRow,
-    Validate,
+    Debug,  // Реализует форматирование {:?} для вывода в консоль и отладки
+    Default,    // Реализует метод default() для создания экземпляра со значениями по умолчанию
+    Serialize,  // Реализует сериализацию структуры в форматы JSON/YAML/etc. (из крейта serde)
+    Deserialize, // Реализует десериализацию структуры из форматов JSON/YAML/etc. (из крейта serde)
+    FromRow,    // Реализует преобразование строки из БД в структуру (из крейта sqlx)
+    Validate,   // Реализует метод validate() для валидации полей структуры (из крейта validator)
  )
 ]
 pub struct User {
     
+    /// Код пользователя
     id_user: u32,
 
+    /// Натменование пользователя
     #[validate(
         length(
             min = MIN_LENGTH_NAME, 
@@ -94,6 +89,7 @@ pub struct User {
     ]
     name:    String,
 
+    /// email пользователя
     #[validate(
         email,
         length(
@@ -106,13 +102,6 @@ pub struct User {
 }
 
 impl User {
-
-    /*
-    /// Получить значение User по умолчанию
-    pub fn new() ->Self {
-        Self::default()
-    }
-     */
 
     /// Установка id_user
     pub fn set_id_user(&mut self, id_user: u32) ->Result<()> {
@@ -129,16 +118,6 @@ impl User {
     pub fn id_user(&self) ->u32 {
         self.id_user
     }
-
-    /*
-    /// Проверка id_user
-    pub fn check_id_user(&self) ->Result<()> {
-        match self.id_user() {
-            id if id == 0 => return Err(anyhow::anyhow!("Invalid id_user: {}", id)),
-            _ => Ok(())
-        }
-    }
-     */
 
     /// Установка name
     pub fn set_name(&mut self, name: &str) ->Result<()> {
@@ -183,70 +162,27 @@ impl User {
         &self.email
     }
 
-    /*
-    /// Создать пользователя в DB
-    pub async fn create_user(
-                &mut self,
-                db:    &Database,                
-                name:  &str,
-                email: &str,
-            ) ->Result<()> {
-
-        let mut user_new = User::default() ;
-
-        user_new.set_name(name)? ;
-        
-        user_new.set_email(email)? ;
-
-        let mut trans = 
-                db
-                    .pool
-                    // Устанавливает соединение и немедленно начинает новую транзакцию.
-                    .begin()
-                    .await? ;
-
-        *self = sqlx::query_as::<_, User>(
-            r#"
-            insert into users (name, email)
-            values (?, ?)
-            returning id_user, name, email
-            "#
-        )
-        .bind(user_new.name())
-        .bind(user_new.email())
-        .fetch_one(&mut *trans)
-        .await? ;
-
-        self
-            .validate()
-            .map_err(|err|
-                anyhow::anyhow!("{}", err)
-            )? ;
-
-        trans
-            // Подтверждает эту транзакцию или точку сохранения.
-            .commit()
-            .await? ;
-
-        Ok(())
-    }
-     */
-
     /// Поиск пользователя по id_user
     pub async fn find_for_id_user(
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
+                    is_lock:    bool,
                  ) ->Result<Option<User>> {
         let mut tmp_user = User::default() ;
 
         tmp_user.set_id_user(id_user)? ;
 
         match sqlx::query_as::<_, User>(
-                r#"
-                select *
-                from users
-                where id_user = ?
-                "#
+                format!(
+                    r#"
+                    select *
+                    from users
+                    where id_user = ?
+                    {}
+                    "#
+                    ,
+                    is_lock.then_some(db::FOR_UPDATE).unwrap_or("")
+                ).as_str()
             )
             .bind(tmp_user.id_user())
             .fetch_one(&mut *trans)
@@ -261,8 +197,9 @@ impl User {
     pub async fn find_for_id_user_raise(
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
+                    is_lock:    bool,
                  ) ->Result<User> {
-        match Self::find_for_id_user(&mut *trans, id_user).await {
+        match Self::find_for_id_user(&mut *trans, id_user, is_lock).await {
             Ok(ur) => match ur {
                 Some(u ) => Ok(u),
                 None => Err(anyhow::anyhow!("Not found user for id_user: {}", id_user)),
@@ -274,7 +211,8 @@ impl User {
     /// Поиск пользователя по email
     pub async fn find_for_email(
                         trans: &mut sqlx::MySqlConnection,
-                        email: &str, 
+                        email: &str,
+                        is_lock:    bool,
                     ) ->Result<Option<User>> {
         let mut new_user = User::default() ;
         
@@ -282,11 +220,16 @@ impl User {
 
         // Поиск пользователя по email
         match sqlx::query_as::<_, User>(
-            r#"
-            select *
-            from users
-            where email = ?
+            format!(
+                r#"
+                select *
+                from users
+                where email = ?
+                {}
             "#
+            ,
+            is_lock.then_some(db::FOR_UPDATE).unwrap_or("")
+            ).as_str()
         )
         .bind(new_user.email())
         .fetch_one(&mut *trans)
@@ -304,8 +247,9 @@ impl User {
     pub async fn find_for_email_raise(
                         trans: &mut sqlx::MySqlConnection,
                         email: &str, 
+                        is_lock:    bool,
                     ) ->Result<User> {
-        match Self::find_for_email(&mut *trans, email).await {
+        match Self::find_for_email(&mut *trans, email, is_lock).await {
             Ok(ur) => match ur {
                 Some(u ) => Ok(u),
                 None => Err(anyhow::anyhow!("Not found user for email: {}", email)),
@@ -326,7 +270,7 @@ impl User {
 
         new_user.set_name(name)? ;
 
-        match Self::find_for_email(&mut *trans, new_user.email()).await? {
+        match Self::find_for_email(&mut *trans, new_user.email(), true).await? {
             Some(u) => Ok(u),
             None => {
                 sqlx::query(
@@ -340,7 +284,7 @@ impl User {
                 .execute(&mut *trans)
                 .await? ;
 
-                Self::find_for_email_raise(&mut *trans, new_user.email()).await
+                Self::find_for_email_raise(&mut *trans, new_user.email(), false).await
             },
         }
     }
@@ -360,7 +304,7 @@ impl User {
         tmp_user.set_id_user(id_user)? ;
 
         let exist_user = 
-                User::find_for_id_user_raise(&mut *trans, id_user).await? ;
+                User::find_for_id_user_raise(&mut *trans, id_user, true).await? ;
 
         if exist_user.name() == tmp_user.name() {
             return Ok(exist_user) ;
@@ -380,7 +324,8 @@ impl User {
         Ok(
             User::find_for_id_user_raise(
                     &mut *trans, 
-                    tmp_user.id_user()
+                    tmp_user.id_user(),
+                    false
                 )
                 .await?
         )
@@ -399,7 +344,7 @@ impl User {
         user_tmp.set_id_user(id_user)? ;
 
         let user_now = 
-                Self::find_for_id_user_raise(&mut *trans, id_user)
+                Self::find_for_id_user_raise(&mut *trans, id_user, true)
                     .await? ;
 
         if user_now.email() == user_tmp.email() {
@@ -419,7 +364,8 @@ impl User {
 
         User::find_for_id_user_raise(
                 &mut *trans,
-                user_tmp.id_user()
+                user_tmp.id_user(),
+                false
             )
             .await
     }
@@ -433,7 +379,8 @@ impl User {
 
         user_tmp.set_id_user(id_user)? ;
 
-        User::find_for_id_user_raise(&mut *trans, user_tmp.id_user())
+        // заблокировать пользователя
+        User::find_for_id_user_raise(&mut *trans, user_tmp.id_user(), true)
             .await? ;
 
         sqlx::query(r#"
@@ -445,7 +392,8 @@ impl User {
         .execute(&mut *trans)
         .await? ;
 
-        match Self::find_for_id_user(&mut *trans, user_tmp.id_user())
+        // проверка наличия пользователя
+        match Self::find_for_id_user(&mut *trans, user_tmp.id_user(), false)
             .await?
         {
             Some(_) => {
@@ -458,21 +406,6 @@ impl User {
     /// Получить всех id_user
     pub async fn get_all_id_user(trans: &mut sqlx::MySqlConnection,) ->Result<Vec<u32>> {
         Ok(
-            // Сделать так:
-            /*
-            sqlx::query_as::<_,(u32,)>(r#"
-                    select id_user
-                    from users
-                    order by id_user
-                    "#
-            )
-            .fetch_all(&mut *trans)
-            .await?
-            .iter()
-            .map(|&u| u.0)
-            .collect::<Vec<_>>() 
-             */
-            // Более короткий вариант
             sqlx::query_scalar(r#"
             select id_user
             from users
@@ -483,102 +416,6 @@ impl User {
             .await?
         )
     }
-
-    /*
-    /// Создать пользователя в DB
-    pub async fn create_user(
-                db:    &Database,                
-                name:  &str,
-                email: &str,
-            ) ->Result<User> {
-
-        let mut user_new = User::default() ;
-
-        user_new.set_name(name)? ;
-        
-        user_new.set_email(email)? ;
-
-        let mut trans = 
-                db
-                    .pool
-                    // Устанавливает соединение и немедленно начинает новую транзакцию.
-                    .begin()
-                    .await? ;
-
-        // Поиск пользователя перед его созданием
-        match sqlx::query_as::<_, User>(
-            r#"
-            select *
-            from users
-            where email = ?
-            "#
-        )
-        .bind(user_new.email())
-        .fetch_one(&mut *trans)
-        .await {
-            Ok(u) => { // пользователь найден
-                u.validate()? ;
-                Ok(u)
-            },
-            Err(sqlx::Error::RowNotFound) => {  // пользователь не найден
-                // создание пользователя
-                sqlx::query(
-                    r#"
-                    insert into users (name, email)
-                    values (?, ?)
-                    "#
-                )
-                .bind(user_new.name())
-                .bind(user_new.email())
-                .execute(&mut *trans)
-                .await? ;
-
-                // поиск созданного пользователя
-                user_new = sqlx::query_as::<_, User>(
-                    r#"
-                    select *
-                    from users
-                    where email = ?
-                    "#
-                )
-                .bind(user_new.email())
-                .fetch_one(&mut *trans)
-                .await? ;
-
-                user_new
-                    .validate()? ;
-
-                //Self::f(&mut *trans) ;
-
-                trans
-                    // Подтверждает эту транзакцию или точку сохранения.
-                    .commit()
-                    .await? ;
-
-                Ok(user_new)
-            },
-            Err(err) => Err(err.into()),
-        }
-    }
-     */
-
-    /*
-        Commands::UserList { id } => {
-            if let Some(id) = id {
-                if let Some(user) = db.get_user_with_roles(id).await? {
-                    println!("{}", user);
-                } else {
-                    println!("User {} not found", id);
-                }
-            } else {
-                let users = db.list_users_with_roles().await?;
-                for user in users {
-                    println!("{}", user);
-                    println!("---");
-                }
-            }
-        }    
-     */
 }
 
 /// Пользователь с его ролями
@@ -628,29 +465,33 @@ impl UserWithRole {
                  ) ->Result<UserWithRole> {
         let mut user_with_roles = UserWithRole::default() ;
 
+        // получить данные по пользователю
         user_with_roles.user = 
                 User::find_for_id_user_raise(
                     &mut *trans, 
-                    id_user
+                    id_user,
+                    false
                 )
                 .await? ;
 
-        //user_with_roles.list_roles = 
-        let lr = users_roles::UsersRoles::find_all_user_roles(
-                &mut *trans,
-                id_user
-            )
-            .await? ;
-
-        for r in lr {
-            let role = 
+        // получить список пользовательских ролей
+        for r in users_roles::UsersRoles::find_all_user_roles(
+                                    &mut *trans,
+                                    id_user
+                                )
+                                .await? 
+        {
+            // заполнить данными по ролям
+            user_with_roles
+                .list_roles
+                .push(
                     roles::Role::find_slug_raise(
                         &mut *trans,
-                        r.slug()
+                        r.slug(),
+                        false
                     )
-                    .await? ;
-
-            user_with_roles.list_roles.push(role);
+                    .await?                    
+                );
         }
 
         // сортировка ролей по slug
