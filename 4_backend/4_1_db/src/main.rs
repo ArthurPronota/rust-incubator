@@ -1,11 +1,17 @@
 /*
 
-    Общая помощь:
+    Contact: https://artaudiochats.t.me/
+
+    Для работы программы необходим MySql версии 8.4.7
+    В файле .env указаны параметры соединения с MySql.
+    В переменную окружения DB_PATH_CONNECT можно так-же установить параметры соединения с MySql.
+
+    1. Общая помощь:
 $ cargo run -- -h
 Usage: step_4_1.exe <COMMAND>
 
 Commands:
-  init-db            Creating the necessary tables.
+  init-db            Creating the required database objects.
   create-user        Create a new user
   delete-user        Delete user
   update-name-user   Modify user name
@@ -24,7 +30,7 @@ Options:
   -h, --help  Print help
 $
 
-    Помощь для конкретной команды:
+    2. Помощь для конкретной команды:
 $ cargo run -- create-user -h
 Create a new user
 
@@ -38,22 +44,23 @@ Options:
   -h, --help  Print help
 $
 
-    Помощь для конкретной команды:
+    3. Создание объектов базы данных:
 $ cargo run -- init-db
-Tables created successfully.
+Database objects created successfully.
 $
 
-    Создание роли:
+
+    4. Создание роли:
 $ cargo run -- create-role "read-data" "Reader" "read,write,access"
 Role created successfully.
 $
 
-    Создание Пользователя:
+    5. Создание Пользователя:
 $ cargo run -- create-user Arthur yhgvnhjk.986ght.jhgt543@gmail.com
 User created successfully.
 $
 
-    Показать пользователей и их роли:
+    6. Показать пользователей и их роли:
 $ cargo run -- show-users-roles
 User #3: Arthur (yhgvnhjk.986ght.jhgt543@gmail.com)
 Roles:
@@ -67,7 +74,7 @@ Roles:
 --------------------------------------------
 $
 
-    Показать роли:
+    7. Показать роли:
 $ cargo run -- show-roles
 Role: #default: reader perm: read,write
 --------------------------------------------
@@ -99,7 +106,7 @@ async fn main() ->Result<()> {
     let env_file = Path::new(".env") ;
     if env_file.exists() {
         // Загрузка в переменные окружения сожержимого файла .env
-        // Если переменная уже существует в окружении то она не затирается 
+        // Если переменная уже существует в окружении то содержимое не затирается 
         // содержимым из .env
         dotenv::dotenv()
             // преобразование ошибки в anyhow формат
