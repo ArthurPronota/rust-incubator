@@ -19,7 +19,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
             db_res
                 .create_tables()
                 .await ?;
-            println!("Tables created successfully.") ;
+            println!("Database objects created successfully.") ;
         },
         Commands::CreateUser { name, email } => {
             // Сформировать новую транзакцию

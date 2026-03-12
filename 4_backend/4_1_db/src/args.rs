@@ -8,7 +8,7 @@ pub enum Commands {
     /// Создание необхожимых таблиц
     #[clap(
         name = "init-db",
-        about = "Creating the necessary tables.",
+        about = "Creating the required database objects.",
      )
     ]
     InitDb,

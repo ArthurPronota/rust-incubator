@@ -94,6 +94,27 @@ CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 "#,
 roles::MAX_LENGTH_SLUG,
 ),
+/*
+
+r#"
+DELIMITER //
+
+CREATE TRIGGER IF NOT EXISTS BEF_DEL_ROLE
+BEFORE DELETE ON roles
+FOR EACH ROW
+BEGIN
+
+    IF OLD.slug = 'default' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot delete default role' ;
+    END IF;
+
+END //
+
+DELIMITER ;
+"#
+
+*/
         ] ;
 
         for sql_query in sql_queries.iter() {
@@ -115,6 +136,32 @@ roles::MAX_LENGTH_SLUG,
         // создать роль по умолчанию
         roles::Role::create_default_role(&self)
             .await? ;
+
+        // Создать триггер контроля удаления роли по умолчанию
+        use sqlx::Executor ;
+
+        let mut trans = 
+                    self
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+        trans.execute(r#"
+CREATE TRIGGER IF NOT EXISTS BEF_DEL_ROLE
+BEFORE DELETE ON roles
+FOR EACH ROW
+BEGIN
+
+    IF OLD.slug = 'default' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot delete default role' ;
+    END IF;
+
+END;        
+        "#
+        )
+        .await? ;
 
         Ok(())
     }

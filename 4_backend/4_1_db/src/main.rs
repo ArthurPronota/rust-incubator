@@ -1,18 +1,81 @@
 /*
 
     Общая помощь:
-cargo run -- -h
+$ cargo run -- -h
+Usage: step_4_1.exe <COMMAND>
+
+Commands:
+  init-db            Creating the necessary tables.
+  create-user        Create a new user
+  delete-user        Delete user
+  update-name-user   Modify user name
+  update-email-user  Modify email name
+  show-users-roles   Show users and their roles
+  create-role        Create a new role
+  delete-role        Delete role
+  update-name-role   Modify role name
+  update-perm-role   Modify role permissions
+  show-roles         Show roles
+  role-to-user       Add a role to a user
+  remove-user-role   Remove a role from a user
+  help               Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help  Print help
+$
 
     Помощь для конкретной команды:
-cargo run -- create-user -h
+$ cargo run -- create-user -h
+Create a new user
 
-cargo run -- init-db
+Usage: step_4_1.exe create-user <Username> <Email>
 
-cargo run -- create-role "read-data" "Reader" "read,write,access"
+Arguments:
+  <Username>  User name, not unique
+  <Email>     Email, unique
 
-cargo run -- create-role "manager-1" "Level 1 Manager" "access,read,write,approve"
+Options:
+  -h, --help  Print help
+$
 
-cargo run -- create-user "Arthur" "yhgvnhjk.986ght.jhgt543@gmail.com"
+    Помощь для конкретной команды:
+$ cargo run -- init-db
+Tables created successfully.
+$
+
+    Создание роли:
+$ cargo run -- create-role "read-data" "Reader" "read,write,access"
+Role created successfully.
+$
+
+    Создание Пользователя:
+$ cargo run -- create-user Arthur yhgvnhjk.986ght.jhgt543@gmail.com
+User created successfully.
+$
+
+    Показать пользователей и их роли:
+$ cargo run -- show-users-roles
+User #3: Arthur (yhgvnhjk.986ght.jhgt543@gmail.com)
+Roles:
+  Role #default: reader perm: read,write
+  Role #manager-1: Level 1 Manager perm: access,approve,read,write
+  Role #read-data: Reader perm: access,read,write
+--------------------------------------------
+User #4: Bob (bob@gmail.com)
+Roles:
+  Role #default: reader perm: read,write
+--------------------------------------------
+$
+
+    Показать роли:
+$ cargo run -- show-roles
+Role: #default: reader perm: read,write
+--------------------------------------------
+Role: #manager-1: Level 1 Manager perm: access,approve,read,write
+--------------------------------------------
+Role: #read-data: Reader perm: access,read,write
+--------------------------------------------
+$
 
 */
 mod args ;
