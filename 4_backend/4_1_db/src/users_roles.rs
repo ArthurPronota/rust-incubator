@@ -250,28 +250,4 @@ impl UsersRoles {
 
         Ok(())          
     }
-
-    /*
-    /// Добавить роль к пользователю
-    pub async fn add_role_to_user(
-            db:         &Database,
-            id_user:    u32,
-            slug:       &str,
-        ) ->Result<UsersRoles> {
-
-        let mut trans = 
-                    db
-                    .pool
-                    .begin()
-                    .await? ;
-
-        match Self::ins_role_to_user(&mut trans, id_user, slug).await {
-            Ok(ur) => {
-                trans.commit().await? ;
-                Ok(ur)
-            },
-            Err(err) => Err(err),
-        }
-    }
-     */
 }
