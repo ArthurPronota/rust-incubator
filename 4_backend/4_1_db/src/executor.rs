@@ -1,4 +1,7 @@
-use crate::args::{self, Commands} ;
+use crate::args::{
+        self,
+        Commands
+    } ;
 use crate::db ;
 use crate::users ;
 use crate::roles ;
@@ -14,7 +17,9 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
             db::Database::new(db_path_conn) 
             .await ?;
 
+    // Обработка команд из CLI
     match &arg_in.command {
+        // Инициализация DB
         Commands::InitDb => {
             db_res
                 .create_tables()
