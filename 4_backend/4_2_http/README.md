@@ -36,12 +36,10 @@ __Estimated time__: 1 day
 Для тех, кто предпочитает экосистему [`async-std`], окончательным выбором (и единственным на данный момент) является крейт [`tide`].
 
 
-All the [web frameworks][21] above inherit the [work-stealing][23] from the asynchronous runtime they're run on, and so, require the proper synchronization (being [`Send`]) from user-provided [HTTP] request handlers, which may introduce an unnecessary or undesired overhead. That's why __[`actix-web`] crate was designed__ and implemented specifically with this consideration in mind (__to avoid [work-stealing][23]__), being built on top of [`actix-rt`] crate (leveraging [thread-per-core][24] model), and thus, not requiring any synchronization in its request handlers (allowing `!Send` [`Future`]s). Also, [`actix-web`], at the time, was the first mature and production-ready [web framework][21] in [Rust] ecosystem, possessing a [top of "TechEmpower Web Framework Benchmarks"][25].
-
 Все [веб-фреймворки][21], описанные выше, наследуют [кражу работы][23] от асинхронной среды выполнения, в которой они выполняются, и, следовательно, требуют надлежащей синхронизации (например, [`Send`]) от предоставляемых пользователем обработчиков запросов [HTTP], что может привести к ненужному или нежелательные накладные расходы. Вот почему __[`actix-web`] crate был разработан__ и реализован специально с учетом этого (__чтобы избежать [кражи работы][23]__), будучи созданным поверх [`actix-rt`] crate (используя [thread-модель для каждого ядра][24]), и, таким образом, не требует никакой синхронизации в своих обработчиках запросов (позволяя `!Send` [`Future`]s). Кроме того, [`actix-web`] на тот момент был первым зрелым и готовым к работе [веб-фреймворком][21] в экосистеме [Rust], который входил в [топ "Тестов веб-фреймворка TechEmpower"][25].
 
 
-To better understand and be familiar with [HTTP] servers in [Rust], read through:
+Чтобы лучше понять и освоить HTTP-серверы в Rust, прочтите следующее:
 - [Official `actix-web` crate docs][`actix-web`]
 - [Official `actix-web` crate guides: Server](https://actix.rs/docs/server)
 - [Official `axum` crate docs][`axum`]
@@ -58,6 +56,8 @@ To better understand and be familiar with [HTTP] servers in [Rust], read through
 ## Client
 
 Similarly to a server, while [`hyper`] provides its own client implementation, using it directly can feel quite low-level and unergonomic. So, the "default choice" [HTTP] client (and mostly used) in [Rust] ecosystem is the [`reqwest`] crate, built on top of [`hyper`].
+
+Подобно серверу, хотя [`hyper`] предоставляет собственную реализацию клиента, его прямое использование может показаться довольно низкоуровневым и неэргономичным. Поэтому «вариантом по умолчанию» (и наиболее часто используемым) [HTTP] клиентом в экосистеме [Rust] является крейт [`reqwest`], построенный на основе [`hyper`].
 
 [`isahc`] crate, as an alternative, is a runtime-agnostic wrapper (with major focus on being practical and ergonomic) around the famous [cURL] library.
 
