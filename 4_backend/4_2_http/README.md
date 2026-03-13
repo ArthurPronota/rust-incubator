@@ -55,15 +55,16 @@ __Estimated time__: 1 day
 
 ## Client
 
-Similarly to a server, while [`hyper`] provides its own client implementation, using it directly can feel quite low-level and unergonomic. So, the "default choice" [HTTP] client (and mostly used) in [Rust] ecosystem is the [`reqwest`] crate, built on top of [`hyper`].
-
 Подобно серверу, хотя [`hyper`] предоставляет собственную реализацию клиента, его прямое использование может показаться довольно низкоуровневым и неэргономичным. Поэтому «вариантом по умолчанию» (и наиболее часто используемым) [HTTP] клиентом в экосистеме [Rust] является крейт [`reqwest`], построенный на основе [`hyper`].
 
-[`isahc`] crate, as an alternative, is a runtime-agnostic wrapper (with major focus on being practical and ergonomic) around the famous [cURL] library.
+В качестве альтернативы, [`isahc`] crate представляет собой независимую от среды выполнения обертку (с основным упором на практичность и эргономичность) над известной библиотекой [cURL].
 
-For simple and trivial scenarios, __where an asynchronous runtime is redundant__ and/or low overhead is preferred, the viable alternative is the [`ureq`] crate.
+Для простых и тривиальных сценариев, __где асинхронная среда выполнения избыточна__ и/или предпочтительны низкие накладные расходы__, жизнеспособной альтернативой является крейт [`ureq`].
+
 
 For [`async-std`] ecosystem, the main crate is [`surf`], which is, however, not restricted to [`async-std`] only, and is able to use alternative backends: [cURL] (via [`isahc`]), [`hyper`], [WASM] (via [browser's `window.fetch` API][32]).
+
+Для экосистемы [`async-std`] основной библиотекой является [`surf`], которая, однако, не ограничивается только [`async-std`] и может использовать альтернативные бэкенды: [cURL] (через [`isahc`]), [`hyper`], [WASM] (через [API `window.fetch` браузера][32]).
 
 For [`actix-web`] ecosystem, the meaningful option would be the [`awc`] crate, which supports [WebSocket] connections out-of-the-box (while most other [HTTP] clients lacks that).
 
