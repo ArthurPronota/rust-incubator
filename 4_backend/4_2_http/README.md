@@ -3,22 +3,20 @@
 
 __Estimated time__: 1 day
 
-The current situation regarding [HTTP] in [Rust] ecosystem can be grasped quite well in [the "Web programming" section of "Awesome Rust"][1] and in the ["Web Frameworks"][2], ["HTTP Clients"][3] and ["Lower Web-Stack" topics of "Are we web yet?"][4]. Of course, most of them use [async I/O][5].
-
-
 Текущая ситуация с [HTTP] в экосистеме [Rust] хорошо описана в [разделе «Веб-программирование» книги «Awesome Rust»][1] и в [разделах «Веб-фреймворки»][2], [«HTTP-клиенты»][3] и [«Нижний веб-стек» книги «Мы уже веб?»][4]. Конечно, большинство из них используют [асинхронный ввод-вывод][5].
 
 ## Low-level
 
-There are few core crates, providing general-purpose [HTTP] implementation, powering the whole variety of [web frameworks][21] and [HTTP] clients in [Rust] ecosystem.
+Существует несколько основных библиотек, предоставляющих универсальную реализацию [HTTP], которая обеспечивает работу всего многообразия [веб-фреймворков][21] и [HTTP]-клиентов в экосистеме [Rust].
 
-The most prominent and mature one is, of course, the [`hyper`] crate (built using [`tokio`]). Almost all [web frameworks][21] of [Rust] ecosystem are built on top of it.
 
-The main alternatives are:
-- [`async-h1`], powering the [`async-std`] ecosystem for [HTTP].
-- [`actix-http`], powering the [`actix-web`] ecosystem.
+Наиболее известным и зрелым является, конечно же, крейт [`hyper`] (созданный с использованием [`tokio`]). Почти все [веб-фреймворки][21] экосистемы [Rust] построены на его основе.
 
-For more details, read through:
+Основные альтернативы:
+- [`async-h1`], обеспечивающий работу экосистемы [`async-std`] для [HTTP].
+- [`actix-http`], обеспечивающий работу экосистемы [`actix-web`].
+
+Для получения более подробной информации ознакомьтесь с:
 - [Official `hyper` crate docs][`hyper`]
 - [Official `async-h1` crate docs][`async-h1`]
 - [Official `actix-http` crate docs][`actix-http`]
@@ -28,8 +26,9 @@ For more details, read through:
 
 ## Server
 
-While [`hyper`] provides its own server implementation, using it directly can feel quite low-level and unergonomic, due to its nature. Naturally, there are [numerous web frameworks][2] built on top of [`hyper`], which provide high-level, ergonomic and friendly interface. The most notable are:
-- [`axum`] - a [web application framework][21] that focuses on ergonomics and modularity, and provides macro-free request routing (yet ergonomic and declarative), simple and predictive error-handling, and leverages full advantage of the [`tower`] and [`tower-http`] ecosystem of [middleware][22], services, and utilities.
+Хотя [`hyper`] предоставляет собственную серверную реализацию, его прямое использование может показаться довольно низкоуровневым и неэргономичным из-за его природы. Естественно, существует [многочисленное множество веб-фреймворков][2], построенных на основе [`hyper`], которые предоставляют высокоуровневый, эргономичный и удобный интерфейс. Наиболее известные из них:
+- [`axum`] — [фреймворк для веб-приложений][21], ориентированный на эргономику и модульность, обеспечивающий маршрутизацию запросов без макросов (но эргономичный и декларативный), простую и предсказуемую обработку ошибок, а также в полной мере использующий преимущества экосистемы [`tower`] и [`tower-http`] [промежуточного ПО][22], сервисов и утилит.
+
 - [`warp`] - a super-easy, composable, [web server framework][21] for warp speeds, built around the "everything is a [`Filter`]" concept.
 - [`rocket`] - a [web framework][21], aims to be fast, easy, and flexible while offering guaranteed safety and security where it can, and, importantly, aiming to be fun (accomplishing this by ensuring that you write as little code as needed to accomplish your task).
 - [`poem`] - a full-featured and easy-to-use [web framework][21], focusing on providing all the capabilities (like [i18n]) out-of-the-box.
