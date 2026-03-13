@@ -297,7 +297,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [4104]: 4_backend/4_1_db#q-304
 [4105]: 4_backend/4_1_db#q-305
 
-[4201]: 4_backend/4_2_http#q-4201
-[4202]: 4_backend/4_2_http#q-4202
-[4203]: 4_backend/4_2_http#q-4203
-[4204]: 4_backend/4_2_http#q-4204
+[4201]: 4_backend/4_2_http/README.md#q-4201
+[4202]: 4_backend/4_2_http/README.md#q-4202
+[4203]: 4_backend/4_2_http/README.md#q-4203
+[4204]: 4_backend/4_2_http/README.md#q-4204
