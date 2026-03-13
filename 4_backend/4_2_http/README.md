@@ -81,9 +81,9 @@ __Estimated time__: 1 day
 
 Многие [HTTP] клиенты и серверы в [Rust] не имеют встроенной реализации [WebSocket]. Поэтому был создан крейт [`tungstenite`], предоставляющий базовую и независимую от конкретного языка реализацию [WebSocket]. Такие крейты, как [`async-tungstenite`] и [`tokio-tungstenite`], предоставляют готовую к использованию реализацию клиента/сервера для желаемой экосистемы и асинхронной среды выполнения.
 
-For [`actix-web`] ecosystem, the idiomatic solution is the [`actix-web-actors::ws`] module, providing implementation in a form of [actor][41] (via [`actix`]).
+Для экосистемы [`actix-web`] идиоматическим решением является модуль [`actix-web-actors::ws`], обеспечивающий реализацию в виде [actor][41] (через [`actix`]).
 
-To better understand and be familiar with [WebSocket] implementations in [Rust], read through:
+Чтобы лучше понять и освоить реализацию [WebSocket] в [Rust], прочтите следующее:
 - [Official `tungstenite` crate docs][`tungstenite`]
 - [Official `async-tungstenite` crate docs][`async-tungstenite`]
 - [Official `tokio-tungstenite` crate docs][`tokio-tungstenite`]
