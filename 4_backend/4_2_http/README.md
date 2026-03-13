@@ -1,4 +1,4 @@
-Step 4.2: HTTP servers and clients
+Шаг 4.2: HTTP-серверы и клиенты
 ==================================
 
 __Estimated time__: 1 day
