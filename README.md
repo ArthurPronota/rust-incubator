@@ -291,11 +291,11 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [26]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-такое-акторы-когда-они-полезны
 
 
-[4101]: 4_backend/4_1_db#q-301
-[4102]: 4_backend/4_1_db#q-302
-[4103]: 4_backend/4_1_db#q-303
-[4104]: 4_backend/4_1_db#q-304
-[4105]: 4_backend/4_1_db#q-305
+[4101]: 4_backend/4_1_db/README.md#q-301
+[4102]: 4_backend/4_1_db/README.md#q-302
+[4103]: 4_backend/4_1_db/README.md#q-303
+[4104]: 4_backend/4_1_db/README.md#q-304
+[4105]: 4_backend/4_1_db/README.md#q-305
 
 [4201]: 4_backend/4_2_http/README.md#q-4201
 [4202]: 4_backend/4_2_http/README.md#q-4202

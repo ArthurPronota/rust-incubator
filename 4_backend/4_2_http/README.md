@@ -98,6 +98,7 @@ Rework [the task from the previous step](../4_1_db/README.md#task) in a [client-
 - [CLI] client does nothing except sending commands "as is" to the server and rendering its responses.
 - Server [daemon][52], having a single [HTTP] endpoint, does all the parsing and executing of commands sent by the [CLI] client.
 
+Переработайте [задачу из предыдущего шага](../4_1_db/README.md#task) в [клиент-серверной архитектуре][51]. Она должна состоять из [CLI] клиента и [серверного демона][52] и использовать [подход «тонкого клиента»][53]:
 
 
 
