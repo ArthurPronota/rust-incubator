@@ -106,6 +106,7 @@ Rework [the task from the previous step](../4_1_db/README.md#task) in a [client-
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - [Что такое HTTP? Что подразумевает HTTP/2? Что подразумевает HTTP/3?][4201]
 - How do work-stealing and thread-per-core paradigms affect programming a web server in practice? Which one is better and when? When does this question (choosing) become meaningful, in practice?
+- [Как парадигмы «перераспределения задач» и «поток на ядро» влияют на практическое программирование веб-сервера? Какая из них лучше и когда? Когда этот вопрос (выбор) становится актуальным на практике?][4202]
 - What are common crates for making HTTP requests in [Rust]? Which trade-offs do they have?
 - What is WebSocket? How is it used and when? How does it work, in a nutshell?
 
@@ -144,7 +145,7 @@ __Итог:__ HTTP/2 ускорил загрузку за счет паралл�
 
 <hr>
 
-
+<a name="q-4202"><h3>Как парадигмы «перераспределения задач» и «поток на ядро» влияют на практическое программирование веб-сервера? Какая из них лучше и когда? Когда этот вопрос (выбор) становится актуальным на практике?</h3></a>
 
 <hr>
 
@@ -205,3 +206,4 @@ __Итог:__ HTTP/2 ускорил загрузку за счет паралл�
 [53]: https://en.wikipedia.org/wiki/Thin_client
 
 [4201]: #q-4201
+[4202]: #q-4202
