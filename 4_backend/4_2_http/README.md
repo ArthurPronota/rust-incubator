@@ -61,14 +61,11 @@ __Estimated time__: 1 day
 
 Для простых и тривиальных сценариев, __где асинхронная среда выполнения избыточна__ и/или предпочтительны низкие накладные расходы__, жизнеспособной альтернативой является крейт [`ureq`].
 
-
-For [`async-std`] ecosystem, the main crate is [`surf`], which is, however, not restricted to [`async-std`] only, and is able to use alternative backends: [cURL] (via [`isahc`]), [`hyper`], [WASM] (via [browser's `window.fetch` API][32]).
-
 Для экосистемы [`async-std`] основной библиотекой является [`surf`], которая, однако, не ограничивается только [`async-std`] и может использовать альтернативные бэкенды: [cURL] (через [`isahc`]), [`hyper`], [WASM] (через [API `window.fetch` браузера][32]).
 
-For [`actix-web`] ecosystem, the meaningful option would be the [`awc`] crate, which supports [WebSocket] connections out-of-the-box (while most other [HTTP] clients lacks that).
+Для экосистемы [`actix-web`] наиболее подходящим вариантом будет крейт [`awc`], который поддерживает соединения [WebSocket] из коробки (в то время как большинство других [HTTP] клиентов этого не делают).
 
-To better understand and be familiar with [HTTP] clients in [Rust], read through:
+Чтобы лучше понять и освоить работу с HTTP-клиентами в Rust, прочтите следующее:
 - [Official `reqwest` crate docs][`reqwest`]
 - [Joshua Mo: Writing a Web Scraper in Rust using Reqwest][33]
 - [Official `isahc` crate docs][`isahc`]
@@ -82,7 +79,7 @@ To better understand and be familiar with [HTTP] clients in [Rust], read through
 
 ## WebSocket
 
-Many [HTTP] clients and servers in [Rust] lack a built-in [WebSocket] implementation. Therefore, the [`tungstenite`] crate was created, providing a barebone and agnostic [WebSocket] implementation. Crates, like [`async-tungstenite`] and [`tokio-tungstenite`], provide the actual ready-for-use client/server implementation for the desired ecosystem and asynchronous runtime.
+Многие [HTTP] клиенты и серверы в [Rust] не имеют встроенной реализации [WebSocket]. Поэтому был создан крейт [`tungstenite`], предоставляющий базовую и независимую от конкретного языка реализацию [WebSocket]. Такие крейты, как [`async-tungstenite`] и [`tokio-tungstenite`], предоставляют готовую к использованию реализацию клиента/сервера для желаемой экосистемы и асинхронной среды выполнения.
 
 For [`actix-web`] ecosystem, the idiomatic solution is the [`actix-web-actors::ws`] module, providing implementation in a form of [actor][41] (via [`actix`]).
 
