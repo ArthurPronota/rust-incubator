@@ -1,31 +1,28 @@
-use anyhow::Result ;
+use anyhow::Result ; // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
 
-use sqlx::FromRow ;
+use sqlx::FromRow ; // Импорт трейта FromRow из крейта sqlx для автоматического преобразования строк базы данных в структуры Rust 
 
-use validator::{
-        Validate,
-        //ValidateLength
-    } ;
+use validator::Validate ;   // Импорт трейта Validate из крейта validator для валидации полей структур
 
-use crate::roles ;
+use crate::roles ;  // Импорт модуля roles из текущего крейта
 
-use crate::users ;
+use crate::users ;  // Импорт модуля users из текущего крейта
 
-use crate::db ;
+use crate::db ;     // Импорт модуля db из текущего крейта (crate) для работы с базой данных
 
-//use crate::db::Database ;
-//use crate::users::User;
-
-#[derive(
-    Default,
-    Validate,
-    FromRow,
+/// Роля для пользователей
+#[derive(   // Автоматическая реализация стандартных трейтов для структуры
+    Default,    // Реализует метод default() для создания экземпляра со значениями по умолчанию
+    Validate,   // Реализует метод validate() из крейта validator для проверки полей
+    FromRow,    // Реализует преобразование строки из БД в структуру (из крейта sqlx)
  )
 ]
 pub struct UsersRoles {
 
+    /// Код пользователя
     id_user: u32,
 
+    /// Код роли
     #[validate(
         length(
             min = roles::MIN_LENGTH_SLUG,
@@ -36,6 +33,7 @@ pub struct UsersRoles {
     slug:           String,    
 }
 
+/// Реализация методов для UsersRoles
 impl UsersRoles {
 
     /// Установть id_user
@@ -77,7 +75,7 @@ impl UsersRoles {
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
                     slug:       &str,
-                    is_lock:    bool,
+                    is_lock:    bool,  // признак необходимости блокировки
                  ) ->Result<Option<UsersRoles>> {
 
         let mut new_users_roles = UsersRoles::default() ;
@@ -113,7 +111,7 @@ impl UsersRoles {
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
                     slug:       &str,
-                    is_lock:    bool,
+                    is_lock:    bool,  // признак необходимости блокировки
                  ) ->Result<UsersRoles> {
         match Self::find(trans, id_user, slug, is_lock).await {
             Ok(ur) => match ur {
@@ -159,17 +157,13 @@ impl UsersRoles {
                         .execute(&mut *trans)
                         .await? ;
 
-                        match Self::find_raise(
+                        Self::find_raise(
                                     trans,
                                     new_users_roles.id_user(),
                                     new_users_roles.slug(),
                                     false
-                                ).await {
-                            Ok(ur) => {
-                                Ok(ur)
-                            },
-                            Err(err) => Err(err),
-                        }
+                                )
+                                .await
                     }
                 }
             },
@@ -248,6 +242,16 @@ impl UsersRoles {
         .execute(&mut *trans)
         .await? ;
 
-        Ok(())          
+        Self::find(
+                &mut *trans,
+                new_user_role.id_user(),
+                new_user_role.slug(),
+                false
+                )
+                .await?
+                .map_or(
+                    Ok(()), |_|
+                    Err(anyhow::anyhow!("Role: {} for user: {} is not deleted", new_user_role.slug(), new_user_role.id_user()))
+                )
     }
 }

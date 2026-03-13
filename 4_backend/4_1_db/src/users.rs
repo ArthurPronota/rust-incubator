@@ -166,7 +166,7 @@ impl User {
     pub async fn find_for_id_user(
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
-                    is_lock:    bool,
+                    is_lock:    bool,   // признак блокировки
                  ) ->Result<Option<User>> {
         let mut tmp_user = User::default() ;
 
@@ -197,7 +197,7 @@ impl User {
     pub async fn find_for_id_user_raise(
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
-                    is_lock:    bool,
+                    is_lock:    bool,   // признак блокировки
                  ) ->Result<User> {
         match Self::find_for_id_user(&mut *trans, id_user, is_lock).await {
             Ok(ur) => match ur {
@@ -212,7 +212,7 @@ impl User {
     pub async fn find_for_email(
                         trans: &mut sqlx::MySqlConnection,
                         email: &str,
-                        is_lock:    bool,
+                        is_lock:    bool,   // признак блокировки
                     ) ->Result<Option<User>> {
         let mut new_user = User::default() ;
         
@@ -247,7 +247,7 @@ impl User {
     pub async fn find_for_email_raise(
                         trans: &mut sqlx::MySqlConnection,
                         email: &str, 
-                        is_lock:    bool,
+                        is_lock:    bool,   // признак блокировки
                     ) ->Result<User> {
         match Self::find_for_email(&mut *trans, email, is_lock).await {
             Ok(ur) => match ur {
@@ -284,7 +284,11 @@ impl User {
                 .execute(&mut *trans)
                 .await? ;
 
-                Self::find_for_email_raise(&mut *trans, new_user.email(), false).await
+                Self::find_for_email_raise(
+                        &mut *trans,
+                        new_user.email(),
+                        false
+                    ).await
             },
         }
     }
@@ -393,14 +397,16 @@ impl User {
         .await? ;
 
         // проверка наличия пользователя
-        match Self::find_for_id_user(&mut *trans, user_tmp.id_user(), false)
+        Self::find_for_id_user(
+                &mut *trans,
+                user_tmp.id_user(),
+                false
+            )
             .await?
-        {
-            Some(_) => {
-                Err(anyhow::anyhow!("The user id_user: {} has not been deleted", user_tmp.id_user()))
-            },
-            None => Ok(()),
-        }
+            .map_or(
+                Ok(()),
+                |_| Err(anyhow::anyhow!("The user id_user: {} has not been deleted", user_tmp.id_user()))
+            )
     }
 
     /// Получить всех id_user

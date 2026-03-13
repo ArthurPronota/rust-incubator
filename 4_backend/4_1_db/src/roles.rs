@@ -10,7 +10,7 @@ use validator::{
 use crate::db::{
         self,       // Импортирует сам модуль db
         Database    // Импортирует тип Database из модуля db
-    } ;        
+    } ;
 
 /// Минимальная длина slug
 pub const MIN_LENGTH_SLUG: u64 = 1 ;
@@ -395,6 +395,7 @@ impl Role {
                     .await? ;
         // В случа получения одного значения использовать список: (u32,)
         match sqlx::query_as::<_, (u32,)>(
+            // фраза "for update" обеспечивает целостность данных
             r#"
                 select id_user
                 from (
@@ -404,6 +405,7 @@ impl Role {
                         select ur_1.id_user
                         from users_roles ur_1
                         where ur_1.slug = ?
+                        for update
                     )
                     group by ur_2.id_user
                 ) as res
@@ -434,16 +436,16 @@ impl Role {
                 .execute(&mut *trans)
                 .await? ;
 
-                match Role::find_slug(
+                Role::find_slug(
                             &mut *trans,
                             role_tmp.slug(),
                             false
                     )   
                     .await? 
-                {
-                   Some(_) => Err(anyhow::anyhow!("The role: {} has not been deleted", role_tmp.slug())),
-                   None => Ok(()),
-                }
+                    .map_or(
+                        Ok(()),
+                        |_| Err(anyhow::anyhow!("The role: {} has not been deleted", role_tmp.slug()))
+                    )
             },
             Err(err) => Err(err.into()),
         }

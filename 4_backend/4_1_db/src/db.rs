@@ -1,16 +1,11 @@
-use anyhow::Result ;
-use crate::users::{
-                self,
-                //User,
-            } ;
+use anyhow::Result ;  // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
+use crate::users ;    // Импорт модуля users из текущего крейта
 
-use crate::roles::{
-                self,
-} ;
+use crate::roles ;    // Импорт модуля roles из текущего крейта
 
-use sqlx::{
-        mysql::MySqlPoolOptions,
-        MySqlPool
+use sqlx::{ // Импорт типов из крейта sqlx для работы с MySQL базой данных
+        mysql::MySqlPoolOptions,    // MySqlPoolOptions - строитель для настройки и создания пула соединений с БД
+        MySqlPool   // MySqlPool - пул соединений с MySQL для выполнения асинхронных запросов
 } ;
 
 /// часть выражения для блокировки строки
@@ -97,27 +92,6 @@ CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 "#,
 roles::MAX_LENGTH_SLUG,
 ),
-/*
-
-r#"
-DELIMITER //
-
-CREATE TRIGGER IF NOT EXISTS BEF_DEL_ROLE
-BEFORE DELETE ON roles
-FOR EACH ROW
-BEGIN
-
-    IF OLD.slug = 'default' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Cannot delete default role' ;
-    END IF;
-
-END //
-
-DELIMITER ;
-"#
-
-*/
         ] ;
 
         for sql_query in sql_queries.iter() {
@@ -140,17 +114,25 @@ DELIMITER ;
         roles::Role::create_default_role(&self)
             .await? ;
 
-        // Создать триггер контроля удаления роли
-        use sqlx::Executor ;
+        // Создание триггеров для контроля целостности данных
+        use sqlx::Executor ;    // это трейт (trait) в sqlx, который определяет общий интерфейс для выполнения SQL-запросов. 
 
-        let mut trans = 
-                    self
-                      .pool
-                      // Устанавливает соединение и немедленно начинает новую транзакцию.
-                      .begin()
-                      .await? ;
-
-        trans.execute(r#"
+        let sql_triggers = vec![
+// Триггер запрета модификации slug роли
+r#"
+CREATE TRIGGER IF NOT EXISTS BEF_UPD_ROLE
+BEFORE UPDATE ON roles
+FOR EACH ROW
+BEGIN
+    IF OLD.SLUG != NEW.SLUG THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot update role' ;
+    END IF ;
+END;
+"#,
+// Триггер контроля удаления роли
+// фраза "for update" обеспечивает целостность данных
+r#"
 CREATE TRIGGER IF NOT EXISTS BEF_DEL_ROLE
 BEFORE DELETE ON roles
 FOR EACH ROW
@@ -172,6 +154,7 @@ BEGIN
                 select ur_1.id_user
                 from users_roles ur_1
                 where ur_1.slug = OLD.slug
+                for update
             )
             group by ur_2.id_user
         ) as res
@@ -190,9 +173,22 @@ BEGIN
     END IF ;
 
 END;
-        "#
-        )
-        .await? ;
+"#
+        ] ;
+
+        let mut trans = 
+                    self
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+        for unit_trg in sql_triggers {
+            trans.execute(
+            unit_trg
+            )
+            .await? ;
+        }
 
         Ok(())
     }
