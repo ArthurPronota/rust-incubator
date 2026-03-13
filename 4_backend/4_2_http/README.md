@@ -28,11 +28,10 @@ __Estimated time__: 1 day
 
 Хотя [`hyper`] предоставляет собственную серверную реализацию, его прямое использование может показаться довольно низкоуровневым и неэргономичным из-за его природы. Естественно, существует [многочисленное множество веб-фреймворков][2], построенных на основе [`hyper`], которые предоставляют высокоуровневый, эргономичный и удобный интерфейс. Наиболее известные из них:
 - [`axum`] — [фреймворк для веб-приложений][21], ориентированный на эргономику и модульность, обеспечивающий маршрутизацию запросов без макросов (но эргономичный и декларативный), простую и предсказуемую обработку ошибок, а также в полной мере использующий преимущества экосистемы [`tower`] и [`tower-http`] [промежуточного ПО][22], сервисов и утилит.
-
-- [`warp`] - a super-easy, composable, [web server framework][21] for warp speeds, built around the "everything is a [`Filter`]" concept.
-- [`rocket`] - a [web framework][21], aims to be fast, easy, and flexible while offering guaranteed safety and security where it can, and, importantly, aiming to be fun (accomplishing this by ensuring that you write as little code as needed to accomplish your task).
-- [`poem`] - a full-featured and easy-to-use [web framework][21], focusing on providing all the capabilities (like [i18n]) out-of-the-box.
-- [`salvo`] - a powerful and simple [web server framework][21], adopting [HTTP/3] implementation.
+- [`warp`] — сверхпростой, компонуемый [фреймворк веб-сервера][21] для сверхбыстрой работы, построенный на концепции «все — это [`Filter`]».
+- [`rocket`] — [веб-фреймворк][21], цель которого — быть быстрым, простым и гибким, обеспечивая при этом гарантированную безопасность и защиту там, где это возможно, и, что важно, быть интересным (достигая этого за счет того, что вы пишете как можно меньше кода, необходимого для выполнения вашей задачи).
+- [`poem`] — полнофункциональный и простой в использовании [веб-фреймворк][21], ориентированный на предоставление всех возможностей (например, [i18n]) «из коробки».
+- [`salvo`] — мощный и простой [фреймворк веб-сервера][21], использующий реализацию [HTTP/3].
 
 For those who prefer [`async-std`] ecosystem, the definitive choice (and the single one, at the moment) is the [`tide`] crate.
 
