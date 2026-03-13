@@ -111,7 +111,7 @@ Rework [the task from the previous step](../4_1_db/README.md#task) in a [client-
 
 <hr>
 
-<a name="q-4201">Что такое HTTP? Что подразумевает HTTP/2? Что подразумевает HTTP/3?</a>
+### <a name="q-4201">Что такое HTTP? Что подразумевает HTTP/2? Что подразумевает HTTP/3?</a>
 
 
 [`actix`]: https://docs.rs/actix
