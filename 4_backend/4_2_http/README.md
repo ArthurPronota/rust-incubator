@@ -104,12 +104,14 @@ Rework [the task from the previous step](../4_1_db/README.md#task) in a [client-
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
-- What is HTTP? What does HTTP/2 imply? What does HTTP/3 imply?
+- [Что такое HTTP? Что подразумевает HTTP/2? Что подразумевает HTTP/3?][4201]
 - How do work-stealing and thread-per-core paradigms affect programming a web server in practice? Which one is better and when? When does this question (choosing) become meaningful, in practice?
 - What are common crates for making HTTP requests in [Rust]? Which trade-offs do they have?
 - What is WebSocket? How is it used and when? How does it work, in a nutshell?
 
+<hr>
 
+### <a name="q-4201"></a> Что такое HTTP? Что подразумевает HTTP/2? Что подразумевает HTTP/3?
 
 
 [`actix`]: https://docs.rs/actix
@@ -167,3 +169,5 @@ Rework [the task from the previous step](../4_1_db/README.md#task) in a [client-
 [51]: https://en.wikipedia.org/wiki/Client%E2%80%93server_model
 [52]: https://en.wikipedia.org/wiki/Daemon_(computing)
 [53]: https://en.wikipedia.org/wiki/Thin_client
+
+[4201]: #q-4201
