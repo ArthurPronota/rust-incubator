@@ -6,7 +6,7 @@ __Estimated time__: 1 day
 The current situation regarding [HTTP] in [Rust] ecosystem can be grasped quite well in [the "Web programming" section of "Awesome Rust"][1] and in the ["Web Frameworks"][2], ["HTTP Clients"][3] and ["Lower Web-Stack" topics of "Are we web yet?"][4]. Of course, most of them use [async I/O][5].
 
 
-
+Текущая ситуация с [HTTP] в экосистеме [Rust] хорошо описана в [разделе «Веб-программирование» книги «Awesome Rust»][1] и в [разделах «Веб-фреймворки»][2], [«HTTP-клиенты»][3] и [«Нижний веб-стек» книги «Мы уже веб?»][4]. Конечно, большинство из них используют [асинхронный ввод-вывод][5].
 
 ## Low-level
 
