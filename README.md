@@ -181,6 +181,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [Что такое миграции? Зачем их использовать? Как они работают?][4104]
         - [Какие виды миграции существуют? Каковы их преимущества и недостатки? Когда и какой вид миграции предпочтительнее?][4105]
     - [ ] [Шаг 4.2: HTTP-серверы и клиенты][Step 4.2] (1 day)
+        - [Что такое HTTP? Что подразумевает HTTP/2? Что подразумевает HTTP/3?][4201]
     - [ ] [4.3. API servers, clients and tools][Step 4.3] (1 day)
 
 
@@ -292,3 +293,5 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [4103]: 4_backend/4_1_db#q-303
 [4104]: 4_backend/4_1_db#q-304
 [4105]: 4_backend/4_1_db#q-305
+
+[4201]: 4_backend/4_2_http#q-4201
