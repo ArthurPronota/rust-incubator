@@ -3,3 +3,10 @@ name = "step_4_2"
 version = "0.1.0"
 edition = "2024"
 publish = false
+
+[dependencies]
+anyhow = "1.0.102"
+clap = { version = "4.6.0", features = ["derive"] }
+dotenv = "0.15.0"
+serde = { version = "1.0.228", features = ["derive"] }
+ureq = { version = "3.2.0", features = ["json"] }
