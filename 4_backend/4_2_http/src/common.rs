@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize} ;
 use anyhow::Result ;
-use std::f64::consts::E;
+//use std::f64::consts::E;
 use std::path::Path ;
 use std::net::IpAddr ;
 
@@ -21,16 +21,25 @@ const DB_PATH_CONNECT: &str = "DB_PATH_CONNECT" ;
     Serialize,
     Deserialize,
     Debug,
+    // ----------
+    Clone,      // Необходим для 
   )
 ]
+//#[serde(tag = "status")]
+//#[derive(Clone)]
 pub enum Response {
     Success(String),    // serialization -> {"Success":"Operation completed"}
     Error(String),      // serialization -> {"Error":"Database connection failed"}
 }
 
+/// Получить бащовый путь для url
+pub fn get_base_path_for_url() ->&'static str {
+    "/anycommand"
+}
+
 /// получить базовый url
 pub fn get_base_url(host: &str, port: u32) ->String {
-    format!("http:://{}:{}/anycommand", host, port)
+    format!("http://{}:{}{}", host, port, get_base_path_for_url())
     //"https://mk.ru/".to_owned()
 }
 

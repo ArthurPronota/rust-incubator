@@ -3,13 +3,14 @@ use clap::{
         Subcommand,
     } ;
 
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
 /// Перечень команд
 #[derive(
     Subcommand, 
     //Debug                 // Убрать после отладки
     Serialize,      // Для формирования POST запроса к серверу
+    Deserialize,
   )
  ]
 pub enum Commands {
@@ -19,7 +20,7 @@ pub enum Commands {
         about = "Creating the required database objects.",
       )
     ]
-    InitDb,
+    InitDb, // serialization -> "InitDb"
 }
 
 /// Реализация трейта Parser

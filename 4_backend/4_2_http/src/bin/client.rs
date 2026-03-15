@@ -3,7 +3,7 @@
 Пример запуска:
     cargo run --bin client -- -h
 
-    
+
 */
 use anyhow::Result ;
 use clap::Parser ;
@@ -17,9 +17,11 @@ use std::net::IpAddr ;
 #[path = "../args.rs"]
 mod args ;
 
+// Подклбчение модуля client_executor из родительского дирректория
 #[path = "../client_executor.rs"]
 mod client_executor ;
 
+// Подклбчение модуля common из родительского дирректория
 #[path = "../common.rs"]
 mod common ;
 
