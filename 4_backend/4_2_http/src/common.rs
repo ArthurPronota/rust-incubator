@@ -40,7 +40,6 @@ pub fn get_base_path_for_url() ->&'static str {
 /// получить базовый url
 pub fn get_base_url(host: &str, port: u32) ->String {
     format!("http://{}:{}{}", host, port, get_base_path_for_url())
-    //"https://mk.ru/".to_owned()
 }
 
 /// Получить все переменные env
