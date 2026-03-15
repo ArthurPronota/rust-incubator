@@ -1,3 +1,10 @@
+/*
+
+Пример запуска:
+    cargo run --bin client -- -h
+
+    
+*/
 use anyhow::Result ;
 use clap::Parser ;
 use std::path::{
@@ -87,6 +94,7 @@ fn main() ->Result<()> {
                         .to_string()
             } ;
      */
+    // получить все необъодтиые для работы параметры
     let (http_port, http_host, _) = common::get_all_env_vars()? ;
 
     //println!("host: {}, port: {}", http_host, http_port) ;

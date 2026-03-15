@@ -24,8 +24,8 @@ const DB_PATH_CONNECT: &str = "DB_PATH_CONNECT" ;
   )
 ]
 pub enum Response {
-    Success(String),
-    Error(String),
+    Success(String),    // serialization -> {"Success":"Operation completed"}
+    Error(String),      // serialization -> {"Error":"Database connection failed"}
 }
 
 /// получить базовый url
@@ -37,6 +37,8 @@ pub fn get_base_url(host: &str, port: u32) ->String {
 /// Получить все переменные env
 pub fn get_all_env_vars() ->Result<(u32, String, String)> {
 
+    // Считывание содержимого из .env файла с установкой переменных 
+    // окружения если таковые не определены
     if Path::new(".env")    // путь к .env файлу
         .exists() { // файл .env существует
             // загрузка переменных окружения из .env файла
@@ -82,6 +84,7 @@ pub fn get_all_env_vars() ->Result<(u32, String, String)> {
                     .trim()
                     .to_owned()
             {
+                host if host.is_empty() => return Err(anyhow::anyhow!("host is empty.")),
                 // Это localhost
                 host if host == LOCALHOST => host,
                 // Это не localhost
@@ -90,13 +93,14 @@ pub fn get_all_env_vars() ->Result<(u32, String, String)> {
                         .map_err(|err|
                             anyhow::anyhow!(
                                 "Invalid ip: {}, error: {}",
-                                HTTP_HOST,
-                                err
+                                host,
+                                err,
                             )
                         )?
                         .to_string()
             } ;
 
+    // Установить path для DB
     let db_path_conn = match
             std::env::var(DB_PATH_CONNECT)
             .map_err(|err|
