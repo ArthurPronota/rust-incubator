@@ -5,6 +5,9 @@ __Estimated time__: 1 day
 
 Naturally, in [client-server][4] applications, a client and a server negotiate with each other via some [API (application programming interface)][API], which often takes form of [RPC (remote procedure call)][RPC] for better structuring and standardizing (due [IDL (interface definition language)][IDL] usage).
 
+Естественно, в [клиент-серверных][4] приложениях клиент и сервер взаимодействуют друг с другом через некоторый [API (интерфейс прикладного программирования - application programming interface)][API], который часто принимает форму [RPC (удаленный вызов процедур - remote procedure call)][RPC] для лучшей структуризации и стандартизации (из-за использования [IDL (язык определения интерфейса - interface definition language)][IDL]).
+
+
 [Rust] ecosystem provides support for all modern widely-used and adopted [RPC] technologies, and even comes with its [own unique ones][`tarpc`].
 
 
