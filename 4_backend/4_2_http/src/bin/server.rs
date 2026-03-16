@@ -80,10 +80,12 @@ async fn main() ->Result<()> {
     
     let listener = TcpListener::bind(&addr).await?;
 
+    /*
     println!("{} -> {}", 
         common::get_base_path_for_url(),
         addr,
     ) ;
+      */
 
     axum::serve(
             listener,
