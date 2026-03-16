@@ -15,18 +15,16 @@ __Estimated time__: 1 day
 
 REST (REpresentational State Transfer) — это архитектурный стиль для проектирования сетевых приложений.
 
-
-This approach, however, __suffers from lacking [API] schema__, and so, makes it hard to build a rich ecosystem around with ready-to-use tooling (or connect with existing ones). Fortunately, this is easily solved by using a concrete [RPC specification][3] on top of [REST] conventions, and following it strictly.
-
 Однако этот подход __страдает от отсутствия схемы [API]__, что затрудняет создание богатой экосистемы с готовыми инструментами (или подключение к существующим). К счастью, это легко решается с помощью конкретной спецификации [RPC][3] поверх соглашений [REST] и строгого следования ей.
 
-For more information about [REST], read through:
+Для получения более подробной информации о [REST] ознакомьтесь с материалами по ссылке:
 - [Tyler Charboneau: What’s the Difference Between RPC and REST?][111]
 
 
 ### OpenAPI
 
 [OpenAPI] (former [Swagger]) is a [specification][3] for a [machine-readable][102] [IDL (interface definition language)][IDL], allowing to describe, produce, consume and visualize [REST]ful web [API]s. In a nutshell, [OpenAPI] is a __kind of [REST]-based [RPC]__.
+
 
 > The OpenAPI Specification (OAS) defines a standard, language-agnostic interface to HTTP APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection. When properly defined, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.
 >
