@@ -72,6 +72,7 @@ pub const MAX_LENGTH_EMAIL: u64 = 255 ;
     Deserialize, // Реализует десериализацию структуры из форматов JSON/YAML/etc. (из крейта serde)
     FromRow,    // Реализует преобразование строки из БД в структуру (из крейта sqlx)
     Validate,   // Реализует метод validate() для валидации полей структуры (из крейта validator)
+    Clone,
  )
 ]
 pub struct User {
@@ -425,7 +426,14 @@ impl User {
 }
 
 /// Пользователь с его ролями
-#[derive(Default)]
+#[derive(
+    Default,
+    Serialize,
+    Deserialize,
+    Debug,
+    Clone,
+  )
+ ]
 pub struct UserWithRole {
     user:   User,
     list_roles: Vec<Role>

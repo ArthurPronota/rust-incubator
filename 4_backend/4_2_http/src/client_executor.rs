@@ -46,6 +46,20 @@ pub fn any_command(
     match resp.body_mut().read_json::<common::Response>()? {
         common::Response::Success(mess) => println!("{}", mess),
         common::Response::Error(err) => return Err(anyhow::anyhow!("{}", err)),
+        common::Response::UserRole(u_r) => println!("{}", u_r),
+        common::Response::ListUsersRoles(list_ur) => {
+            for u_r in &list_ur {
+                println!("{}", u_r) ;
+                println!("--------------------------------------------") ;
+            }
+        },
+        common::Response::Role(rl) => println!("{}", rl),
+        common::Response::ListRoles(list_roles) => {
+            for rl in &list_roles {
+                println!("{}", rl) ;
+                println!("--------------------------------------------") ;
+            }
+        },
     }
 
     Ok(())

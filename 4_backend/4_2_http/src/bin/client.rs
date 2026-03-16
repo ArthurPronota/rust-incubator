@@ -25,6 +25,19 @@ mod client_executor ;
 #[path = "../common.rs"]
 mod common ;
 
+#[path = "../users.rs"]
+mod users ;
+
+#[path = "../roles.rs"]
+mod roles ;
+
+#[path = "../db.rs"]
+mod db ;
+
+#[path = "../users_roles.rs"]
+mod users_roles ;
+
+
 /*
 /// Переменная окружения порт http сервера
 const HTTP_PORT: &str = "HTTP_PORT" ;

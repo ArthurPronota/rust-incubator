@@ -4,6 +4,8 @@ use anyhow::Result ;
 use std::path::Path ;
 use std::net::IpAddr ;
 
+use crate::{roles, users} ;
+
 /// Переменная окружения порт http сервера
 const HTTP_PORT: &str = "HTTP_PORT" ;
 
@@ -30,6 +32,10 @@ const DB_PATH_CONNECT: &str = "DB_PATH_CONNECT" ;
 pub enum Response {
     Success(String),    // serialization -> {"Success":"Operation completed"}
     Error(String),      // serialization -> {"Error":"Database connection failed"}
+    UserRole(users::UserWithRole),
+    ListUsersRoles(Vec<users::UserWithRole>),
+    Role(roles::Role),
+    ListRoles(Vec<roles::Role>),
 }
 
 /// Получить бащовый путь для url
