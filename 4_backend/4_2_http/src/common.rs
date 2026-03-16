@@ -1,6 +1,8 @@
-use serde::{Deserialize, Serialize} ;
+use serde::{
+        Deserialize,
+        Serialize
+    } ;
 use anyhow::Result ;
-//use std::f64::consts::E;
 use std::path::Path ;
 use std::net::IpAddr ;
 
@@ -25,13 +27,8 @@ const DB_PATH_CONNECT: &str = "DB_PATH_CONNECT" ;
 #[derive(
     Serialize,
     Deserialize,
-    //Debug,
-    // ----------
-    //Clone,      // Необходим для 
   )
 ]
-//#[serde(tag = "status")]
-//#[derive(Clone)]
 pub enum Response {
     Success(String),    // serialization -> {"Success":"Operation completed"}
     Error(String),      // serialization -> {"Error":"Database connection failed"}
