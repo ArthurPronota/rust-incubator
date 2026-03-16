@@ -22,8 +22,11 @@ pub async fn handle_commmand(
     
     match cmd {
         Commands::InitDb => {
-
-            JsonResponse(common::Response::Success("Database objects created successfully.".to_owned()))
+            match state.create_tables().await {
+                Ok(v) => JsonResponse(common::Response::Success("Database objects created successfully.".to_owned())),
+                Err(err) => JsonResponse(common::Response::Error(err.to_string()))
+            }
+            //JsonResponse(common::Response::Success("Database objects created successfully.".to_owned()))
             //Json(common::Response::Success("Database objects created successfully.".to_owned()))
         },
     }
