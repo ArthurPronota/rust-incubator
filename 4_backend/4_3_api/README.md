@@ -25,6 +25,7 @@ REST (REpresentational State Transfer) — это архитектурный с�
 
 [OpenAPI] (former [Swagger]) is a [specification][3] for a [machine-readable][102] [IDL (interface definition language)][IDL], allowing to describe, produce, consume and visualize [REST]ful web [API]s. In a nutshell, [OpenAPI] is a __kind of [REST]-based [RPC]__.
 
+[OpenAPI] (ранее [Swagger]) — это [спецификация][3] для [машинно-читаемого][102] [языка определения интерфейса][IDL], позволяющая описывать, создавать, использовать и визуализировать [REST]ful веб-[API]. В двух словах, [OpenAPI] — это __разновидность [RPC] на основе [REST]__.
 
 > The OpenAPI Specification (OAS) defines a standard, language-agnostic interface to HTTP APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection. When properly defined, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.
 >
