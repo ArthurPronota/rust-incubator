@@ -4,7 +4,10 @@ use anyhow::Result ;
 use std::path::Path ;
 use std::net::IpAddr ;
 
-use crate::{roles, users} ;
+use crate::{
+        roles, 
+        users
+    } ;
 
 /// Переменная окружения порт http сервера
 const HTTP_PORT: &str = "HTTP_PORT" ;
@@ -22,9 +25,9 @@ const DB_PATH_CONNECT: &str = "DB_PATH_CONNECT" ;
 #[derive(
     Serialize,
     Deserialize,
-    Debug,
+    //Debug,
     // ----------
-    Clone,      // Необходим для 
+    //Clone,      // Необходим для 
   )
 ]
 //#[serde(tag = "status")]

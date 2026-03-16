@@ -3,7 +3,10 @@ use clap::{
         Subcommand,
     } ;
 
-use serde::{Serialize, Deserialize};
+use serde::{
+        Serialize,
+        Deserialize
+    };
 
 /// Перечень команд
 #[derive(

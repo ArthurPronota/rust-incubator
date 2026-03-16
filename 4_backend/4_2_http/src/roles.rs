@@ -1,6 +1,10 @@
 use anyhow::Result ;    // крейт для гибкой обработки ошибок
 
-use serde::{Deserialize, Serialize};
+use serde::{
+        Deserialize, 
+        Serialize
+    };
+
 use sqlx::FromRow ; // трейт для преобразования строки из базы данных в структуру Rust
 
 use validator::{
@@ -48,7 +52,7 @@ pub const PERMISSION_DEFAULT: &str = "read,write" ;
     FromRow,
     Serialize,
     Deserialize,
-    Debug,
+    //Debug,
     Clone,
 )]
 pub struct Role {
