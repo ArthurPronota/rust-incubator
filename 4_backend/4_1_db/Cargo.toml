@@ -14,5 +14,3 @@ sqlx = { version = "0.8.6", features = ["runtime-tokio-native-tls", "mysql", "ma
 tokio = { version = "1.0", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 validator = { version = "0.20.0", features = ["derive"]}
-#garde = { version = "0.22.1", features = ["derive"]}
-#const_format = "0.2" # "0.2.35"
