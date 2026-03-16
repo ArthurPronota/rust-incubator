@@ -300,6 +300,7 @@ impl Role {
     }
 
     /// Модифицировать name в роли
+    #[allow(dead_code)]
     pub async fn update_name(
                     trans: &mut sqlx::MySqlConnection,
                     slug:           &str,
@@ -340,6 +341,7 @@ impl Role {
     }
 
     /// Модифицировать разрешения у роли
+    #[allow(dead_code)]
     pub async fn update_permissions(
                     trans: &mut sqlx::MySqlConnection,
                     slug:           &str,
@@ -379,6 +381,7 @@ impl Role {
     }
 
     /// Удалить роль 
+    #[allow(dead_code)]
     pub async fn delete_role(
                     trans: &mut sqlx::MySqlConnection,
                     slug:           &str,
@@ -512,6 +515,7 @@ impl Role {
     }   
 
     /// Получить все slugs
+    #[allow(dead_code)]
     pub async fn get_all_slugs(
                     trans: &mut sqlx::MySqlConnection,
                  ) ->Result<Vec<String>> {

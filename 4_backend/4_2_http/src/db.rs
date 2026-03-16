@@ -9,9 +9,11 @@ use sqlx::{ // Импорт типов из крейта sqlx для работ�
 } ;
 
 /// часть выражения для блокировки строки
+#[allow(dead_code)]
 pub const FOR_UPDATE: &str = "FOR UPDATE" ;
 
 /// Пул соединений с базой данных
+#[allow(dead_code)]
 pub struct Database {
     pub pool:   MySqlPool,
 }
@@ -19,6 +21,7 @@ pub struct Database {
 impl Database {
 
     // Создание нового пула соединений с базой
+    #[allow(dead_code)]
     pub async fn new(path_to_mysql: &str) ->Result<Self> {
         let pool = 
                 // Возвращает конфигурацию по умолчанию
@@ -42,6 +45,7 @@ impl Database {
     }
 
     /// Создать таблицы для программы
+    #[allow(dead_code)]
     pub async fn create_tables(&self) ->Result<()> {
 
         // вектор с командами создания необходимых таблиц

@@ -4,15 +4,12 @@ use ureq ;
 
 use ureq::http::StatusCode;
 
-use crate::args::{
-            self,
-            Commands 
-        } ;
+use crate::args ;
 
 use crate::common::{
             self,
             get_base_url 
-        };
+        } ;
 
 
 /// Выполнить действие из аргументов командной строки

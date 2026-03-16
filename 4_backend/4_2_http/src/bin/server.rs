@@ -13,14 +13,17 @@ use axum::{
         post,
         //get
     },
-    extract::State,
+    //extract::State,
 } ;
 
-use std::{path, sync::Arc};
+use std::{
+        //path,
+        sync::Arc
+    };
 
 use tokio::net::TcpListener;
 
-use crate::db::Database;
+//use crate::db::Database;
 
 // Необходимо подключить все используемые модули в точке входа 
 // для их дальнейшего использования.
@@ -59,7 +62,7 @@ async fn main() ->Result<()> {
 
     // server::db::Database
 
-    let mut db_res = 
+    let /*mut */ db_res = 
             Arc::new(
                 db::Database::new(&db_path_conn) 
                     .await? 

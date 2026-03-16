@@ -17,6 +17,7 @@ use crate::db ;     // Импорт модуля db из текущего кре
     FromRow,    // Реализует преобразование строки из БД в структуру (из крейта sqlx)
  )
 ]
+#[allow(dead_code)]
 pub struct UsersRoles {
 
     /// Код пользователя
@@ -37,6 +38,7 @@ pub struct UsersRoles {
 impl UsersRoles {
 
     /// Установть id_user
+    #[allow(dead_code)]
     pub fn set_id_user(&mut self, id_user: u32) ->Result<()> {
 
         let mut user_tmp = users::User::default() ;
@@ -49,11 +51,13 @@ impl UsersRoles {
     }
 
     /// Получить id_user
+    #[allow(dead_code)]
     pub fn id_user(&self) ->u32 {
         self.id_user
     }
 
     /// Установить slug
+    #[allow(dead_code)]
     pub fn set_slug(&mut self, slug: &str) ->Result<()> {
         
         let mut role_tmp = roles::Role::default() ;
@@ -66,11 +70,13 @@ impl UsersRoles {
     }
 
     /// Получить slug
+    #[allow(dead_code)]
     pub fn slug(&self) ->&str {
         &self.slug
     }
 
     /// Поиск роли для пользователя
+    #[allow(dead_code)]
     pub async fn find(
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
@@ -107,6 +113,7 @@ impl UsersRoles {
     }
 
     /// Обязательный поиск роли для пользователя
+    #[allow(dead_code)]
     pub async fn find_raise(
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
@@ -123,6 +130,7 @@ impl UsersRoles {
     }
 
     /// Вставка в role_to_user
+    #[allow(dead_code)]
     pub async fn ins_role_to_user(
                 trans: &mut sqlx::MySqlConnection,
                 id_user:    u32,
@@ -172,6 +180,7 @@ impl UsersRoles {
     }
 
     /// Получить все роли для пользователя
+    #[allow(dead_code)]
     pub async fn find_all_user_roles(
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
@@ -195,6 +204,7 @@ impl UsersRoles {
     }
 
     /// Удалить роль у пользователя
+    #[allow(dead_code)]
     pub async fn del_role_from_user(
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,

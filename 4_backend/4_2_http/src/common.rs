@@ -44,9 +44,11 @@ pub fn get_base_path_for_url() ->&'static str {
 }
 
 /// получить базовый url
+#[allow(dead_code)]
 pub fn get_base_url(host: &str, port: u32) ->String {
     format!("http://{}:{}{}", host, port, get_base_path_for_url())
 }
+
 
 /// Получить все переменные env
 pub fn get_all_env_vars() ->Result<(u32, String, String)> {

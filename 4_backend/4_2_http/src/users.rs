@@ -121,6 +121,7 @@ impl User {
     }
 
     /// Установка name
+    #[allow(dead_code)]
     pub fn set_name(&mut self, name: &str) ->Result<()> {
         
         self.name = match name.trim() {
@@ -142,6 +143,7 @@ impl User {
     }
 
     /// Установка email
+    #[allow(dead_code)]
     pub fn set_email(&mut self, email: &str) ->Result<()> {
 
         self.email = match email.trim() {
@@ -210,6 +212,7 @@ impl User {
     }
 
     /// Поиск пользователя по email
+    #[allow(dead_code)]
     pub async fn find_for_email(
                         trans: &mut sqlx::MySqlConnection,
                         email: &str,
@@ -245,6 +248,7 @@ impl User {
     }
 
     /// Обязательный поиск пользователя по email
+    #[allow(dead_code)]
     pub async fn find_for_email_raise(
                         trans: &mut sqlx::MySqlConnection,
                         email: &str, 
@@ -260,6 +264,7 @@ impl User {
     }
 
     /// Вставить пользователя
+    #[allow(dead_code)]
     pub async fn ins_user(
                     trans: &mut sqlx::MySqlConnection,
                     name:  &str,
@@ -296,6 +301,7 @@ impl User {
 
 
     /// Модифицировать имя пользователя
+    #[allow(dead_code)]
     pub async fn update_name(
                     trans: &mut sqlx::MySqlConnection,
                     name:       &str,
@@ -337,6 +343,7 @@ impl User {
     }
 
     /// Модифицировать email для пользователя
+    #[allow(dead_code)]
     pub async fn update_email(
                     trans: &mut sqlx::MySqlConnection,
                     email:      &str,
@@ -376,6 +383,7 @@ impl User {
     }
 
     /// Удалить пользователя
+    #[allow(dead_code)]
     pub async fn delete_user(
                     trans: &mut sqlx::MySqlConnection,
                     id_user:    u32,
@@ -411,6 +419,7 @@ impl User {
     }
 
     /// Получить всех id_user
+    #[allow(dead_code)]
     pub async fn get_all_id_user(trans: &mut sqlx::MySqlConnection,) ->Result<Vec<u32>> {
         Ok(
             sqlx::query_scalar(r#"
@@ -473,6 +482,7 @@ impl std::fmt::Display for UserWithRole {
 
 impl UserWithRole {
     /// Получить данные по пользователю и его роли
+    #[allow(dead_code)]
     pub async fn get_data(
                     trans: &mut sqlx::MySqlConnection,
                     id_user: u32
