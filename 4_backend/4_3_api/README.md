@@ -16,7 +16,9 @@ __Estimated time__: 1 day
 REST (REpresentational State Transfer) — это архитектурный стиль для проектирования сетевых приложений.
 
 
-This approach, however, __suffers from lacking [API] schema__, and so, makes it hard to build a rich ecosystem around with ready-to-use tooling (or connect with existing ones). Fortunately, this is easily solved by using a concrete [RPC specification][3] on top of [REST] conventions, and following it strictly. 
+This approach, however, __suffers from lacking [API] schema__, and so, makes it hard to build a rich ecosystem around with ready-to-use tooling (or connect with existing ones). Fortunately, this is easily solved by using a concrete [RPC specification][3] on top of [REST] conventions, and following it strictly.
+
+Однако этот подход __страдает от отсутствия схемы [API]__, что затрудняет создание богатой экосистемы с готовыми инструментами (или подключение к существующим). К счастью, это легко решается с помощью конкретной спецификации [RPC][3] поверх соглашений [REST] и строгого следования ей.
 
 For more information about [REST], read through:
 - [Tyler Charboneau: What’s the Difference Between RPC and REST?][111]
