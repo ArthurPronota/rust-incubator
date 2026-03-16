@@ -1,14 +1,14 @@
-use serde::{
-        Deserialize,
-        Serialize
+use serde::{    //  крейт serde
+        Deserialize,    // Импорт трейтов Deserialize
+        Serialize       // Импорт трейтов Serialize
     } ;
-use anyhow::Result ;
-use std::path::Path ;
-use std::net::IpAddr ;
+use anyhow::Result ;    // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
+use std::path::Path ;   // Импорт типа Path из стандартной библиотеки для работы с путями файловой системы
+use std::net::IpAddr ;  // Импорт типа IpAddr из стандартной библиотеки для работы с IP-адресами (IPv4 и IPv6)
 
 use crate::{
-        roles, 
-        users
+        roles,  // Модуль для работы с ролями 
+        users,  // Модуль для работы с пользователями
     } ;
 
 /// Переменная окружения порт http сервера
@@ -25,16 +25,22 @@ const DB_PATH_CONNECT: &str = "DB_PATH_CONNECT" ;
 
 /// Ответы сервера
 #[derive(
-    Serialize,
-    Deserialize,
+    Serialize,      // Сериализация для enum
+    Deserialize,    // Десериализация для enum
   )
 ]
 pub enum Response {
+    // Успех
     Success(String),    // serialization -> {"Success":"Operation completed"}
+    // Ошибка
     Error(String),      // serialization -> {"Error":"Database connection failed"}
+    // Роли для пользователя
     UserRole(users::UserWithRole),
+    // Перечень ролей для пользователей
     ListUsersRoles(Vec<users::UserWithRole>),
+    // Роль
     Role(roles::Role),
+    // Список ролей
     ListRoles(Vec<roles::Role>),
 }
 
