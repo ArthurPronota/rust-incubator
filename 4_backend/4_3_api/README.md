@@ -6,14 +6,15 @@ __Estimated time__: 1 day
 Естественно, в [клиент-серверных][4] приложениях клиент и сервер взаимодействуют друг с другом через некоторый [API (интерфейс прикладного программирования - application programming interface)][API], который часто принимает форму [RPC (удаленный вызов процедур - remote procedure call)][RPC] для лучшей структуризации и стандартизации (из-за использования [IDL (язык определения интерфейса - interface definition language)][IDL]).
 
 
-[Rust] ecosystem provides support for all modern widely-used and adopted [RPC] technologies, and even comes with its [own unique ones][`tarpc`].
-
 Экосистема [Rust] обеспечивает поддержку всех современных широко используемых и распространенных [RPC] технологий и даже включает в себя свои [уникальные технологии][`tarpc`].
 
 
 ## RESTful
 
-Since [REST] is rather an __architecture convention/style__ than a strict [specification][3] for [RPC], and [REST]ful [API]s are typically __loosely based on [HTTP] methods__ directly, there is usually __no need in special frameworks__ in [Rust] to implement a [REST]ful [API] server or to request the one. Just any [HTTP server][101] or [HTTP client][231] will do.
+Поскольку [REST] — это __скорее архитектурная конвенция/стиль__, чем [строгая спецификация][3] для [RPC], и [REST]ful [API] обычно _свободно основаны на методах [HTTP] напрямую, в [Rust] обычно нет необходимости в специальных фреймворках реализовывать [REST]ful [API]-сервер или запрашивать его. Подойдет любой [HTTP-сервер][101] или [HTTP-клиент][231].
+
+REST (REpresentational State Transfer) — это архитектурный стиль для проектирования сетевых приложений.
+
 
 This approach, however, __suffers from lacking [API] schema__, and so, makes it hard to build a rich ecosystem around with ready-to-use tooling (or connect with existing ones). Fortunately, this is easily solved by using a concrete [RPC specification][3] on top of [REST] conventions, and following it strictly. 
 
