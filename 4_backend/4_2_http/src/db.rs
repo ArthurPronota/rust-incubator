@@ -20,7 +20,7 @@ pub struct Database {
 
 impl Database {
 
-    // Создание нового пула соединений с базой
+    /// Создание нового пула соединений с базой
     #[allow(dead_code)]
     pub async fn new(path_to_mysql: &str) ->Result<Self> {
         let pool = 

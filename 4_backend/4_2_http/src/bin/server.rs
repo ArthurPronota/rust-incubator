@@ -1,32 +1,51 @@
 /*
-Пример запуска:
-    cargo run --bin server
+
+    Contact: https://artaudiochats.t.me/
+
+        Общие положения:
+1) Для работы программы необходим MySql версии 8.4.7
+2) В файле .env указаны параметры соединения с MySql, данные по порту и хосту http сервера.
+3) В переменную окужения DB_PATH_CONNECT можно так-же установить параметры соединения с MySql.
+4) В переменную окужения HTTP_PORT можно так-же установить порт http сервера
+5) В переменную окужения HTTP_HOST можно так-же установить хост http сервера
+6) Пользователь DB болжен иметь права на создание таблиц и триггеров.
+
+        Структура проекта:
+    
+4_2_http/
+├── Cargo.toml              <- конфигурация программы
+├── src/                    <- директорий для хранения исходныъ кодов
+│   │  │
+│   │  bin/                  <- директорий для исполняемых файлов
+│   │     ├── client.rs      <- точка входа в программу для клиента
+│   │     └── server.rs      <- точка входа в программу для сервера
+│   ├── client_executor.rs  <- модуль обработки всех основных комманд клмента
+│   ├── db.rs               <- модуль общей работы с DB
+│   ├── server_executor.rs  <- модуль обработки всех основных комманд сервера
+│   ├── common.rs           <- модуль общих данных
+│   ├── args.rs             <- модуль обработки агрементов CLI
+│   ├── roles.rs            <- модуль обработки ролей
+│   ├── users.rs            <- модуль обработки пользователей
+│   └── users_roles.rs      <- модуль обработки пользовательских ролей
+├── .env                    <- файл для формирования переменных окружения
+└── README.md               <- файл с документацией
+
+
+    1. Запуск http сервера:
+$ cargo run --bin server
 
 */
-use anyhow::Result ;
 
-//use std::path::Path ;
+use anyhow::Result ;    // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
 
-use axum::{
-    Router, 
-    routing::{
-        post,
-        //get
-    },
-    //extract::State,
+use axum::{ // Импорт типов из крейта axum для создания веб-сервера
+    Router,         // Основной тип для определения маршрутов и middleware
+    routing::post,  // Функция для обработки HTTP POST запросов
 } ;
 
-use std::{
-        //path,
-        sync::Arc
-    };
+use std::sync::Arc ;    // Импорт типа Arc (Atomic Reference Counting) для потокобезопасного разделения данных между задачами
 
-use tokio::net::TcpListener;
-
-//use crate::db::Database;
-
-// Необходимо подключить все используемые модули в точке входа 
-// для их дальнейшего использования.
+use tokio::net::TcpListener;    // Импорт TcpListener из tokio для асинхронного прослушивания TCP соединений
 
 // Подклбчение модуля args из родительского дирректория
 #[path ="../args.rs"]
@@ -48,90 +67,62 @@ mod db ;
 #[path = "../users.rs"]
 mod users ;
 
+// Подклбчение модуля roles из родительского дирректория
 #[path = "../roles.rs"]
 mod roles ;
 
+// Подклбчение модуля users_roles из родительского дирректория
 #[path = "../users_roles.rs"]
 mod users_roles ;
 
-#[tokio::main]
+#[tokio::main]  // требуется асинхронный runtime
 async fn main() ->Result<()> {
 
     // получить все необходимые для работы параметры
     let (http_port, http_host, db_path_conn) = common::get_all_env_vars()? ;
 
-    // server::db::Database
-
-    let /*mut */ db_res = 
+    let db_res = 
+            // Оборачивание пула соединений с DB в Arc
             Arc::new(
+                // Создание нового пула соединений с DB
                 db::Database::new(&db_path_conn) 
                     .await? 
             ) ;
 
-    let app: //Router<Arc<Database>> 
-             Router<()>
-                = 
+    // Объявляем переменную app с явным указанием типа Router<()> 
+    // (роутер без состояния, так как тип состояния - пустой кортеж ())
+    let app: Router<()> = 
+                // Создаем новый пустой роутер
                 Router::new()
+                    // Добавляем маршрут с методом POST
                     .route(
+                        // базовый путь для URL
                         common::get_base_path_for_url(),
+                        // Привязываем обработчик server_executor::handle_command к POST запросам
                         post(server_executor::handle_commmand)
-                        //get(server_executor::handle_commmand)
                     )  
+                    // Добавляем состояние db_res в роутер (теперь тип состояния меняется с () на тип db_res)
+                    // это первый аргумент в функции server_executor::handle_commmand
                     .with_state(db_res) ;
     
-    let addr = format!("{}:{}", http_host, http_port) ;
-    
-    let listener = TcpListener::bind(&addr).await?;
+    let listener = 
+            // Создает новый объект TcpListener, который будет привязан к указанному адресу.
+            TcpListener::bind(
+                            // формирование адреса привязки host:port
+                            format!("{}:{}", http_host, http_port).as_str()
+                        )
+                        // Приостановить выполнение до тех пор, пока результат выполнения Future не будет готов.
+                        .await
+                        ? ;
 
-    /*
-    println!("{} -> {}", 
-        common::get_base_path_for_url(),
-        addr,
-    ) ;
-      */
-
+    // Запускаем HTTP сервер из крейта axum
     axum::serve(
-            listener,
-            app
+            listener,   // Передаем TCP слушатель (TcpListener), который ожидает входящие соединения
+            app // Передаем настроенный роутер (Router), который определяет логику обработки запросов
         )
-        .await? ;
-
-
-    /* Так:
-    let app = 
-                Router::<common::Response>::new()
-                    .route(
-                        &common::get_base_url(&http_host, http_port),
-                        post(server_executor::handle_commmand)
-                    )  ;
-     */
-    /* Ити так
-    let app = 
-                Router::<()>::new()
-                    .route(
-                        &common::get_base_url(&http_host, http_port),
-                        post(server_executor::handle_commmand)
-                    )  ;
-     */
-
-    /*
-    use std::sync::Arc;
-
-    #[derive(Clone)]
-    struct ServerState {
-        db_pool: Vec<u32>, 
-    }
-
-    let mut data = Arc::new(ServerState{db_pool: vec![1, 2, 3]});
-    let app: Router<Arc<ServerState>> = 
-                Router::new()
-                    .route(
-                        &common::get_base_url(&http_host, http_port),
-                        post(server_executor::handle_commmand)
-                    )  
-                    .with_state(data) ;
-     */
-
+        // Асинхронно ожидаем завершения работы сервера (блокируется до остановки)
+        .await
+        ? ;
 
     Ok(())
 }

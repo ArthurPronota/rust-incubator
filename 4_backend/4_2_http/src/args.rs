@@ -8,7 +8,7 @@ use serde::{
         Deserialize
     };
 
-/// Перечень команд
+// Перечень команд
 #[derive(
     Subcommand, 
     //Debug                 // Убрать после отладки
@@ -289,9 +289,8 @@ pub enum Commands {
     },
 }
 
-/// Реализация трейта Parser
 #[derive(
-    Parser,
+    Parser,     // Реализация трейта Parser
     //Debug,      // Убрать после отладки
   )
  ]

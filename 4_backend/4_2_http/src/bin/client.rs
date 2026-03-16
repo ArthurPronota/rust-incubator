@@ -1,28 +1,30 @@
 /*
-Пример запуска:
-    cargo run --bin client -- -h
-
-
-
     Contact: https://artaudiochats.t.me/
 
         Общие положения:
 1) Для работы программы необходим MySql версии 8.4.7
-2) В файле .env указаны параметры соединения с MySql.
+2) В файле .env указаны параметры соединения с MySql, данные по порту и хосту http сервера.
 3) В переменную окужения DB_PATH_CONNECT можно так-же установить параметры соединения с MySql.
-4) Пользователь DB болжен иметь права на создание таблиц и триггеров.
-5) После создания пустой базы данных запустиие команду:
-    $ cargo run -- --bin client init-db
-6) Вся работа с DB выполняется в асинхронном режиме.
+4) В переменную окужения HTTP_PORT можно так-же установить порт http сервера
+5) В переменную окужения HTTP_HOST можно так-же установить хост http сервера
+6) Пользователь DB болжен иметь права на создание таблиц и триггеров.
+7) После создания пустой базы данных, запустиие команду:
+    $ cargo run --bin client -- init-db
+
 
         Структура проекта:
     
-4_1_db/
+4_2_http/
 ├── Cargo.toml              <- конфигурация программы
 ├── src/                    <- директорий для хранения исходныъ кодов
-│   ├── main.rs             <- точка входа в программу
+│   │  │
+│   │  bin/                  <- директорий для исполняемых файлов
+│   │     ├── client.rs      <- точка входа в программу для клиента
+│   │     └── server.rs      <- точка входа в программу для сервера
+│   ├── client_executor.rs  <- модуль обработки всех основных комманд клмента
 │   ├── db.rs               <- модуль общей работы с DB
-│   ├── executor.rs         <- модуль обработки всех основных комманд
+│   ├── server_executor.rs  <- модуль обработки всех основных комманд сервера
+│   ├── common.rs           <- модуль общих данных
 │   ├── args.rs             <- модуль обработки агрементов CLI
 │   ├── roles.rs            <- модуль обработки ролей
 │   ├── users.rs            <- модуль обработки пользователей
@@ -33,8 +35,8 @@
 
 
     1. Общая помощь:
-$ cargo run -- -h
-Usage: step_4_1.exe <COMMAND>
+$ cargo run --bin client -- -h
+Usage: client.exe <COMMAND>
 
 Commands:
   init-db            Creating the required database objects.
@@ -57,10 +59,10 @@ Options:
 $
 
     2. Помощь для конкретной команды:
-$ cargo run -- create-user -h
+$ cargo run --bin client -- create-user -h
 Create a new user
 
-Usage: step_4_1.exe create-user <Username> <Email>
+Usage: client.exe create-user <Username> <Email>
 
 Arguments:
   <Username>  User name, not unique
@@ -77,17 +79,17 @@ $
 
 
     4. Создание роли:
-$ cargo run -- create-role "read-data" "Reader" "read,write,access"
+$ cargo run --bin client -- create-role "read-data" "Reader" "read,write,access"
 Role created successfully.
 $
 
     5. Создание Пользователя:
-$ cargo run -- create-user Arthur yhgvnhjk.986ght.jhgt543@gmail.com
+$ cargo run --bin client -- create-user Arthur yhgvnhjk.986ght.jhgt543@gmail.com
 User created successfully.
 $
 
     6. Показать пользователей и их роли:
-$ cargo run -- show-users-roles
+$ cargo run --bin client -- show-users-roles
 User #3: Arthur (yhgvnhjk.986ght.jhgt543@gmail.com)
 Roles:
   Role #default: reader perm: read,write
@@ -101,7 +103,7 @@ Roles:
 $
 
     7. Показать роли:
-$ cargo run -- show-roles
+$ cargo run --bin client -- show-roles
 Role: #default: reader perm: read,write
 --------------------------------------------
 Role: #manager-1: Level 1 Manager perm: access,approve,read,write
@@ -113,33 +115,37 @@ $
 \connect arthur@localhost:3306
 
 */
-use anyhow::Result ;
-use clap::Parser ;
 
-// Подклбчение модуля args из родительского дирректория
+use anyhow::Result ;    // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
+use clap::Parser ;  // Импорт трейта Parser из крейта clap для декларативного парсинга аргументов командной строки
+
+// Подключение модуля args из родительского дирректория
 #[path = "../args.rs"]
 mod args ;
 
-// Подклбчение модуля client_executor из родительского дирректория
+// Подключение модуля client_executor из родительского дирректория
 #[path = "../client_executor.rs"]
 mod client_executor ;
 
-// Подклбчение модуля common из родительского дирректория
+// Подключение модуля common из родительского дирректория
 #[path = "../common.rs"]
 mod common ;
 
+// Подключение модуля users из родительского дирректория
 #[path = "../users.rs"]
 mod users ;
 
+// Подключение модуля roles из родительского дирректория
 #[path = "../roles.rs"]
 mod roles ;
 
+// Подключение модуля db из родительского дирректория
 #[path = "../db.rs"]
 mod db ;
 
+// Подключение модуля users_roles из родительского дирректория
 #[path = "../users_roles.rs"]
 mod users_roles ;
-
 
 fn main() ->Result<()> {
 
