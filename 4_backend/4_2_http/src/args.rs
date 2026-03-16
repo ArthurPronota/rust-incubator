@@ -44,6 +44,44 @@ pub enum Commands {
         email:  String,
     },
 
+    /// Удаление пользователя
+    #[clap(
+        name = "delete-user",
+        about = "Delete user",
+     )
+    ]    
+    DeleteUser {
+        /// Id user
+        #[arg(
+            name = "id_user",
+            help = "Id of user",
+         )
+        ]
+        id_user:    u32,
+    },
+
+    /// Модифицировать имя у пользователю
+    #[clap(
+        name = "update-name-user",
+        about = "Modify user name",
+     )
+    ]
+    UpdateNameUser {
+        #[arg(
+            name = "New username",
+            help = "Modified username",
+         )
+        ]
+        new_name:   String,
+
+        /// Id user
+        #[arg(
+            name = "id_user",
+            help = "Id of user",
+         )
+        ]        
+        id_user:    u32,
+    },    
 }
 
 /// Реализация трейта Parser
