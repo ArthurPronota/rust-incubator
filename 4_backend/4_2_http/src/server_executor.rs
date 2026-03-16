@@ -297,6 +297,46 @@ async fn handle_commmand_int(
                 }
             }                    
         },
+        Commands::AddRoleToUser { slug, id_user } => {
+            // Сформировать новую транзакцию
+            let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+            // Добавить роль для пользователя
+            users_roles::UsersRoles::ins_role_to_user(
+                        &mut *trans,
+                        *id_user,
+                        slug
+                    )
+                    .await? ;
+            // выполнить commit
+            trans.commit().await? ;
+
+            Ok(local_success("The role has been successfully added to the user."))
+        },
+        Commands::RemoveRoleFromUser { slug, id_user } => {
+            // Сформировать новую транзакцию
+            let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+            // удаление роли у пользователя
+            users_roles::UsersRoles::del_role_from_user(
+                    &mut *trans,
+                    *id_user,
+                    slug
+                ).await? ;
+            // выпонить commit
+            trans.commit().await? ;
+
+            Ok(local_success("The role has been successfully removed from the user."))
+        },
     }
 }
 

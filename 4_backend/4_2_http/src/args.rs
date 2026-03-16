@@ -237,6 +237,53 @@ pub enum Commands {
         slug:   Option<String>,
     },
 
+    /// Добвить роль к пользователю
+    #[clap(
+        name = "role-to-user",
+        about = "Add a role to a user",
+     )
+    ]
+    AddRoleToUser {
+        /// Код роли
+        #[arg(
+            name = "slug",
+            help = "Slug string of role",
+         )
+        ]
+        slug:       String,
+
+        /// Id user
+        #[arg(
+            name = "id_user",
+            help = "Id of user",
+         )
+        ]
+        id_user:    u32,
+    },
+
+    /// Удалить роль у пользователю
+    #[clap(
+        name = "remove-user-role",
+        about = "Remove a role from a user",
+     )
+    ]
+    RemoveRoleFromUser {
+        /// Код роли
+        #[arg(
+            name = "slug",
+            help = "Slug string of role",
+         )
+        ]
+        slug:       String,
+
+        /// Id user
+        #[arg(
+            name = "id_user",
+            help = "Id of user",
+         )
+        ]        
+        id_user:    u32,
+    },
 }
 
 /// Реализация трейта Parser
