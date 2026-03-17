@@ -138,8 +138,9 @@ Avoid architecture [over-engineering][42] for this task, just use simple, straig
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - [Что такое API? Что такое RPC? Как они связаны?][4301]
-
 - What does "code-first" approach mean? What does "schema-first" approach mean? Which advantages and disadvantages do they have?
+- [Что означает подход «сначала код»? Что означает подход «сначала схема»? Каковы их преимущества и недостатки?][4302]
+
 - What does REST paradigm mean? What are essentials of RESTful API? Which strengths does it have? What does it lack?  
 - What is OpenAPI? What is Swagger? How do they relate? Why are they beneficial for RESTful API?
 - What is GraphQL? Which are strong sides of this technology? What problems does it bring in practice? 
@@ -188,6 +189,11 @@ __RPC__ — это подвид __API__.
 - RPC (gRPC): Если у вас много микросервисов на Rust, которые должны общаться друг с другом максимально быстро и с гарантией, что типы данных совпадают.
 
 Ваш текущий код с handle_command — это Web API. Он принимает JSON-команду и выполняет её. Это очень близко к идее RPC, но реализовано поверх обычного HTTP-роутинга.
+
+<hr>
+
+<a name="q-4302"><h3>Что означает подход «сначала код»? Что означает подход «сначала схема»? Каковы их преимущества и недостатки?</h3></a>
+
 
 
 <hr>
@@ -254,3 +260,4 @@ __RPC__ — это подвид __API__.
 [42]: https://en.wikipedia.org/wiki/Overengineering
 
 [4301]: #q-4301
+[4302]: #q-4302

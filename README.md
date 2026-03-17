@@ -187,7 +187,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [Что такое WebSocket? Как он используется и когда? В двух словах, как он работает?][4204]
     - [ ] [Шаг 4.3: API-серверы, клиенты и инструменты][Step 4.3] (1 day)
         - [Что такое API? Что такое RPC? Как они связаны?][4301]
-
+        - [Что означает подход «сначала код»? Что означает подход «сначала схема»? Каковы их преимущества и недостатки?][4302]
 
 
 ## More practice
@@ -303,3 +303,4 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [4204]: 4_backend/4_2_http/README.md#q-4204
 
 [4301]: 4_backend/4_3_api/README.md#q-4301
+[4302]: 4_backend/4_3_api/README.md#q-4302
