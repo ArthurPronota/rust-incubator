@@ -85,23 +85,22 @@ REST (REpresentational State Transfer) — это архитектурный с�
 Для отправки запросов к существующим API [GraphQL][GraphQL] вам не обязательно нужен специальный крейт в [Rust] для тривиальных случаев, достаточно [любого HTTP-клиента][231], способного отправить [простой запрос/запрос на изменение][232].
 
 
-However, if more static guarantees is needed, then the [`graphql-client`] crate may be used, providing the __query-to-code approach__ ([Rust] code is generated from [GraphQL] files defining queries).
+Однако, если требуются дополнительные статические гарантии, можно использовать библиотеку [`graphql-client`], которая обеспечивает подход __запрос-в-код__ (код на [Rust] генерируется из файлов [GraphQL], определяющих запросы).
 
-[`cynic`] crate takes the __opposite code-to-query approach__ of generating a [GraphQL] query out of [Rust] code and validating it statically against a provided [GraphQL] schema.
+[`cynic`] crate использует __противоположный подход от кода к запросу__, генерируя [GraphQL]-запрос из [Rust]-кода и статически проверяя его на соответствие предоставленной [GraphQL]-схеме.
 
-To be familiar with making [GraphQL] requests in [Rust], read through:
+Чтобы ознакомиться с выполнением [GraphQL]-запросов в [Russ], прочтите следующее:
 - [Official `graphql-client` crate description][`graphql-client`]
 - [Official `cynic` crate docs][`cynic`]
 - [Official `cynic` crate guide](https://cynic-rs.dev)
 
 
 
-
 ## gRPC
 
-[gRPC] is a widely-adopted high performance [RPC] framework, having a __strict schema__, powered with pluggable support for load balancing, tracing, health checking and authentication, built on top of [HTTP/2] (and so, having a __mandatory encryption__), and __heavily using code-from-schema generation__.
+[gRPC] — это широко распространенная высокопроизводительная [RPC] платформа, имеющая __строгую схему__, с возможностью расширения для балансировки нагрузки, трассировки, проверки работоспособности и аутентификации, построенная на основе [HTTP/2] (и, следовательно, имеющая __обязательное шифрование__) и _активно использующая генерацию кода из схемы__.
 
-To be familiar with [gRPC], read through:
+Чтобы ознакомиться с [gRPC], прочтите следующее:
 - [gRPC docs: Introduction to gRPC][301]
 - [gRPC docs: Core concepts, architecture and lifecycle][302]
 
