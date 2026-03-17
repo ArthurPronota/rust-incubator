@@ -186,7 +186,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [Какие существуют распространённые крейты для выполнения HTTP-запросов в Rust? Какие компромиссы они имеют?][4203]
         - [Что такое WebSocket? Как он используется и когда? В двух словах, как он работает?][4204]
     - [ ] [Шаг 4.3: API-серверы, клиенты и инструменты][Step 4.3] (1 day)
-
+        - [Что такое API? Что такое RPC? Как они связаны?][4301]
 
 
 
@@ -301,3 +301,5 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [4202]: 4_backend/4_2_http/README.md#q-4202
 [4203]: 4_backend/4_2_http/README.md#q-4203
 [4204]: 4_backend/4_2_http/README.md#q-4204
+
+[4301]: 4_backend/4_3_api/README.md#q-4304

@@ -107,11 +107,12 @@ REST (REpresentational State Transfer) — это архитектурный с�
 
 ### Server and client
 
-For implementing a [gRPC] server in [Rust], there are two main production-ready crates in its ecosystem: [`tonic`] (pure [Rust] implementation, based on [`tokio`]) and [`grpcio`] (wrapper around [gRPC core][311] implementation).
+Для реализации [gRPC]-сервера на [Rust] в его экосистеме есть два основных готовых к использованию крейта: [`tonic`] (чистая реализация на [Rust], основанная на [`tokio`]) и [`grpcio`] (обертка вокруг реализации [gRPC core][311]).
 
-In [gRPC] ecosystem, usually, implementing a [gRPC] client doesn't differ much from implementing a server, since both are auto-generated from the same `.proto` schema. So, for [Rust], the same [`tonic`] and [`grpcio`] crates do the job when it comes to making [gRPC] requests. 
+В экосистеме [gRPC] реализация [gRPC]-клиента обычно мало чем отличается от реализации сервера, поскольку оба автоматически генерируются из одной и той же схемы `.proto`. Таким образом, для [Rust] одни и те же крейты [`tonic`] и [`grpcio`] выполняют работу по отправке [gRPC]-запросов.
 
-To be familiar with using [gRPC] in [Rust], read through:
+
+Чтобы ознакомиться с использованием [gRPC] в [Rust], прочтите следующее:
 - [Official `tonic` crate docs][`tonic`]
 - [Official `grpcio` crate docs][`grpcio`]
 
@@ -135,16 +136,20 @@ Avoid architecture [over-engineering][42] for this task, just use simple, straig
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
-- What is API? What is RPC? How do they relate?
+После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
+- [Что такое API? Что такое RPC? Как они связаны?][4301]
+
 - What does "code-first" approach mean? What does "schema-first" approach mean? Which advantages and disadvantages do they have?
 - What does REST paradigm mean? What are essentials of RESTful API? Which strengths does it have? What does it lack?  
 - What is OpenAPI? What is Swagger? How do they relate? Why are they beneficial for RESTful API?
 - What is GraphQL? Which are strong sides of this technology? What problems does it bring in practice? 
 - What is gRPC? What are its strengths? Which are good use-cases for it, and which are not? Why? 
 
+<hr>
 
+<a name="q-4201"><h3>Что такое API? Что такое RPC? Как они связаны?</h3></a>
 
+<hr>
 
 [`apistos`]: https://docs.rs/apistos
 [`async-graphql`]: https://docs.rs/async-graphql
@@ -206,3 +211,5 @@ After completing everything above, you should be able to answer (and understand 
 [311]: https://github.com/grpc/grpc
 [41]: https://en.wikipedia.org/wiki/Rich_client
 [42]: https://en.wikipedia.org/wiki/Overengineering
+
+[4301]: #q-4301
