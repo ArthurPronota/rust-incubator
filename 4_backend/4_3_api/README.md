@@ -147,7 +147,7 @@ Avoid architecture [over-engineering][42] for this task, just use simple, straig
 
 <hr>
 
-<a name="q-4201"><h3>Что такое API? Что такое RPC? Как они связаны?</h3></a>
+<a name="q-4301"><h3>Что такое API? Что такое RPC? Как они связаны?</h3></a>
 
 <hr>
 
