@@ -67,11 +67,12 @@ REST (REpresentational State Transfer) — это архитектурный с�
 
 ### Server
 
-For implementing a [GraphQL] server in [Rust], there are two major crates in its ecosystem: [`juniper`] (provides more static guarantees) and [`async-graphql`] (more feature-rich). Both __manifest code-to-schema approach__ (writing [Rust] code and later generating a [GraphQL] schema from it), because [Rust] type system is far more expressive than the [GraphQL] one.
+Для реализации [GraphQL]-сервера на [Rust] существуют два основных крейта в его экосистеме: [`juniper`] (предоставляет больше статических гарантий) и [`async-graphql`] (более функциональный). Оба используют подход __manifest code-to-schema__ (написание кода на [Rust] и последующая генерация [GraphQL]-схемы на его основе), поскольку система типов [Rust] гораздо более выразительна, чем система [GraphQL].
 
-[`juniper-from-schema`] crate, however, tries to take it in opposite direction, and to some degree successfully __provides schema-to-code approach__ (generating [Rust] code using [`juniper`] from a provided [GraphQL] schema).
 
-To be familiar with implementing [GraphQL] server in [Rust], read through:
+Однако библиотека [`juniper-from-schema`] пытается двигаться в противоположном направлении и в некоторой степени успешно __обеспечивает подход преобразования схемы в код__ (генерация кода [Rust] с использованием [`juniper`] из предоставленной схемы [GraphQL]).
+
+Чтобы ознакомиться с реализацией [GraphQL]-сервера на [Russ], прочтите следующее:
 - [Official `juniper` crate docs][`juniper`]
 - [Juniper Book]
 - [Official `juniper-from-schema` crate docs][`juniper-from-schema`]
