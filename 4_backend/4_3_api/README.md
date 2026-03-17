@@ -55,14 +55,12 @@ REST (REpresentational State Transfer) — это архитектурный с�
 [GraphQL] - это [гибкий][200] язык запросов для [API], позволяющий запрашивать данные частично и составлять несколько вложенных запросов как один, приправленный схемой, имеющей [выразительную][201] [систему типов][1] (по сравнению с другими [API] схемы) и [very strong][202] [introspection][2] возможности "из коробки".
 
 
-One of the strongest parts of [GraphQL] is its [whole ecosystem][203] built around the language, allowing to auto-generate code from schema (or schema from code), have documentation directly from introspection, play interactively with any [API]s in playgrounds, easily mock them, and much, much more. __Once you've built your [GraphQL] schema, you have everything else ready-to-go.__
-
 Одной из самых сильных сторон [GraphQL] является его [вся экосистема][203], построенная вокруг языка, позволяющая автоматически генерировать код из схемы (или схему из кода), получать документацию непосредственно из интроспекции, интерактивно играть с любыми [API] на игровых площадках, легко имитировать их и гораздо, гораздо больше. __Как только вы построите свою схему [GraphQL], все остальное будет готово к работе.__
 
 
-Another strong part of [GraphQL] is that its __protocol is [transport][204]-agnostic__, so the same schema and queries, used via [HTTP], are __easily reusable via [WebSocket]__, allowing to [stream data][205] with almost zero effort atop.
+Еще одно важное преимущество [GraphQL] заключается в том, что его протокол не зависит от [транспорта][204]__, поэтому одна и та же схема и запросы, используемые через [HTTP], легко повторно используются через [WebSocket]__, что позволяет [stream data][205] практически без усилий.
 
-To be familiar with [GraphQL], read through:
+Чтобы ознакомиться с [GraphQL], прочтите следующее:
 - [GraphQL docs: Introduction to GraphQL][206]
 - [The Fullstack Tutorial for GraphQL][207]
 
