@@ -191,7 +191,8 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [Что означает парадигма REST? Каковы основные характеристики RESTful API? В чём её сильные стороны? Чего ей не хватает?][4303]
         - [Что такое OpenAPI? Что такое Swagger? Как они связаны? Почему они полезны для RESTful API?][4304]
         - [Что такое GraphQL? Каковы сильные стороны этой технологии? Какие проблемы она создает на практике?][4305]
-        
+        - [Что такое gRPC? В чём его преимущества? В каких случаях его применение целесообразно, а в каких — нет? Почему?][4306]
+
 ## More practice
 
 - [Rustlings][rustlings] is a collection of small exercises to get you used to reading and writing [Rust] code.
@@ -309,3 +310,4 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [4303]: 4_backend/4_3_api/README.md#q-4303
 [4304]: 4_backend/4_3_api/README.md#q-4304
 [4305]: 4_backend/4_3_api/README.md#q-4305
+[4306]: 4_backend/4_3_api/README.md#q-4306
