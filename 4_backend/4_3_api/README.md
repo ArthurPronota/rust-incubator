@@ -140,8 +140,8 @@ Avoid architecture [over-engineering][42] for this task, just use simple, straig
 - [Что такое API? Что такое RPC? Как они связаны?][4301]
 - [Что означает подход «сначала код»? Что означает подход «сначала схема»? Каковы их преимущества и недостатки?][4302]
 - [Что означает парадигма REST? Каковы основные характеристики RESTful API? В чём её сильные стороны? Чего ей не хватает?][4303]
+- [Что такое OpenAPI? Что такое Swagger? Как они связаны? Почему они полезны для RESTful API?][4304]
 
-- What is OpenAPI? What is Swagger? How do they relate? Why are they beneficial for RESTful API?
 - What is GraphQL? Which are strong sides of this technology? What problems does it bring in practice? 
 - What is gRPC? What are its strengths? Which are good use-cases for it, and which are not? Why? 
 
@@ -276,6 +276,10 @@ __Недостатки:__
 
 <hr>
 
+<a name="q-4304"><h3>Что такое OpenAPI? Что такое Swagger? Как они связаны? Почему они полезны для RESTful API?</h3></a>
+
+<hr>
+
 [`apistos`]: https://docs.rs/apistos
 [`async-graphql`]: https://docs.rs/async-graphql
 [`cynic`]: https://docs.rs/cynic
@@ -340,3 +344,4 @@ __Недостатки:__
 [4301]: #q-4301
 [4302]: #q-4302
 [4303]: #q-4303
+[4304]: #q-4304

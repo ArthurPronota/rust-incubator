@@ -189,7 +189,8 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [Что такое API? Что такое RPC? Как они связаны?][4301]
         - [Что означает подход «сначала код»? Что означает подход «сначала схема»? Каковы их преимущества и недостатки?][4302]
         - [Что означает парадигма REST? Каковы основные характеристики RESTful API? В чём её сильные стороны? Чего ей не хватает?][4303]
-
+        - [Что такое OpenAPI? Что такое Swagger? Как они связаны? Почему они полезны для RESTful API?][4304]
+        
 ## More practice
 
 - [Rustlings][rustlings] is a collection of small exercises to get you used to reading and writing [Rust] code.
@@ -305,3 +306,4 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [4301]: 4_backend/4_3_api/README.md#q-4301
 [4302]: 4_backend/4_3_api/README.md#q-4302
 [4303]: 4_backend/4_3_api/README.md#q-4303
+[4304]: 4_backend/4_3_api/README.md#q-4304
