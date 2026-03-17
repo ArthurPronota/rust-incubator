@@ -138,7 +138,6 @@ Avoid architecture [over-engineering][42] for this task, just use simple, straig
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 - [Что такое API? Что такое RPC? Как они связаны?][4301]
-- What does "code-first" approach mean? What does "schema-first" approach mean? Which advantages and disadvantages do they have?
 - [Что означает подход «сначала код»? Что означает подход «сначала схема»? Каковы их преимущества и недостатки?][4302]
 
 - What does REST paradigm mean? What are essentials of RESTful API? Which strengths does it have? What does it lack?  
