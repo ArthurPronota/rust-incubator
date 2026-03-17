@@ -23,19 +23,20 @@ REST (REpresentational State Transfer) — это архитектурный с�
 
 ### OpenAPI
 
-[OpenAPI] (former [Swagger]) is a [specification][3] for a [machine-readable][102] [IDL (interface definition language)][IDL], allowing to describe, produce, consume and visualize [REST]ful web [API]s. In a nutshell, [OpenAPI] is a __kind of [REST]-based [RPC]__.
-
 [OpenAPI] (ранее [Swagger]) — это [спецификация][3] для [машинно-читаемого][102] [языка определения интерфейса][IDL], позволяющая описывать, создавать, использовать и визуализировать [REST]ful веб-[API]. В двух словах, [OpenAPI] — это __разновидность [RPC] на основе [REST]__.
 
-> The OpenAPI Specification (OAS) defines a standard, language-agnostic interface to HTTP APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection. When properly defined, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.
+> Спецификация OpenAPI (OAS) определяет стандартный, независимый от языка программирования интерфейс для HTTP API, который позволяет как людям, так и компьютерам обнаруживать и понимать возможности сервиса без доступа к исходному коду, документации или анализа сетевого трафика. При правильном определении потребитель может понимать и взаимодействовать с удаленным сервисом с минимальным количеством логики реализации.
 >
-> An OpenAPI definition can then be used by documentation generation tools to display the API, code generation tools to generate servers and clients in various programming languages, testing tools, and many other use cases.
+> Определение OpenAPI затем может использоваться инструментами генерации документации для отображения API, инструментами генерации кода для создания серверов и клиентов на различных языках программирования, инструментами тестирования и во многих других случаях.
 
-In [Rust] ecosystem, most [OpenAPI] crates follow the __code-first approach__ (generating [OpenAPI] schema from source code). The most notable crates for this are [`utoipa`], [`okapi`] and [`apistos`].
 
-For the opposite (generating source code from [OpenAPI] schema) [Rust] ecosystem lacks its own pure implementation, and the original [OpenAPI] tool [`openapi-generator`] should be used (powered by the [`swagger`] crate).
+В экосистеме [Rust] большинство [OpenAPI]-крейтов следуют подходу __code-first__ (генерация [OpenAPI]-схемы из исходного кода). Наиболее известные крейты для этого — [`utoipa`], [`okapi`] и [`apistos`].
 
-To be familiar with [OpenAPI] and using it in [Rust], read through:
+
+Для противоположной задачи (генерации исходного кода из схемы [OpenAPI]) в экосистеме [Rust] отсутствует собственная чистая реализация, и следует использовать оригинальный инструмент [OpenAPI] [`openapi-generator`] (работающий на основе крейта [`swagger`]).
+
+
+Чтобы ознакомиться с [OpenAPI] и использовать его в [Rust], прочтите следующее:
 - [OpenAPI Initiative]
 - [SwaggerHub Documentation: OpenAPI 3.0 Tutorial][122]
 - [Official `utoipa` crate docs][`cynic`]
@@ -51,7 +52,8 @@ To be familiar with [OpenAPI] and using it in [Rust], read through:
 
 ## GraphQL
 
-[GraphQL] is a [flexible][200] query language for [API]s, allowing to request data partially and compose multiple nested requests as a single one, seasoned with a schema having an [expressive][201] [type system][1] (comparing to other [API] schemas) and [very strong][202] [introspection][2] capabilities out-of-the-box.
+[GraphQL] - это [гибкий][200] язык запросов для [API], позволяющий запрашивать данные частично и составлять несколько вложенных запросов как один, приправленный схемой, имеющей [выразительную][201] [систему типов][1] (по сравнению с другими [API] схемы) и [very strong][202] [introspection][2] возможности "из коробки".
+
 
 One of the strongest parts of [GraphQL] is its [whole ecosystem][203] built around the language, allowing to auto-generate code from schema (or schema from code), have documentation directly from introspection, play interactively with any [API]s in playgrounds, easily mock them, and much, much more. __Once you've built your [GraphQL] schema, you have everything else ready-to-go.__
 
