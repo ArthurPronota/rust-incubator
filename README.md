@@ -190,6 +190,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
         - [Что означает подход «сначала код»? Что означает подход «сначала схема»? Каковы их преимущества и недостатки?][4302]
         - [Что означает парадигма REST? Каковы основные характеристики RESTful API? В чём её сильные стороны? Чего ей не хватает?][4303]
         - [Что такое OpenAPI? Что такое Swagger? Как они связаны? Почему они полезны для RESTful API?][4304]
+        - [Что такое GraphQL? Каковы сильные стороны этой технологии? Какие проблемы она создает на практике?][4305]
         
 ## More practice
 
@@ -307,3 +308,4 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [4302]: 4_backend/4_3_api/README.md#q-4302
 [4303]: 4_backend/4_3_api/README.md#q-4303
 [4304]: 4_backend/4_3_api/README.md#q-4304
+[4305]: 4_backend/4_3_api/README.md#q-4305
