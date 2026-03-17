@@ -82,7 +82,8 @@ REST (REpresentational State Transfer) — это архитектурный с�
 
 ### Client
 
-For making request to existing [GraphQL][GraphQL] [API]s, you don't necessarily need a special crate in [Rust] for trivial cases, just [any HTTP client][231] is capable to send a [simple query/mutation request][232].
+Для отправки запросов к существующим API [GraphQL][GraphQL] вам не обязательно нужен специальный крейт в [Rust] для тривиальных случаев, достаточно [любого HTTP-клиента][231], способного отправить [простой запрос/запрос на изменение][232].
+
 
 However, if more static guarantees is needed, then the [`graphql-client`] crate may be used, providing the __query-to-code approach__ ([Rust] code is generated from [GraphQL] files defining queries).
 
