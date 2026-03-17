@@ -188,7 +188,7 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
     - [ ] [Шаг 4.3: API-серверы, клиенты и инструменты][Step 4.3] (1 day)
         - [Что такое API? Что такое RPC? Как они связаны?][4301]
         - [Что означает подход «сначала код»? Что означает подход «сначала схема»? Каковы их преимущества и недостатки?][4302]
-
+        - [Что означает парадигма REST? Каковы основные характеристики RESTful API? В чём её сильные стороны? Чего ей не хватает?][4303]
 
 ## More practice
 
@@ -304,3 +304,4 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 
 [4301]: 4_backend/4_3_api/README.md#q-4301
 [4302]: 4_backend/4_3_api/README.md#q-4302
+[4303]: 4_backend/4_3_api/README.md#q-4303
