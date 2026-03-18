@@ -70,7 +70,7 @@ pub fn get_all_env_vars() ->Result<(u32, String, String)> {
                 )? ;
         }
 
-    // Установить хост http сервера
+    // Установить порт http сервера
     let http_port = 
             // получить переменную окружения из HTTP_PORT
             std::env::var(HTTP_PORT)

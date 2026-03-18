@@ -75,7 +75,7 @@ Options:
 $
 
     3. Создание объектов базы данных:
-$ cargo run -- init-db
+$ cargo run --bin client -- init-db
 Database objects created successfully.
 $
 

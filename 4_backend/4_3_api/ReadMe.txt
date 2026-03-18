@@ -1079,3 +1079,87 @@ match command {
 Тонкий клиент просто шлёт всё на один эндпоинт методом POST, 
 а толстый клиент использует правильные HTTP методы для каждой операции, 
 следуя REST архитектуре.
+
+====================================================
+
+В коде ниже :id - это извлечение из uri идентификатора id?
+
+    let app = Router::new()
+        .route("/api/users", post(create_user).get(get_users))
+        .route("/api/users/:id", get(get_user))
+
+✅ Да, совершенно верно!
+
+:id в маршруте /api/users/:id — это параметр пути (path parameter), который извлекает идентификатор из URI.
+
+🔍 Как это работает
+1. Определение маршрута с параметром
+rust
+.route("/api/users/:id", get(get_user))
+//                   👆 это параметр пути
+2. Использование параметра в обработчике
+rust
+async fn get_user(Path(id): Path<i32>) -> impl IntoResponse {
+    // id автоматически извлекается из URI
+    // и преобразуется в i32
+    format!("User ID: {}", id)
+}
+
+📝 Примеры запросов
+
+URI	            Извлечённое значение
+--------------- ---------------------
+/api/users/42	id = 42
+/api/users/123	id = 123
+/api/users/abc	❌ Ошибка (не число)
+
+🎯 Полный пример
+
+```rust
+use axum::{
+    Router,
+    routing::get,
+    extract::Path,
+};
+
+async fn get_user(Path(id): Path<i32>) -> String {
+    format!("Getting user with ID: {}", id)
+}
+
+async fn update_user(Path(id): Path<i32>) -> String {
+    format!("Updating user with ID: {}", id)
+}
+
+async fn delete_user(Path(id): Path<i32>) -> String {
+    format!("Deleting user with ID: {}", id)
+}
+
+#[tokio::main]
+async fn main() {
+    let app = Router::new()
+        .route("/api/users/:id", 
+            get(get_user)
+            .put(update_user)
+            .delete(delete_user)
+        );
+    
+    // Запросы:
+    // GET    /api/users/42   -> "Getting user with ID: 42"
+    // PUT    /api/users/42   -> "Updating user with ID: 42"
+    // DELETE /api/users/42   -> "Deleting user with ID: 42"
+}
+```
+
+📊 Типы параметров в Axum
+
+Синтаксис	        Тип	                    Пример	            Извлечение
+------------------- ----------------------- ------------------- -------------------
+/:id	            Path parameter	        /users/42	        Path<i32>
+?page=2	            Query parameter	        /users?page=2	    Query<Pagination>
+/:id/roles/:role_id	Несколько параметров	/users/42/roles/7	Path<(i32, i32)>
+
+🎯 Итог
+Да, :id в маршруте — это параметр пути, который извлекает идентификатор из URI и передаёт его в обработчик через Path<T>. Это стандартный способ работы с динамическими сегментами URL в REST API.
+
+====================================================
+
