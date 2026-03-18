@@ -1,4 +1,3 @@
-use std::path;
 
 use anyhow::Result ;
 
@@ -13,6 +12,18 @@ mod common ;
 #[path = "../client_executor.rs"]
 mod client_executor ;
 
+#[path = "../users.rs"]
+mod users ;
+
+#[path = "../roles.rs"]
+mod roles ;
+
+#[path = "../users_roles.rs"]
+mod users_roles ;
+
+#[path = "../db.rs"]
+mod db ;
+
 fn main() ->Result<()>{
 
     // получить все необходтиые для работы параметры 
@@ -21,6 +32,7 @@ fn main() ->Result<()>{
     // Получение параметров из командной строки
     let args = args::Args::parse() ;
 
+    client_executor::any_command(&args.commands, &host, port)? ;
 
     Ok(())
 }

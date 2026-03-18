@@ -19,11 +19,6 @@ pub fn any_command(
                 port:   u32,
              ) ->Result<()> {
 
-    // сформировать базовый url
-    //let base_url = get_base_url(host, port) ;
-
-    //println!("url: {}", get_base_url(host, port)) ;
-
     let mut resp = 
             // сформировать POST запрос
             ureq::post(

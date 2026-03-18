@@ -1,4 +1,5 @@
 use anyhow::Result ;
+use serde::{Deserialize, Serialize};
 
 use std::path::Path ;
 
@@ -18,6 +19,25 @@ const LOCALHOST: &str = "localhost" ;
 
 /// переменная окружения с путём соединения с DB
 const DB_PATH_CONNECT: &str = "DB_PATH_CONNECT" ;    
+
+/// базовый uri путь
+const BASE_URI_PATH: &str = "/api/" ;
+
+/// init-db часть uri
+const INIT_DB_PART: &str = "initdb" ;
+
+/// Ответы сервера
+#[derive(
+    Serialize, 
+    Deserialize
+ )
+]
+pub enum Responce {
+    /// Успех
+    Success(String),    // serialization -> {"Success":"Operation completed"}
+    /// Ошибка
+    Error(String),      // serialization -> {"Error":"Database connection failed"}
+}
 
 
 /// Получить все переменные env
@@ -95,4 +115,14 @@ pub fn get_all_env_cars() ->Result<(u32, String, String)> {
         } ;
 
     Ok((http_port, http_host, db_path))
+}
+
+/// получить базовый uri путь
+pub fn get_base_uri_path() ->&'static str {
+    BASE_URI_PATH
+}
+
+/// получить init-db uri
+pub fn get_initdb_uri() ->String {
+    format!("{}{}", get_base_uri_path(), INIT_DB_PART)
 }
