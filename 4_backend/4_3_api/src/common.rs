@@ -7,6 +7,7 @@ use std::net::IpAddr ;
 
 use dotenv ;
 
+use utoipa::ToSchema;
 
 /// Переменная окружения порт http сервера
 const HTTP_PORT: &str = "HTTP_PORT" ;
@@ -26,16 +27,18 @@ const BASE_URI_PATH: &str = "/api/" ;
 /// init-db часть uri
 const INIT_DB_PART: &str = "initdb" ;
 
-/// Ответы сервера
+// Ответы сервера
 #[derive(
     Serialize, 
-    Deserialize
+    Deserialize,
+    //Debug,
+    ToSchema,
  )
 ]
 pub enum Responce {
-    /// Успех
+    // Успех
     Success(String),    // serialization -> {"Success":"Operation completed"}
-    /// Ошибка
+    // Ошибка
     Error(String),      // serialization -> {"Error":"Database connection failed"}
 }
 
@@ -125,4 +128,9 @@ pub fn get_base_uri_path() ->&'static str {
 /// получить init-db uri
 pub fn get_initdb_uri() ->String {
     format!("{}{}", get_base_uri_path(), INIT_DB_PART)
+}
+
+/// получить init-db URL
+pub fn get_initdb_url(host: &str, port: u32) ->String {
+    format!("http://{}:{}{}", host, port, get_initdb_uri())
 }

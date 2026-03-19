@@ -1,0 +1,85 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "step_4_3",
+    "description": "",
+    "license": {
+      "name": ""
+    },
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/initdb": {
+      "get": {
+        "tags": [
+          "initdb"
+        ],
+        "operationId": "initdb_handle",
+        "responses": {
+          "200": {
+            "description": "Creating database objects.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Success": "Database objects created successfully."
+                }
+              }
+            }
+          },
+          "303": {
+            "description": "Error creating database objects.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "Error creating trigger."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Responce": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "Success"
+            ],
+            "properties": {
+              "Success": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "Error"
+            ],
+            "properties": {
+              "Error": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "initdb",
+      "description": "Creating the necessary objects in the database"
+    }
+  ]
+}

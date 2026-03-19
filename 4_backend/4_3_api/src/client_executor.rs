@@ -20,15 +20,33 @@ pub fn any_command(
         // Создание в DB необходимых объектов
         Command::InitDb => {
             // https://docs.rs/ureq/latest/ureq/
-            ureq::get(&common::get_initdb_uri())
+            ureq::get(&common::get_initdb_url(host, port))
                 // Отправляет запрос и блокирует вызывающего до получения ответа.
                 .call()?
         },
 
     } ;
 
+    /*
     if resp.status() != StatusCode::OK {
         return Err(anyhow::anyhow!("Server error: {}", resp.status()));  
+    }
+     */
+    /*
+    match resp.status() {
+        StatusCode::OK | StatusCode::SEE_OTHER => {},
+        _ => return Err(anyhow::anyhow!("Server error: {}", resp.status())),
+    }
+     */
+    /*
+    match resp.status() {
+        st if st == StatusCode::OK || st == StatusCode::SEE_OTHER => {},
+        _ => return Err(anyhow::anyhow!("Server error: {}", resp.status())),
+    }
+     */
+
+    if !matches!(resp.status(), StatusCode::OK | StatusCode::SEE_OTHER) {
+        return Err(anyhow::anyhow!("Server error: {}", resp.status())) ;
     }
 
     match resp

@@ -14,3 +14,8 @@ sqlx = { version = "0.8.6", features = ["runtime-tokio-native-tls", "mysql", "ma
 validator = { version = "0.20.0", features = ["derive"] }
 tokio = { version = "1.50.0", features = ["full"] }
 axum = "0.8.8"
+utoipa = { version = "5.4.0" }
+utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
+serde_json = "1.0.149"
+#utoipa = { version = "4.2.3", features = ["axum"] }
+#utoipa-swagger-ui = { version = "4.0", features = ["axum"] }
