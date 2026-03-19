@@ -46,11 +46,11 @@ async fn main() ->Result<()> {
     // получить все необходимые для работы параметры
     let (http_port, http_host, db_path) = common::get_all_env_cars()? ;
 
+    // Возвращает экземпляр openapi::OpenApi, который можно разобрать с помощью serde 
     let openapi = server_executor::ApiDoc::openapi() ;
-    std::fs::write(
-            "openapi.json",
-            serde_json::to_string_pretty(&openapi)?
-        )? ;
+
+    // Запись в файл спецификации openapi если спецификация изменилась
+    server_executor::write_to_openapi(&openapi)? ;
 
     let db_res = 
             // Оборачивание пула соединений с DB в Arc
@@ -67,10 +67,18 @@ async fn main() ->Result<()> {
                         &common::get_initdb_uri(), 
                         routing::get(server_executor::initdb_handle)
                     )
+                    // Добавляем Swagger UI в наш роутер (объединяем с основными маршрутами)
                     .merge(
-                        SwaggerUi::new("/docs")
+                        // Создаем новый экземпляр Swagger UI, который будет доступен по пути "/docs"
+                        // Пользователь может открыть в браузере http://127.0.0.1:8080/docs
+                        // Там будет интерактивная документация с возможностью тестировать API
+                        SwaggerUi::new(server_executor::OPENAPI_URL_DOCS) // пользовательский интерфейс: http://127.0.0.1:8080/docs
+                            // Добавляем URL, по которому будет доступна OpenAPI спецификация в JSON формате
+                            // Swagger UI загрузит этот JSON, чтобы построить интерфейс
                             .url(
-                                "/api-docs/openapi.json", 
+                                // Путь к JSON с описанием API: http://127.0.0.1:8080/api-docs/openapi.json
+                                    server_executor::OPENAPI_URL_SPECIFIC, // "/api-docs/openapi.json",   // данные API: http://127.0.0.1:8080/api-docs/openapi.json
+                                // Сама OpenAPI спецификация, сгенерированная из кода с помощью макроса #[derive(OpenApi)]
                                 openapi
                             )
                     )

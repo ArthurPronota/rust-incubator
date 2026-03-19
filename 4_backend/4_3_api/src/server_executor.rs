@@ -17,6 +17,41 @@ use utoipa::{OpenApi, ToSchema} ;
 
 const DB_OBJ_CREATED_SUCCESS: &str = "Database objects created successfully." ;
 
+/// Файл с данными документации
+const OPENAPI_FILE: &str = "openapi.json" ;
+
+/// url документации openapi
+pub const OPENAPI_URL_DOCS: &str = "/docs" ;
+
+/// url спецификации openapi
+pub const OPENAPI_URL_SPECIFIC: &str = "/api-docs/openapi.json" ;
+
+/// Запись в файл спецификации openapi если спецификация изменилась
+pub fn write_to_openapi(op_api: &utoipa::openapi::OpenApi) ->Result<()> {
+
+    // текущий контент сожержимого openapi
+    let content_openapi_now = serde_json::to_string_pretty(&op_api)? ;
+
+    // путь к файлу openapi
+    let openapi_path = std::path::Path::new(OPENAPI_FILE) ;
+
+    // чтение содержимого файла openapi
+    let content_openapi = if openapi_path.exists() {
+        std::fs::read_to_string(openapi_path)?
+    } else {
+        "".to_string()
+    } ;
+
+    if content_openapi_now != content_openapi {
+        std::fs::write(
+                openapi_path,
+                content_openapi_now
+            )? ;
+    }
+
+    Ok(())
+}
+
 // Отправка сообщения об успехе
 fn success_message(mess: &str) -> common::Responce {
     common::Responce::Success(mess.to_owned())
