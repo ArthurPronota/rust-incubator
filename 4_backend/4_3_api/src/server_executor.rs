@@ -44,6 +44,11 @@ fn error_message(err: &str) ->common::Responce {
             description = "Creating the necessary objects in the database",
         ),
     ),
+    info(
+        title = "API for working with users and their roles.",
+        version = "1.0.0",
+        description = "RESTful API for managing users and roles",
+    ),
   )
  ]
 pub struct ApiDoc;

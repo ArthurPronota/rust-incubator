@@ -1,12 +1,12 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "step_4_3",
-    "description": "",
+    "title": "API for working with users and their roles.",
+    "description": "RESTful API for managing users and roles",
     "license": {
       "name": ""
     },
-    "version": "0.1.0"
+    "version": "1.0.0"
   },
   "paths": {
     "/api/initdb": {
