@@ -33,6 +33,9 @@ const HTTP_PROTOCOL: &str = "http" ;
 /// create-user часть uri
 pub const CREATE_USER_PART: &str = "create_user" ;
 
+/// delete-user часть uri
+pub const DELETE_USER_PART: &str = "delete_user" ;
+
 // Ответы сервера
 #[derive(
     Serialize, 
@@ -143,10 +146,25 @@ pub fn get_initdb_url(host: &str, port: u32) ->String {
 
 /// получить create-user uri
 pub fn get_create_user_uri() ->String {
-    format!("{}{}", HTTP_PROTOCOL, CREATE_USER_PART)
+    format!("{}{}", get_base_uri_path(), CREATE_USER_PART)
 }
 
 /// получить url создания пользователя
 pub fn get_create_user_url(host: &str, port: u32) ->String {
-    format!("{}:://{}:{}{}", HTTP_PROTOCOL, host, port, get_create_user_uri())
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_create_user_uri())
+}
+
+/// получить укороченный delete-user uri
+pub fn get_delete_user_uri_short() ->String {
+    format!("{}{}/", get_base_uri_path(), DELETE_USER_PART)
+}
+
+/// получить delete-user uri
+pub fn get_delete_user_uri(id_user: u32) ->String {
+    format!("{}{}", get_delete_user_uri_short(), id_user)
+}
+
+/// получить url delete-user
+pub fn get_delete_user_url(host: &str, port: u32, id_user: u32) ->String {
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_delete_user_uri(id_user))
 }

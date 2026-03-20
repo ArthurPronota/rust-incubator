@@ -8,15 +8,14 @@ use serde::{
         Deserialize
     } ;
 
- use utoipa::ToSchema;
+use utoipa::ToSchema;
 
+// Структура создания пользователя
 #[derive(
     Serialize,
     Deserialize,
     Parser,
     ToSchema,
-    Clone,
-    Debug,
   )
 ]
 pub struct CreateUser {
@@ -33,6 +32,24 @@ pub struct CreateUser {
      )
     ]
     pub email:    String,
+}
+
+// Структура удаления пользователя
+#[derive(
+    Serialize,
+    Deserialize,
+    Parser,
+    ToSchema,
+  )
+]
+pub struct DeleteUser {
+    /// Id user
+    #[arg(
+        name = "id_user",
+        help = "Id of user",
+     )
+    ]
+    pub id_user:    u32,
 }
 
 // Перечень команд
@@ -58,25 +75,15 @@ pub enum Command {
         about = "Create a new user",
       )
     ]
-    CreateUser 
-    /*
-    {
-        #[arg(
-            name = "Username",
-            help = "User name, not unique",
-         )
-        ]
-        name:     String,
-        #[arg(
-            name = "Email",
-            help = "Email, unique",
-          )
-        ]
-        email:    String,
-    }
-    */
-    (CreateUser),
-
+    CreateUser(CreateUser),
+    
+    /// Удаление пользователя
+    #[clap(
+        name = "delete-user",
+        about = "Delete user",
+     )
+    ]   
+    DeleteUser(DeleteUser),
 }
 
 // Структура с агрументами CLI

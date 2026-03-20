@@ -9,6 +9,101 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/create_user": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "operationId": "create_user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Creating a user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Success": "User created successfully."
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error creating user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "Duplicate user email."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/delete_user/{id_user}": {
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "operationId": "delete_user",
+        "parameters": [
+          {
+            "name": "id_user",
+            "in": "path",
+            "description": "User ID to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Success": "The user has been deleted."
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error deleting user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "The user does not exist."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/initdb": {
       "get": {
         "tags": [
@@ -29,7 +124,7 @@
               }
             }
           },
-          "303": {
+          "201": {
             "description": "Error creating database objects.",
             "content": {
               "application/json": {
@@ -95,6 +190,10 @@
     {
       "name": "initdb",
       "description": "Creating the necessary objects in the database"
+    },
+    {
+      "name": "users",
+      "description": "Working with users"
     }
   ]
 }

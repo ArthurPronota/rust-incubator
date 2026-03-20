@@ -1,6 +1,9 @@
 use anyhow::Result ;
 
-use ureq::{self, http::StatusCode} ;
+use ureq::{
+        self,
+        http::StatusCode
+    } ;
 
 use crate::args::Command ;
 
@@ -26,6 +29,7 @@ pub fn any_command(
                 // Отправляет запрос и блокирует вызывающего до получения ответа.
                 .call()?
         },
+        // Создание пользователя
         Command::CreateUser(arg_unit)  => {
             let mut tmp_user = User::default() ;
             // проверка имени пользователя
@@ -37,27 +41,22 @@ pub fn any_command(
                 .header(CONTENT_TYPE, JSON_TYPE)
                 .send_json(&arg_unit)? 
         },
+        // Удаление пользователя
+        Command::DeleteUser(arg_unit) => {
+            let mut tmp_user = User::default() ;
+
+            tmp_user.set_id_user(arg_unit.id_user)? ;
+
+            //println!("{}", common::get_delete_user_url(host, port, tmp_user.id_user())) ;
+
+            ureq::delete(
+                common::get_delete_user_url(host, port, tmp_user.id_user())
+            )
+            .call()?
+        }
     } ;
 
-    /*
-    if resp.status() != StatusCode::OK {
-        return Err(anyhow::anyhow!("Server error: {}", resp.status()));  
-    }
-     */
-    /*
-    match resp.status() {
-        StatusCode::OK | StatusCode::SEE_OTHER => {},
-        _ => return Err(anyhow::anyhow!("Server error: {}", resp.status())),
-    }
-     */
-    /*
-    match resp.status() {
-        st if st == StatusCode::OK || st == StatusCode::SEE_OTHER => {},
-        _ => return Err(anyhow::anyhow!("Server error: {}", resp.status())),
-    }
-     */
-
-    if !matches!(resp.status(), StatusCode::OK | StatusCode::SEE_OTHER) {
+    if !matches!(resp.status(), StatusCode::OK | StatusCode::CREATED) {
         return Err(anyhow::anyhow!("Server error: {}", resp.status())) ;
     }
 

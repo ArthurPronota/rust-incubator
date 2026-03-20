@@ -55,6 +55,8 @@ async fn main() ->Result<()> {
     // Запись в файл спецификации openapi если спецификация изменилась
     server_executor::write_to_openapi(&openapi)? ;
 
+    //println!("{}", format!("{}{{id_user}}", common::get_delete_user_uri_short())) ;
+
     let db_res = 
             // Оборачивание пула соединений с DB в Arc
             Arc::new(
@@ -71,16 +73,15 @@ async fn main() ->Result<()> {
                         routing::get(server_executor::initdb_handle)
                     )
                     // создаение пользователя
-                    /*
                     .route(
                         &common::get_create_user_uri(),
                         routing::post(server_executor::create_user)
                     )
-                    */
+                    // Удаление пользователя
                     .route(
-                        &common::get_create_user_uri(),
-                        routing::get(server_executor::initdb_handle)
-                    )                    
+                        &format!("{}{{{}}}", common::get_delete_user_uri_short(), server_executor::ID_USER_KEY),
+                        routing::delete(server_executor::delete_user)
+                    )
                     // Добавляем Swagger UI в наш роутер (объединяем с основными маршрутами)
                     .merge(
                         // Создаем новый экземпляр Swagger UI, который будет доступен по пути "/docs"

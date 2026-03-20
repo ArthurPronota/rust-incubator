@@ -1,13 +1,16 @@
-use std::sync::Arc;
+use std::{
+        //path::Path, 
+        sync::Arc
+    };
 
 use const_format::concatcp;
 
-use crate::{common, roles, users::{self, User}, users_roles} ;
+use crate::{common::{self, Responce}, roles, users::{self, User}, users_roles} ;
 
+//use axum::extract::Path;
 use axum::{
         extract::{
-            Json,
-            State,
+            self, Json, State
         }, http::{StatusCode, status}, response::IntoResponse
 } ;
 
@@ -34,6 +37,12 @@ pub const OPENAPI_URL_SPECIFIC: &str = "/api-docs/openapi.json" ;
 
 /// пользователь успешно создан
 const USER_CREATED_SUCCESSFULY: &str = "User created successfully." ;
+
+/// тэг пользователи
+const TAG_USERS: &str = "users" ;
+
+/// id_user ключ
+pub const ID_USER_KEY: &str = "id_user" ;
 
 /// Запись в файл спецификации openapi если спецификация изменилась
 pub fn write_to_openapi(op_api: &utoipa::openapi::OpenApi) ->Result<()> {
@@ -75,7 +84,9 @@ fn error_message(err: &str) ->common::Responce {
 #[derive(OpenApi)]
 #[openapi(
     paths(
-        initdb_handle
+        initdb_handle,
+        create_user,
+        delete_user,
     ),
     components(
         schemas(
@@ -88,6 +99,10 @@ fn error_message(err: &str) ->common::Responce {
             name = "initdb",
             description = "Creating the necessary objects in the database",
         ),
+        (
+            name = "users",
+            description = "Working with users",
+        ),        
     ),
     info(
         title = "API for working with users and their roles.",
@@ -128,7 +143,7 @@ async fn initdb_handle_int(
             example = json!({"Success": DB_OBJ_CREATED_SUCCESS})
         ),
         (
-            status = StatusCode::SEE_OTHER,   // 303, 
+            status = StatusCode::CREATED,   // 303, 
             description = "Error creating database objects.", 
             body = common::Responce,
             example = json!({"Error": "Error creating trigger."})
@@ -152,7 +167,7 @@ pub async fn initdb_handle(
                             Json(v)
                         ),
         Err(err) => (
-                            StatusCode::SEE_OTHER,
+                            StatusCode::CREATED,
                             Json(
                                 error_message(
                                     &err.to_string()
@@ -205,75 +220,109 @@ async fn create_user_int(db_res: &Database,
     responses (
         (
             status = StatusCode::OK,  // 200, 
-            description = "Creating database objects.", 
+            description = "Creating a user", 
             body = common::Responce,
-            example = json!({"Success": DB_OBJ_CREATED_SUCCESS})
+            example = json!({"Success": "User created successfully."})
         ),
         (
-            status = StatusCode::SEE_OTHER,   // 303, 
+            status = StatusCode::CREATED,   // 303, 
             description = "Error creating user.", 
             body = common::Responce,
-            example = json!({"Error": "duplicate user email."})
+            example = json!({"Error": "Duplicate user email."})
         ),
     ),
-    tag = "users",
+    tag = TAG_USERS,
   )
 ]
 pub async fn create_user(
                     State(db_res): State<Arc<Database>>,
-                    //Json(cmd): Json<args::CreateUser>
+                    Json(cmd): Json<args::CreateUser>
                 ) ->impl IntoResponse {
 
-    /*
-    match cmd {
-        // команда создания пользователя
-        args::Command::CreateUser { name, email } => 
-            match create_user_int(&db_res, &name, &email).await {
-                Ok(v) => (
+    match create_user_int(&db_res, &cmd).await {
+            Ok(v) => (
                             StatusCode::OK,
                             Json(v)
                            ),
-                Err(err) => (
-                            StatusCode::SEE_OTHER,
+            Err(err) => (
+                            StatusCode::CREATED,
                             Json(
                                 error_message(&err.to_string())
-                              )
-                            ),
-            }
-        ,
-        // Иная команда
-        other_comm => (
-                            StatusCode::SEE_OTHER,
-                            Json(
-                                error_message(
-                                    &format!(
-                                            "This is a different command: {:?}",
-                                            other_comm
-                                        )
-                                )
                               )
                             ),
     }
-     */
+}
 
+// удалить пользователя,внутренний формат
+async fn delete_user_int(
+            db_res:     &Database,
+            id_user:    u32,
+         ) ->Result<common::Responce> {
+    
+    let mut tmp_user = User::default() ;
+
+    tmp_user.set_id_user(id_user)? ;
+
+    // Сформировать новую транзакцию
+    let mut trans = 
+                db_res
+                    .pool
+                    // Устанавливает соединение и немедленно начинает новую транзакцию.
+                    .begin()
+                    .await? ;
+
+    // удалить пользователя
+    User::delete_user(&mut *trans, tmp_user.id_user()).await? ;
+    
+    // выполнить commit в DB
+    trans.commit().await? ;    
+
+    Ok(success_message("The user has been deleted."))
+}
+
+// удалить пользователя
+#[utoipa::path(
+    delete,
+    //path =  &format!("{}{{id_user}}", common::get_delete_user_uri_short()), // "/api/del_user/{id_user}",
+    path =  &format!("{}{{{}}}", common::get_delete_user_uri_short(), ID_USER_KEY), // "/api/del_user/{id_user}",
+    params(
+        ("id_user" = u32, Path, description = "User ID to delete")
+    ),
+    responses(
+        (
+            status = StatusCode::OK, // 200, 
+            description = "Successfully deleted user.", 
+            body = common::Responce,
+            example = json!({"Success": "The user has been deleted."}),
+        ),
+        (
+            status = StatusCode::CREATED,  // 303,
+            description = "Error deleting user.",
+            body = common::Responce,
+            example = json!({"Error": "The user does not exist."}),
+        ),
+    ),
+    tag = TAG_USERS,
     /*
-            match create_user_int(&db_res, &cmd).await {
-                Ok(v) => (
+    operation_id = "delete_user",
+    security(
+        ("bearer_auth" = [])
+    )
+     */
+)]
+pub async fn delete_user(
+                  State(db_res): State<Arc<Database>>,
+                  extract::Path(id_user): extract::Path<u32>,
+                ) ->impl IntoResponse {
+    //println!("id_user: {}", id_user) ;
+    match delete_user_int(&db_res, id_user).await {
+        Ok(v) => (
                             StatusCode::OK,
                             Json(v)
                            ),
-                Err(err) => (
-                            StatusCode::SEE_OTHER,
-                            Json(
-                                error_message(&err.to_string())
-                              )
-                            ),
-            }
-    */
-    (
-                            StatusCode::SEE_OTHER,
-                            Json(
-                                error_message("abc")
-                              )
-                            )
+        Err(err) => (
+                        StatusCode::CREATED,
+                        Json(error_message(&err.to_string()))
+                    ),
+    }
 }
