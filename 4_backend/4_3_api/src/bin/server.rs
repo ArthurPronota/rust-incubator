@@ -33,8 +33,11 @@ mod roles ;
 #[path = "../users.rs"]
 mod users ;
 
-#[path ="../users_roles.rs"]
+#[path = "../users_roles.rs"]
 mod users_roles ;
+
+#[path = "../args.rs"]
+mod args ;
 
 // Подклбчение модуля db из родительского дирректория
 #[path = "../db.rs"]
@@ -67,6 +70,17 @@ async fn main() ->Result<()> {
                         &common::get_initdb_uri(), 
                         routing::get(server_executor::initdb_handle)
                     )
+                    // создаение пользователя
+                    /*
+                    .route(
+                        &common::get_create_user_uri(),
+                        routing::post(server_executor::create_user)
+                    )
+                    */
+                    .route(
+                        &common::get_create_user_uri(),
+                        routing::get(server_executor::initdb_handle)
+                    )                    
                     // Добавляем Swagger UI в наш роутер (объединяем с основными маршрутами)
                     .merge(
                         // Создаем новый экземпляр Swagger UI, который будет доступен по пути "/docs"

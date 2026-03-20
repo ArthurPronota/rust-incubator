@@ -7,6 +7,8 @@ use crate::args::Command ;
 use crate::users::User;
 use crate::{common, users} ;
 
+const CONTENT_TYPE: &str = "Content-Type" ;
+const JSON_TYPE: &str =  "application/json" ;
 
 /// Выполнить любую команду
 pub fn any_command(
@@ -24,7 +26,17 @@ pub fn any_command(
                 // Отправляет запрос и блокирует вызывающего до получения ответа.
                 .call()?
         },
+        Command::CreateUser(arg_unit)  => {
+            let mut tmp_user = User::default() ;
+            // проверка имени пользователя
+            tmp_user.set_name(&arg_unit.name)? ;
+            // проверка email пользователя
+            tmp_user.set_email(&arg_unit.email)? ;
 
+            ureq::post(common::get_create_user_url(host, port))
+                .header(CONTENT_TYPE, JSON_TYPE)
+                .send_json(&arg_unit)? 
+        },
     } ;
 
     /*

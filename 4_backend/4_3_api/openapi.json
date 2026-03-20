@@ -48,6 +48,21 @@
   },
   "components": {
     "schemas": {
+      "CreateUser": {
+        "type": "object",
+        "required": [
+          "name",
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
       "Responce": {
         "oneOf": [
           {

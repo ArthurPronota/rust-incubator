@@ -1,6 +1,8 @@
 use std::sync::Arc;
 
-use crate::common ;
+use const_format::concatcp;
+
+use crate::{common, roles, users::{self, User}, users_roles} ;
 
 use axum::{
         extract::{
@@ -10,10 +12,14 @@ use axum::{
 } ;
 
 use anyhow::Result ;
+use clap::Command;
 
 use crate::db::Database ;
 
+use crate::args ;
+
 use utoipa::{OpenApi, ToSchema} ;
+
 
 const DB_OBJ_CREATED_SUCCESS: &str = "Database objects created successfully." ;
 
@@ -25,6 +31,9 @@ pub const OPENAPI_URL_DOCS: &str = "/docs" ;
 
 /// url спецификации openapi
 pub const OPENAPI_URL_SPECIFIC: &str = "/api-docs/openapi.json" ;
+
+/// пользователь успешно создан
+const USER_CREATED_SUCCESSFULY: &str = "User created successfully." ;
 
 /// Запись в файл спецификации openapi если спецификация изменилась
 pub fn write_to_openapi(op_api: &utoipa::openapi::OpenApi) ->Result<()> {
@@ -70,7 +79,8 @@ fn error_message(err: &str) ->common::Responce {
     ),
     components(
         schemas(
-            common::Responce
+            common::Responce,
+            args::CreateUser,
         )
     ),
     tags(
@@ -106,7 +116,10 @@ async fn initdb_handle_int(
 // инициализация базы данных
 #[utoipa::path(
     get,
-    path = "/api/initdb",
+    path = concatcp!(
+                common::BASE_URI_PATH,        // "/api/",
+                common::INIT_DB_PART      // "initdb"
+            ),  // "/api/initdb"
     responses (
         (
             status = StatusCode::OK,  // 200, 
@@ -125,13 +138,11 @@ async fn initdb_handle_int(
   )
 ]
 pub async fn initdb_handle(
-                State(db_res): State<Arc<Database>>
+                State(db_res): State<Arc<Database>>,
             ) 
                 //->Json<common::Responce> 
                 -> impl IntoResponse
             {
-
-    let v = StatusCode::SEE_OTHER.as_u16() ;
 
     match initdb_handle_int(&db_res)
                 .await 
@@ -149,4 +160,120 @@ pub async fn initdb_handle(
                             ),
                         ),
     }
+}
+
+// ****************** Раздел User ******************
+
+// создать пользователя,внутренний формат
+async fn create_user_int(db_res: &Database,
+                        cmd: &args::CreateUser,
+                        ) ->Result<common::Responce> {
+    let mut trans = db_res
+                      .pool
+                      .begin()
+                      .await? ;
+
+    let new_user = 
+            users::User::ins_user(
+                    &mut *trans,
+                    &cmd.name, //        name, 
+                    &cmd.email, //    email
+                )
+                .await? ;
+
+    users_roles::UsersRoles::ins_role_to_user(
+            &mut *trans, 
+            new_user.id_user(),
+            roles::SLUG_DEFAULT
+        )
+        .await? ;
+        
+    trans.commit().await? ;
+
+    Ok(success_message(USER_CREATED_SUCCESSFULY))
+}
+
+
+// создать пользователя
+#[utoipa::path(
+    post,
+    path = concatcp!(
+                common::BASE_URI_PATH,        // "/api/",
+                common::CREATE_USER_PART      // "create_user"
+            ), // "/api/create_user",
+    request_body = args::CreateUser,
+    responses (
+        (
+            status = StatusCode::OK,  // 200, 
+            description = "Creating database objects.", 
+            body = common::Responce,
+            example = json!({"Success": DB_OBJ_CREATED_SUCCESS})
+        ),
+        (
+            status = StatusCode::SEE_OTHER,   // 303, 
+            description = "Error creating user.", 
+            body = common::Responce,
+            example = json!({"Error": "duplicate user email."})
+        ),
+    ),
+    tag = "users",
+  )
+]
+pub async fn create_user(
+                    State(db_res): State<Arc<Database>>,
+                    //Json(cmd): Json<args::CreateUser>
+                ) ->impl IntoResponse {
+
+    /*
+    match cmd {
+        // команда создания пользователя
+        args::Command::CreateUser { name, email } => 
+            match create_user_int(&db_res, &name, &email).await {
+                Ok(v) => (
+                            StatusCode::OK,
+                            Json(v)
+                           ),
+                Err(err) => (
+                            StatusCode::SEE_OTHER,
+                            Json(
+                                error_message(&err.to_string())
+                              )
+                            ),
+            }
+        ,
+        // Иная команда
+        other_comm => (
+                            StatusCode::SEE_OTHER,
+                            Json(
+                                error_message(
+                                    &format!(
+                                            "This is a different command: {:?}",
+                                            other_comm
+                                        )
+                                )
+                              )
+                            ),
+    }
+     */
+
+    /*
+            match create_user_int(&db_res, &cmd).await {
+                Ok(v) => (
+                            StatusCode::OK,
+                            Json(v)
+                           ),
+                Err(err) => (
+                            StatusCode::SEE_OTHER,
+                            Json(
+                                error_message(&err.to_string())
+                              )
+                            ),
+            }
+    */
+    (
+                            StatusCode::SEE_OTHER,
+                            Json(
+                                error_message("abc")
+                              )
+                            )
 }

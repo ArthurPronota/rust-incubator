@@ -8,11 +8,39 @@ use serde::{
         Deserialize
     } ;
 
-// Перечень команд
+ use utoipa::ToSchema;
+
 #[derive(
     Serialize,
     Deserialize,
+    Parser,
+    ToSchema,
+    Clone,
+    Debug,
+  )
+]
+pub struct CreateUser {
+    #[arg(
+        name = "Username",
+        help = "User name, not unique",
+     )
+    ]
+    pub name:     String,
+
+    #[arg(
+        name = "Email",
+        help = "Email, unique",
+     )
+    ]
+    pub email:    String,
+}
+
+// Перечень команд
+#[derive(
     Subcommand,
+    Serialize,
+    Deserialize,
+    //Debug,
 )]
 pub enum Command {
     
@@ -24,11 +52,36 @@ pub enum Command {
     ]
     InitDb,
 
+    /// Создать пользователя
+    #[clap(
+        name = "create-user",
+        about = "Create a new user",
+      )
+    ]
+    CreateUser 
+    /*
+    {
+        #[arg(
+            name = "Username",
+            help = "User name, not unique",
+         )
+        ]
+        name:     String,
+        #[arg(
+            name = "Email",
+            help = "Email, unique",
+          )
+        ]
+        email:    String,
+    }
+    */
+    (CreateUser),
+
 }
 
 // Структура с агрументами CLI
 #[derive(
-   Parser
+   Parser,
   )
  ]
 pub struct Args {

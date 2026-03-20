@@ -22,10 +22,16 @@ const LOCALHOST: &str = "localhost" ;
 const DB_PATH_CONNECT: &str = "DB_PATH_CONNECT" ;    
 
 /// базовый uri путь
-const BASE_URI_PATH: &str = "/api/" ;
+pub const BASE_URI_PATH: &str = "/api/" ;
 
 /// init-db часть uri
-const INIT_DB_PART: &str = "initdb" ;
+pub const INIT_DB_PART: &str = "initdb" ;
+
+/// http протокол
+const HTTP_PROTOCOL: &str = "http" ;
+
+/// create-user часть uri
+pub const CREATE_USER_PART: &str = "create_user" ;
 
 // Ответы сервера
 #[derive(
@@ -132,5 +138,15 @@ pub fn get_initdb_uri() ->String {
 
 /// получить init-db URL
 pub fn get_initdb_url(host: &str, port: u32) ->String {
-    format!("http://{}:{}{}", host, port, get_initdb_uri())
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_initdb_uri())
+}
+
+/// получить create-user uri
+pub fn get_create_user_uri() ->String {
+    format!("{}{}", HTTP_PROTOCOL, CREATE_USER_PART)
+}
+
+/// получить url создания пользователя
+pub fn get_create_user_url(host: &str, port: u32) ->String {
+    format!("{}:://{}:{}{}", HTTP_PROTOCOL, host, port, get_create_user_uri())
 }
