@@ -64,6 +64,18 @@ pub fn any_command(
                 .header(CONTENT_TYPE, JSON_TYPE)
                 .send_json(&arg_unit)?
         },
+        // Модифицировать email у пользователя
+        Command::UpdateEmailUser(arg_unit) => {
+            let mut tmp_user = User::default() ;
+
+            tmp_user.set_id_user(arg_unit.id_user)? ;
+
+            tmp_user.set_email(&arg_unit.new_email)? ;
+
+            ureq::put(common::get_update_useremail_url(host, port))
+                .header(CONTENT_TYPE, JSON_TYPE)
+                .send_json(&arg_unit)?            
+        }
     } ;
 
     if !matches!(resp.status(), StatusCode::OK | StatusCode::CREATED) {

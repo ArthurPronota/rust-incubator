@@ -5,7 +5,7 @@ use std::{
 
 use const_format::concatcp;
 
-use crate::{args::UpdateNameUser, common::{self, Responce}, roles, users::{self, User}, users_roles} ;
+use crate::{args::{UpdateEmailUser, UpdateNameUser}, common::{self, Responce}, roles, users::{self, User}, users_roles} ;
 
 //use axum::extract::Path;
 use axum::{
@@ -46,6 +46,9 @@ pub const ID_USER_KEY: &str = "id_user" ;
 
 /// Сообщение имя пользователя изменено успешно
 const USER_NAME_CHANGED_SUCCESS: &str = "User's name changed successfully." ;
+
+/// Сообщение email пользователя изменено успешно
+const USER_EMAIL_CHANGED_SUCCESS: &str = "User's email changed successfully." ;
 
 /// Запись в файл спецификации openapi если спецификация изменилась
 pub fn write_to_openapi(op_api: &utoipa::openapi::OpenApi) ->Result<()> {
@@ -91,12 +94,14 @@ fn error_message(err: &str) ->common::Responce {
         create_user,
         delete_user,
         update_username,
+        update_useremail,
     ),
     components(
         schemas(
             common::Responce,
             args::CreateUser,
             args::UpdateNameUser,
+            args::UpdateEmailUser,
         )
     ),
     tags(
@@ -260,7 +265,7 @@ pub async fn create_user(
     }
 }
 
-// удалить пользователя,внутренний формат
+// удалить пользователя, внутренний формат
 async fn delete_user_int(
             db_res:     &Database,
             id_user:    u32,
@@ -335,7 +340,7 @@ pub async fn delete_user(
     }
 }
 
-// модифицировать имя пользователя
+// модифицировать имя пользователя, внутренний формат
 async fn update_username_int(
             db_res:     &Database,
             com:        &UpdateNameUser,
@@ -405,5 +410,76 @@ pub async fn update_username(
                                 )
                             )
                            ),
+    }
+}
+
+// модифицировать email пользователя, внутренний формат
+async fn update_useremail_int(
+                    db_res:     &Database,
+                    com:  &UpdateEmailUser
+                ) ->Result<common::Responce> {
+    // Сформировать новую транзакцию
+    let mut trans = 
+               db_res
+                .pool
+                // Устанавливает соединение и немедленно начинает новую транзакцию.
+                .begin()
+                .await? ;
+
+    // Модифицировать имя у пользователя
+    users::User::update_email(
+            &mut *trans,
+            &com.new_email,
+            com.id_user
+          )
+          .await? ;
+
+    // Выполнить commit
+    trans.commit().await? ;
+
+    Ok(success_message(USER_EMAIL_CHANGED_SUCCESS))
+}
+
+// модифицировать email пользователя
+#[utoipa::path(
+    put,
+    path = concatcp!(
+                common::BASE_URI_PATH,        // "/api/",
+                common::UPDATE_USEREMAIL_PART
+            ), // "/api/create_user",
+    summary = "Update user's email.",
+    request_body = args::UpdateEmailUser,
+    responses (
+        (
+            status = StatusCode::OK,  // 200, 
+            description = "Successful modification of user email.", 
+            body = common::Responce,
+            example = json!({"Success": USER_EMAIL_CHANGED_SUCCESS})
+        ),
+        (
+            status = StatusCode::CREATED,   // 303, 
+            description = "Error modifying user email.", 
+            body = common::Responce,
+            example = json!({"Error": "Invalid email: n1#abc.com"})
+        ),
+    ),
+    tag = TAG_USERS,
+  )
+]
+pub async fn update_useremail(
+                    State(db_res): State<Arc<Database>>,
+                    Json(com):  Json<args::UpdateEmailUser>
+                ) ->impl IntoResponse {
+    match update_useremail_int(&db_res, &com).await {
+        Ok(v) => (
+                            StatusCode::OK,
+                            Json(v)
+                        ),
+        Err(err) => (
+                            StatusCode::CREATED,
+                            Json(
+                                error_message(&err.to_string())
+                            )
+                        )
     }
 }

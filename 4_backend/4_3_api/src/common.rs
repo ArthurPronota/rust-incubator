@@ -39,6 +39,9 @@ pub const DELETE_USER_PART: &str = "delete_user" ;
 /// update_username часть uri 
 pub const UPDATE_USERNAME_PART: &str = "update_username" ;
 
+/// update_useremail часть uri 
+pub const UPDATE_USEREMAIL_PART: &str = "update_useremail" ;
+
 // Ответы сервера
 #[derive(
     Serialize, 
@@ -180,4 +183,14 @@ pub fn get_update_username_uri() ->String {
 /// получить url update-username
 pub fn get_update_username_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_update_username_uri())
+}
+
+/// получить update-useremail uri
+pub fn get_update_useremail_uri() ->String {
+    format!("{}{}", get_base_uri_path(), UPDATE_USEREMAIL_PART)
+}
+
+/// получить url update-useremail
+pub fn get_update_useremail_url(host: &str, port: u32) ->String {
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_update_useremail_uri())
 }

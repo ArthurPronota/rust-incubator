@@ -78,7 +78,49 @@ pub struct UpdateNameUser {
     pub id_user:    u32,
 }
 
+/// Модифицировать email у пользователя
+#[derive(
+    Serialize,
+    Deserialize,
+    Parser,
+    ToSchema,
+  )
+]
+pub struct UpdateEmailUser {
+    #[arg(
+        name = "New user email",
+        help = "Modified user email",
+      )
+    ]
+    pub new_email:  String,
 
+    /// Id user
+    #[arg(
+        name = "id_user",
+        help = "Id of user",
+     )
+    ]
+    pub id_user:    u32,        
+}
+
+
+/// Показать пользователей и их роли
+#[derive(
+    Serialize,
+    Deserialize,
+    Parser,
+    ToSchema,
+  )
+]
+pub struct ShowUsersRoles {
+    /// Id user
+    #[arg(
+        name = "id_user",
+        help = "Id of user, optional",
+     )
+    ]
+    id_user:    Option<u32>
+}
 
 // Перечень команд
 #[derive(
@@ -120,6 +162,22 @@ pub enum Command {
      )
     ]
     UpdateNameUser(UpdateNameUser),
+
+    /// Модифицировать email у пользователя
+    #[clap(
+        name = "update-email-user",
+        about = "Modify email name",
+     )
+    ]
+    UpdateEmailUser(UpdateEmailUser),
+
+    /// Показать пользователей и их роли
+    #[clap(
+        name = "show-users-roles",
+        about = "Show users and their roles",
+     )
+    ]
+    ShowUsersRoles(ShowUsersRoles)
 }
 
 // Структура с агрументами CLI

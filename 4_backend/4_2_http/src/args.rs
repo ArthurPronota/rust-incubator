@@ -109,7 +109,7 @@ pub enum Commands {
         id_user:    u32,        
     },
 
-    /// Показать пользователей и из роли
+    /// Показать пользователей и их роли
     #[clap(
         name = "show-users-roles",
         about = "Show users and their roles",

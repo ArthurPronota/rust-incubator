@@ -143,6 +143,53 @@
         }
       }
     },
+    "/api/update_useremail": {
+      "put": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update user's email.",
+        "operationId": "update_useremail",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmailUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful modification of user email.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Success": "User's email changed successfully."
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error modifying user email.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "Invalid email: n1#abc.com"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/update_username": {
       "put": {
         "tags": [
@@ -233,6 +280,25 @@
             }
           }
         ]
+      },
+      "UpdateEmailUser": {
+        "type": "object",
+        "description": "Модифицировать email у пользователя",
+        "required": [
+          "new_email",
+          "id_user"
+        ],
+        "properties": {
+          "id_user": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Id user",
+            "minimum": 0
+          },
+          "new_email": {
+            "type": "string"
+          }
+        }
       },
       "UpdateNameUser": {
         "type": "object",
