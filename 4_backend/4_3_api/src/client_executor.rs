@@ -47,13 +47,23 @@ pub fn any_command(
 
             tmp_user.set_id_user(arg_unit.id_user)? ;
 
-            //println!("{}", common::get_delete_user_url(host, port, tmp_user.id_user())) ;
-
             ureq::delete(
                 common::get_delete_user_url(host, port, tmp_user.id_user())
             )
             .call()?
-        }
+        },
+        // Модифицировать имя у пользователя
+        Command::UpdateNameUser(arg_unit) => {
+            let mut tmp_user = User::default() ;
+
+            tmp_user.set_id_user(arg_unit.id_user)? ;
+
+            tmp_user.set_name(&arg_unit.new_name)? ;
+
+            ureq::put(common::get_update_username_url(host, port))
+                .header(CONTENT_TYPE, JSON_TYPE)
+                .send_json(&arg_unit)?
+        },
     } ;
 
     if !matches!(resp.status(), StatusCode::OK | StatusCode::CREATED) {

@@ -52,6 +52,34 @@ pub struct DeleteUser {
     pub id_user:    u32,
 }
 
+
+/// Модифицировать имя у пользователю
+#[derive(
+    Serialize,
+    Deserialize,
+    Parser,
+    ToSchema,
+  )
+]
+pub struct UpdateNameUser {
+    #[arg(
+        name = "New username",
+        help = "Modified username",
+     )
+    ]
+    pub new_name:   String,
+
+    /// Id user
+    #[arg(
+        name = "id_user",
+        help = "Id of user",
+     )
+    ]        
+    pub id_user:    u32,
+}
+
+
+
 // Перечень команд
 #[derive(
     Subcommand,
@@ -84,6 +112,14 @@ pub enum Command {
      )
     ]   
     DeleteUser(DeleteUser),
+
+    /// Модифицировать имя у пользователя
+    #[clap(
+        name = "update-name-user",
+        about = "Modify user name",
+     )
+    ]
+    UpdateNameUser(UpdateNameUser),
 }
 
 // Структура с агрументами CLI

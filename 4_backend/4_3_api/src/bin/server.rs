@@ -82,6 +82,11 @@ async fn main() ->Result<()> {
                         &format!("{}{{{}}}", common::get_delete_user_uri_short(), server_executor::ID_USER_KEY),
                         routing::delete(server_executor::delete_user)
                     )
+                    // Модификация имени пользователя
+                    .route(
+                        &common::get_update_username_uri(),
+                        routing::put(server_executor::update_username)
+                    )
                     // Добавляем Swagger UI в наш роутер (объединяем с основными маршрутами)
                     .merge(
                         // Создаем новый экземпляр Swagger UI, который будет доступен по пути "/docs"

@@ -5,7 +5,7 @@ use std::{
 
 use const_format::concatcp;
 
-use crate::{common::{self, Responce}, roles, users::{self, User}, users_roles} ;
+use crate::{args::UpdateNameUser, common::{self, Responce}, roles, users::{self, User}, users_roles} ;
 
 //use axum::extract::Path;
 use axum::{
@@ -43,6 +43,9 @@ const TAG_USERS: &str = "users" ;
 
 /// id_user ключ
 pub const ID_USER_KEY: &str = "id_user" ;
+
+/// Сообщение имя пользователя изменено успешно
+const USER_NAME_CHANGED_SUCCESS: &str = "User's name changed successfully." ;
 
 /// Запись в файл спецификации openapi если спецификация изменилась
 pub fn write_to_openapi(op_api: &utoipa::openapi::OpenApi) ->Result<()> {
@@ -87,11 +90,13 @@ fn error_message(err: &str) ->common::Responce {
         initdb_handle,
         create_user,
         delete_user,
+        update_username,
     ),
     components(
         schemas(
             common::Responce,
             args::CreateUser,
+            args::UpdateNameUser,
         )
     ),
     tags(
@@ -135,10 +140,11 @@ async fn initdb_handle_int(
                 common::BASE_URI_PATH,        // "/api/",
                 common::INIT_DB_PART      // "initdb"
             ),  // "/api/initdb"
+    summary = "Creating database objects.",
     responses (
         (
             status = StatusCode::OK,  // 200, 
-            description = "Creating database objects.", 
+            description = "Successfully created database objects.", 
             body = common::Responce,
             example = json!({"Success": DB_OBJ_CREATED_SUCCESS})
         ),
@@ -216,11 +222,12 @@ async fn create_user_int(db_res: &Database,
                 common::BASE_URI_PATH,        // "/api/",
                 common::CREATE_USER_PART      // "create_user"
             ), // "/api/create_user",
+    summary = "Creating a user.",
     request_body = args::CreateUser,
     responses (
         (
             status = StatusCode::OK,  // 200, 
-            description = "Creating a user", 
+            description = "Successful user creation.", 
             body = common::Responce,
             example = json!({"Success": "User created successfully."})
         ),
@@ -285,6 +292,7 @@ async fn delete_user_int(
     delete,
     //path =  &format!("{}{{id_user}}", common::get_delete_user_uri_short()), // "/api/del_user/{id_user}",
     path =  &format!("{}{{{}}}", common::get_delete_user_uri_short(), ID_USER_KEY), // "/api/del_user/{id_user}",
+    summary = "Deleting a user.",
     params(
         ("id_user" = u32, Path, description = "User ID to delete")
     ),
@@ -324,5 +332,78 @@ pub async fn delete_user(
                         StatusCode::CREATED,
                         Json(error_message(&err.to_string()))
                     ),
+    }
+}
+
+// модифицировать имя пользователя
+async fn update_username_int(
+            db_res:     &Database,
+            com:        &UpdateNameUser,
+         ) ->Result<common::Responce>{
+    
+    // Сформировать новую транзакцию
+    let mut trans = 
+              db_res
+                .pool
+                // Устанавливает соединение и немедленно начинает новую транзакцию.
+                .begin()
+                .await? ;
+
+    // Модифицировать имя пользователя
+    users::User::update_name(
+                    &mut *trans,
+                    &com.new_name,
+                    com.id_user
+                ).await? ;
+
+    // Выполнить commit
+    trans.commit().await? ;
+
+    Ok(success_message(USER_NAME_CHANGED_SUCCESS))
+}
+
+// модифицировать имя пользователя
+#[utoipa::path(
+    put,
+    path = concatcp!(
+                common::BASE_URI_PATH,        // "/api/",
+                common::UPDATE_USERNAME_PART      // "create_user"
+            ), // "/api/create_user",
+    summary = "Update user's username",
+    request_body = args::UpdateNameUser,
+    responses (
+        (
+            status = StatusCode::OK,  // 200, 
+            description = "Successful modification of username.", 
+            body = common::Responce,
+            example = json!({"Success": USER_NAME_CHANGED_SUCCESS})
+        ),
+        (
+            status = StatusCode::CREATED,   // 303, 
+            description = "Error modifying username.", 
+            body = common::Responce,
+            example = json!({"Error": "Not found user for id_user: 100"})
+        ),
+    ),
+    tag = TAG_USERS,
+  )
+]
+pub async fn update_username(
+                State(db_res): State<Arc<Database>>,
+                Json(com): Json<args::UpdateNameUser> 
+             ) ->impl IntoResponse {
+    match update_username_int(&db_res, &com).await {
+        Ok(v) => (
+                            StatusCode::OK,
+                            Json(v),
+                           ),
+        Err(err) => (
+                            StatusCode::CREATED,
+                            Json(
+                                error_message(
+                                    &err.to_string()
+                                )
+                            )
+                           ),
     }
 }

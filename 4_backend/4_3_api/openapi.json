@@ -14,6 +14,7 @@
         "tags": [
           "users"
         ],
+        "summary": "Creating a user.",
         "operationId": "create_user",
         "requestBody": {
           "content": {
@@ -27,7 +28,7 @@
         },
         "responses": {
           "200": {
-            "description": "Creating a user",
+            "description": "Successful user creation.",
             "content": {
               "application/json": {
                 "schema": {
@@ -60,6 +61,7 @@
         "tags": [
           "users"
         ],
+        "summary": "Deleting a user.",
         "operationId": "delete_user",
         "parameters": [
           {
@@ -109,10 +111,11 @@
         "tags": [
           "initdb"
         ],
+        "summary": "Creating database objects.",
         "operationId": "initdb_handle",
         "responses": {
           "200": {
-            "description": "Creating database objects.",
+            "description": "Successfully created database objects.",
             "content": {
               "application/json": {
                 "schema": {
@@ -133,6 +136,53 @@
                 },
                 "example": {
                   "Error": "Error creating trigger."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/update_username": {
+      "put": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update user's username",
+        "operationId": "update_username",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNameUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful modification of username.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Success": "User's name changed successfully."
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error modifying username.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "Not found user for id_user: 100"
                 }
               }
             }
@@ -183,6 +233,25 @@
             }
           }
         ]
+      },
+      "UpdateNameUser": {
+        "type": "object",
+        "description": "Модифицировать имя у пользователю",
+        "required": [
+          "new_name",
+          "id_user"
+        ],
+        "properties": {
+          "id_user": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Id user",
+            "minimum": 0
+          },
+          "new_name": {
+            "type": "string"
+          }
+        }
       }
     }
   },
