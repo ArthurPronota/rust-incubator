@@ -108,7 +108,15 @@ pub fn any_command(
             ureq::post(common::get_create_role_url(host, port))
                 .header(CONTENT_TYPE, JSON_TYPE)
                 .send_json(&arg_unit)?
-        }
+        },
+        // Удалить роль
+        Command::DeleteRole(arg_unit) => {
+            let mut tmp_role = Role::default() ;
+
+            tmp_role.set_slug(&arg_unit.slug)? ;
+
+            
+        },
     } ;
 
     if !matches!(resp.status(), StatusCode::OK | StatusCode::CREATED) {

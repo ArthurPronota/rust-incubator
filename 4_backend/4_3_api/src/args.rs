@@ -158,6 +158,25 @@ pub struct  CreateRole {
     pub permissions:    Vec<String>,
 }
 
+/// Удалить роль
+#[derive(
+    Serialize,
+    Deserialize,
+    Parser,
+    ToSchema,
+  )
+]
+pub struct DeleteRole {
+    /// Slug: name-of-role
+    #[arg(
+        name = "slug",
+        help = "Slug string of role",
+     )
+    ]
+    pub slug:   String,
+}
+
+
 // Перечень команд
 #[derive(
     Subcommand,
@@ -223,6 +242,13 @@ pub enum Command {
     ]
     CreateRole(CreateRole),
 
+    /// Удалить роль
+    #[clap(
+        name = "delete-role",
+        about = "Delete role",
+     )
+    ]
+    DeleteRole(DeleteRole),
 }
 
 // Структура с агрументами CLI
