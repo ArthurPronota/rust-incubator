@@ -9,6 +9,53 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/create_role": {
+      "post": {
+        "tags": [
+          "roles"
+        ],
+        "summary": "Create a role.",
+        "operationId": "create_role",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRole"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful role creation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Success": "Role created successfully."
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error creating role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "name is empty"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/create_user": {
       "post": {
         "tags": [
@@ -324,6 +371,31 @@
   },
   "components": {
     "schemas": {
+      "CreateRole": {
+        "type": "object",
+        "description": "Создать роль",
+        "required": [
+          "slug",
+          "name",
+          "permissions"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Текстовое наименоывание роли"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "slug": {
+            "type": "string",
+            "description": "Slug: name-of-role"
+          }
+        }
+      },
       "CreateUser": {
         "type": "object",
         "required": [

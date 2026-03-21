@@ -39,8 +39,14 @@ pub const OPENAPI_URL_SPECIFIC: &str = "/api-docs/openapi.json" ;
 /// пользователь успешно создан
 const USER_CREATED_SUCCESSFULY: &str = "User created successfully." ;
 
+/// роль успешно создана
+const ROLE_CREATED_SUCCESSFULY: &str = "Role created successfully." ;
+
 /// тэг пользователи
 const TAG_USERS: &str = "users" ;
+
+/// тэг роли
+const TAG_ROLES: &str = "roles" ;
 
 /// id_user ключ
 pub const ID_USER_KEY: &str = "id_user" ;
@@ -98,6 +104,7 @@ fn error_message(err: &str) ->common::Responce {
         update_useremail,
         show_user,
         show_users,
+        create_role,
     ),
     components(
         schemas(
@@ -106,6 +113,7 @@ fn error_message(err: &str) ->common::Responce {
             args::UpdateNameUser,
             args::UpdateEmailUser,
             users::UserWithRole,
+            args::CreateRole,
         )
     ),
     tags(
@@ -621,6 +629,58 @@ pub async fn show_users(
                 State(db_res): State<Arc<Database>>,
              ) ->impl IntoResponse {
     match show_users_int(&db_res).await {
+        Ok(v) => (StatusCode::OK, Json(v)),
+        Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
+    }
+}
+
+// Создать роль, внутренний код
+pub async fn create_role_int(
+                db_res:     &Database,
+                cmd:        &args::CreateRole
+             ) ->Result<common::Responce> {
+    roles::Role::create_role(
+            &db_res, 
+            &cmd.slug, 
+            &cmd.name, 
+            &cmd.permissions.join(",")
+        )
+        .await? ;
+
+    Ok(success_message(ROLE_CREATED_SUCCESSFULY))
+}
+
+// Создать роль
+#[utoipa::path(
+    post,
+    path = concatcp!(
+                common::BASE_URI_PATH,        // "/api/",
+                common::CREATE_ROLE_PART      // "create_user"
+            ), // "/api/create_user",
+    summary = "Create a role.",
+    request_body = args::CreateRole,
+    responses (
+        (
+            status = StatusCode::OK,  // 200, 
+            description = "Successful role creation.", 
+            body = common::Responce,
+            example = json!({"Success": ROLE_CREATED_SUCCESSFULY})
+        ),
+        (
+            status = StatusCode::CREATED,   // 303, 
+            description = "Error creating role.", 
+            body = common::Responce,
+            example = json!({"Error": "name is empty"})
+        ),
+    ),
+    tag = TAG_ROLES,
+  )
+]
+pub async fn create_role(
+                State(db_res): State<Arc<Database>>,
+                Json(cmd):  Json<args::CreateRole>
+             ) ->impl IntoResponse {
+    match create_role_int(&db_res, &cmd).await {
         Ok(v) => (StatusCode::OK, Json(v)),
         Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
     }

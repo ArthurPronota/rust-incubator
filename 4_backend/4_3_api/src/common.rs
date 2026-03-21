@@ -47,6 +47,9 @@ pub const UPDATE_USEREMAIL_PART: &str = "update_useremail" ;
 /// show_users часть uri 
 pub const SHOW_USERS_PART: &str = "show_users" ;
 
+/// create_role часть uri 
+pub const CREATE_ROLE_PART: &str = "create_role" ;
+
 // Ответы сервера
 #[derive(
     Serialize, 
@@ -217,4 +220,14 @@ pub fn get_show_users_url(host: &str, port: u32) ->String {
 /// получить url show-user
 pub fn get_show_user_url(host: &str, port: u32, id_user: u32) ->String {
     format!("{}/{}", get_show_users_url(host, port), id_user)
+}
+
+/// получить create_role uri
+pub fn get_create_role_uri() ->String {
+    format!("{}{}", get_base_uri_path(), CREATE_ROLE_PART)
+}
+
+/// получить url create_role
+pub fn get_create_role_url(host: &str, port: u32) ->String {
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_create_role_uri())
 }

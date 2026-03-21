@@ -122,6 +122,42 @@ pub struct ShowUsersRoles {
     pub id_user:    Option<u32>
 }
 
+
+/// Создать роль
+#[derive(
+    Serialize,
+    Deserialize,
+    Parser,
+    ToSchema,
+  )
+]
+pub struct  CreateRole {
+    /// Slug: name-of-role
+    #[arg(
+        name = "slug",
+        help = "Slug string of role, unique",
+      )
+    ]
+    pub slug:   String,
+
+    /// Текстовое наименоывание роли
+    #[arg(
+        name = "name",
+        help = "Description of the role of the slug",
+      )
+    ]
+    pub name:   String,
+
+    // Разрешения включенную в эту роль, разделённых запятой: r,i,d,u
+    #[arg(
+        name = "permissions",
+        help = "The permissions for this role are comma separated.",
+        value_delimiter = ',',
+     )
+    ]        
+    pub permissions:    Vec<String>,
+}
+
 // Перечень команд
 #[derive(
     Subcommand,
@@ -177,7 +213,16 @@ pub enum Command {
         about = "Show users and their roles",
      )
     ]
-    ShowUsersRoles(ShowUsersRoles)
+    ShowUsersRoles(ShowUsersRoles),
+
+    /// Создать роль
+    #[clap(
+        name = "create-role",
+        about = "Create a new role",
+     )
+    ]
+    CreateRole(CreateRole),
+
 }
 
 // Структура с агрументами CLI

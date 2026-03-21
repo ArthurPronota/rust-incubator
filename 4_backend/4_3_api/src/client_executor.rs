@@ -7,6 +7,7 @@ use ureq::{
 
 use crate::args::Command ;
 
+use crate::roles::Role;
 use crate::users::User;
 use crate::{common, users} ;
 
@@ -92,6 +93,22 @@ pub fn any_command(
                             .call()?
             }
         },
+        // Создать роль
+        Command::CreateRole(arg_unit) => {
+            let mut tmp_role = Role::default() ;
+            
+            tmp_role.set_name(&arg_unit.name)? ;
+
+            tmp_role.set_permissions(
+                        &arg_unit.permissions.join(",")
+                    )? ;
+
+            tmp_role.set_slug(&arg_unit.slug)? ;
+
+            ureq::post(common::get_create_role_url(host, port))
+                .header(CONTENT_TYPE, JSON_TYPE)
+                .send_json(&arg_unit)?
+        }
     } ;
 
     if !matches!(resp.status(), StatusCode::OK | StatusCode::CREATED) {
