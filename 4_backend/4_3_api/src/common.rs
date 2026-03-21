@@ -9,6 +9,8 @@ use dotenv ;
 
 use utoipa::ToSchema;
 
+use crate::users::UserWithRole ;
+
 /// Переменная окружения порт http сервера
 const HTTP_PORT: &str = "HTTP_PORT" ;
 
@@ -42,6 +44,9 @@ pub const UPDATE_USERNAME_PART: &str = "update_username" ;
 /// update_useremail часть uri 
 pub const UPDATE_USEREMAIL_PART: &str = "update_useremail" ;
 
+/// show_users часть uri 
+pub const SHOW_USERS_PART: &str = "show_users" ;
+
 // Ответы сервера
 #[derive(
     Serialize, 
@@ -55,6 +60,10 @@ pub enum Responce {
     Success(String),    // serialization -> {"Success":"Operation completed"}
     // Ошибка
     Error(String),      // serialization -> {"Error":"Database connection failed"}
+    // Пользователь и tuj роли:
+    UserWithRole(UserWithRole),
+    // Пользователи и их роли:
+    UsersRoles(Vec<UserWithRole>),
 }
 
 
@@ -193,4 +202,19 @@ pub fn get_update_useremail_uri() ->String {
 /// получить url update-useremail
 pub fn get_update_useremail_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_update_useremail_uri())
+}
+
+/// получить show-users uri
+pub fn get_show_users_uri() ->String {
+    format!("{}{}", get_base_uri_path(), SHOW_USERS_PART)
+}
+
+/// получить url show-users
+pub fn get_show_users_url(host: &str, port: u32) ->String {
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_show_users_uri())
+}
+
+/// получить url show-user
+pub fn get_show_user_url(host: &str, port: u32, id_user: u32) ->String {
+    format!("{}/{}", get_show_users_url(host, port), id_user)
 }

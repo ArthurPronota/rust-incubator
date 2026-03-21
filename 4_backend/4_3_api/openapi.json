@@ -143,6 +143,90 @@
         }
       }
     },
+    "/api/show_users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Show users and their roles.",
+        "operationId": "show_users",
+        "responses": {
+          "200": {
+            "description": "Successful display of users and their roles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserWithRole"
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error displaying users and their roles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "Database connection error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/show_users/{id_user}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Show user and their roles",
+        "operationId": "show_user",
+        "parameters": [
+          {
+            "name": "id_user",
+            "in": "path",
+            "description": "User ID to show",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user and their roles have been successfully displayed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserWithRole"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error displaying user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "The user does not exist."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/update_useremail": {
       "put": {
         "tags": [
@@ -278,8 +362,56 @@
                 "type": "string"
               }
             }
+          },
+          {
+            "type": "object",
+            "required": [
+              "UserWithRole"
+            ],
+            "properties": {
+              "UserWithRole": {
+                "$ref": "#/components/schemas/UserWithRole"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "UsersRoles"
+            ],
+            "properties": {
+              "UsersRoles": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UserWithRole"
+                }
+              }
+            }
           }
         ]
+      },
+      "Role": {
+        "type": "object",
+        "description": "Роль",
+        "required": [
+          "slug",
+          "name",
+          "permissions"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "наименование роли"
+          },
+          "permissions": {
+            "type": "string",
+            "description": "разрешения для роли"
+          },
+          "slug": {
+            "type": "string",
+            "description": "код роли"
+          }
+        }
       },
       "UpdateEmailUser": {
         "type": "object",
@@ -316,6 +448,50 @@
           },
           "new_name": {
             "type": "string"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "description": "Структура пользователя",
+        "required": [
+          "id_user",
+          "name",
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "email пользователя"
+          },
+          "id_user": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Код пользователя",
+            "minimum": 0
+          },
+          "name": {
+            "type": "string",
+            "description": "Натменование пользователя"
+          }
+        }
+      },
+      "UserWithRole": {
+        "type": "object",
+        "description": "Пользователь с его ролями",
+        "required": [
+          "user",
+          "list_roles"
+        ],
+        "properties": {
+          "list_roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
           }
         }
       }

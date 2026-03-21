@@ -5,7 +5,7 @@ use std::{
 
 use const_format::concatcp;
 
-use crate::{args::{UpdateEmailUser, UpdateNameUser}, common::{self, Responce}, roles, users::{self, User}, users_roles} ;
+use crate::{args::{UpdateEmailUser, UpdateNameUser}, common::{self, Responce}, roles, users::{self, User}, users_roles::{self, UsersRoles}} ;
 
 //use axum::extract::Path;
 use axum::{
@@ -23,6 +23,7 @@ use crate::args ;
 
 use utoipa::{OpenApi, ToSchema} ;
 
+//use crate::users_roles::UsersRoles ;
 
 const DB_OBJ_CREATED_SUCCESS: &str = "Database objects created successfully." ;
 
@@ -95,6 +96,8 @@ fn error_message(err: &str) ->common::Responce {
         delete_user,
         update_username,
         update_useremail,
+        show_user,
+        show_users,
     ),
     components(
         schemas(
@@ -102,6 +105,7 @@ fn error_message(err: &str) ->common::Responce {
             args::CreateUser,
             args::UpdateNameUser,
             args::UpdateEmailUser,
+            users::UserWithRole,
         )
     ),
     tags(
@@ -481,5 +485,143 @@ pub async fn update_useremail(
                                 error_message(&err.to_string())
                             )
                         )
+    }
+}
+
+// Показ пользователя, внутренний код
+async fn show_user_int(
+            db_res:     &Database,
+            id_user:    u32
+         ) ->//Result<Vec<users::UserWithRole>> 
+            Result<common::Responce>
+         {
+
+    //let mut list_ur = vec![] ;
+
+    // Сформировать новую транзакцию
+    let mut trans = 
+                db_res
+                  .pool
+                  // Устанавливает соединение и немедленно начинает новую транзакцию.
+                  .begin()
+                  .await? ;
+    /*
+    list_ur.push(
+        users::UserWithRole::get_data(
+                                &mut *trans,
+                                id_user
+                            )
+                            .await?
+    );
+
+    Ok(
+        common::Responce::UsersRoles(list_ur)
+    )
+     */
+    Ok(common::Responce::UserWithRole(
+        users::UserWithRole::get_data(
+                                &mut *trans,
+                                id_user
+                            )
+                            .await?
+        )
+    )
+}
+
+// Показ пользователя и их ролей
+#[utoipa::path(
+    get,
+    path =  &format!("{}/{{{}}}", common::get_show_users_uri(), ID_USER_KEY), // "/api/del_user/{id_user}",
+    summary = "Show user and their roles",
+    params(
+        ("id_user" = u32, Path, description = "User ID to show")
+    ),
+    responses(
+        (
+            status = StatusCode::OK, // 200, 
+            description = "The user and their roles have been successfully displayed.", 
+            //body = Vec<users::UserWithRole> // common::Responce,
+            body = users::UserWithRole, // common::Responce,
+            //example = json!({"Success": "The user has been deleted."}),
+        ),
+        (
+            status = StatusCode::CREATED,  // 303,
+            description = "Error displaying user.",
+            body = common::Responce,
+            example = json!({"Error": "The user does not exist."}),
+        ),
+    ),
+    tag = TAG_USERS,
+)]
+pub async fn show_user(
+                State(db_res): State<Arc<Database>>,
+                extract::Path(id_user): extract::Path<u32>
+             ) ->impl IntoResponse {
+    match show_user_int(&db_res, id_user).await {
+        Ok(v) => (
+                            StatusCode::OK,
+                            Json(v)
+                           ),
+        Err(err) => (
+                            StatusCode::CREATED, 
+                            Json(error_message(&err.to_string()))
+                           ),
+    }
+}
+
+// показ пользователей и их ролей, внутренний код
+async fn show_users_int(db_res: &Database) ->Result<common::Responce> {
+
+        // Сформировать новую транзакцию
+    let mut trans = 
+                db_res
+                  .pool
+                  // Устанавливает соединение и немедленно начинает новую транзакцию.
+                  .begin()
+                  .await? ;
+
+    let mut list_ur = vec![] ;
+
+    for id_user in users::User::get_all_id_user(&mut *trans).await? {
+            list_ur.push(
+                users::UserWithRole::get_data(
+                    &mut *trans,
+                    id_user
+                )
+                .await?
+            );
+    }
+    
+    Ok(common::Responce::UsersRoles(list_ur))
+}
+
+// показ пользователей и их ролей
+#[utoipa::path(
+    get,
+    path = common::get_show_users_uri(), // "/api/del_user/{id_user}",
+    summary = "Show users and their roles.",
+    responses(
+        (
+            status = StatusCode::OK, // 200, 
+            description = "Successful display of users and their roles.", 
+            //body = Vec<users::UserWithRole> // common::Responce,
+            body = Vec<users::UserWithRole>, // common::Responce,
+            //example = json!({"Success": "The user has been deleted."}),
+        ),
+        (
+            status = StatusCode::CREATED,  // 303,
+            description = "Error displaying users and their roles.",
+            body = common::Responce,
+            example = json!({"Error": "Database connection error."}),
+        ),
+    ),
+    tag = TAG_USERS,
+)]
+pub async fn show_users(
+                State(db_res): State<Arc<Database>>,
+             ) ->impl IntoResponse {
+    match show_users_int(&db_res).await {
+        Ok(v) => (StatusCode::OK, Json(v)),
+        Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
     }
 }

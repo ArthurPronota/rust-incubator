@@ -36,7 +36,8 @@ impl<'r> FromRow<'r, MySqlRow> for User {
  */
 
 use anyhow::Result ;    // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
-use sqlx::FromRow ; // Импорт трейта FromRow из крейта sqlx для преобразования строк БД в структуры
+use sqlx::FromRow ; use utoipa::ToSchema;
+// Импорт трейта FromRow из крейта sqlx для преобразования строк БД в структуры
 use validator::{
         Validate,   // Основной трейт для валидации структур с методом validate()
         ValidateEmail,  // Трейт для валидации email адресов (используется с #[validate(email)])
@@ -73,6 +74,7 @@ pub const MAX_LENGTH_EMAIL: u64 = 255 ;
     FromRow,    // Реализует преобразование строки из БД в структуру (из крейта sqlx)
     Validate,   // Реализует метод validate() для валидации полей структуры (из крейта validator)
     Clone,
+    ToSchema,
  )
 ]
 pub struct User {
@@ -441,6 +443,7 @@ impl User {
     Deserialize,
     // !!!!!!!!!!!!!!!!! Debug,
     Clone,
+    ToSchema,
   )
  ]
 pub struct UserWithRole {

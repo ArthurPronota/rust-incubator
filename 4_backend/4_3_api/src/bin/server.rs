@@ -92,6 +92,16 @@ async fn main() ->Result<()> {
                         &common::get_update_useremail_uri(),
                         routing::put(server_executor::update_useremail)
                     )
+                    // Показ пользователя и его ролей
+                    .route(
+                        &format!("{}/{{{}}}", common::get_show_users_uri(), server_executor::ID_USER_KEY), //path, 
+                        routing::get(server_executor::show_user)
+                    )
+                    // Показ пользователей и их ролей
+                    .route(
+                        &common::get_show_users_uri(),
+                        routing::get(server_executor::show_users)
+                    )
                     // Добавляем Swagger UI в наш роутер (объединяем с основными маршрутами)
                     .merge(
                         // Создаем новый экземпляр Swagger UI, который будет доступен по пути "/docs"

@@ -75,7 +75,23 @@ pub fn any_command(
             ureq::put(common::get_update_useremail_url(host, port))
                 .header(CONTENT_TYPE, JSON_TYPE)
                 .send_json(&arg_unit)?            
-        }
+        },
+        // Показать пользователей и их роли
+        Command::ShowUsersRoles(arg_unit) => {
+            let mut tmp_user = User::default() ;
+
+            match arg_unit.id_user {
+                // показ одиносного пользователя
+                Some(id_user) => {
+                    tmp_user.set_id_user(id_user)? ;
+                    ureq::get(common::get_show_user_url(host, port, id_user))
+                        .call()?
+                },
+                // показ всех пользователей
+                None => ureq::get(common::get_show_users_url(host, port))
+                            .call()?
+            }
+        },
     } ;
 
     if !matches!(resp.status(), StatusCode::OK | StatusCode::CREATED) {
@@ -88,6 +104,13 @@ pub fn any_command(
     {
         common::Responce::Success(mess) => println!("{}", mess),
         common::Responce::Error(err) => println!("{}", err),
+        common::Responce::UserWithRole(ur) => println!("{}", ur),
+        common::Responce::UsersRoles(list_ur) => {
+            for u_r in &list_ur {
+              println!("{}", u_r) ;
+              println!("--------------------------------------------") ;
+            }
+        },
     }
 
     Ok(())

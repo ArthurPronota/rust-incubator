@@ -119,7 +119,7 @@ pub struct ShowUsersRoles {
         help = "Id of user, optional",
      )
     ]
-    id_user:    Option<u32>
+    pub id_user:    Option<u32>
 }
 
 // Перечень команд

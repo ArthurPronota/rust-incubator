@@ -7,6 +7,7 @@ use serde::{
 
 use sqlx::FromRow ; // трейт для преобразования строки из базы данных в структуру Rust
 
+use utoipa::ToSchema;
 use validator::{
         Validate,   // Основной трейт для валидации структур
         ValidateLength  // Вспомогательный трейт для проверки длины (опционально)
@@ -54,6 +55,7 @@ pub const PERMISSION_DEFAULT: &str = "read,write" ;
     Deserialize,
     //Debug,
     Clone,
+    ToSchema,
 )]
 pub struct Role {
     /// код роли
