@@ -5,9 +5,28 @@ use std::{
 
 use const_format::concatcp;
 
-use crate::{args::{UpdateEmailUser, UpdateNameUser}, common::{self, Responce}, roles, users::{self, User}, users_roles::{self, UsersRoles}} ;
+use crate::{
+        args::{
+            UpdateEmailUser, 
+            UpdateNameUser
+        },
+        common::{
+            self, 
+            //Responce
+        }, 
+        roles, 
+        users::{
+            self, 
+            User
+        },
+        users_roles::{
+            self, 
+            UsersRoles
+        }
+} ;
 
 use urlencoding ;
+
 
 //use axum::extract::Path;
 use axum::{
@@ -122,6 +141,7 @@ fn error_message(err: &str) ->common::Responce {
         delete_role,
         update_rolename,
         update_rolepermissions,
+        show_role,
     ),
     components(
         schemas(
@@ -906,5 +926,92 @@ pub async fn update_rolepermissions(
     match update_rolepermissions_int(&db_res, &cmd).await {
         Ok(v) => (StatusCode::OK, Json(v)),
         Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
+    }
+}
+
+/*
+async fn show_role_int(
+            db_res: &Database,
+            slug:   &str,
+         ) ->Result<common::Responce> {
+    // Сформировать новую транзакцию
+    let mut trans = 
+                db_res
+                  .pool
+                  // Устанавливает соединение и немедленно начинает новую транзакцию.
+                  .begin()
+                  .await? ;
+
+    Ok(
+      common::Responce::Role( 
+        roles::Role::find_slug_raise(
+            &mut *trans,
+            slug,
+            false
+        )
+        .await?
+      )
+    )
+}
+ */
+
+/// Показать роль
+#[utoipa::path(
+    get,
+    path =  &format!("{}/{{{}}}", common::get_show_role_short_uri(), SLUG_KEY), // "/api/del_user/{id_user}",
+    summary = "Show role",
+    params(
+        ("slug" = String, Path, description = "Role slug to show")
+    ),
+    responses(
+        (
+            status = StatusCode::OK, // 200, 
+            description = "Successfully displayed role.", 
+            //body = Vec<users::UserWithRole> // common::Responce,
+            body = roles::Role, // common::Responce,
+            //example = json!({"Success": "The user has been deleted."}),
+        ),
+        (
+            status = StatusCode::CREATED,  // 303,
+            description = "Error displaying role.",
+            body = common::Responce,
+            example = json!({"Error": "Not found role for slug: abc-mk"}),
+        ),
+    ),
+    tag = TAG_ROLES,
+)]
+pub async fn show_role(
+                State(db_res): State<Arc<Database>>,
+                extract::Path(slug): extract::Path<String>
+             ) ->impl IntoResponse {
+
+    async fn show_role_int(
+                db_res: &Database,
+                slug:   &str,
+            ) ->Result<common::Responce> {
+        // Сформировать новую транзакцию
+        let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+        Ok(
+            common::Responce::Role( 
+                roles::Role::find_slug_raise(
+                    &mut *trans,
+                    slug,
+                    false
+                )
+                .await?
+            )
+        )
+    }
+
+    match show_role_int(&db_res, &slug).await {
+        Ok(v) => (StatusCode::OK, Json(v)),
+        Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
+
     }
 }

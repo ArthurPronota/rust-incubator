@@ -238,6 +238,51 @@
         }
       }
     },
+    "/api/show_role/{slug}": {
+      "get": {
+        "tags": [
+          "roles"
+        ],
+        "summary": "Show role",
+        "operationId": "show_role",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Role slug to show",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully displayed role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Role"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error displaying role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "Not found role for slug: abc-mk"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/show_users": {
       "get": {
         "tags": [
@@ -599,6 +644,17 @@
                 "items": {
                   "$ref": "#/components/schemas/UserWithRole"
                 }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "Role"
+            ],
+            "properties": {
+              "Role": {
+                "$ref": "#/components/schemas/Role"
               }
             }
           }

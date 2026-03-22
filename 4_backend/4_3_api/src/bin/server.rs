@@ -59,6 +59,7 @@ async fn main() ->Result<()> {
 
     //println!("{}", format!("{}{{{}}}", common::get_delete_role_uri_short(), server_executor::SLUG_KEY)) ;
 
+    //println!("{}", format!("{}/{}", &common::get_show_role_short_uri(), server_executor::SLUG_KEY)) ;
 
     let db_res = 
             // Оборачивание пула соединений с DB в Arc
@@ -124,6 +125,11 @@ async fn main() ->Result<()> {
                     .route(
                         &common::get_update_rolepermissions_uri(), 
                         routing::put(server_executor::update_rolepermissions)
+                    )
+                    // Показ роли 
+                    .route(
+                        &format!("{}/{{{}}}", &common::get_show_role_short_uri(), server_executor::SLUG_KEY),
+                        routing::get(server_executor::show_role)
                     )
                     // Добавляем Swagger UI в наш роутер (объединяем с основными маршрутами)
                     .merge(

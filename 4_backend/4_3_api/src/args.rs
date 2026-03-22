@@ -245,7 +245,7 @@ pub struct ShowRoles {
         help = "Slug string of role, optional",
       )
     ]
-    slug:   Option<String>,
+    pub slug:   Option<String>,
 }
 
 // Перечень команд

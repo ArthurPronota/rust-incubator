@@ -81,11 +81,11 @@ pub fn any_command(
         },
         // Показать пользователей и их роли
         Command::ShowUsersRoles(arg_unit) => {
-            let mut tmp_user = User::default() ;
-
             match arg_unit.id_user {
                 // показ одиносного пользователя
                 Some(id_user) => {
+                    let mut tmp_user = User::default() ;
+
                     tmp_user.set_id_user(id_user)? ;
                     ureq::get(common::get_show_user_url(host, port, id_user))
                         .call()?
@@ -144,6 +144,23 @@ pub fn any_command(
                 .header(CONTENT_TYPE, JSON_TYPE)
                 .send_json(&arg_unit)?            
         }
+        // Показать роли
+        Command::ShowRoles(arg_unit) => {
+            match &arg_unit.slug {
+                // Показ одной роли
+                Some(sl) => {
+                        let mut tmp_role = Role::default() ;
+                        tmp_role.set_slug(&sl)? ;
+                        ureq::get(
+                            common::get_show_role_url(host, port, sl)
+                        )
+                        .call()?
+                },
+                // Показ всех ролей
+                None => ureq::get(common::get_show_roles_url(host,port))
+                                .call()?,
+            }
+        },
     } ;
 
     if !matches!(resp.status(), StatusCode::OK | StatusCode::CREATED) {
@@ -163,6 +180,7 @@ pub fn any_command(
               println!("--------------------------------------------") ;
             }
         },
+        common::Responce::Role(rl) => println!("{}", rl),
     }
 
     Ok(())

@@ -11,6 +11,7 @@ use utoipa::ToSchema;
 
 use urlencoding ;
 
+use crate::roles;
 use crate::users::UserWithRole ;
 
 /// Переменная окружения порт http сервера
@@ -61,6 +62,9 @@ pub const UPDATE_ROLENAME_PART: &str = "update_rolename" ;
 /// update_rolepermissions часть uri 
 pub const UPDATE_ROLEPERMISSIONS_PART: &str = "update_rolepermissions" ;
 
+// show role часть uri
+pub const SHOW_ROLE_PART: &str = "show_role" ;
+
 // Ответы сервера
 #[derive(
     Serialize, 
@@ -78,6 +82,8 @@ pub enum Responce {
     UserWithRole(UserWithRole),
     // Пользователи и их роли:
     UsersRoles(Vec<UserWithRole>),
+    // Роль
+    Role(roles::Role),
 }
 
 
@@ -276,4 +282,25 @@ pub fn get_update_rolepermissions_uri() ->String {
 /// получить url update_rolepermissions
 pub fn get_update_rolepermissions_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_update_rolepermissions_uri())
+}
+
+/// получить укороченный show_role uri
+pub fn get_show_role_short_uri() ->String {
+    format!("{}{}", get_base_uri_path(), SHOW_ROLE_PART)
+}
+
+/// получить show_role uri
+pub fn get_show_role_uri(slug: &str) ->String {
+
+    format!("{}/{}", get_show_role_short_uri(), urlencoding::encode(slug))
+}
+
+/// получить url show_role
+pub fn get_show_role_url(host: &str, port: u32, slug: &str) ->String {
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_show_role_uri(slug))
+}
+
+/// получить show_roles uri
+pub fn get_show_roles_url(host: &str, port: u32) ->String {
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_show_role_short_uri())
 }
