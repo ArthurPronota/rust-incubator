@@ -69,6 +69,9 @@ const TAG_USERS: &str = "users" ;
 /// тэг роли
 const TAG_ROLES: &str = "roles" ;
 
+/// роли и пользователи
+const TAG_USERS_ROLES: &str = "users_roles" ;
+
 /// id_user ключ
 pub const ID_USER_KEY: &str = "id_user" ;
 
@@ -89,6 +92,9 @@ const ROLE_NAME_WASSUCCESS_CHANGED: &str = "Role name successfully changed." ;
 
 /// Сообщение разрешения роли были успешно изменены
 const ROLE_PERMISSIONS_WASSUCCESS_CHANGED: &str = "Role permissions successfully changed." ;
+
+/// Роль успешно добавлена к пользователю.
+const ROLE_SUCCESS_ADDED_TO_USER: & str = "The role has been successfully added to the user." ;
 
 /// Запись в файл спецификации openapi если спецификация изменилась
 pub fn write_to_openapi(op_api: &utoipa::openapi::OpenApi) ->Result<()> {
@@ -143,6 +149,7 @@ fn error_message(err: &str) ->common::Responce {
         update_rolepermissions,
         show_role,
         get_show_roles,
+        add_role_to_user,
     ),
     components(
         schemas(
@@ -155,6 +162,7 @@ fn error_message(err: &str) ->common::Responce {
             args::UpdateNameRole,
             args::UpdatePermissionsRole,
             roles::Role,
+            args::AddRoleToUser,
         )
     ),
     tags(
@@ -169,6 +177,10 @@ fn error_message(err: &str) ->common::Responce {
         (
             name = "roles",
             description = "Working with roles",
+        ),
+        (
+            name = "users_roles",
+            description = "Manipulating user roles",
         ),        
     ),
     info(
@@ -1074,4 +1086,66 @@ pub async fn get_show_roles(
         Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
     }
 
+}
+
+/// Добавить роль к пользователю
+#[utoipa::path(
+    post,
+    path = concatcp!(
+                common::BASE_URI_PATH,        // "/api/",
+                common::ADD_ROLE_TO_USER_PART      // "create_user"
+            ), // "/api/create_user",
+    summary = "Add a role to a user",
+    request_body = args::AddRoleToUser,
+    responses (
+        (
+            status = StatusCode::OK,  // 200, 
+            description = "Successfully added role to user.", 
+            body = common::Responce,
+            example = json!({"Success": ROLE_SUCCESS_ADDED_TO_USER})
+        ),
+        (
+            status = StatusCode::CREATED,   // 303, 
+            description = "Error adding role to user.", 
+            body = common::Responce,
+            example = json!({"Error": "Not found user for id_user: 100"})
+        ),
+    ),
+    tag = TAG_USERS_ROLES,
+  )
+]
+pub async fn add_role_to_user(
+                State(db_res): State<Arc<Database>>,
+                Json(com): Json<args::AddRoleToUser>
+             ) ->impl IntoResponse {
+
+    async fn add_role_to_user_int(
+                    db_res: &Database,
+                    cmd:    &args::AddRoleToUser
+                ) ->Result<common::Responce> {
+        // Сформировать новую транзакцию
+        let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+
+        // Добавить роль для пользователя
+        users_roles::UsersRoles::ins_role_to_user(
+                        &mut *trans,
+                        cmd.id_user,
+                        &cmd.slug
+                    )
+                    .await? ;
+        // выполнить commit
+        trans.commit().await? ;
+
+        Ok(success_message(ROLE_SUCCESS_ADDED_TO_USER))
+    }
+
+    match add_role_to_user_int(&db_res, &com).await {
+        Ok(v) => (StatusCode::OK, Json(v)),
+        Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
+    }
 }

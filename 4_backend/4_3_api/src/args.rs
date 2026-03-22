@@ -248,6 +248,33 @@ pub struct ShowRoles {
     pub slug:   Option<String>,
 }
 
+
+/// Добвить роль к пользователю
+#[derive(
+    Serialize,
+    Deserialize,
+    Parser,
+    ToSchema,
+  )
+]
+pub struct AddRoleToUser {
+    /// Код роли
+    #[arg(
+        name = "slug",
+        help = "Slug string of role",
+      )
+    ]
+    pub slug:       String,
+
+    /// Id user
+    #[arg(
+        name = "id_user",
+        help = "Id of user",
+      )
+    ]
+    pub id_user:    u32,
+}
+
 // Перечень команд
 #[derive(
     Subcommand,
@@ -344,6 +371,14 @@ pub enum Command {
      )
     ]
     ShowRoles(ShowRoles),
+
+    /// Добвить роль к пользователю
+    #[clap(
+        name = "role-to-user",
+        about = "Add a role to a user",
+     )
+    ]
+    AddRoleToUser(AddRoleToUser),
 }
 
 // Структура с агрументами CLI

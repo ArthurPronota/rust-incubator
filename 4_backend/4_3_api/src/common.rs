@@ -65,6 +65,9 @@ pub const UPDATE_ROLEPERMISSIONS_PART: &str = "update_rolepermissions" ;
 // show role часть uri
 pub const SHOW_ROLE_PART: &str = "show_role" ;
 
+// add_tole_to_user часть uri
+pub const ADD_ROLE_TO_USER_PART: &str = "add_role_to_user" ;
+
 // Ответы сервера
 #[derive(
     Serialize, 
@@ -305,4 +308,14 @@ pub fn get_show_role_url(host: &str, port: u32, slug: &str) ->String {
 /// получить show_roles uri
 pub fn get_show_roles_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_show_role_short_uri())
+}
+
+/// получить add_role_to_user uri
+pub fn get_add_role_to_user_uri() ->String {
+    format!("{}{}", get_base_uri_path(), ADD_ROLE_TO_USER_PART)
+}
+
+/// получить show_roles uri
+pub fn get_add_role_to_user_url(host: &str, port: u32) ->String {
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_add_role_to_user_uri())
 }

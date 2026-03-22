@@ -161,6 +161,20 @@ pub fn any_command(
                                 .call()?,
             }
         },
+        // Добавить роль к пользователю
+        Command::AddRoleToUser(arg_unit) => {
+            let mut tmp_user = User::default() ;
+
+            tmp_user.set_id_user(arg_unit.id_user)? ;
+
+            let mut tmp_role = Role::default() ;
+
+            tmp_role.set_slug(&arg_unit.slug)? ;
+
+            ureq::post(&common::get_add_role_to_user_url(host, port))
+                .header(CONTENT_TYPE, JSON_TYPE)
+                .send_json(&arg_unit)?
+        },
     } ;
 
     if !matches!(resp.status(), StatusCode::OK | StatusCode::CREATED) {

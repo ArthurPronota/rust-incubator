@@ -9,6 +9,53 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/add_role_to_user": {
+      "post": {
+        "tags": [
+          "users_roles"
+        ],
+        "summary": "Add a role to a user",
+        "operationId": "add_role_to_user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddRoleToUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully added role to user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Success": "The role has been successfully added to the user."
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error adding role to user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "Not found user for id_user: 100"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/create_role": {
       "post": {
         "tags": [
@@ -595,6 +642,26 @@
   },
   "components": {
     "schemas": {
+      "AddRoleToUser": {
+        "type": "object",
+        "description": "Добвить роль к пользователю",
+        "required": [
+          "slug",
+          "id_user"
+        ],
+        "properties": {
+          "id_user": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Id user",
+            "minimum": 0
+          },
+          "slug": {
+            "type": "string",
+            "description": "Код роли"
+          }
+        }
+      },
       "CreateRole": {
         "type": "object",
         "description": "Создать роль",
@@ -866,6 +933,10 @@
     {
       "name": "roles",
       "description": "Working with roles"
+    },
+    {
+      "name": "users_roles",
+      "description": "Manipulating user roles"
     }
   ]
 }
