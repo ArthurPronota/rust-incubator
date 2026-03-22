@@ -238,6 +238,43 @@
         }
       }
     },
+    "/api/show_role": {
+      "get": {
+        "tags": [
+          "roles"
+        ],
+        "summary": "Show all roles",
+        "operationId": "get_show_roles",
+        "responses": {
+          "200": {
+            "description": "Successfully display all roles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Role"
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error displaying all roles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "Not found role for slug: abc-mk"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/show_role/{slug}": {
       "get": {
         "tags": [
@@ -655,6 +692,20 @@
             "properties": {
               "Role": {
                 "$ref": "#/components/schemas/Role"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "ListRoles"
+            ],
+            "properties": {
+              "ListRoles": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Role"
+                }
               }
             }
           }

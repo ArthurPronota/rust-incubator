@@ -84,6 +84,8 @@ pub enum Responce {
     UsersRoles(Vec<UserWithRole>),
     // Роль
     Role(roles::Role),
+    // Все роли
+    ListRoles(Vec<roles::Role>),
 }
 
 

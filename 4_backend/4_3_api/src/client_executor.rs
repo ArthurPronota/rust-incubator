@@ -181,6 +181,12 @@ pub fn any_command(
             }
         },
         common::Responce::Role(rl) => println!("{}", rl),
+        common::Responce::ListRoles(list_roles) => {
+            for rl in &list_roles {
+                println!("{}", rl) ;
+                println!("--------------------------------------------") ;
+            }
+        },
     }
 
     Ok(())

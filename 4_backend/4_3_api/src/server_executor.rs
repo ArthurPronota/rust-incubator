@@ -142,6 +142,7 @@ fn error_message(err: &str) ->common::Responce {
         update_rolename,
         update_rolepermissions,
         show_role,
+        get_show_roles,
     ),
     components(
         schemas(
@@ -153,6 +154,7 @@ fn error_message(err: &str) ->common::Responce {
             args::CreateRole,
             args::UpdateNameRole,
             args::UpdatePermissionsRole,
+            roles::Role,
         )
     ),
     tags(
@@ -1014,4 +1016,62 @@ pub async fn show_role(
         Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
 
     }
+}
+
+
+/// Показать все роли
+#[utoipa::path(
+    get,
+    path =  &common::get_show_role_short_uri(), // "/api/del_user/{id_user}",
+    summary = "Show all roles",
+    responses(
+        (
+            status = StatusCode::OK, // 200, 
+            description = "Successfully display all roles.", 
+            //body = Vec<users::UserWithRole> // common::Responce,
+            body = Vec<roles::Role>, // common::Responce,
+            //example = json!({"Success": "The user has been deleted."}),
+        ),
+        (
+            status = StatusCode::CREATED,  // 303,
+            description = "Error displaying all roles.",
+            body = common::Responce,
+            example = json!({"Error": "Not found role for slug: abc-mk"}),
+        ),
+    ),
+    tag = TAG_ROLES,
+)]
+pub async fn get_show_roles(
+                State(db_res): State<Arc<Database>>,
+            ) ->impl IntoResponse {
+
+    async fn get_show_roles_int(db_res: &Database) ->Result<common::Responce> {
+        // Сформировать новую транзакцию
+        let mut trans = 
+                  db_res
+                    .pool
+                    // Устанавливает соединение и немедленно начинает новую транзакцию.
+                    .begin()
+                    .await? ;
+
+        let mut list_roles = vec![] ;
+
+        for sl in roles::Role::get_all_slugs(&mut *&mut trans).await? {
+                    list_roles.push(
+                            roles::Role::find_slug_raise(
+                                    &mut *trans,
+                                    &sl,
+                                    false
+                            )
+                            .await?                            
+                    );
+        }
+        Ok(common::Responce::ListRoles(list_roles))
+    }
+
+    match get_show_roles_int(&db_res).await {
+        Ok(v) => (StatusCode::OK, Json(v)),
+        Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
+    }
+
 }
