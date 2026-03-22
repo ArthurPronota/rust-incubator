@@ -120,6 +120,30 @@ pub fn any_command(
             ureq::delete(common::get_delete_role_url(host, port, &tmp_role.slug()))
                 .call()?
         },
+        // Модифицировать имя у роли
+        Command::UpdateNameRole(arg_unit) => {
+            let mut tmp_role = Role::default() ;
+
+            tmp_role.set_name(&arg_unit.new_name)? ;
+
+            tmp_role.set_slug(&arg_unit.slug)? ;
+
+            ureq::put(common::get_update_rolename_url(host, port))
+                .header(CONTENT_TYPE, JSON_TYPE)
+                .send_json(&arg_unit)?
+        },
+        // Модифицировать разрешения у роли
+        Command::UpdatePermissionsRole(arg_unit) => {
+            let mut tmp_role = Role::default() ;
+
+            tmp_role.set_permissions(&arg_unit.slug)? ;
+
+            tmp_role.set_slug(&arg_unit.slug)? ;
+
+            ureq::put(common::get_update_rolepermissions_url(host, port))
+                .header(CONTENT_TYPE, JSON_TYPE)
+                .send_json(&arg_unit)?            
+        }
     } ;
 
     if !matches!(resp.status(), StatusCode::OK | StatusCode::CREATED) {

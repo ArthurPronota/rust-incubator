@@ -176,6 +176,77 @@ pub struct DeleteRole {
     pub slug:   String,
 }
 
+/// Модифицировать имя у роли
+#[derive(
+    Serialize,
+    Deserialize,
+    Parser,
+    ToSchema,
+  )
+]
+pub struct UpdateNameRole {
+    /// Наименование роли
+    #[arg(
+        name = "New role name",
+        help = "Modified role name",
+     )
+    ]
+    pub new_name:   String,
+
+    /// Код роли
+    #[arg(
+        name = "slug",
+        help = "Slug string of role",
+      )
+    ]
+    pub slug:       String,
+}
+
+// Модифицировать разрешения у роли
+#[derive(
+    Serialize,
+    Deserialize,
+    Parser,
+    ToSchema,
+  )
+]
+pub struct UpdatePermissionsRole {
+    // Код роли
+    #[arg(
+        name = "slug",
+        help = "Slug string of role",
+      )
+    ]
+    pub slug:       String,
+
+    // Разрешения включенную в эту роль, разделённых запятой: r,i,d,u
+    // Значения типа Vec<_> должны быть в конце списка аргументов иначе возникает ошибка.
+    #[arg(
+        name = "new-permissions",
+        help = "The new permissions for this role are comma separated.",
+        value_delimiter = ',',
+      )
+    ]        
+    pub new_permissions:    Vec<String>,
+} 
+
+// Показать роли
+#[derive(
+    Serialize,
+    Deserialize,
+    Parser,
+    ToSchema,
+  )
+]
+pub struct ShowRoles {
+    // Slug: name-of-role
+    #[arg(
+        name = "slug",
+        help = "Slug string of role, optional",
+      )
+    ]
+    slug:   Option<String>,
+}
 
 // Перечень команд
 #[derive(
@@ -249,6 +320,30 @@ pub enum Command {
      )
     ]
     DeleteRole(DeleteRole),
+
+    // Модифицировать имя у роли
+    #[clap(
+        name = "update-name-role",
+        about = "Modify role name",
+     )
+    ]
+    UpdateNameRole(UpdateNameRole),
+
+    // Модифицировать разрешения у роли
+    #[clap(
+        name = "update-perm-role",
+        about = "Modify role permissions",
+     )
+    ]
+    UpdatePermissionsRole(UpdatePermissionsRole),
+
+    // Показать роли
+    #[clap(
+        name = "show-roles",
+        about = "Show roles",
+     )
+    ]
+    ShowRoles(ShowRoles),
 }
 
 // Структура с агрументами CLI

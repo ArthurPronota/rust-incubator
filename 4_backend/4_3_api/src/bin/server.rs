@@ -57,6 +57,9 @@ async fn main() ->Result<()> {
 
     //println!("{}", format!("{}{{id_user}}", common::get_delete_user_uri_short())) ;
 
+    //println!("{}", format!("{}{{{}}}", common::get_delete_role_uri_short(), server_executor::SLUG_KEY)) ;
+
+
     let db_res = 
             // Оборачивание пула соединений с DB в Arc
             Arc::new(
@@ -111,7 +114,17 @@ async fn main() ->Result<()> {
                     .route(
                         &format!("{}{{{}}}", common::get_delete_role_uri_short(), server_executor::SLUG_KEY),
                         routing::delete(server_executor::delete_role)
-                    )                    
+                    )
+                    // Модификация наименования роли
+                    .route(
+                        &common::get_update_rolename_uri(),
+                        routing::put(server_executor::update_rolename)
+                    )
+                    // Модификация разрешений у роли
+                    .route(
+                        &common::get_update_rolepermissions_uri(), 
+                        routing::put(server_executor::update_rolepermissions)
+                    )
                     // Добавляем Swagger UI в наш роутер (объединяем с основными маршрутами)
                     .merge(
                         // Создаем новый экземпляр Swagger UI, который будет доступен по пути "/docs"

@@ -62,6 +62,15 @@ const USER_NAME_CHANGED_SUCCESS: &str = "User's name changed successfully." ;
 /// Сообщение email пользователя изменено успешно
 const USER_EMAIL_CHANGED_SUCCESS: &str = "User's email changed successfully." ;
 
+/// Сообщение роль была успешно удалена
+const ROLE_WAS_SUCCESS_REMOVED: &str = "The role was successfully removed." ;
+
+/// Сообщение наименование роли было успешно изменено
+const ROLE_NAME_WASSUCCESS_CHANGED: &str = "Role name successfully changed." ;
+
+/// Сообщение разрешения роли были успешно изменены
+const ROLE_PERMISSIONS_WASSUCCESS_CHANGED: &str = "Role permissions successfully changed." ;
+
 /// Запись в файл спецификации openapi если спецификация изменилась
 pub fn write_to_openapi(op_api: &utoipa::openapi::OpenApi) ->Result<()> {
 
@@ -110,6 +119,9 @@ fn error_message(err: &str) ->common::Responce {
         show_user,
         show_users,
         create_role,
+        delete_role,
+        update_rolename,
+        update_rolepermissions,
     ),
     components(
         schemas(
@@ -119,6 +131,8 @@ fn error_message(err: &str) ->common::Responce {
             args::UpdateEmailUser,
             users::UserWithRole,
             args::CreateRole,
+            args::UpdateNameRole,
+            args::UpdatePermissionsRole,
         )
     ),
     tags(
@@ -129,6 +143,10 @@ fn error_message(err: &str) ->common::Responce {
         (
             name = "users",
             description = "Working with users",
+        ),
+        (
+            name = "roles",
+            description = "Working with roles",
         ),        
     ),
     info(
@@ -692,7 +710,7 @@ pub async fn create_role(
 }
 
 // Удаление роли, внутренний код
-pub async fn delete_role_int(
+async fn delete_role_int(
                 db_res:     &Database,
                 slug:       &str,
              ) ->Result<common::Responce> {
@@ -717,10 +735,34 @@ pub async fn delete_role_int(
     // выполнить commit
     trans.commit().await? ;
 
-    Ok(success_message("The role was successfully removed."))
+    Ok(success_message(ROLE_WAS_SUCCESS_REMOVED))
 }
 
 // Удаление роли
+#[utoipa::path(
+    delete,
+    //path =  &format!("{}{{id_user}}", common::get_delete_user_uri_short()), // "/api/del_user/{id_user}",
+    path =  &format!("{}{{{}}}", common::get_delete_role_uri_short(), SLUG_KEY), // "/api/del_user/{id_user}",
+    summary = "Deleting a role.",
+    params(
+        ("slug" = String, Path, description = "Slug of role to delete.")
+    ),
+    responses(
+        (
+            status = StatusCode::OK, // 200, 
+            description = "Successful role deletion.", 
+            body = common::Responce,
+            example = json!({"Success": ROLE_WAS_SUCCESS_REMOVED}),
+        ),
+        (
+            status = StatusCode::CREATED,  // 303,
+            description = "Error deleting role.",
+            body = common::Responce,
+            example = json!({"Error": "The default role cannot be deleted."}),
+        ),
+    ),
+    tag = TAG_ROLES,
+)]
 pub async fn delete_role(
                   State(db_res): State<Arc<Database>>,
                   extract::Path(slug): extract::Path<String>,
@@ -735,5 +777,134 @@ pub async fn delete_role(
                             Json(error_message(&err.to_string()))
                           ),
     }
+}
 
+/// Модификация наименование роли, внутренний код
+async fn update_rolename_int(
+                db_res: &Database,
+                cmd:  &args::UpdateNameRole
+             ) ->Result<common::Responce> {
+    // Сформировать новую транзакцию
+    let mut trans = 
+                db_res
+                    .pool
+                    // Устанавливает соединение и немедленно начинает новую транзакцию.
+                    .begin()
+                    .await? ;
+
+    // Модифицировать name в роли
+    roles::Role::update_name(&mut *trans, &cmd.slug, &cmd.new_name)
+            .await? ;
+
+    // Выполнить commit
+    trans.commit().await? ;
+
+    Ok(success_message(ROLE_NAME_WASSUCCESS_CHANGED))
+}
+
+/// Модификация наименование роли
+#[utoipa::path(
+    put,
+    path = concatcp!(
+                common::BASE_URI_PATH,        // "/api/",
+                common::UPDATE_ROLENAME_PART      // "create_user"
+            ), // "/api/create_user",
+    summary = "Modify role name",
+    request_body = args::UpdateNameRole,
+    responses (
+        (
+            status = StatusCode::OK,  // 200, 
+            description = "Successful modification of role name.", 
+            body = common::Responce,
+            example = json!({"Success": ROLE_NAME_WASSUCCESS_CHANGED})
+        ),
+        (
+            status = StatusCode::CREATED,   // 303, 
+            description = "Error modifying role name.", 
+            body = common::Responce,
+            example = json!({"Error": "Not found role for slug: abc-mk"})
+        ),
+    ),
+    tag = TAG_ROLES,
+  )
+]
+pub async fn update_rolename(
+                State(db_res): State<Arc<Database>>,
+                Json(cmd):  Json<args::UpdateNameRole>
+             ) ->impl IntoResponse {
+    match update_rolename_int(&db_res, &cmd).await {
+        Ok(v) => (
+                            StatusCode::OK,
+                            Json(v)
+                           ),
+        Err(err) => (
+                            StatusCode::CREATED,
+                            Json(
+                                error_message(&err.to_string())
+                            )
+                        ),
+    }
+}
+
+// Модифицировать разрешение у роли, внутренний код
+async fn update_rolepermissions_int(
+                db_res: &Database,
+                cmd:    &args::UpdatePermissionsRole,
+             ) ->Result<common::Responce> {
+    // Сформировать новую транзакцию
+    let mut trans = 
+                db_res
+                    .pool
+                    // Устанавливает соединение и немедленно начинает новую транзакцию.
+                    .begin()
+                    .await? ;
+
+    // Модифицировать разрешения у роли
+    roles::Role::update_permissions(
+                    &mut *trans,
+                    &cmd.slug, 
+                    &cmd.new_permissions.join(",")
+                    )
+                    .await? ;
+
+    // Выполнить commit
+    trans.commit().await? ;
+
+    Ok(success_message(ROLE_PERMISSIONS_WASSUCCESS_CHANGED))
+}
+
+// Модифицировать разрешение у роли
+#[utoipa::path(
+    put,
+    path = concatcp!(
+                common::BASE_URI_PATH,        // "/api/",
+                common::UPDATE_ROLEPERMISSIONS_PART      // "create_user"
+            ), // "/api/create_user",
+    summary = "Modify role permissions",
+    request_body = args::UpdatePermissionsRole,
+    responses (
+        (
+            status = StatusCode::OK,  // 200, 
+            description = "Successful modification of role permission.", 
+            body = common::Responce,
+            example = json!({"Success": ROLE_PERMISSIONS_WASSUCCESS_CHANGED})
+        ),
+        (
+            status = StatusCode::CREATED,   // 303, 
+            description = "Error modifying role permissions.", 
+            body = common::Responce,
+            example = json!({"Error": "Not found role for slug: abc-mk"})
+        ),
+    ),
+    tag = TAG_ROLES,
+  )
+]
+pub async fn update_rolepermissions(
+                State(db_res): State<Arc<Database>>,
+                Json(cmd): Json<args::UpdatePermissionsRole>
+             ) ->impl IntoResponse {
+    match update_rolepermissions_int(&db_res, &cmd).await {
+        Ok(v) => (StatusCode::OK, Json(v)),
+        Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
+    }
 }

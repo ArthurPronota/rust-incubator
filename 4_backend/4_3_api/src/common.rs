@@ -55,6 +55,12 @@ pub const CREATE_ROLE_PART: &str = "create_role" ;
 /// delete_role часть uri 
 pub const DELETE_ROLE_PART: &str = "delete_role" ;
 
+/// update_rolename часть uri 
+pub const UPDATE_ROLENAME_PART: &str = "update_rolename" ;
+
+/// update_rolepermissions часть uri 
+pub const UPDATE_ROLEPERMISSIONS_PART: &str = "update_rolepermissions" ;
+
 // Ответы сервера
 #[derive(
     Serialize, 
@@ -250,4 +256,24 @@ pub fn get_delete_role_uri(slug: &str) ->String {
 /// получить url delete_role
 pub fn get_delete_role_url(host: &str, port: u32, slug: &str) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_delete_role_uri(slug))
+}
+
+/// получить update_rolename uri
+pub fn get_update_rolename_uri() ->String {
+    format!("{}{}", get_base_uri_path(), UPDATE_ROLENAME_PART)
+}
+
+/// получить url delete_role
+pub fn get_update_rolename_url(host: &str, port: u32) ->String {
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_update_rolename_uri())
+}
+
+/// получить update_rolepermissions uri
+pub fn get_update_rolepermissions_uri() ->String {
+    format!("{}{}", get_base_uri_path(), UPDATE_ROLEPERMISSIONS_PART)
+}
+
+/// получить url update_rolepermissions
+pub fn get_update_rolepermissions_url(host: &str, port: u32) ->String {
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_update_rolepermissions_uri())
 }

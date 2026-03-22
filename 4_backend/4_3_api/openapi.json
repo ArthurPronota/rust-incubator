@@ -103,6 +103,54 @@
         }
       }
     },
+    "/api/delete_role/{slug}": {
+      "delete": {
+        "tags": [
+          "roles"
+        ],
+        "summary": "Deleting a role.",
+        "operationId": "delete_role",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Slug of role to delete.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful role deletion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Success": "The role was successfully removed."
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error deleting role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "The default role cannot be deleted."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/delete_user/{id_user}": {
       "delete": {
         "tags": [
@@ -267,6 +315,100 @@
                 },
                 "example": {
                   "Error": "The user does not exist."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/update_rolename": {
+      "put": {
+        "tags": [
+          "roles"
+        ],
+        "summary": "Modify role name",
+        "operationId": "update_rolename",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNameRole"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful modification of role name.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Success": "Role name successfully changed."
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error modifying role name.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "Not found role for slug: abc-mk"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/update_rolepermissions": {
+      "put": {
+        "tags": [
+          "roles"
+        ],
+        "summary": "Modify role permissions",
+        "operationId": "update_rolepermissions",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePermissionsRole"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful modification of role permission.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Success": "Role permissions successfully changed."
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error modifying role permissions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "Not found role for slug: abc-mk"
                 }
               }
             }
@@ -504,6 +646,24 @@
           }
         }
       },
+      "UpdateNameRole": {
+        "type": "object",
+        "description": "Модифицировать имя у роли",
+        "required": [
+          "new_name",
+          "slug"
+        ],
+        "properties": {
+          "new_name": {
+            "type": "string",
+            "description": "Наименование роли"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Код роли"
+          }
+        }
+      },
       "UpdateNameUser": {
         "type": "object",
         "description": "Модифицировать имя у пользователю",
@@ -519,6 +679,24 @@
             "minimum": 0
           },
           "new_name": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdatePermissionsRole": {
+        "type": "object",
+        "required": [
+          "slug",
+          "new_permissions"
+        ],
+        "properties": {
+          "new_permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "slug": {
             "type": "string"
           }
         }
@@ -577,6 +755,10 @@
     {
       "name": "users",
       "description": "Working with users"
+    },
+    {
+      "name": "roles",
+      "description": "Working with roles"
     }
   ]
 }
