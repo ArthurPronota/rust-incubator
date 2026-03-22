@@ -32,6 +32,7 @@ fn main() ->Result<()>{
     // Получение параметров из командной строки
     let args = args::Args::parse() ;
 
+    // Выполнить полученную команду
     client_executor::any_command(&args.commands, &host, port)? ;
 
     Ok(())
