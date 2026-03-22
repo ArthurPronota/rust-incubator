@@ -182,7 +182,7 @@ async fn handle_commmand_int(
             // выполнить commit
             trans.commit().await? ;
 
-            Ok(local_success("The role has been successfully added to the user."))
+            Ok(local_success("The role was successfully removed."))
         },
         Commands::UpdateNameRole { new_name, slug } => {
             // Сформировать новую транзакцию

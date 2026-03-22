@@ -7,6 +7,8 @@ use const_format::concatcp;
 
 use crate::{args::{UpdateEmailUser, UpdateNameUser}, common::{self, Responce}, roles, users::{self, User}, users_roles::{self, UsersRoles}} ;
 
+use urlencoding ;
+
 //use axum::extract::Path;
 use axum::{
         extract::{
@@ -50,6 +52,9 @@ const TAG_ROLES: &str = "roles" ;
 
 /// id_user ключ
 pub const ID_USER_KEY: &str = "id_user" ;
+
+/// slug ключ
+pub const SLUG_KEY: &str = "slug" ;
 
 /// Сообщение имя пользователя изменено успешно
 const USER_NAME_CHANGED_SUCCESS: &str = "User's name changed successfully." ;
@@ -684,4 +689,51 @@ pub async fn create_role(
         Ok(v) => (StatusCode::OK, Json(v)),
         Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
     }
+}
+
+// Удаление роли, внутренний код
+pub async fn delete_role_int(
+                db_res:     &Database,
+                slug:       &str,
+             ) ->Result<common::Responce> {
+               
+    // Сформировать новую транзакцию
+    let mut trans = 
+                db_res
+                    .pool
+                    // Устанавливает соединение и немедленно начинает новую транзакцию.
+                    .begin()
+                    .await? ;
+
+    let slug = &urlencoding::decode(slug)?
+                        //.unwrap()
+                        .to_string()
+                        //.as_str()
+                        ;
+
+    // удалить роль
+    roles::Role::delete_role(&mut *trans, slug).await? ;
+
+    // выполнить commit
+    trans.commit().await? ;
+
+    Ok(success_message("The role was successfully removed."))
+}
+
+// Удаление роли
+pub async fn delete_role(
+                  State(db_res): State<Arc<Database>>,
+                  extract::Path(slug): extract::Path<String>,
+                ) ->impl IntoResponse {
+    match delete_role_int(&db_res, &slug).await {
+       Ok(v)  => (
+                            StatusCode::OK,
+                            Json(v)
+                           ),
+       Err(err) => (
+                            StatusCode::CREATED,
+                            Json(error_message(&err.to_string()))
+                          ),
+    }
+
 }

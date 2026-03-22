@@ -5,6 +5,8 @@ use ureq::{
         http::StatusCode
     } ;
 
+//use urlencoding ;
+
 use crate::args::Command ;
 
 use crate::roles::Role;
@@ -115,7 +117,8 @@ pub fn any_command(
 
             tmp_role.set_slug(&arg_unit.slug)? ;
 
-            
+            ureq::delete(common::get_delete_role_url(host, port, &tmp_role.slug()))
+                .call()?
         },
     } ;
 

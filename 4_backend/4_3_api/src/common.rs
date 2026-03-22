@@ -9,6 +9,8 @@ use dotenv ;
 
 use utoipa::ToSchema;
 
+use urlencoding ;
+
 use crate::users::UserWithRole ;
 
 /// Переменная окружения порт http сервера
@@ -49,6 +51,9 @@ pub const SHOW_USERS_PART: &str = "show_users" ;
 
 /// create_role часть uri 
 pub const CREATE_ROLE_PART: &str = "create_role" ;
+
+/// delete_role часть uri 
+pub const DELETE_ROLE_PART: &str = "delete_role" ;
 
 // Ответы сервера
 #[derive(
@@ -230,4 +235,19 @@ pub fn get_create_role_uri() ->String {
 /// получить url create_role
 pub fn get_create_role_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_create_role_uri())
+}
+
+/// получить укороченный delete_role uri 
+pub fn get_delete_role_uri_short() ->String {
+    format!("{}{}/", get_base_uri_path(), DELETE_ROLE_PART)
+}
+
+/// получить delete_role uri
+pub fn get_delete_role_uri(slug: &str) ->String {
+    format!("{}{}", get_delete_role_uri_short(), urlencoding::encode(slug))
+}
+
+/// получить url delete_role
+pub fn get_delete_role_url(host: &str, port: u32, slug: &str) ->String {
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_delete_role_uri(slug))
 }
