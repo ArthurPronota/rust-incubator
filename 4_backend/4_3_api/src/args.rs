@@ -1,21 +1,21 @@
-use clap::{
-        Parser,
-        Subcommand,
+use clap::{ // Command Line Argument Parser for Rust
+        Parser, // импортирует трейт Parser, который позволяет автоматически парсить аргументы командной строки в структуру с помощью аннотаций.
+        Subcommand, // импортирует трейт Subcommand, который позволяет определять вложенные команды
 } ;
 
-use serde::{
-        Serialize,
-        Deserialize
+use serde::{    // это фреймворк для эффективной и универсальной сериализации и десериализации структур данных Rust.
+        Serialize,  // импортирует трейт Serialize, который позволяет преобразовывать структуры данных в форматы сериализации (JSON, YAML и др.).
+        Deserialize // импортирует трейт Deserialize, который позволяет восстанавливать структуры данных из форматов десериализации.
     } ;
 
-use utoipa::ToSchema;
+use utoipa::ToSchema;   // импортирует трейт ToSchema, который автоматически генерирует OpenAPI-схему для структур данных, используемых в API-документации.
 
 // Структура создания пользователя
 #[derive(
-    Serialize,
-    Deserialize,
-    Parser,
-    ToSchema,
+    Serialize,      // добавляет возможность сериализовать данные (например, в JSON) из крейта serde
+    Deserialize,    // добавляет возможность десериализовать данные из форматов обратно в структуру
+    Parser,         // из clap позволяет автоматически парсить аргументы командной строки в поля структуры
+    ToSchema,       // из utoipa генерирует OpenAPI-схему для автоматической документации API
   )
 ]
 pub struct CreateUser {
@@ -307,7 +307,6 @@ pub struct RemoveRoleFromUser {
     Subcommand,
     Serialize,
     Deserialize,
-    //Debug,
 )]
 pub enum Command {
     

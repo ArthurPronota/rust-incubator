@@ -1,22 +1,18 @@
 use anyhow::Result ;    // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
 
-use tokio::net::TcpListener ;
+use tokio::net::TcpListener ;   // TCP-сервер, принимающий соединения.
 use utoipa::OpenApi;  // Импорт TcpListener из tokio для асинхронного прослушивания TCP соединений
 
-use std::sync::Arc ;
+use std::sync::Arc ;  // Импорт тип атомарного счетчика ссылок Arc для разделяемого владения данными между потоками.
 
-use axum::{
-        Router,
-        routing/*::{
-            get,
-            post,
-            put,
-            delete,
-        }
-        */
-        ,
+use axum::{ // фреймворк для веб-приложений, ориентированный на эргономику и модульность.
+        Router, // Тип маршрутизатора для компоновки обработчиков и служб.
+        routing,    // Маршрутизация между сервисами и обработчиками.
 } ;
 
+// Импортирует структуру SwaggerUi для встраивания Swagger UI в 
+// веб-приложение, чтобы автоматически генерировать интерактивную 
+// документацию API на основе OpenAPI-спецификации из крейта utoipa.
 use utoipa_swagger_ui::SwaggerUi ;
 
 // Подклбчение модуля common из родительского дирректория
@@ -27,15 +23,19 @@ mod common ;
 #[path = "../server_executor.rs"]
 mod server_executor ;
 
+// Подклбчение модуля roles из родительского дирректория
 #[path = "../roles.rs"]
 mod roles ;
 
+// Подклбчение модуля users из родительского дирректория
 #[path = "../users.rs"]
 mod users ;
 
+// Подклбчение модуля users_roles из родительского дирректория
 #[path = "../users_roles.rs"]
 mod users_roles ;
 
+// Подклбчение модуля args из родительского дирректория
 #[path = "../args.rs"]
 mod args ;
 
@@ -43,7 +43,7 @@ mod args ;
 #[path = "../db.rs"]
 mod db ;
 
-#[tokio::main]
+#[tokio::main]  // макрос, который преобразует асинхронную функцию main в синхронную, автоматически создавая и запуская среду выполнения Tokio (runtime) для выполнения асинхронного кода.
 async fn main() ->Result<()> {
     
     // получить все необходимые для работы параметры
@@ -54,12 +54,6 @@ async fn main() ->Result<()> {
 
     // Запись в файл спецификации openapi если спецификация изменилась
     server_executor::write_to_openapi(&openapi)? ;
-
-    //println!("{}", format!("{}{{id_user}}", common::get_delete_user_uri_short())) ;
-
-    //println!("{}", format!("{}{{{}}}", common::get_delete_role_uri_short(), server_executor::SLUG_KEY)) ;
-
-    //println!("{}", format!("{}/{}", &common::get_show_role_short_uri(), server_executor::SLUG_KEY)) ;
 
     let db_res = 
             // Оборачивание пула соединений с DB в Arc
@@ -163,12 +157,15 @@ async fn main() ->Result<()> {
                     )
                     .with_state(db_res) ;
     
+    // Создает новый объект TcpListener, который будет привязан к 
+    // указанному адресу.
     let listener = 
                 TcpListener::bind(
                     format!("{}:{}", http_host, http_port)
                 )
                 .await? ;
 
+    // Запустите сервис, используя предоставленный обработчик событий.
     axum::serve(
             listener, 
             rout
