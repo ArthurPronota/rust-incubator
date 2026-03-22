@@ -275,6 +275,33 @@ pub struct AddRoleToUser {
     pub id_user:    u32,
 }
 
+
+/// Удалить роль у пользователю
+#[derive(
+    Serialize,
+    Deserialize,
+    Parser,
+    ToSchema,
+  )
+]
+pub struct RemoveRoleFromUser {
+    /// Код роли
+    #[arg(
+        name = "slug",
+        help = "Slug string of role",
+     )
+    ]
+    pub slug:       String,
+
+    /// Id user
+    #[arg(
+        name = "id_user",
+        help = "Id of user",
+      )
+    ]        
+    pub id_user:    u32,
+}
+
 // Перечень команд
 #[derive(
     Subcommand,
@@ -379,6 +406,14 @@ pub enum Command {
      )
     ]
     AddRoleToUser(AddRoleToUser),
+
+    /// Удалить роль у пользователю
+    #[clap(
+        name = "remove-user-role",
+        about = "Remove a role from a user",
+     )
+    ]
+    RemoveRoleFromUser(RemoveRoleFromUser),
 }
 
 // Структура с агрументами CLI

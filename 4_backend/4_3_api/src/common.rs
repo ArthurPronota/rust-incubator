@@ -68,6 +68,9 @@ pub const SHOW_ROLE_PART: &str = "show_role" ;
 // add_tole_to_user часть uri
 pub const ADD_ROLE_TO_USER_PART: &str = "add_role_to_user" ;
 
+// add_tole_to_user часть uri
+pub const REMOVE_ROLE_FROM_USER_PART: &str = "remove_role_from_user" ;
+
 // Ответы сервера
 #[derive(
     Serialize, 
@@ -318,4 +321,14 @@ pub fn get_add_role_to_user_uri() ->String {
 /// получить show_roles uri
 pub fn get_add_role_to_user_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_add_role_to_user_uri())
+}
+
+/// получить remove_role_from_user uri
+pub fn get_remove_role_from_user_uri() ->String {
+    format!("{}{}", get_base_uri_path(), REMOVE_ROLE_FROM_USER_PART)
+}
+
+/// получить remove_role_from_user uri
+pub fn get_remove_role_from_user_url(host: &str, port: u32) ->String {
+    format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_remove_role_from_user_uri())
 }

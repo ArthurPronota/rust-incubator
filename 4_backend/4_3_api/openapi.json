@@ -285,6 +285,53 @@
         }
       }
     },
+    "/api/remove_role_from_user": {
+      "post": {
+        "tags": [
+          "users_roles"
+        ],
+        "summary": "Removing a role from a user",
+        "operationId": "remove_role_from_user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveRoleFromUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully removed a role from a user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Success": "The role has been successfully removed from the user."
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Error deleting role from user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Responce"
+                },
+                "example": {
+                  "Error": "Invalid number: 1 of roles for id_user: 10"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/show_role": {
       "get": {
         "tags": [
@@ -699,6 +746,26 @@
           },
           "name": {
             "type": "string"
+          }
+        }
+      },
+      "RemoveRoleFromUser": {
+        "type": "object",
+        "description": "Удалить роль у пользователю",
+        "required": [
+          "slug",
+          "id_user"
+        ],
+        "properties": {
+          "id_user": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Id user",
+            "minimum": 0
+          },
+          "slug": {
+            "type": "string",
+            "description": "Код роли"
           }
         }
       },

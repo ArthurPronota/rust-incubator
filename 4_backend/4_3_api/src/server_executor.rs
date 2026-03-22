@@ -96,6 +96,9 @@ const ROLE_PERMISSIONS_WASSUCCESS_CHANGED: &str = "Role permissions successfully
 /// Роль успешно добавлена к пользователю.
 const ROLE_SUCCESS_ADDED_TO_USER: & str = "The role has been successfully added to the user." ;
 
+/// Роль успешно далена у пользователя
+const ROLE_REMOVED_FROM_USER_SUCCESS: &str = "The role has been successfully removed from the user." ;
+
 /// Запись в файл спецификации openapi если спецификация изменилась
 pub fn write_to_openapi(op_api: &utoipa::openapi::OpenApi) ->Result<()> {
 
@@ -150,6 +153,7 @@ fn error_message(err: &str) ->common::Responce {
         show_role,
         get_show_roles,
         add_role_to_user,
+        remove_role_from_user,
     ),
     components(
         schemas(
@@ -163,6 +167,7 @@ fn error_message(err: &str) ->common::Responce {
             args::UpdatePermissionsRole,
             roles::Role,
             args::AddRoleToUser,
+            args::RemoveRoleFromUser,
         )
     ),
     tags(
@@ -1145,6 +1150,66 @@ pub async fn add_role_to_user(
     }
 
     match add_role_to_user_int(&db_res, &com).await {
+        Ok(v) => (StatusCode::OK, Json(v)),
+        Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
+    }
+}
+
+/// Удалить роль у пользователи
+#[utoipa::path(
+    post,
+    path = concatcp!(
+                common::BASE_URI_PATH,        // "/api/",
+                common::REMOVE_ROLE_FROM_USER_PART      // "create_user"
+            ), // "/api/create_user",
+    summary = "Removing a role from a user",
+    request_body = args::RemoveRoleFromUser,
+    responses (
+        (
+            status = StatusCode::OK,  // 200, 
+            description = "Successfully removed a role from a user.", 
+            body = common::Responce,
+            example = json!({"Success": ROLE_REMOVED_FROM_USER_SUCCESS})
+        ),
+        (
+            status = StatusCode::CREATED,   // 303, 
+            description = "Error deleting role from user.", 
+            body = common::Responce,
+            example = json!({"Error": "Invalid number: 1 of roles for id_user: 10"})
+        ),
+    ),
+    tag = TAG_USERS_ROLES,
+  )
+]
+pub async fn remove_role_from_user(
+                State(db_res): State<Arc<Database>>,
+                Json(cmd): Json<args::RemoveRoleFromUser>
+             ) ->impl IntoResponse {
+
+    async fn remove_role_from_user_int(
+                    db_res: &Database,
+                    cmd:    &args::RemoveRoleFromUser
+                ) ->Result<common::Responce> {
+        // Сформировать новую транзакцию
+        let mut trans = 
+                    db_res
+                      .pool
+                      // Устанавливает соединение и немедленно начинает новую транзакцию.
+                      .begin()
+                      .await? ;
+        // удаление роли у пользователя
+        users_roles::UsersRoles::del_role_from_user(
+                    &mut *trans,
+                    cmd.id_user,
+                    &cmd.slug
+                ).await? ;
+        // выпонить commit
+        trans.commit().await? ;
+
+        Ok(success_message(ROLE_REMOVED_FROM_USER_SUCCESS))
+    }
+
+    match remove_role_from_user_int(&db_res, &cmd).await {
         Ok(v) => (StatusCode::OK, Json(v)),
         Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
     }

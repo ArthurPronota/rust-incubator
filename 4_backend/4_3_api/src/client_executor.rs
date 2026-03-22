@@ -175,6 +175,20 @@ pub fn any_command(
                 .header(CONTENT_TYPE, JSON_TYPE)
                 .send_json(&arg_unit)?
         },
+        // Удалить роль у пользователя
+        Command::RemoveRoleFromUser(arg_unit) => {
+            let mut tmp_user = User::default() ;
+
+            tmp_user.set_id_user(arg_unit.id_user)? ;
+
+            let mut tmp_role = Role::default() ;
+
+            tmp_role.set_slug(&arg_unit.slug)? ;
+
+            ureq::post(&common::get_remove_role_from_user_url(host, port))
+                .header(CONTENT_TYPE, JSON_TYPE)
+                .send_json(&arg_unit)?            
+        },
     } ;
 
     if !matches!(resp.status(), StatusCode::OK | StatusCode::CREATED) {
