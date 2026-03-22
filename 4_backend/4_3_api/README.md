@@ -121,18 +121,6 @@ REST (REpresentational State Transfer) — это архитектурный с�
 
 ## Task
 
-Rework [the task from the previous step](../4_2_http/README.md#task) in a ["thick client" paradigm][41]:
-- Server represents a [REST]ful [API] with separate endpoints for each operation.
-- [CLI] client parses commands by itself and makes accurate requests to the server [REST]ful [API].
-
-It should be possible to perform all the operations via [cURL] (or any other [HTTP]/[API] client) directly on the [REST]ful [API] server, without using the [CLI] client.
-
-Additionally, implement generation of [OpenAPI] schema out of you server [REST]ful [API] code, and generate [HTML] documentation from the generated [OpenAPI] schema.
-
-Avoid architecture [over-engineering][42] for this task, just use simple, straightforward and obvious solutions.
-
-
-
 Переработайте [задачу из предыдущего шага](../4_2_http/README.md#task) в парадигме ["толстого клиента"][41]:
 - Сервер представляет собой [REST]ful [API] с отдельными конечными точками для каждой операции.
 - [CLI] клиент самостоятельно анализирует команды и отправляет точные запросы к серверу [REST]ful [API].
@@ -143,7 +131,7 @@ Avoid architecture [over-engineering][42] for this task, just use simple, straig
 
 Избегайте чрезмерного [усложнения архитектуры][42] для этой задачи, используйте только простые, понятные и очевидные решения.
 
-### Скриншот окна браузера с интерактивной документацией.
+### Скриншот окна браузера с автоматически сгенерированной интерактивной документацией.
 
 ![alt text](image.png)
 
