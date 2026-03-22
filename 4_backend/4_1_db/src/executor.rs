@@ -128,7 +128,7 @@ pub async fn any_command(arg_in: &args::Args, db_path_conn: &str) ->Result<()>{
             // выполнить commit
             trans.commit().await? ;
 
-            println!("The role has been successfully added to the user.") ;                                
+            println!("The role was successfully removed.") ;
         },
         // Показать роль
         Commands::ShowRoles { slug } => {
