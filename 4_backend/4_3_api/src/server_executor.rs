@@ -1027,29 +1027,29 @@ pub async fn get_show_roles(
 // ****************** Раздел Users-Roles ******************
 
 /// Добавить роль к пользователю
-#[utoipa::path(
-    post,
-    path = concatcp!(
-                common::BASE_URI_PATH,
-                common::ADD_ROLE_TO_USER_PART
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    post,   // Указывает, что этот обработчик отвечает на POST-запросы (создание связи)
+    path = concatcp!(   // Определяет URL-путь эндпоинта с конкатенацией на этапе компиляции
+                common::BASE_URI_PATH,  // Базовая часть пути из модуля common
+                common::ADD_ROLE_TO_USER_PART   // Конкретная часть пути для назначения роли пользователю
             ),
-    summary = "Add a role to a user",
-    request_body = args::AddRoleToUser,
-    responses (
+    summary = "Add a role to a user",   // Краткое описание функциональности эндпоинта
+    request_body = args::AddRoleToUser, // Описывает структуру JSON-тела запроса с id_user и slug роли
+    responses ( // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successfully added role to user.", 
-            body = common::Responce,
-            example = json!({"Success": ROLE_SUCCESS_ADDED_TO_USER})
+            status = StatusCode::OK,    // HTTP статус 200 при успешном назначении роли пользователю
+            description = "Successfully added role to user.",   // Описание успешного ответа
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа
+            example = json!({"Success": ROLE_SUCCESS_ADDED_TO_USER})    // Пример успешного JSON-ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error adding role to user.", 
-            body = common::Responce,
-            example = json!({"Error": "Not found user for id_user: 100"})
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке назначения
+            description = "Error adding role to user.", // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "Not found user for id_user: 100"})   // Пример ответа с ошибкой отсутствия пользователя
         ),
     ),
-    tag = TAG_USERS_ROLES,
+    tag = TAG_USERS_ROLES,  // Группирует эндпоинт в категорию "users_roles" в Swagger UI документации
   )
 ]
 pub async fn add_role_to_user(
