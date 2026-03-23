@@ -1,7 +1,4 @@
-use std::{
-        //path::Path, 
-        sync::Arc
-    };
+use std::sync::Arc ;
 
 use const_format::concatcp;
 
@@ -10,19 +7,13 @@ use crate::{
             UpdateEmailUser, 
             UpdateNameUser
         },
-        common::{
-            self, 
-            //Responce
-        }, 
+        common, 
         roles, 
         users::{
             self, 
             User
         },
-        users_roles::{
-            self, 
-            UsersRoles
-        }
+        users_roles,
 } ;
 
 use urlencoding ;
@@ -31,20 +22,23 @@ use urlencoding ;
 //use axum::extract::Path;
 use axum::{
         extract::{
-            self, Json, State
-        }, http::{StatusCode, status}, response::IntoResponse
+            self,
+            Json,
+            State
+        }, 
+        http::{
+            StatusCode,
+        },
+        response::IntoResponse,
 } ;
 
 use anyhow::Result ;
-use clap::Command;
 
 use crate::db::Database ;
 
 use crate::args ;
 
-use utoipa::{OpenApi, ToSchema} ;
-
-//use crate::users_roles::UsersRoles ;
+use utoipa::OpenApi ;
 
 const DB_OBJ_CREATED_SUCCESS: &str = "Database objects created successfully." ;
 

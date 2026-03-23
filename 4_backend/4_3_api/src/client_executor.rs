@@ -5,13 +5,11 @@ use ureq::{
         http::StatusCode
     } ;
 
-//use urlencoding ;
-
 use crate::args::Command ;
 
 use crate::roles::Role;
 use crate::users::User;
-use crate::{common, users} ;
+use crate::common ;
 
 const CONTENT_TYPE: &str = "Content-Type" ;
 const JSON_TYPE: &str =  "application/json" ;
@@ -27,7 +25,7 @@ pub fn any_command(
     let mut resp = match args {
         // Создание в DB необходимых объектов
         Command::InitDb => {
-            // https://docs.rs/ureq/latest/ureq/
+            // документация https://docs.rs/ureq/latest/ureq/
             ureq::get(&common::get_initdb_url(host, port))
                 // Отправляет запрос и блокирует вызывающего до получения ответа.
                 .call()?
@@ -191,24 +189,32 @@ pub fn any_command(
         },
     } ;
 
+    // Проверка кода возврата
     if !matches!(resp.status(), StatusCode::OK | StatusCode::CREATED) {
         return Err(anyhow::anyhow!("Server error: {}", resp.status())) ;
     }
 
+    // Разбор ответа сервера
     match resp
             .body_mut()
             .read_json::<common::Responce>()? 
     {
+        // Команда выполнена успешно
         common::Responce::Success(mess) => println!("{}", mess),
+        // Возникла ошибка при выполнении команды
         common::Responce::Error(err) => println!("{}", err),
+        // Получены данные по пользователю и его ролям
         common::Responce::UserWithRole(ur) => println!("{}", ur),
+        // Получены данные по пользователям и их ролям
         common::Responce::UsersRoles(list_ur) => {
             for u_r in &list_ur {
               println!("{}", u_r) ;
               println!("--------------------------------------------") ;
             }
         },
+        // Получены данные по роли
         common::Responce::Role(rl) => println!("{}", rl),
+        // Получены данные по ролям
         common::Responce::ListRoles(list_roles) => {
             for rl in &list_roles {
                 println!("{}", rl) ;

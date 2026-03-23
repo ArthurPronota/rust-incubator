@@ -1,18 +1,24 @@
-use anyhow::Result ;
-use serde::{Deserialize, Serialize};
+use anyhow::Result ;    // импортирует тип Result из крейта anyhow для простой обработки ошибок с расширенным контекстом.
 
-use std::path::Path ;
+// импортирует трейты для сериализации и десериализации данных из крейта serde.
+use serde::{
+        Deserialize, 
+        Serialize
+    };
 
-use std::net::IpAddr ;
+use std::path::Path ;   // импортирует тип Path из стандартной библиотеки для работы с путями файловой системы
 
-use dotenv ;
+use std::net::IpAddr ;  // импортирует перечисление IpAddr из стандартной библиотеки для представления IPv4 и IPv6 адресов.
 
-use utoipa::ToSchema;
+use dotenv ;    // импортирует крейт dotenv целиком для загрузки переменных окружения из файла .env.
 
-use urlencoding ;
+use utoipa::ToSchema;   // импортирует трейт ToSchema из utoipa для генерации OpenAPI схем.
 
-use crate::roles;
-use crate::users::UserWithRole ;
+use urlencoding ;   // импортирует крейт urlencoding целиком для кодирования и декодирования URL-строк
+
+use crate::roles;   // импортирует модуль roles из текущего крейта 
+
+use crate::users::UserWithRole ;    // импортирует структуру UserWithRole из модуля users текущего крейта
 
 /// Переменная окружения порт http сервера
 const HTTP_PORT: &str = "HTTP_PORT" ;
@@ -33,6 +39,7 @@ pub const BASE_URI_PATH: &str = "/api/" ;
 pub const INIT_DB_PART: &str = "initdb" ;
 
 /// http протокол
+#[allow(dead_code)]
 const HTTP_PROTOCOL: &str = "http" ;
 
 /// create-user часть uri
@@ -75,7 +82,6 @@ pub const REMOVE_ROLE_FROM_USER_PART: &str = "remove_role_from_user" ;
 #[derive(
     Serialize, 
     Deserialize,
-    //Debug,
     ToSchema,
  )
 ]
@@ -183,6 +189,7 @@ pub fn get_initdb_uri() ->String {
 }
 
 /// получить init-db URL
+#[allow(dead_code)]
 pub fn get_initdb_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_initdb_uri())
 }
@@ -193,6 +200,7 @@ pub fn get_create_user_uri() ->String {
 }
 
 /// получить url создания пользователя
+#[allow(dead_code)]
 pub fn get_create_user_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_create_user_uri())
 }
@@ -203,11 +211,13 @@ pub fn get_delete_user_uri_short() ->String {
 }
 
 /// получить delete-user uri
+#[allow(dead_code)]
 pub fn get_delete_user_uri(id_user: u32) ->String {
     format!("{}{}", get_delete_user_uri_short(), id_user)
 }
 
 /// получить url delete-user
+#[allow(dead_code)]
 pub fn get_delete_user_url(host: &str, port: u32, id_user: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_delete_user_uri(id_user))
 }
@@ -218,6 +228,7 @@ pub fn get_update_username_uri() ->String {
 }
 
 /// получить url update-username
+#[allow(dead_code)]
 pub fn get_update_username_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_update_username_uri())
 }
@@ -228,6 +239,7 @@ pub fn get_update_useremail_uri() ->String {
 }
 
 /// получить url update-useremail
+#[allow(dead_code)]
 pub fn get_update_useremail_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_update_useremail_uri())
 }
@@ -238,11 +250,13 @@ pub fn get_show_users_uri() ->String {
 }
 
 /// получить url show-users
+#[allow(dead_code)]
 pub fn get_show_users_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_show_users_uri())
 }
 
 /// получить url show-user
+#[allow(dead_code)]
 pub fn get_show_user_url(host: &str, port: u32, id_user: u32) ->String {
     format!("{}/{}", get_show_users_url(host, port), id_user)
 }
@@ -253,6 +267,7 @@ pub fn get_create_role_uri() ->String {
 }
 
 /// получить url create_role
+#[allow(dead_code)]
 pub fn get_create_role_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_create_role_uri())
 }
@@ -263,11 +278,13 @@ pub fn get_delete_role_uri_short() ->String {
 }
 
 /// получить delete_role uri
+#[allow(dead_code)]
 pub fn get_delete_role_uri(slug: &str) ->String {
     format!("{}{}", get_delete_role_uri_short(), urlencoding::encode(slug))
 }
 
 /// получить url delete_role
+#[allow(dead_code)]
 pub fn get_delete_role_url(host: &str, port: u32, slug: &str) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_delete_role_uri(slug))
 }
@@ -278,6 +295,7 @@ pub fn get_update_rolename_uri() ->String {
 }
 
 /// получить url delete_role
+#[allow(dead_code)]
 pub fn get_update_rolename_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_update_rolename_uri())
 }
@@ -288,6 +306,7 @@ pub fn get_update_rolepermissions_uri() ->String {
 }
 
 /// получить url update_rolepermissions
+#[allow(dead_code)]
 pub fn get_update_rolepermissions_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_update_rolepermissions_uri())
 }
@@ -298,17 +317,19 @@ pub fn get_show_role_short_uri() ->String {
 }
 
 /// получить show_role uri
+#[allow(dead_code)]
 pub fn get_show_role_uri(slug: &str) ->String {
-
     format!("{}/{}", get_show_role_short_uri(), urlencoding::encode(slug))
 }
 
 /// получить url show_role
+#[allow(dead_code)]
 pub fn get_show_role_url(host: &str, port: u32, slug: &str) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_show_role_uri(slug))
 }
 
 /// получить show_roles uri
+#[allow(dead_code)]
 pub fn get_show_roles_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_show_role_short_uri())
 }
@@ -319,6 +340,7 @@ pub fn get_add_role_to_user_uri() ->String {
 }
 
 /// получить show_roles uri
+#[allow(dead_code)]
 pub fn get_add_role_to_user_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_add_role_to_user_uri())
 }
@@ -329,6 +351,7 @@ pub fn get_remove_role_from_user_uri() ->String {
 }
 
 /// получить remove_role_from_user uri
+#[allow(dead_code)]
 pub fn get_remove_role_from_user_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_remove_role_from_user_uri())
 }

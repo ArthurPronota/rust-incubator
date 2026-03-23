@@ -53,7 +53,6 @@ pub const PERMISSION_DEFAULT: &str = "read,write" ;
     FromRow,
     Serialize,
     Deserialize,
-    //Debug,
     Clone,
     ToSchema,
 )]
