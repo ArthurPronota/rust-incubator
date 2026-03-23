@@ -133,7 +133,7 @@ REST (REpresentational State Transfer) — это архитектурный с�
 
 ### Скриншот окна браузера с автоматически сгенерированной интерактивной документацией.
 
-![alt text](image.png)
+![alt text](image-1.png)
 
 
 ## Questions

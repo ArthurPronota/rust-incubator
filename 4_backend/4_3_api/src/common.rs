@@ -352,6 +352,11 @@ pub fn get_remove_role_from_user_uri() ->String {
 
 /// получить remove_role_from_user uri
 #[allow(dead_code)]
+/*
 pub fn get_remove_role_from_user_url(host: &str, port: u32) ->String {
     format!("{}://{}:{}{}", HTTP_PROTOCOL, host, port, get_remove_role_from_user_uri())
+}
+ */
+pub fn get_remove_role_from_user_url(host: &str, port: u32, id_user: u32, slug: &str) ->String {
+    format!("{}://{}:{}{}/{}/{}", HTTP_PROTOCOL, host, port, get_remove_role_from_user_uri(), id_user, &urlencoding::encode(slug))
 }

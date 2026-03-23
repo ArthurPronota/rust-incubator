@@ -9,7 +9,7 @@ use crate::args::Command ;
 
 use crate::roles::Role;
 use crate::users::User;
-use crate::common ;
+use crate::{common, users_roles} ;
 
 const CONTENT_TYPE: &str = "Content-Type" ;
 const JSON_TYPE: &str =  "application/json" ;
@@ -175,17 +175,14 @@ pub fn any_command(
         },
         // Удалить роль у пользователя
         Command::RemoveRoleFromUser(arg_unit) => {
-            let mut tmp_user = User::default() ;
+            let mut tmp_users_roles = users_roles::UsersRoles::default() ;
 
-            tmp_user.set_id_user(arg_unit.id_user)? ;
+            tmp_users_roles.set_id_user(arg_unit.id_user)? ;
 
-            let mut tmp_role = Role::default() ;
+            tmp_users_roles.set_slug(&arg_unit.slug)? ;
 
-            tmp_role.set_slug(&arg_unit.slug)? ;
-
-            ureq::post(&common::get_remove_role_from_user_url(host, port))
-                .header(CONTENT_TYPE, JSON_TYPE)
-                .send_json(&arg_unit)?            
+            ureq::delete(&common::get_remove_role_from_user_url(host, port, tmp_users_roles.id_user(), &tmp_users_roles.slug()))
+                .call()?
         },
     } ;
 

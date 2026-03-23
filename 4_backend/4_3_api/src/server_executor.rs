@@ -161,7 +161,6 @@ fn error_message(err: &str) ->common::Responce {
             args::UpdatePermissionsRole,    // Схема данных для обновления разрешений роли
             roles::Role,    // Схема роли
             args::AddRoleToUser,    // Схема данных для назначения роли пользователю
-            args::RemoveRoleFromUser,   // Схема данных для удаления роли у пользователя
         )
     ),
     tags(   // Секция группировки эндпоинтов по категориям в документации Swagger UI
@@ -1090,14 +1089,14 @@ pub async fn add_role_to_user(
 
 /// Удалить роль у пользователи
 #[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
-    post,   
-    path = concatcp!(   // Определяет URL-путь эндпоинта с конкатенацией на этапе компиляции
-                common::BASE_URI_PATH,  // Базовая часть пути из модуля common
-                common::REMOVE_ROLE_FROM_USER_PART  // Конкретная часть пути для удаления роли у пользователя
-            ),
+    delete, // Указывает, что этот обработчик отвечает на DELETE-запросы
+    path =  &format!("{}/{{{}}}/{{{}}}", common::get_remove_role_from_user_uri(), ID_USER_KEY, SLUG_KEY), // Динамическое формирование пути с параметами id_user и slug в фигурных скобках
     summary = "Removing a role from a user",    // Краткое описание функциональности эндпоинта
-    request_body = args::RemoveRoleFromUser,    // Описывает структуру JSON-тела запроса с id_user и slug роли для удаления
-    responses ( // Секция описания возможных HTTP-ответов
+    params( // Секция описания параметров запроса
+        ("id_user" = u32, Path, description = "User ID to delete"),
+        ("slug" = String, Path, description = "Slug of role to delete.") 
+    ),
+    responses(  // Секция описания возможных HTTP-ответов
         (
             status = StatusCode::OK,    // HTTP статус 200 при успешном удалении роли у пользователя
             description = "Successfully removed a role from a user.",   // Описание успешного ответа
@@ -1112,17 +1111,18 @@ pub async fn add_role_to_user(
         ),
     ),
     tag = TAG_USERS_ROLES,  // Группирует эндпоинт в категорию "users_roles" в Swagger UI документации
-  )
-]
+)]
 pub async fn remove_role_from_user(
                 State(db_res): State<Arc<Database>>,
-                Json(cmd): Json<args::RemoveRoleFromUser>
+                extract::Path((id_user, slug)): extract::Path<(u32, String)>,
              ) ->impl IntoResponse {
 
     async fn remove_role_from_user_int(
                     db_res: &Database,
-                    cmd:    &args::RemoveRoleFromUser
+                    id_user: u32,
+                    slug: &str
                 ) ->Result<common::Responce> {
+
         // Сформировать новую транзакцию
         let mut trans = 
                     db_res
@@ -1133,8 +1133,10 @@ pub async fn remove_role_from_user(
         // удаление роли у пользователя
         users_roles::UsersRoles::del_role_from_user(
                     &mut *trans,
-                    cmd.id_user,
-                    &cmd.slug
+                    id_user,
+                    //&cmd.slug
+                    &urlencoding::decode(slug)?
+                        .to_string()
                 ).await? ;
         // выпонить commit
         trans.commit().await? ;
@@ -1142,8 +1144,8 @@ pub async fn remove_role_from_user(
         Ok(success_message(ROLE_REMOVED_FROM_USER_SUCCESS))
     }
 
-    match remove_role_from_user_int(&db_res, &cmd).await {
+    match remove_role_from_user_int(&db_res, id_user, &slug).await {
         Ok(v) => (StatusCode::OK, Json(v)),
         Err(err) => (StatusCode::CREATED, Json(error_message(&err.to_string()))),
-    }
+    }    
 }

@@ -285,23 +285,35 @@
         }
       }
     },
-    "/api/remove_role_from_user": {
-      "post": {
+    "/api/remove_role_from_user/{id_user}/{slug}": {
+      "delete": {
         "tags": [
           "users_roles"
         ],
         "summary": "Removing a role from a user",
         "operationId": "remove_role_from_user",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RemoveRoleFromUser"
-              }
+        "parameters": [
+          {
+            "name": "id_user",
+            "in": "path",
+            "description": "User ID to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
             }
           },
-          "required": true
-        },
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Slug of role to delete.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successfully removed a role from a user.",
@@ -746,26 +758,6 @@
           },
           "name": {
             "type": "string"
-          }
-        }
-      },
-      "RemoveRoleFromUser": {
-        "type": "object",
-        "description": "Удалить роль у пользователю",
-        "required": [
-          "slug",
-          "id_user"
-        ],
-        "properties": {
-          "id_user": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Id user",
-            "minimum": 0
-          },
-          "slug": {
-            "type": "string",
-            "description": "Код роли"
           }
         }
       },

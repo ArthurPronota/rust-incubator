@@ -137,8 +137,8 @@ async fn main() ->Result<()> {
                     )
                     // Удалить роль у пользователя
                     .route(
-                        &common::get_remove_role_from_user_uri(),
-                        routing::post(server_executor::remove_role_from_user)
+                        &format!("{}/{{{}}}/{{{}}}", common::get_remove_role_from_user_uri(), server_executor::ID_USER_KEY, server_executor::SLUG_KEY),
+                        routing::delete(server_executor::remove_role_from_user)
                     )
                     // Добавляем Swagger UI в наш роутер (объединяем с основными маршрутами)
                     .merge(
