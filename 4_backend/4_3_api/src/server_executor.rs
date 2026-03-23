@@ -1089,29 +1089,29 @@ pub async fn add_role_to_user(
 }
 
 /// Удалить роль у пользователи
-#[utoipa::path(
-    post,
-    path = concatcp!(
-                common::BASE_URI_PATH,
-                common::REMOVE_ROLE_FROM_USER_PART
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    post,   
+    path = concatcp!(   // Определяет URL-путь эндпоинта с конкатенацией на этапе компиляции
+                common::BASE_URI_PATH,  // Базовая часть пути из модуля common
+                common::REMOVE_ROLE_FROM_USER_PART  // Конкретная часть пути для удаления роли у пользователя
             ),
-    summary = "Removing a role from a user",
-    request_body = args::RemoveRoleFromUser,
-    responses (
+    summary = "Removing a role from a user",    // Краткое описание функциональности эндпоинта
+    request_body = args::RemoveRoleFromUser,    // Описывает структуру JSON-тела запроса с id_user и slug роли для удаления
+    responses ( // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successfully removed a role from a user.", 
-            body = common::Responce,
-            example = json!({"Success": ROLE_REMOVED_FROM_USER_SUCCESS})
+            status = StatusCode::OK,    // HTTP статус 200 при успешном удалении роли у пользователя
+            description = "Successfully removed a role from a user.",   // Описание успешного ответа
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа
+            example = json!({"Success": ROLE_REMOVED_FROM_USER_SUCCESS})    // Пример успешного JSON-ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error deleting role from user.", 
-            body = common::Responce,
-            example = json!({"Error": "Invalid number: 1 of roles for id_user: 10"})
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке удаления 
+            description = "Error deleting role from user.", // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "Invalid number: 1 of roles for id_user: 10"})    // Пример ответа с ошибкой о невозможности удалить единственную роль
         ),
     ),
-    tag = TAG_USERS_ROLES,
+    tag = TAG_USERS_ROLES,  // Группирует эндпоинт в категорию "users_roles" в Swagger UI документации
   )
 ]
 pub async fn remove_role_from_user(
