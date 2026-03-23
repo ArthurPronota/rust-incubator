@@ -207,28 +207,28 @@ async fn initdb_handle_int(
 }
 
 // инициализация базы данных
-#[utoipa::path(
-    get,
-    path = concatcp!(
-                common::BASE_URI_PATH,
-                common::INIT_DB_PART,
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    get,    // Указывает, что этот обработчик отвечает на GET-запросы
+    path = concatcp!(   // Определяет URL-путь эндпоинта с конкатенацией на этапе компиляции
+                common::BASE_URI_PATH,  // Базовая часть пути из модуля common
+                common::INIT_DB_PART,   // Конкретная часть пути для инициализации БД
             ),
-    summary = "Creating database objects.",
-    responses (
+    summary = "Creating database objects.", // Краткое описание функциональности эндпоинта
+    responses ( // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successfully created database objects.", 
-            body = common::Responce,
-            example = json!({"Success": DB_OBJ_CREATED_SUCCESS})
+            status = StatusCode::OK,    // HTTP статус 200 при успешном выполнении
+            description = "Successfully created database objects.", // Описание успешного ответа
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа
+            example = json!({"Success": DB_OBJ_CREATED_SUCCESS})    // Пример успешного JSON-ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error creating database objects.", 
-            body = common::Responce,
-            example = json!({"Error": "Error creating trigger."})
+            status = StatusCode::CREATED,   // HTTP статус 201 (для ощибки)
+            description = "Error creating database objects.",   // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "Error creating trigger."}),  // Пример ответа с ошибкой
         ),
     ),
-    tag = "initdb",
+    tag = "initdb", // Группирует эндпоинт в категорию "initdb" в Swagger UI документации
   )
 ]
 pub async fn initdb_handle(
@@ -287,29 +287,29 @@ async fn create_user_int(db_res: &Database,
 
 
 // создать пользователя
-#[utoipa::path(
-    post,
-    path = concatcp!(
-                common::BASE_URI_PATH,
-                common::CREATE_USER_PART,
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    post,   // Указывает, что этот обработчик отвечает на POST-запросы
+    path = concatcp!(   // Определяет URL-путь эндпоинта с конкатенацией на этапе компиляции
+                common::BASE_URI_PATH,  // Базовая часть пути из модуля common
+                common::CREATE_USER_PART,   // Конкретная часть пути для создания пользователя
             ),
-    summary = "Creating a user.",
-    request_body = args::CreateUser,
-    responses (
+    summary = "Creating a user.",   // Краткое описание функциональности эндпоинта
+    request_body = args::CreateUser,    // Описывает структуру JSON-тела запроса для создания пользователя
+    responses ( // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successful user creation.", 
-            body = common::Responce,
-            example = json!({"Success": "User created successfully."})
+            status = StatusCode::OK,    // HTTP статус 200 при успешном создании пользователя
+            description = "Successful user creation.",  // Описание успешного ответа
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа
+            example = json!({"Success": "User created successfully."})  // Пример успешного JSON-ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error creating user.", 
-            body = common::Responce,
-            example = json!({"Error": "Duplicate user email."})
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке создания 
+            description = "Error creating user.",   // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "Duplicate user email."}) // Пример ответа с ошибкой дублирования email
         ),
     ),
-    tag = TAG_USERS,
+    tag = TAG_USERS,    // Группирует эндпоинт в категорию "users" в Swagger UI документации
   )
 ]
 pub async fn create_user(
@@ -359,28 +359,28 @@ async fn delete_user_int(
 }
 
 // удалить пользователя
-#[utoipa::path(
-    delete,
-    path =  &format!("{}{{{}}}", common::get_delete_user_uri_short(), ID_USER_KEY),
-    summary = "Deleting a user.",
-    params(
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    delete, // Указывает, что этот обработчик отвечает на DELETE-запросы
+    path =  &format!("{}{{{}}}", common::get_delete_user_uri_short(), ID_USER_KEY), // Динамическое формирование пути с параметром id_user в фигурных скобках
+    summary = "Deleting a user.",   // Краткое описание функциональности эндпоинта
+    params( // Секция описания параметров запроса
         ("id_user" = u32, Path, description = "User ID to delete")
     ),
-    responses(
+    responses(  // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successfully deleted user.", 
-            body = common::Responce,
-            example = json!({"Success": "The user has been deleted."}),
+            status = StatusCode::OK,    // HTTP статус 200 при успешном удалении пользователя
+            description = "Successfully deleted user.", // Описание успешного ответа
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа
+            example = json!({"Success": "The user has been deleted."}), // Пример успешного JSON-ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error deleting user.",
-            body = common::Responce,
-            example = json!({"Error": "The user does not exist."}),
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке удаления
+            description = "Error deleting user.",   // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "The user does not exist."}), // Пример ответа с ошибкой отсутствия пользователя
         ),
     ),
-    tag = TAG_USERS,
+    tag = TAG_USERS,    // Пример ответа с ошибкой отсутствия пользователя
 )]
 pub async fn delete_user(
                   State(db_res): State<Arc<Database>>,
@@ -427,26 +427,26 @@ async fn update_username_int(
 }
 
 // модифицировать имя пользователя
-#[utoipa::path(
-    put,
-    path = concatcp!(
-                common::BASE_URI_PATH,
-                common::UPDATE_USERNAME_PART
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    put,    // Указывает, что этот обработчик отвечает на PUT-запросы (обновление ресурса)
+    path = concatcp!(   // Определяет URL-путь эндпоинта с конкатенацией на этапе компиляции
+                common::BASE_URI_PATH,  // Базовая часть пути из модуля common
+                common::UPDATE_USERNAME_PART    // Конкретная часть пути для обновления имени пользователя
             ),
-    summary = "Update user's username",
-    request_body = args::UpdateNameUser,
-    responses (
+    summary = "Update user's username", // Краткое описание функциональности эндпоинта
+    request_body = args::UpdateNameUser,    // Описывает структуру JSON-тела запроса с ID пользователя и новым именем
+    responses ( // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successful modification of username.", 
-            body = common::Responce,
-            example = json!({"Success": USER_NAME_CHANGED_SUCCESS})
+            status = StatusCode::OK,    // HTTP статус 200 при успешном обновлении имени
+            description = "Successful modification of username.",   // Описание успешного ответа
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа
+            example = json!({"Success": USER_NAME_CHANGED_SUCCESS}) // Пример успешного JSON-ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error modifying username.", 
-            body = common::Responce,
-            example = json!({"Error": "Not found user for id_user: 100"})
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке обновления
+            description = "Error modifying username.",  // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "Not found user for id_user: 100"})   // Пример ответа с ошибкой отсутствия пользователя
         ),
     ),
     tag = TAG_USERS,
@@ -500,26 +500,26 @@ async fn update_useremail_int(
 }
 
 // модифицировать email пользователя
-#[utoipa::path(
-    put,
-    path = concatcp!(
-                common::BASE_URI_PATH,
-                common::UPDATE_USEREMAIL_PART
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    put,    // Указывает, что этот обработчик отвечает на PUT-запросы (обновление ресурса)
+    path = concatcp!(   // Определяет URL-путь эндпоинта с конкатенацией на этапе компиляции
+                common::BASE_URI_PATH,  // Базовая часть пути из модуля common
+                common::UPDATE_USEREMAIL_PART   // Конкретная часть пути для обновления email пользователя
             ),
-    summary = "Update user's email.",
-    request_body = args::UpdateEmailUser,
-    responses (
+    summary = "Update user's email.",   // Краткое описание функциональности эндпоинта
+    request_body = args::UpdateEmailUser,   // Описывает структуру JSON-тела запроса с ID пользователя и новым email
+    responses ( // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successful modification of user email.", 
-            body = common::Responce,
-            example = json!({"Success": USER_EMAIL_CHANGED_SUCCESS})
+            status = StatusCode::OK,    // HTTP статус 200 при успешном обновлении email
+            description = "Successful modification of user email.", // Описание успешного ответа
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа
+            example = json!({"Success": USER_EMAIL_CHANGED_SUCCESS})    // Пример успешного JSON-ответа 
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error modifying user email.", 
-            body = common::Responce,
-            example = json!({"Error": "Invalid email: n1#abc.com"})
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке обновления
+            description = "Error modifying user email.",    // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "Invalid email: n1#abc.com"}) // Пример ответа с ошибкой невалидного email
         ),
     ),
     tag = TAG_USERS,
@@ -568,27 +568,27 @@ async fn show_user_int(
 }
 
 // Показ пользователя и их ролей
-#[utoipa::path(
-    get,
-    path =  &format!("{}/{{{}}}", common::get_show_users_uri(), ID_USER_KEY),
-    summary = "Show user and their roles",
-    params(
-        ("id_user" = u32, Path, description = "User ID to show")
+#[utoipa::path(// Атрибут для документирования эндпоинта в OpenAPI спецификации
+    get,    // Указывает, что этот обработчик отвечает на GET-запросы
+    path =  &format!("{}/{{{}}}", common::get_show_users_uri(), ID_USER_KEY),   // Динамическое формирование пути с параметром id_user в фигурных скобках
+    summary = "Show user and their roles",  // Краткое описание функциональности эндпоинта
+    params( // Секция описания параметров запроса
+        ("id_user" = u32, Path, description = "User ID to show")    // Описание параметра пути id_user типа u32 с пояснением, Path — обозначает, что параметр является частью URL-пути
     ),
-    responses(
+    responses(  // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "The user and their roles have been successfully displayed.", 
-            body = users::UserWithRole,
+            status = StatusCode::OK,    // HTTP статус 200 при успешном отображении пользователя
+            description = "The user and their roles have been successfully displayed.", // Описание успешного ответа
+            body = users::UserWithRole, // Структура данных пользователя с ролями, возвращаемая в теле ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error displaying user.",
-            body = common::Responce,
-            example = json!({"Error": "The user does not exist."}),
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке отображения
+            description = "Error displaying user.", // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "The user does not exist."}), // Пример ответа с ошибкой отсутствия пользователя
         ),
     ),
-    tag = TAG_USERS,
+    tag = TAG_USERS,    // Группирует эндпоинт в категорию "users" в Swagger UI документации
 )]
 pub async fn show_user(
                 State(db_res): State<Arc<Database>>,
@@ -633,24 +633,24 @@ async fn show_users_int(db_res: &Database) ->Result<common::Responce> {
 }
 
 // показ пользователей и их ролей
-#[utoipa::path(
-    get,
-    path = common::get_show_users_uri(),
-    summary = "Show users and their roles.",
-    responses(
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    get,    // Указывает, что этот обработчик отвечает на GET-запросы
+    path = common::get_show_users_uri(),    // URL-путь эндпоинта, возвращаемый функцией из модуля common
+    summary = "Show users and their roles.",    // Краткое описание функциональности эндпоинта
+    responses(  // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successful display of users and their roles.", 
-            body = Vec<users::UserWithRole>,
+            status = StatusCode::OK,    // HTTP статус 200 при успешном отображении списка пользователе
+            description = "Successful display of users and their roles.",   // Описание успешного ответа
+            body = Vec<users::UserWithRole>,    // Массив структур пользователей с ролями, возвращаемый в теле ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error displaying users and their roles.",
-            body = common::Responce,
-            example = json!({"Error": "Database connection error."}),
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке формирования данных
+            description = "Error displaying users and their roles.",    // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "Database connection error."}),   // Пример ответа с ошибкой подключения к БД
         ),
     ),
-    tag = TAG_USERS,
+    tag = TAG_USERS,    // Группирует эндпоинт в категорию "users" в Swagger UI документации
 )]
 pub async fn show_users(
                 State(db_res): State<Arc<Database>>,
@@ -678,29 +678,29 @@ pub async fn create_role_int(
 }
 
 // Создать роль
-#[utoipa::path(
-    post,
-    path = concatcp!(
-                common::BASE_URI_PATH,
-                common::CREATE_ROLE_PART
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    post,   // Указывает, что этот обработчик отвечает на POST-запросы
+    path = concatcp!(   // Определяет URL-путь эндпоинта с конкатенацией на этапе компиляции
+                common::BASE_URI_PATH,  // Базовая часть пути из модуля common
+                common::CREATE_ROLE_PART    // Конкретная часть пути для создания роли
             ),
-    summary = "Create a role.",
-    request_body = args::CreateRole,
-    responses (
+    summary = "Create a role.", // Краткое описание функциональности эндпоинта
+    request_body = args::CreateRole,    // Описывает структуру JSON-тела запроса с названием и правами новой роли
+    responses ( // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successful role creation.", 
-            body = common::Responce,
-            example = json!({"Success": ROLE_CREATED_SUCCESSFULY})
+            status = StatusCode::OK,    // HTTP статус 200 при успешном создании роли
+            description = "Successful role creation.",  // Описание успешного ответа
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа
+            example = json!({"Success": ROLE_CREATED_SUCCESSFULY})  // Пример успешного JSON-ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error creating role.", 
-            body = common::Responce,
-            example = json!({"Error": "name is empty"})
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке создания
+            description = "Error creating role.",   // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "name is empty"}) // Пример ответа с ошибкой пустого названия роли
         ),
     ),
-    tag = TAG_ROLES,
+    tag = TAG_ROLES,    // Группирует эндпоинт в категорию "roles" в Swagger UI документации
   )
 ]
 pub async fn create_role(
@@ -740,28 +740,28 @@ async fn delete_role_int(
 }
 
 // Удаление роли
-#[utoipa::path(
-    delete,
-    path =  &format!("{}{{{}}}", common::get_delete_role_uri_short(), SLUG_KEY),
-    summary = "Deleting a role.",
-    params(
-        ("slug" = String, Path, description = "Slug of role to delete.")
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    delete, // Указывает, что этот обработчик отвечает на DELETE-запросы (удаление ресурса)
+    path =  &format!("{}{{{}}}", common::get_delete_role_uri_short(), SLUG_KEY),    // Динамическое формирование пути с параметром slug в фигурных скобках
+    summary = "Deleting a role.",   // Краткое описание функциональности эндпоинта
+    params( // Секция описания параметров запроса
+        ("slug" = String, Path, description = "Slug of role to delete.")    // Описание параметра пути slug типа String с пояснением
     ),
-    responses(
+    responses(  // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successful role deletion.", 
-            body = common::Responce,
-            example = json!({"Success": ROLE_WAS_SUCCESS_REMOVED}),
+            status = StatusCode::OK,    // HTTP статус 200 при успешном удалении роли
+            description = "Successful role deletion.",  // Описание успешного ответа
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа
+            example = json!({"Success": ROLE_WAS_SUCCESS_REMOVED}), // Пример успешного JSON-ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error deleting role.",
-            body = common::Responce,
-            example = json!({"Error": "The default role cannot be deleted."}),
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке удаления
+            description = "Error deleting role.",   // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "The default role cannot be deleted."}),  // Пример ответа с ошибкой удаления защищенной роли по умолчанию
         ),
     ),
-    tag = TAG_ROLES,
+    tag = TAG_ROLES,    // Группирует эндпоинт в категорию "roles" в Swagger UI документации
 )]
 pub async fn delete_role(
                   State(db_res): State<Arc<Database>>,
@@ -803,29 +803,29 @@ async fn update_rolename_int(
 }
 
 /// Модификация наименование роли
-#[utoipa::path(
-    put,
-    path = concatcp!(
-                common::BASE_URI_PATH,
-                common::UPDATE_ROLENAME_PART
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    put,    // Указывает, что этот обработчик отвечает на PUT-запросы (обновление ресурса)
+    path = concatcp!(   // Определяет URL-путь эндпоинта с конкатенацией на этапе компиляции
+                common::BASE_URI_PATH,  // Базовая часть пути из модуля common
+                common::UPDATE_ROLENAME_PART    // Конкретная часть пути для обновления названия роли
             ),
-    summary = "Modify role name",
-    request_body = args::UpdateNameRole,
-    responses (
+    summary = "Modify role name",   // Краткое описание функциональности эндпоинта
+    request_body = args::UpdateNameRole,    // Описывает структуру JSON-тела запроса с slug роли и новым названием
+    responses ( // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successful modification of role name.", 
-            body = common::Responce,
-            example = json!({"Success": ROLE_NAME_WASSUCCESS_CHANGED})
+            status = StatusCode::OK,     // HTTP статус 200 при успешном обновлении названия роли
+            description = "Successful modification of role name.",  // Описание успешного ответа
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа
+            example = json!({"Success": ROLE_NAME_WASSUCCESS_CHANGED})  // Пример успешного JSON-ответа 
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error modifying role name.", 
-            body = common::Responce,
-            example = json!({"Error": "Not found role for slug: abc-mk"})
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке обновления
+            description = "Error modifying role name.", // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "Not found role for slug: abc-mk"})   // Пример ответа с ошибкой отсутствия роли по указанному slug
         ),
     ),
-    tag = TAG_ROLES,
+    tag = TAG_ROLES,    // Группирует эндпоинт в категорию "roles" в Swagger UI документации
   )
 ]
 pub async fn update_rolename(
@@ -874,29 +874,29 @@ async fn update_rolepermissions_int(
 }
 
 // Модифицировать разрешение у роли
-#[utoipa::path(
-    put,
-    path = concatcp!(
-                common::BASE_URI_PATH,
-                common::UPDATE_ROLEPERMISSIONS_PART
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    put,    // Указывает, что этот обработчик отвечает на PUT-запросы (обновление ресурса)
+    path = concatcp!(   // Определяет URL-путь эндпоинта с конкатенацией на этапе компиляции
+                common::BASE_URI_PATH,  // Базовая часть пути из модуля common 
+                common::UPDATE_ROLEPERMISSIONS_PART // Конкретная часть пути для обновления прав роли
             ),
-    summary = "Modify role permissions",
-    request_body = args::UpdatePermissionsRole,
-    responses (
+    summary = "Modify role permissions",    // Краткое описание функциональности эндпоинта
+    request_body = args::UpdatePermissionsRole, // Описывает структуру JSON-тела запроса с slug роли и новым набором прав
+    responses ( // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successful modification of role permission.", 
-            body = common::Responce,
-            example = json!({"Success": ROLE_PERMISSIONS_WASSUCCESS_CHANGED})
+            status = StatusCode::OK,    // HTTP статус 200 при успешном обновлении прав роли
+            description = "Successful modification of role permission.",    // Описание успешного ответа
+            body = common::Responce,    // // Структура данных, возвращаемая в теле ответа
+            example = json!({"Success": ROLE_PERMISSIONS_WASSUCCESS_CHANGED})   // Пример успешного JSON-ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error modifying role permissions.", 
-            body = common::Responce,
-            example = json!({"Error": "Not found role for slug: abc-mk"})
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке обновления
+            description = "Error modifying role permissions.",  // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "Not found role for slug: abc-mk"})   // Пример ответа с ошибкой отсутствия роли по указанному slug
         ),
     ),
-    tag = TAG_ROLES,
+    tag = TAG_ROLES,    // Группирует эндпоинт в категорию "roles" в Swagger UI документации
   )
 ]
 pub async fn update_rolepermissions(
@@ -910,27 +910,27 @@ pub async fn update_rolepermissions(
 }
 
 /// Показать роль
-#[utoipa::path(
-    get,
-    path =  &format!("{}/{{{}}}", common::get_show_role_short_uri(), SLUG_KEY),
-    summary = "Show role",
-    params(
-        ("slug" = String, Path, description = "Role slug to show")
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    get,    // Указывает, что этот обработчик отвечает на GET-запросы (получение данных)
+    path =  &format!("{}/{{{}}}", common::get_show_role_short_uri(), SLUG_KEY), // Динамическое формирование пути с параметром slug в фигурных скобках
+    summary = "Show role",  // Краткое описание функциональности эндпоинта
+    params( // Секция описания параметров запроса
+        ("slug" = String, Path, description = "Role slug to show")  // Описание параметра пути slug типа String с пояснением 
     ),
-    responses(
+    responses(  // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successfully displayed role.", 
-            body = roles::Role,
+            status = StatusCode::OK,    // HTTP статус 200 при успешном отображении роли
+            description = "Successfully displayed role.",   // Описание успешного ответа
+            body = roles::Role, // Структура данных роли, возвращаемая в теле ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error displaying role.",
-            body = common::Responce,
-            example = json!({"Error": "Not found role for slug: abc-mk"}),
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке отображения
+            description = "Error displaying role.", // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "Not found role for slug: abc-mk"}),  // Пример ответа с ошибкой отсутствия роли по указанному slug
         ),
     ),
-    tag = TAG_ROLES,
+    tag = TAG_ROLES,    // Группирует эндпоинт в категорию "roles" в Swagger UI документации
 )]
 pub async fn show_role(
                 State(db_res): State<Arc<Database>>,
@@ -970,24 +970,24 @@ pub async fn show_role(
 
 
 /// Показать все роли
-#[utoipa::path(
-    get,
-    path =  &common::get_show_role_short_uri(),
-    summary = "Show all roles",
-    responses(
+#[utoipa::path( // Атрибут для документирования эндпоинта в OpenAPI спецификации
+    get,    // Указывает, что этот обработчик отвечает на GET-запросы (получение данных)
+    path =  &common::get_show_role_short_uri(), // URL-путь эндпоинта, возвращаемый функцией из модуля common
+    summary = "Show all roles", // Краткое описание функциональности эндпоинта
+    responses(  // Секция описания возможных HTTP-ответов
         (
-            status = StatusCode::OK,
-            description = "Successfully display all roles.", 
-            body = Vec<roles::Role>,
+            status = StatusCode::OK,    // HTTP статус 200 при успешном отображении списка всех ролей
+            description = "Successfully display all roles.",    // Описание успешного ответа
+            body = Vec<roles::Role>,    // Массив структур ролей, возвращаемый в теле ответа
         ),
         (
-            status = StatusCode::CREATED,
-            description = "Error displaying all roles.",
-            body = common::Responce,
-            example = json!({"Error": "Not found role for slug: abc-mk"}),
+            status = StatusCode::CREATED,   // HTTP статус 201 при ошибке отображения
+            description = "Error displaying all roles.",    // Описание ответа при ошибке
+            body = common::Responce,    // Структура данных, возвращаемая в теле ответа при ошибке
+            example = json!({"Error": "Not found role for slug: abc-mk"}),  // Пример ответа с ошибкой
         ),
     ),
-    tag = TAG_ROLES,
+    tag = TAG_ROLES,    // Группирует эндпоинт в категорию "roles" в Swagger UI документации
 )]
 pub async fn get_show_roles(
                 State(db_res): State<Arc<Database>>,
