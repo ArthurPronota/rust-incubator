@@ -1,41 +1,41 @@
-use std::sync::Arc ;
+use std::sync::Arc ;    // Импорт атомарного счетчика ссылок для разделяемого владения данными между потоками
 
-use const_format::concatcp;
+use const_format::concatcp; // Импорт макроса для конкатенации строковых литералов на этапе компиляции
 
-use urlencoding ;
+use urlencoding ;   // Импорт крейта для кодирования/декодирования URL-строк (например, пробелов в %20)
 
 use axum::{
         extract::{
-            self,
-            Json,
-            State
+            self,   // Импорт модуля extract целиком для доступа к экстракторам запросов (JSON, State, Path и др.)
+            Json,   // Импорт экстрактора для извлечения JSON-данных из тела запроса
+            State   // Импорт экстрактора для доступа к разделяемому состоянию приложения
         }, 
         http::{
-            StatusCode,
+            StatusCode, // Импорт перечисления HTTP-статусов (200, 404, 500 и т.д.)
         },
-        response::IntoResponse,
+        response::IntoResponse, // Импорт трейта для преобразования типов в HTTP-ответы
 } ;
 
-use anyhow::Result ;
+use anyhow::Result ;    // Импорт типа Result из anyhow для гибкой обработки ошибок с контекстом
 
-use utoipa::OpenApi ;
+use utoipa::OpenApi ;   // Импорт трейта OpenApi для генерации OpenAPI-документации из аннотаций
 
-use crate::db::Database ;
+use crate::db::Database ;   // Импорт структуры Database из модуля db текущего крейта для работы с подключением к БД
 
-use crate::args ;
+use crate::args ;   // Импорт модуля args целиком для доступа к структурам аргументов командной строки
 
 use crate::{
         args::{
-            UpdateEmailUser, 
-            UpdateNameUser
+            UpdateEmailUser, // Импорт структуры аргументов для обновления email пользователя
+            UpdateNameUser   // Импорт структуры аргументов для обновления имени пользователя
         },
-        common, 
-        roles, 
+        common, // Импорт модуля common с общими утилитами и функциями
+        roles,  // Импорт модуля roles для работы с ролями пользователей
         users::{
-            self, 
-            User
+            self, // Импорт модуля users с псевдонимом для доступа к его функциям и типам
+            User  // Импорт структуры User из модуля users
         },
-        users_roles,
+        users_roles,    // Импорт модуля users_roles для работы со связями пользователей и ролей
 } ;
 
 // Сообщение об успешном создании объектов базы данных
@@ -130,62 +130,62 @@ fn error_message(err: &str) ->common::Responce {
 }
 
 // OpenAPI документация
-#[derive(OpenApi)]
-#[openapi(
-    paths(
-        initdb_handle,
-        create_user,
-        delete_user,
-        update_username,
-        update_useremail,
-        show_user,
-        show_users,
-        create_role,
-        delete_role,
-        update_rolename,
-        update_rolepermissions,
-        show_role,
-        get_show_roles,
-        add_role_to_user,
-        remove_role_from_user,
+#[derive(OpenApi)]  // Автоматически реализует трейт OpenApi для генерации OpenAPI-документации
+#[openapi(  // Атрибут для настройки OpenAPI-спецификации
+    paths(  // Секция для регистрации всех endpoint-обработчиков API
+        initdb_handle,  // Регистрация эндпоинта инициализации базы данных
+        create_user,    // Регистрация эндпоинта создания пользователя
+        delete_user,    // Регистрация эндпоинта удаления пользователя
+        update_username,    // Регистрация эндпоинта обновления имени пользователя
+        update_useremail,   // Регистрация эндпоинта обновления email пользователя
+        show_user,          // Регистрация эндпоинта получения одного пользователя
+        show_users,         // Регистрация эндпоинта получения списка всех пользователей
+        create_role,        // Регистрация эндпоинта создания роли
+        delete_role,        // Регистрация эндпоинта удаления роли
+        update_rolename,    // Регистрация эндпоинта обновления названия роли
+        update_rolepermissions, // Регистрация эндпоинта обновления разрешений роли
+        show_role,          // Регистрация эндпоинта получения одной роли
+        get_show_roles,     // Регистрация эндпоинта получения всех ролей
+        add_role_to_user,   // Регистрация эндпоинта назначения роли пользователю
+        remove_role_from_user,  // Регистрация эндпоинта удаления роли у пользователя
     ),
-    components(
-        schemas(
-            common::Responce,
-            args::CreateUser,
-            args::UpdateNameUser,
-            args::UpdateEmailUser,
-            users::UserWithRole,
-            args::CreateRole,
-            args::UpdateNameRole,
-            args::UpdatePermissionsRole,
-            roles::Role,
-            args::AddRoleToUser,
-            args::RemoveRoleFromUser,
+    components(     // Секция для описания схем данных, используемых в API
+        schemas(    // Список структур, которые будут документированы как OpenAPI-схемы
+            common::Responce,   // Схема стандартного ответа API (опечатка в оригинале: Responce -> Response)
+            args::CreateUser,   // Схема данных для создания пользователя
+            args::UpdateNameUser,   // Схема данных для обновления имени пользователя
+            args::UpdateEmailUser,  // Схема данных для обновления email пользователя
+            users::UserWithRole,    // Схема пользователя с его ролью
+            args::CreateRole,       // Схема данных для создания роли
+            args::UpdateNameRole,   // Схема данных для обновления названия роли
+            args::UpdatePermissionsRole,    // Схема данных для обновления разрешений роли
+            roles::Role,    // Схема роли
+            args::AddRoleToUser,    // Схема данных для назначения роли пользователю
+            args::RemoveRoleFromUser,   // Схема данных для удаления роли у пользователя
         )
     ),
-    tags(
+    tags(   // Секция группировки эндпоинтов по категориям в документации Swagger UI
         (
-            name = "initdb",
-            description = "Creating the necessary objects in the database",
+            name = "initdb",    // Название категории для эндпоинтов инициализации БД
+            description = "Creating the necessary objects in the database", // Описание категории
         ),
         (
-            name = "users",
-            description = "Working with users",
+            name = "users", // Название категории для эндпоинтов работы с пользователями
+            description = "Working with users", // Описание категории
         ),
         (
-            name = "roles",
-            description = "Working with roles",
+            name = "roles", // Название категории для эндпоинтов работы с ролями
+            description = "Working with roles", // Описание категории
         ),
         (
-            name = "users_roles",
-            description = "Manipulating user roles",
+            name = "users_roles",   // Название категории для эндпоинтов управления ролями пользователей
+            description = "Manipulating user roles",    // Описание категории
         ),        
     ),
-    info(
-        title = "API for working with users and their roles.",
-        version = "1.0.0",
-        description = "RESTful API for managing users and roles",
+    info(   // Секция с общей информацией об API
+        title = "API for working with users and their roles.",  // Заголовок документации API
+        version = "1.0.0",  // Версия API
+        description = "RESTful API for managing users and roles",   // Описание функциональности API
     ),
   )
  ]
@@ -1023,6 +1023,8 @@ pub async fn get_show_roles(
     }
 
 }
+
+// ****************** Раздел Users-Roles ******************
 
 /// Добавить роль к пользователю
 #[utoipa::path(
