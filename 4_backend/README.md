@@ -10,8 +10,8 @@ __Estimated time__: 3 days
 
 После выполнения этих заданий вы сможете ответить на следующие вопросы:
 - [Как и зачем мне взаимодействовать с базами данных в приложении на Rust? Как организовать миграции для моего проекта?][0401]
+- [Что следует использовать для реализации HTTP-сервера в Rust, когда и почему? А как насчет WebSocket-соединений?][0402]
 
-- What should I use for [HTTP] server implementation in [Rust], when and why? What about [WebSocket] connections?
 - What are options for making [HTTP] request (including [WebSocket] ones)?
 - What is [RPC]? Name several the most adopted technologies, their advantages and disadvantages, explain which one could be used under which circumstances, and what and where is their best fit? 
 
@@ -75,6 +75,9 @@ If you have enough time after implementing base requirements, consider to add th
 - Diesel: Использует собственный CLI инструмент. Команда diesel migration run применяет изменения, а структура БД фиксируется в коде проекта.
 - Многоразовые скрипты: Миграции обычно содержат блоки up (применение изменений) и down (откат). Это гарантирует, что база данных на сервере будет идентична вашей локальной копии. 
 
+<hr>
+
+<a name="q-0402"><h3>Что следует использовать для реализации HTTP-сервера в Rust, когда и почему? А как насчет WebSocket-соединений?</h3></a>
 
 
 <hr>
@@ -91,3 +94,4 @@ If you have enough time after implementing base requirements, consider to add th
 [22]: https://medium.com/the-marcy-lab-school/how-to-use-dataloader-js-9727c527efd0
 
 [0401]: #q-0401
+[0402]: #q-0402
