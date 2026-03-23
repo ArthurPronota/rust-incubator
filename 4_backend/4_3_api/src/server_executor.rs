@@ -2,24 +2,8 @@ use std::sync::Arc ;
 
 use const_format::concatcp;
 
-use crate::{
-        args::{
-            UpdateEmailUser, 
-            UpdateNameUser
-        },
-        common, 
-        roles, 
-        users::{
-            self, 
-            User
-        },
-        users_roles,
-} ;
-
 use urlencoding ;
 
-
-//use axum::extract::Path;
 use axum::{
         extract::{
             self,
@@ -34,12 +18,27 @@ use axum::{
 
 use anyhow::Result ;
 
+use utoipa::OpenApi ;
+
 use crate::db::Database ;
 
 use crate::args ;
 
-use utoipa::OpenApi ;
+use crate::{
+        args::{
+            UpdateEmailUser, 
+            UpdateNameUser
+        },
+        common, 
+        roles, 
+        users::{
+            self, 
+            User
+        },
+        users_roles,
+} ;
 
+// Сообщение об успешном создании объектов базы данных
 const DB_OBJ_CREATED_SUCCESS: &str = "Database objects created successfully." ;
 
 /// Файл с данными документации
@@ -96,7 +95,7 @@ const ROLE_REMOVED_FROM_USER_SUCCESS: &str = "The role has been successfully rem
 /// Запись в файл спецификации openapi если спецификация изменилась
 pub fn write_to_openapi(op_api: &utoipa::openapi::OpenApi) ->Result<()> {
 
-    // текущий контент сожержимого openapi
+    // текущий контент содержимого openapi
     let content_openapi_now = serde_json::to_string_pretty(&op_api)? ;
 
     // путь к файлу openapi
@@ -109,6 +108,7 @@ pub fn write_to_openapi(op_api: &utoipa::openapi::OpenApi) ->Result<()> {
         "".to_string()
     } ;
 
+    // Перезаписать контент openapi файла если контент изменился
     if content_openapi_now != content_openapi {
         std::fs::write(
                 openapi_path,
