@@ -3,12 +3,14 @@
 
 __Estimated time__: 3 days
 
-These steps describe common crates and tools in [Rust] ecosystem required for web backend development.
+В этих шагах описаны распространенные библиотеки и инструменты в экосистеме [Rust], необходимые для разработки веб-бэкенда.
 
-> ❗️Before completing this step you should complete all its sub-steps.
+> ❗️Перед завершением этого шага необходимо выполнить все его подшаги.
 
-After doing them you should be able to answer the following questions:
-- How should I interact with databases in [Rust] application and why? How can I organize migrations for my project?
+
+После выполнения этих заданий вы сможете ответить на следующие вопросы:
+- [Как и зачем мне взаимодействовать с базами данных в приложении на Rust? Как организовать миграции для моего проекта?][0401]
+
 - What should I use for [HTTP] server implementation in [Rust], when and why? What about [WebSocket] connections?
 - What are options for making [HTTP] request (including [WebSocket] ones)?
 - What is [RPC]? Name several the most adopted technologies, their advantages and disadvantages, explain which one could be used under which circumstances, and what and where is their best fit? 
@@ -37,8 +39,12 @@ If you have enough time after implementing base requirements, consider to add th
 - Implement [GraphQL] query [depth limiting][21].
 - Use [dataloading][22] to optimize interaction with database in [GraphQL] resolvers. 
 
+<hr>
+
+<a name="q-0401"><h3>Как и зачем мне взаимодействовать с базами данных в приложении на Rust? Как организовать миграции для моего проекта?</h3></a>
 
 
+<hr>
 
 [API]: https://en.wikipedia.org/wiki/API
 [GraphQL]: https://graphql.org/learn
@@ -50,3 +56,5 @@ If you have enough time after implementing base requirements, consider to add th
 
 [21]: https://escape.tech/blog/cyclic-queries-and-depth-limit
 [22]: https://medium.com/the-marcy-lab-school/how-to-use-dataloader-js-9727c527efd0
+
+[0401]: #q-0401
