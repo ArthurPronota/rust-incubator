@@ -210,19 +210,19 @@ async fn initdb_handle_int(
 #[utoipa::path(
     get,
     path = concatcp!(
-                common::BASE_URI_PATH,        // "/api/",
-                common::INIT_DB_PART      // "initdb"
-            ),  // "/api/initdb"
+                common::BASE_URI_PATH,
+                common::INIT_DB_PART,
+            ),
     summary = "Creating database objects.",
     responses (
         (
-            status = StatusCode::OK,  // 200, 
+            status = StatusCode::OK,
             description = "Successfully created database objects.", 
             body = common::Responce,
             example = json!({"Success": DB_OBJ_CREATED_SUCCESS})
         ),
         (
-            status = StatusCode::CREATED,   // 303, 
+            status = StatusCode::CREATED,
             description = "Error creating database objects.", 
             body = common::Responce,
             example = json!({"Error": "Error creating trigger."})
@@ -233,9 +233,7 @@ async fn initdb_handle_int(
 ]
 pub async fn initdb_handle(
                 State(db_res): State<Arc<Database>>,
-            ) 
-                //->Json<common::Responce> 
-                -> impl IntoResponse
+            ) -> impl IntoResponse
             {
 
     match initdb_handle_int(&db_res)
@@ -292,20 +290,20 @@ async fn create_user_int(db_res: &Database,
 #[utoipa::path(
     post,
     path = concatcp!(
-                common::BASE_URI_PATH,        // "/api/",
-                common::CREATE_USER_PART      // "create_user"
-            ), // "/api/create_user",
+                common::BASE_URI_PATH,
+                common::CREATE_USER_PART,
+            ),
     summary = "Creating a user.",
     request_body = args::CreateUser,
     responses (
         (
-            status = StatusCode::OK,  // 200, 
+            status = StatusCode::OK,
             description = "Successful user creation.", 
             body = common::Responce,
             example = json!({"Success": "User created successfully."})
         ),
         (
-            status = StatusCode::CREATED,   // 303, 
+            status = StatusCode::CREATED,
             description = "Error creating user.", 
             body = common::Responce,
             example = json!({"Error": "Duplicate user email."})
@@ -363,39 +361,32 @@ async fn delete_user_int(
 // удалить пользователя
 #[utoipa::path(
     delete,
-    //path =  &format!("{}{{id_user}}", common::get_delete_user_uri_short()), // "/api/del_user/{id_user}",
-    path =  &format!("{}{{{}}}", common::get_delete_user_uri_short(), ID_USER_KEY), // "/api/del_user/{id_user}",
+    path =  &format!("{}{{{}}}", common::get_delete_user_uri_short(), ID_USER_KEY),
     summary = "Deleting a user.",
     params(
         ("id_user" = u32, Path, description = "User ID to delete")
     ),
     responses(
         (
-            status = StatusCode::OK, // 200, 
+            status = StatusCode::OK,
             description = "Successfully deleted user.", 
             body = common::Responce,
             example = json!({"Success": "The user has been deleted."}),
         ),
         (
-            status = StatusCode::CREATED,  // 303,
+            status = StatusCode::CREATED,
             description = "Error deleting user.",
             body = common::Responce,
             example = json!({"Error": "The user does not exist."}),
         ),
     ),
     tag = TAG_USERS,
-    /*
-    operation_id = "delete_user",
-    security(
-        ("bearer_auth" = [])
-    )
-     */
 )]
 pub async fn delete_user(
                   State(db_res): State<Arc<Database>>,
                   extract::Path(id_user): extract::Path<u32>,
                 ) ->impl IntoResponse {
-    //println!("id_user: {}", id_user) ;
+
     match delete_user_int(&db_res, id_user).await {
         Ok(v) => (
                             StatusCode::OK,
@@ -439,20 +430,20 @@ async fn update_username_int(
 #[utoipa::path(
     put,
     path = concatcp!(
-                common::BASE_URI_PATH,        // "/api/",
-                common::UPDATE_USERNAME_PART      // "create_user"
-            ), // "/api/create_user",
+                common::BASE_URI_PATH,
+                common::UPDATE_USERNAME_PART
+            ),
     summary = "Update user's username",
     request_body = args::UpdateNameUser,
     responses (
         (
-            status = StatusCode::OK,  // 200, 
+            status = StatusCode::OK,
             description = "Successful modification of username.", 
             body = common::Responce,
             example = json!({"Success": USER_NAME_CHANGED_SUCCESS})
         ),
         (
-            status = StatusCode::CREATED,   // 303, 
+            status = StatusCode::CREATED,
             description = "Error modifying username.", 
             body = common::Responce,
             example = json!({"Error": "Not found user for id_user: 100"})
@@ -512,20 +503,20 @@ async fn update_useremail_int(
 #[utoipa::path(
     put,
     path = concatcp!(
-                common::BASE_URI_PATH,        // "/api/",
+                common::BASE_URI_PATH,
                 common::UPDATE_USEREMAIL_PART
-            ), // "/api/create_user",
+            ),
     summary = "Update user's email.",
     request_body = args::UpdateEmailUser,
     responses (
         (
-            status = StatusCode::OK,  // 200, 
+            status = StatusCode::OK,
             description = "Successful modification of user email.", 
             body = common::Responce,
             example = json!({"Success": USER_EMAIL_CHANGED_SUCCESS})
         ),
         (
-            status = StatusCode::CREATED,   // 303, 
+            status = StatusCode::CREATED,
             description = "Error modifying user email.", 
             body = common::Responce,
             example = json!({"Error": "Invalid email: n1#abc.com"})
@@ -556,11 +547,7 @@ pub async fn update_useremail(
 async fn show_user_int(
             db_res:     &Database,
             id_user:    u32
-         ) ->//Result<Vec<users::UserWithRole>> 
-            Result<common::Responce>
-         {
-
-    //let mut list_ur = vec![] ;
+         ) ->Result<common::Responce> {
 
     // Сформировать новую транзакцию
     let mut trans = 
@@ -569,19 +556,7 @@ async fn show_user_int(
                   // Устанавливает соединение и немедленно начинает новую транзакцию.
                   .begin()
                   .await? ;
-    /*
-    list_ur.push(
-        users::UserWithRole::get_data(
-                                &mut *trans,
-                                id_user
-                            )
-                            .await?
-    );
 
-    Ok(
-        common::Responce::UsersRoles(list_ur)
-    )
-     */
     Ok(common::Responce::UserWithRole(
         users::UserWithRole::get_data(
                                 &mut *trans,
@@ -595,21 +570,19 @@ async fn show_user_int(
 // Показ пользователя и их ролей
 #[utoipa::path(
     get,
-    path =  &format!("{}/{{{}}}", common::get_show_users_uri(), ID_USER_KEY), // "/api/del_user/{id_user}",
+    path =  &format!("{}/{{{}}}", common::get_show_users_uri(), ID_USER_KEY),
     summary = "Show user and their roles",
     params(
         ("id_user" = u32, Path, description = "User ID to show")
     ),
     responses(
         (
-            status = StatusCode::OK, // 200, 
+            status = StatusCode::OK,
             description = "The user and their roles have been successfully displayed.", 
-            //body = Vec<users::UserWithRole> // common::Responce,
-            body = users::UserWithRole, // common::Responce,
-            //example = json!({"Success": "The user has been deleted."}),
+            body = users::UserWithRole,
         ),
         (
-            status = StatusCode::CREATED,  // 303,
+            status = StatusCode::CREATED,
             description = "Error displaying user.",
             body = common::Responce,
             example = json!({"Error": "The user does not exist."}),
@@ -662,18 +635,16 @@ async fn show_users_int(db_res: &Database) ->Result<common::Responce> {
 // показ пользователей и их ролей
 #[utoipa::path(
     get,
-    path = common::get_show_users_uri(), // "/api/del_user/{id_user}",
+    path = common::get_show_users_uri(),
     summary = "Show users and their roles.",
     responses(
         (
-            status = StatusCode::OK, // 200, 
+            status = StatusCode::OK,
             description = "Successful display of users and their roles.", 
-            //body = Vec<users::UserWithRole> // common::Responce,
-            body = Vec<users::UserWithRole>, // common::Responce,
-            //example = json!({"Success": "The user has been deleted."}),
+            body = Vec<users::UserWithRole>,
         ),
         (
-            status = StatusCode::CREATED,  // 303,
+            status = StatusCode::CREATED,
             description = "Error displaying users and their roles.",
             body = common::Responce,
             example = json!({"Error": "Database connection error."}),
@@ -710,20 +681,20 @@ pub async fn create_role_int(
 #[utoipa::path(
     post,
     path = concatcp!(
-                common::BASE_URI_PATH,        // "/api/",
-                common::CREATE_ROLE_PART      // "create_user"
-            ), // "/api/create_user",
+                common::BASE_URI_PATH,
+                common::CREATE_ROLE_PART
+            ),
     summary = "Create a role.",
     request_body = args::CreateRole,
     responses (
         (
-            status = StatusCode::OK,  // 200, 
+            status = StatusCode::OK,
             description = "Successful role creation.", 
             body = common::Responce,
             example = json!({"Success": ROLE_CREATED_SUCCESSFULY})
         ),
         (
-            status = StatusCode::CREATED,   // 303, 
+            status = StatusCode::CREATED,
             description = "Error creating role.", 
             body = common::Responce,
             example = json!({"Error": "name is empty"})
@@ -752,14 +723,11 @@ async fn delete_role_int(
     let mut trans = 
                 db_res
                     .pool
-                    // Устанавливает соединение и немедленно начинает новую транзакцию.
                     .begin()
                     .await? ;
 
     let slug = &urlencoding::decode(slug)?
-                        //.unwrap()
                         .to_string()
-                        //.as_str()
                         ;
 
     // удалить роль
@@ -774,21 +742,20 @@ async fn delete_role_int(
 // Удаление роли
 #[utoipa::path(
     delete,
-    //path =  &format!("{}{{id_user}}", common::get_delete_user_uri_short()), // "/api/del_user/{id_user}",
-    path =  &format!("{}{{{}}}", common::get_delete_role_uri_short(), SLUG_KEY), // "/api/del_user/{id_user}",
+    path =  &format!("{}{{{}}}", common::get_delete_role_uri_short(), SLUG_KEY),
     summary = "Deleting a role.",
     params(
         ("slug" = String, Path, description = "Slug of role to delete.")
     ),
     responses(
         (
-            status = StatusCode::OK, // 200, 
+            status = StatusCode::OK,
             description = "Successful role deletion.", 
             body = common::Responce,
             example = json!({"Success": ROLE_WAS_SUCCESS_REMOVED}),
         ),
         (
-            status = StatusCode::CREATED,  // 303,
+            status = StatusCode::CREATED,
             description = "Error deleting role.",
             body = common::Responce,
             example = json!({"Error": "The default role cannot be deleted."}),
@@ -839,20 +806,20 @@ async fn update_rolename_int(
 #[utoipa::path(
     put,
     path = concatcp!(
-                common::BASE_URI_PATH,        // "/api/",
-                common::UPDATE_ROLENAME_PART      // "create_user"
-            ), // "/api/create_user",
+                common::BASE_URI_PATH,
+                common::UPDATE_ROLENAME_PART
+            ),
     summary = "Modify role name",
     request_body = args::UpdateNameRole,
     responses (
         (
-            status = StatusCode::OK,  // 200, 
+            status = StatusCode::OK,
             description = "Successful modification of role name.", 
             body = common::Responce,
             example = json!({"Success": ROLE_NAME_WASSUCCESS_CHANGED})
         ),
         (
-            status = StatusCode::CREATED,   // 303, 
+            status = StatusCode::CREATED,
             description = "Error modifying role name.", 
             body = common::Responce,
             example = json!({"Error": "Not found role for slug: abc-mk"})
@@ -910,20 +877,20 @@ async fn update_rolepermissions_int(
 #[utoipa::path(
     put,
     path = concatcp!(
-                common::BASE_URI_PATH,        // "/api/",
-                common::UPDATE_ROLEPERMISSIONS_PART      // "create_user"
-            ), // "/api/create_user",
+                common::BASE_URI_PATH,
+                common::UPDATE_ROLEPERMISSIONS_PART
+            ),
     summary = "Modify role permissions",
     request_body = args::UpdatePermissionsRole,
     responses (
         (
-            status = StatusCode::OK,  // 200, 
+            status = StatusCode::OK,
             description = "Successful modification of role permission.", 
             body = common::Responce,
             example = json!({"Success": ROLE_PERMISSIONS_WASSUCCESS_CHANGED})
         ),
         (
-            status = StatusCode::CREATED,   // 303, 
+            status = StatusCode::CREATED,
             description = "Error modifying role permissions.", 
             body = common::Responce,
             example = json!({"Error": "Not found role for slug: abc-mk"})
@@ -942,50 +909,22 @@ pub async fn update_rolepermissions(
     }
 }
 
-/*
-async fn show_role_int(
-            db_res: &Database,
-            slug:   &str,
-         ) ->Result<common::Responce> {
-    // Сформировать новую транзакцию
-    let mut trans = 
-                db_res
-                  .pool
-                  // Устанавливает соединение и немедленно начинает новую транзакцию.
-                  .begin()
-                  .await? ;
-
-    Ok(
-      common::Responce::Role( 
-        roles::Role::find_slug_raise(
-            &mut *trans,
-            slug,
-            false
-        )
-        .await?
-      )
-    )
-}
- */
-
 /// Показать роль
 #[utoipa::path(
     get,
-    path =  &format!("{}/{{{}}}", common::get_show_role_short_uri(), SLUG_KEY), // "/api/del_user/{id_user}",
+    path =  &format!("{}/{{{}}}", common::get_show_role_short_uri(), SLUG_KEY),
     summary = "Show role",
     params(
         ("slug" = String, Path, description = "Role slug to show")
     ),
     responses(
         (
-            status = StatusCode::OK, // 200, 
+            status = StatusCode::OK,
             description = "Successfully displayed role.", 
-            //body = Vec<users::UserWithRole> // common::Responce,
-            body = roles::Role, // common::Responce,
-            //example = json!({"Success": "The user has been deleted."}),
+            body = roles::Role,
         ),
         (
-            status = StatusCode::CREATED,  // 303,
+            status = StatusCode::CREATED,
             description = "Error displaying role.",
             body = common::Responce,
             example = json!({"Error": "Not found role for slug: abc-mk"}),
@@ -1033,18 +972,16 @@ pub async fn show_role(
 /// Показать все роли
 #[utoipa::path(
     get,
-    path =  &common::get_show_role_short_uri(), // "/api/del_user/{id_user}",
+    path =  &common::get_show_role_short_uri(),
     summary = "Show all roles",
     responses(
         (
-            status = StatusCode::OK, // 200, 
+            status = StatusCode::OK,
             description = "Successfully display all roles.", 
-            //body = Vec<users::UserWithRole> // common::Responce,
-            body = Vec<roles::Role>, // common::Responce,
-            //example = json!({"Success": "The user has been deleted."}),
+            body = Vec<roles::Role>,
         ),
         (
-            status = StatusCode::CREATED,  // 303,
+            status = StatusCode::CREATED,
             description = "Error displaying all roles.",
             body = common::Responce,
             example = json!({"Error": "Not found role for slug: abc-mk"}),
@@ -1091,20 +1028,20 @@ pub async fn get_show_roles(
 #[utoipa::path(
     post,
     path = concatcp!(
-                common::BASE_URI_PATH,        // "/api/",
-                common::ADD_ROLE_TO_USER_PART      // "create_user"
-            ), // "/api/create_user",
+                common::BASE_URI_PATH,
+                common::ADD_ROLE_TO_USER_PART
+            ),
     summary = "Add a role to a user",
     request_body = args::AddRoleToUser,
     responses (
         (
-            status = StatusCode::OK,  // 200, 
+            status = StatusCode::OK,
             description = "Successfully added role to user.", 
             body = common::Responce,
             example = json!({"Success": ROLE_SUCCESS_ADDED_TO_USER})
         ),
         (
-            status = StatusCode::CREATED,   // 303, 
+            status = StatusCode::CREATED,
             description = "Error adding role to user.", 
             body = common::Responce,
             example = json!({"Error": "Not found user for id_user: 100"})
@@ -1153,20 +1090,20 @@ pub async fn add_role_to_user(
 #[utoipa::path(
     post,
     path = concatcp!(
-                common::BASE_URI_PATH,        // "/api/",
-                common::REMOVE_ROLE_FROM_USER_PART      // "create_user"
-            ), // "/api/create_user",
+                common::BASE_URI_PATH,
+                common::REMOVE_ROLE_FROM_USER_PART
+            ),
     summary = "Removing a role from a user",
     request_body = args::RemoveRoleFromUser,
     responses (
         (
-            status = StatusCode::OK,  // 200, 
+            status = StatusCode::OK,
             description = "Successfully removed a role from a user.", 
             body = common::Responce,
             example = json!({"Success": ROLE_REMOVED_FROM_USER_SUCCESS})
         ),
         (
-            status = StatusCode::CREATED,   // 303, 
+            status = StatusCode::CREATED,
             description = "Error deleting role from user.", 
             body = common::Responce,
             example = json!({"Error": "Invalid number: 1 of roles for id_user: 10"})
