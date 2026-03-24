@@ -214,10 +214,6 @@ RPC (Remote Procedure Call) в Rust — это способ вызвать фу�
 <hr>
 
 
-
-<hr>
-
-
 [API]: https://en.wikipedia.org/wiki/API
 [GraphQL]: https://graphql.org/learn
 [HTML]: https://en.wikipedia.org/wiki/HTML
