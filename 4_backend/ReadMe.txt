@@ -2439,3 +2439,800 @@ json
     }
 
 =========================================================
+
+Покажи пример простого сервера graphql на основе axum 
+Принммающенр структуру:
+struct User(
+   name:   String,
+   email:   String
+)
+
+отпрвленого методом  Post и возврацаяющий ту-же структуру в формате json
+Для создания GraphQL-сервера на Rust чаще всего используют связку Axum (HTTP-фреймворк) и async-graphql (GraphQL-движок).
+Ниже приведен полный пример. Обратите внимание, что в GraphQL данные всегда передаются методом POST на один эндпоинт (обычно /graphql), а структура ответа определяется схемой.
+1. Добавьте зависимости в Cargo.toml
+toml
+[dependencies]
+axum = "0.7"
+async-graphql = "7.0"
+async-graphql-axum = "7.0"
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+Use code with caution.
+
+2. Код сервера (main.rs)
+rust
+use async_graphql::{Context, EmptyMutation, EmptySubscription, Object, Schema, SimpleObject};
+use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
+use axum::{routing::post, Router, Extension};
+
+// 1. Определяем нашу структуру данных. 
+// SimpleObject позволяет async-graphql автоматически превратить её в тип GraphQL.
+#[derive(SimpleObject, Clone)]
+struct User {
+    name: String,
+    email: String,
+}
+
+// 2. Определяем корневой запрос (Query).
+struct Query;
+
+#[Object]
+impl Query {
+    // Наш резолвер. Он принимает name и email и возвращает структуру User.
+    async fn get_user(&self, name: String, email: String) -> User {
+        User { name, email }
+    }
+}
+
+// Тип для нашей схемы
+type MySchema = Schema<Query, EmptyMutation, EmptySubscription>;
+
+// 3. Обработчик (handler) для Axum
+async fn graphql_handler(
+    schema: Extension<MySchema>,
+    req: GraphQLRequest,
+) -> GraphQLResponse {
+    schema.execute(req.into_inner()).await.into()
+}
+
+#[tokio::main]
+async fn main() {
+    // Создаем схему
+    let schema = Schema::build(Query, EmptyMutation, EmptySubscription).finish();
+
+    // Настраиваем роутер Axum
+    let app = Router::new()
+        .route("/graphql", post(graphql_handler))
+        .layer(Extension(schema));
+
+    println!("Сервер запущен на http://localhost:3000/graphql");
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    ax_server(listener, app).await;
+}
+
+async fn ax_server(listener: tokio::net::TcpListener, app: Router) {
+    axum::serve(listener, app).await.unwrap();
+}
+Use code with caution.
+
+Как это проверить?
+Отправьте POST запрос на http://localhost:3000/graphql с JSON-телом:
+Тело запроса:
+json
+{
+  "query": "{ getUser(name: \"Ivan\", email: \"ivan@example.com\") { name email } }"
+}
+Use code with caution.
+
+Ответ сервера:
+json
+{
+  "data": {
+    "getUser": {
+      "name": "Ivan",
+      "email": "ivan@example.com"
+    }
+  }
+}
+Use code with caution.
+
+Что здесь произошло?
+SimpleObject: Макрос, который делает поля структуры доступными для GraphQL «как есть».
+Object: Макрос для реализации резолверов (логики получения данных).
+Extension: Способ прокинуть схему GraphQL внутрь обработчика Axum, чтобы она была доступна при каждом запросе.
+Хотите добавить GraphiQL (интерфейс в браузере), чтобы тестировать запросы визуально, а не через cURL?
+
+=========================================================
+
+Покажи пример простого сервера graphql создающего нового пользователя
+Вот пример простого GraphQL сервера на Rust с использованием async-graphql и axum, который создает нового пользователя:
+
+Полный код сервера
+Cargo.toml
+toml
+[package]
+name = "simple-graphql-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-graphql = "7.0"
+async-graphql-axum = "7.0"
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+anyhow = "1"
+
+
+src/main.rs
+rust
+use async_graphql::{Context, InputObject, Object, Schema, SimpleObject, ID};
+use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
+use axum::{
+    extract::Extension,
+    response::IntoResponse,
+    routing::post,
+    Router,
+};
+use chrono::{DateTime, Utc};
+use std::collections::HashMap;
+use std::sync::{Arc, RwLock};
+use uuid::Uuid;
+
+// ==================== Модели данных ====================
+
+/// Пользователь - модель для GraphQL
+#[derive(Debug, Clone, SimpleObject)]
+struct User {
+    id: ID,
+    name: String,
+    email: String,
+    created_at: DateTime<Utc>,
+}
+
+/// Входные данные для создания пользователя
+#[derive(Debug, InputObject)]
+struct CreateUserInput {
+    name: String,
+    email: String,
+    password: String,
+}
+
+/// Внутренняя модель для хранения в памяти
+#[derive(Debug, Clone)]
+struct UserModel {
+    id: Uuid,
+    name: String,
+    email: String,
+    password_hash: String,
+    created_at: DateTime<Utc>,
+}
+
+// ==================== Сервис для работы с пользователями ====================
+
+/// Сервис для хранения и управления пользователями
+#[derive(Debug, Clone)]
+struct UserService {
+    users: Arc<RwLock<HashMap<Uuid, UserModel>>>,
+}
+
+impl UserService {
+    fn new() -> Self {
+        Self {
+            users: Arc::new(RwLock::new(HashMap::new())),
+        }
+    }
+
+    /// Создание нового пользователя
+    fn create_user(&self, name: String, email: String, password: String) -> Result<User, String> {
+        // Простая валидация
+        if name.is_empty() {
+            return Err("Name cannot be empty".to_string());
+        }
+        
+        if email.is_empty() || !email.contains('@') {
+            return Err("Invalid email format".to_string());
+        }
+        
+        if password.len() < 6 {
+            return Err("Password must be at least 6 characters".to_string());
+        }
+
+        // Проверка на уникальность email
+        let users_read = self.users.read().unwrap();
+        if users_read.values().any(|u| u.email == email) {
+            return Err("Email already exists".to_string());
+        }
+        drop(users_read);
+
+        // Создание пользователя (в реальном приложении пароль нужно хешировать)
+        let user_id = Uuid::new_v4();
+        let user = UserModel {
+            id: user_id,
+            name,
+            email,
+            password_hash: format!("hash_{}", password), // В реальности используйте argon2
+            created_at: Utc::now(),
+        };
+
+        let user_clone = user.clone();
+        let mut users_write = self.users.write().unwrap();
+        users_write.insert(user_id, user);
+        drop(users_write);
+
+        Ok(User {
+            id: user_clone.id.into(),
+            name: user_clone.name,
+            email: user_clone.email,
+            created_at: user_clone.created_at,
+        })
+    }
+
+    /// Получение всех пользователей
+    fn get_all_users(&self) -> Vec<User> {
+        let users_read = self.users.read().unwrap();
+        users_read
+            .values()
+            .map(|u| User {
+                id: u.id.into(),
+                name: u.name.clone(),
+                email: u.email.clone(),
+                created_at: u.created_at,
+            })
+            .collect()
+    }
+
+    /// Получение пользователя по ID
+    fn get_user_by_id(&self, id: &Uuid) -> Option<User> {
+        let users_read = self.users.read().unwrap();
+        users_read.get(id).map(|u| User {
+            id: u.id.into(),
+            name: u.name.clone(),
+            email: u.email.clone(),
+            created_at: u.created_at,
+        })
+    }
+}
+
+// ==================== GraphQL Query ====================
+
+/// Корневой Query тип
+struct Query;
+
+#[Object]
+impl Query {
+    /// Получить всех пользователей
+    async fn users(&self, ctx: &Context<'_>) -> Vec<User> {
+        let user_service = ctx.data_unchecked::<UserService>();
+        user_service.get_all_users()
+    }
+
+    /// Получить пользователя по ID
+    async fn user(&self, ctx: &Context<'_>, id: ID) -> Option<User> {
+        let user_service = ctx.data_unchecked::<UserService>();
+        let uuid = Uuid::parse_str(&id).ok()?;
+        user_service.get_user_by_id(&uuid)
+    }
+}
+
+// ==================== GraphQL Mutation ====================
+
+/// Корневой Mutation тип
+struct Mutation;
+
+#[Object]
+impl Mutation {
+    /// Создание нового пользователя
+    async fn create_user(&self, ctx: &Context<'_>, input: CreateUserInput) -> Result<User, String> {
+        let user_service = ctx.data_unchecked::<UserService>();
+        
+        user_service.create_user(
+            input.name,
+            input.email,
+            input.password,
+        )
+    }
+}
+
+// ==================== Создание схемы ====================
+
+type AppSchema = Schema<Query, Mutation, async_graphql::EmptySubscription>;
+
+fn create_schema(user_service: UserService) -> AppSchema {
+    Schema::build(Query, Mutation, async_graphql::EmptySubscription)
+        .data(user_service)
+        .finish()
+}
+
+// ==================== HTTP обработчик ====================
+
+/// Обработчик GraphQL запросов
+async fn graphql_handler(
+    schema: Extension<AppSchema>,
+    req: GraphQLRequest,
+) -> GraphQLResponse {
+    schema.execute(req.into_inner()).await.into()
+}
+
+// ==================== Точка входа ====================
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Инициализация сервисов
+    let user_service = UserService::new();
+    
+    // Создание тестового пользователя
+    let _test_user = user_service.create_user(
+        "Test User".to_string(),
+        "test@example.com".to_string(),
+        "password123".to_string(),
+    );
+    
+    // Создание GraphQL схемы
+    let schema = create_schema(user_service);
+    
+    // Настройка маршрутов
+    let app = Router::new()
+        .route("/graphql", post(graphql_handler))
+        .layer(Extension(schema));
+    
+    println!("🚀 GraphQL сервер запущен на http://localhost:3000/graphql");
+    println!("📝 Пример запроса создания пользователя:");
+    println!("");
+    println!("POST http://localhost:3000/graphql");
+    println!("Content-Type: application/json");
+    println!("");
+    println!(r#"{{
+  "query": "mutation {{ createUser(input: {{ name: \\"John Doe\\", email: \\"john@example.com\\", password: \\"secret123\\" }}) {{ id name email created_at }} }}"
+}}"#);
+    
+    // Запуск сервера
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await?;
+    axum::serve(listener, app).await?;
+    
+    Ok(())
+}
+Примеры запросов
+1. Создание пользователя (Mutation)
+bash
+curl -X POST http://localhost:3000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "mutation { createUser(input: { name: \"Alice Johnson\", email: \"alice@example.com\", password: \"secure123\" }) { id name email created_at } }"
+  }'
+Ответ:
+
+json
+{
+  "data": {
+    "createUser": {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "name": "Alice Johnson",
+      "email": "alice@example.com",
+      "created_at": "2024-01-15T10:30:00Z"
+    }
+  }
+}
+2. Получение всех пользователей (Query)
+bash
+curl -X POST http://localhost:3000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "query { users { id name email created_at } }"
+  }'
+Ответ:
+
+json
+{
+  "data": {
+    "users": [
+      {
+        "id": "123e4567-e89b-12d3-a456-426614174000",
+        "name": "Alice Johnson",
+        "email": "alice@example.com",
+        "created_at": "2024-01-15T10:30:00Z"
+      },
+      {
+        "id": "987fcdeb-51a2-43d7-9a5b-123456789abc",
+        "name": "Test User",
+        "email": "test@example.com",
+        "created_at": "2024-01-15T10:29:00Z"
+      }
+    ]
+  }
+}
+3. Получение конкретного пользователя
+bash
+curl -X POST http://localhost:3000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "query { user(id: \"123e4567-e89b-12d3-a456-426614174000\") { name email } }"
+  }'
+4. Создание пользователя с обработкой ошибок
+bash
+# Попытка создать пользователя с существующим email
+curl -X POST http://localhost:3000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "mutation { createUser(input: { name: \"Bob\", email: \"test@example.com\", password: \"pass123\" }) { id name } }"
+  }'
+Ответ с ошибкой:
+
+json
+{
+  "errors": [
+    {
+      "message": "Email already exists",
+      "locations": [...],
+      "path": ["createUser"]
+    }
+  ],
+  "data": null
+}
+Упрощенная версия с макросами
+Если нужно еще проще, можно использовать макросы для сокращения кода:
+
+rust
+use async_graphql::*;
+
+#[derive(SimpleObject)]
+struct User {
+    id: ID,
+    name: String,
+    email: String,
+}
+
+#[derive(InputObject)]
+struct CreateUserInput {
+    name: String,
+    email: String,
+    password: String,
+}
+
+struct Query;
+
+#[Object]
+impl Query {
+    async fn users(&self, ctx: &Context<'_>) -> Vec<User> {
+        // Реализация получения пользователей
+        vec![]
+    }
+}
+
+struct Mutation;
+
+#[Object]
+impl Mutation {
+    async fn create_user(&self, ctx: &Context<'_>, input: CreateUserInput) -> Result<User> {
+        // Реализация создания пользователя
+        Ok(User {
+            id: ID::from("1"),
+            name: input.name,
+            email: input.email,
+        })
+    }
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let schema = Schema::new(Query, Mutation, EmptySubscription);
+    
+    let app = Router::new()
+        .route("/graphql", post(
+            |schema: Extension<Schema<Query, Mutation, EmptySubscription>>, req: GraphQLRequest| async move {
+                schema.execute(req.into_inner()).await.into()
+            }
+        ))
+        .layer(Extension(schema));
+    
+    println!("Server running on http://localhost:3000/graphql");
+    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
+        .serve(app.into_make_service())
+        .await?;
+    
+    Ok(())
+}
+Ключевые моменты
+#[Object] — макрос для определения полей Query и Mutation
+
+#[SimpleObject] — для автоматической реализации GraphQL типа
+
+#[InputObject] — для входных объектов (аргументов мутаций)
+
+Context — доступ к данным сервера (UserService, Database, etc.)
+
+Schema — объединяет Query, Mutation и Subscription
+
+Extension — Axum механизм для передачи данных в обработчики
+
+Этот сервер демонстрирует базовую функциональность создания пользователя и готов к расширению (добавление БД, аутентификации, валидации и т.д.).
+
+========================================
+
+Вот несколько способов правильно обработать этот JSON-ответ:
+
+Способ 1: Использование serde_json::Value (простой)
+rust
+let mut resp = ureq::post(&self.url)
+    .header(common::CONTENT_TYPE_HEADER, common::JSON_TYPE_VAL)
+    .send_json(&json!({
+        "query": query,
+        "variables": {
+            "name": name,
+            "password": password,
+        }
+    }))?;
+
+// Чтение ответа
+let response_text = resp.into_string()?;
+println!("Ответ: {}", response_text);
+
+// Парсим JSON
+let json_value: serde_json::Value = serde_json::from_str(&response_text)?;
+
+// Проверяем наличие ошибок
+if let Some(errors) = json_value.get("errors") {
+    println!("GraphQL ошибки: {}", errors);
+    return Err(anyhow::anyhow!("GraphQL errors: {}", errors));
+}
+
+// Извлекаем данные
+if let Some(data) = json_value.get("data") {
+    if let Some(login) = data.get("login") {
+        if let Some(id) = login.get("id") {
+            println!("User ID: {}", id);
+        }
+        if let Some(name) = login.get("name") {
+            println!("User name: {}", name);
+        }
+    }
+}
+Способ 2: Десериализация в структуры (рекомендуемый)
+rust
+use serde::{Deserialize, Serialize};
+
+// Определяем структуры для ответа
+#[derive(Debug, Deserialize)]
+struct GraphQLResponse {
+    data: Option<LoginData>,
+    errors: Option<Vec<GraphQLError>>,
+}
+
+#[derive(Debug, Deserialize)]
+struct LoginData {
+    login: UserInfo,
+}
+
+#[derive(Debug, Deserialize)]
+struct UserInfo {
+    id: i32,
+    name: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct GraphQLError {
+    message: String,
+    // другие поля по желанию
+}
+
+// Использование
+let mut resp = ureq::post(&self.url)
+    .header(common::CONTENT_TYPE_HEADER, common::JSON_TYPE_VAL)
+    .send_json(&json!({
+        "query": query,
+        "variables": {
+            "name": name,
+            "password": password,
+        }
+    }))?;
+
+let response_text = resp.into_string()?;
+println!("Ответ: {}", response_text);
+
+// Десериализация
+let graphql_response: GraphQLResponse = serde_json::from_str(&response_text)?;
+
+// Проверка ошибок
+if let Some(errors) = graphql_response.errors {
+    for error in errors {
+        eprintln!("GraphQL Error: {}", error.message);
+    }
+    return Err(anyhow::anyhow!("GraphQL query failed"));
+}
+
+// Извлечение данных
+if let Some(data) = graphql_response.data {
+    println!("User ID: {}", data.login.id);
+    println!("User name: {}", data.login.name);
+    // Используем данные
+    Ok(Some(data.login))
+} else {
+    Ok(None)
+}
+Способ 3: Обработка с поддержкой Option (если пользователь может не найтись)
+rust
+#[derive(Debug, Deserialize)]
+struct GraphQLResponse {
+    data: Option<LoginData>,
+    errors: Option<Vec<GraphQLError>>,
+}
+
+#[derive(Debug, Deserialize)]
+struct LoginData {
+    login: Option<UserInfo>,  // ← Option, если пользователь может не найтись
+}
+
+#[derive(Debug, Deserialize)]
+struct UserInfo {
+    id: i32,
+    name: String,
+}
+
+// Использование
+let graphql_response: GraphQLResponse = serde_json::from_str(&response_text)?;
+
+if let Some(errors) = graphql_response.errors {
+    return Err(anyhow::anyhow!("GraphQL errors: {:?}", errors));
+}
+
+match graphql_response.data.and_then(|d| d.login) {
+    Some(user) => {
+        println!("Успешный вход! ID: {}, Имя: {}", user.id, user.name);
+        Ok(user)
+    }
+    None => {
+        Err(anyhow::anyhow!("Пользователь не найден или неверный пароль"))
+    }
+}
+Способ 4: Универсальная функция для обработки GraphQL ответов
+rust
+use serde::de::DeserializeOwned;
+
+/// Универсальная функция для обработки GraphQL ответов
+fn process_graphql_response<T: DeserializeOwned>(
+    response_text: String,
+) -> Result<T, anyhow::Error> {
+    // Парсим ответ
+    let json_value: serde_json::Value = serde_json::from_str(&response_text)?;
+    
+    // Проверяем наличие ошибок
+    if let Some(errors) = json_value.get("errors") {
+        let error_messages: Vec<String> = errors
+            .as_array()
+            .unwrap_or(&vec![])
+            .iter()
+            .filter_map(|e| e.get("message").and_then(|m| m.as_str().map(String::from)))
+            .collect();
+        
+        return Err(anyhow::anyhow!("GraphQL errors: {:?}", error_messages));
+    }
+    
+    // Извлекаем данные
+    if let Some(data) = json_value.get("data") {
+        // Десериализуем данные в нужный тип
+        let result: T = serde_json::from_value(data.clone())?;
+        Ok(result)
+    } else {
+        Err(anyhow::anyhow!("No data in response"))
+    }
+}
+
+// Использование
+#[derive(Debug, Deserialize)]
+struct LoginResponse {
+    login: UserInfo,
+}
+
+let mut resp = ureq::post(&self.url)
+    .header(common::CONTENT_TYPE_HEADER, common::JSON_TYPE_VAL)
+    .send_json(&json!({
+        "query": query,
+        "variables": {
+            "name": name,
+            "password": password,
+        }
+    }))?;
+
+let response_text = resp.into_string()?;
+let login_data: LoginResponse = process_graphql_response(response_text)?;
+
+println!("User ID: {}, Name: {}", login_data.login.id, login_data.login.name);
+Способ 5: Полный пример с обработкой всех случаев
+rust
+use serde_json::Value;
+use anyhow::Context;
+
+#[derive(Debug)]
+pub struct User {
+    pub id: i32,
+    pub name: String,
+}
+
+impl User {
+    pub fn from_graphql_response(response_text: &str) -> Result<Self, anyhow::Error> {
+        // Парсим JSON
+        let json: Value = serde_json::from_str(response_text)
+            .context("Failed to parse JSON response")?;
+        
+        // Проверяем наличие ошибок
+        if let Some(errors) = json.get("errors") {
+            let error_messages: Vec<String> = errors
+                .as_array()
+                .unwrap_or(&vec![])
+                .iter()
+                .filter_map(|e| {
+                    e.get("message")
+                        .and_then(|m| m.as_str())
+                        .map(String::from)
+                })
+                .collect();
+            
+            return Err(anyhow::anyhow!(
+                "GraphQL errors: {}",
+                error_messages.join(", ")
+            ));
+        }
+        
+        // Извлекаем данные
+        let user_id = json
+            .pointer("/data/login/id")
+            .and_then(|v| v.as_i64())
+            .context("Failed to extract user id")?;
+        
+        let user_name = json
+            .pointer("/data/login/name")
+            .and_then(|v| v.as_str())
+            .context("Failed to extract user name")?
+            .to_string();
+        
+        Ok(User {
+            id: user_id as i32,
+            name: user_name,
+        })
+    }
+}
+
+// Использование
+let mut resp = ureq::post(&self.url)
+    .header(common::CONTENT_TYPE_HEADER, common::JSON_TYPE_VAL)
+    .send_json(&json!({
+        "query": query,
+        "variables": {
+            "name": name,
+            "password": password,
+        }
+    }))?;
+
+let response_text = resp.into_string()?;
+println!("Raw response: {}", response_text);
+
+match User::from_graphql_response(&response_text) {
+    Ok(user) => {
+        println!("✅ Login successful!");
+        println!("   User ID: {}", user.id);
+        println!("   User name: {}", user.name);
+        Ok(())
+    }
+    Err(e) => {
+        eprintln!("❌ Login failed: {}", e);
+        Err(e)
+    }
+}
+Рекомендация
+Используйте Способ 2 (десериализация в структуры), потому что:
+
+✅ Типобезопасность
+
+✅ Читаемый код
+
+✅ Легко добавлять новые поля
+
+✅ Автоматическая проверка типов
+
+✅ Хорошая поддержка IDE
+
+Если вы хотите быть более гибким, используйте Способ 4 с универсальной функцией.
+
