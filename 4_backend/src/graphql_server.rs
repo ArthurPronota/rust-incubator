@@ -89,6 +89,8 @@ impl Mutation {
         //GraphQLRequest<graphql_client::UserInfo>
         Result<graphql_client::UserTop>
     {
+        println!("Inside !!!!") ;
+
         Ok(
             //User { name: input.name, email: "2".to_string() }
             /*

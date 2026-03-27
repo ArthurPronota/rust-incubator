@@ -92,6 +92,20 @@ impl GraphQLClient {
 
         // строка запроса в формате GraphQL
         let query = 
+        // 1) формат: {"data":{"login":{"token":"aaasdasdsfsdgdrghdfgdgh","user":{"id":10,"name":"123"}}}}
+        r#"
+            mutation Login($name: String!, $password: String!) {
+                login(input: { name: $name, password: $password }) {
+                    token
+                    user {
+                        id
+                        name
+                    }
+                }
+            }
+        "#
+        /*
+        // 2) формат: {"data":{"login":{"user":{"id":10,"name":"123"}}}}
         r#"
             mutation Login($name: String!, $password: String!) {
                 login(input: { name: $name, password: $password }) {
@@ -102,6 +116,30 @@ impl GraphQLClient {
                 }
             }
         "#
+         */
+        /*
+        // 3) формат: {"data":{"login":{"token":"aaasdasdsfsdgdrghdfgdgh","user":{"id":10}}}}
+        r#"
+            mutation Login($name: String!, $password: String!) {
+                login(input: { name: $name, password: $password }) {
+                    token
+                    user {
+                        id
+                    }
+                }
+            }
+        "#
+         */
+        /*
+        // 4) формат: {"data":{"login":{"token":"aaasdasdsfsdgdrghdfgdgh"}}}
+        r#"
+            mutation Login($name: String!, $password: String!) {
+                login(input: { name: $name, password: $password }) {
+                    token
+                }
+            }
+        "#
+         */
         /*
         r#"
             mutation Login($name: String!, $password: String!) {
