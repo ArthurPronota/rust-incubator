@@ -1,5 +1,5 @@
 use anyhow::Result ;  // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
-//use crate::users ;    // Импорт модуля users из текущего крейта
+use crate::users ;    // Импорт модуля users из текущего крейта
 
 //use crate::roles ;    // Импорт модуля roles из текущего крейта
 
@@ -56,46 +56,30 @@ r#"
 create table if not exists users (
     id_user	int unsigned not null primary key auto_increment,
     name varchar({}) not null,
-    email varchar({}) not null,
-    unique key `email` (email)
-) 
+    password varchar({}) not null,
+    unique key `name` (name)
+)
 ENGINE=InnoDb 
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 "#,
-100,    // users::MAX_LENGTH_NAME,
-100,    // users::MAX_LENGTH_EMAIL,
+users::MAX_LENGTH_NAME,
+users::MAX_LENGTH_PASSWORD,
 ),
-// Создать таблицу ролей
-format!(
+// Создать таблицу друзей
 r#"
-create table if not exists roles (
-    slug varchar({}) not null primary key,
-    name varchar({}) not null,
-    permissions varchar({}) not null
+create table if not exists friends (
+    user_id     int unsigned not null,
+    friend_id   int unsigned not null,
+    primary key (user_id, friend_id),
+    foreign key (user_id) references users(id_user) on delete cascade,
+    foreign key (friend_id) references users(id_user) on delete cascade,
+    constraint not_equal CHECK (user_id != friend_id),
+    index id_user (user_id)
 ) 
 ENGINE=InnoDb
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
-"#,
-100,    // roles::MAX_LENGTH_SLUG,
-100,    // roles::MAX_LENGTH_NAME,
-100,    // roles::MAX_LENGTH_PERMISSIONS,
-),
-// Создать таблицу соответсвия пользователя его правам
-format!(
-r#"
-create table if not exists users_roles (
-    id_user int unsigned not null,
-    slug varchar({}) not null,
-    key `slug` (slug),
-    unique `id_user__slug` (id_user, slug),
-    constraint `users_roles__id_user` foreign key (id_user) references users (id_user) on delete cascade,
-    constraint `users_roles__slug` foreign key (slug) references roles (slug) on delete cascade
-) 
-ENGINE=InnoDb
-CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
-"#,
-100,    // roles::MAX_LENGTH_SLUG,
-),
+"#
+.to_owned(),
         ] ;
 
         for sql_query in sql_queries.iter() {
@@ -115,11 +99,6 @@ CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
         }
 
         /*
-        // создать роль по умолчанию
-        roles::Role::create_default_role(&self)
-            .await? ;
-         */
-        
         // Создание триггеров для контроля целостности данных
         use sqlx::Executor ;    // это трейт (trait) в sqlx, который определяет общий интерфейс для выполнения SQL-запросов. 
 
@@ -195,6 +174,7 @@ END;
             )
             .await? ;
         }
+        */
 
         Ok(())
     }

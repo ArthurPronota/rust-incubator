@@ -1,3 +1,5 @@
+use std::path::Display;
+
 // GraphQL клиент
  
 use ureq::{
@@ -18,7 +20,7 @@ use crate::common ;
 
 use async_graphql::{
         //OutputType
-        SimpleObject,
+        //SimpleObject,
     } ;
 
 // Ошибка в GraphQL
@@ -35,34 +37,51 @@ struct GraphQLError {
     Serialize,
     Deserialize,
     //OutputType,
-    SimpleObject,   // Чтобы этот тип мог быть вызвразаемым в graphql_server::Mutation::login
+    //SimpleObject,   // Чтобы этот тип мог быть вызвразаемым в graphql_server::Mutation::login
+    //Debug,
  )
 ]
-pub struct UserInfo {
+pub struct UserShortInfo {
     pub id:     u32,
     pub name:   String,
 }
 
+// реализация Display для UserShortInfo
+impl std::fmt::Display for UserShortInfo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "UserId: {}, UserName: {}", self.id, self.name)
+    }
+}
+
+
+// Данные по токену и короткие данные по пользователю
 #[derive(
     Deserialize,
-    SimpleObject,
+    //SimpleObject,
 )]
-pub struct UserTop {
+pub struct TokenAndShortUser {
     pub token:  String,
-    pub user:   UserInfo,
+    pub user:   UserShortInfo,
 }
-/*
-// Данные от Login
-struct LoginPayload {
 
+// Сырой ответ логирования
+#[derive(
+    Deserialize
+  )
+ ]
+pub struct LoginRawResponce {
+    login:  TokenAndShortUser,
 }
-*/
+
 
 // Ответ сервера на попытку логирования
-#[derive(Deserialize)]
+#[derive(
+    Deserialize
+  )
+]
 struct LoginResponce {
-    data:    Option<UserTop>,  //Option<UserInfo>,
-    errors:  Option<GraphQLError>,
+    data:    Option<LoginRawResponce>,  //Option<UserInfo>,
+    errors:  Option<Vec<GraphQLError>>,
 }
 
 // GraphQL Client
@@ -71,6 +90,7 @@ pub struct GraphQLClient {
     http_host:   String,
     http_port:   u32,
     url:         String,
+    token:       String,
 }
 
 // реализация методов для GraphQLClient
@@ -83,13 +103,29 @@ impl GraphQLClient {
                 http_host:  http_host.to_string(),
                 http_port:  http_port,
                 url:        common::get_graphql_url(http_host, http_port),
+                token:      "".to_owned(),
             }
         )
     }
 
-    // Выполнить login
-    pub fn login(&self, name: &String, password: &str) ->Result<UserInfo> {
+    // Установить токен
+    pub fn set_token(&mut self, token: &str) ->Result<()> {
+        match token {
+            t if t.is_empty() => Err(anyhow::anyhow!("token is empty")),
+            t => {
+                self.token = t.to_owned() ;
+                Ok(())
+            }
+        }
+    }
 
+    // получить token
+    pub fn token(&self) ->&str {
+        &self.token
+    }
+
+    // Выполнить login
+    pub fn login(&mut self, name: &String, password: &str) ->Result<UserShortInfo> {
         // строка запроса в формате GraphQL
         let query = 
         // 1) формат: {"data":{"login":{"token":"aaasdasdsfsdgdrghdfgdgh","user":{"id":10,"name":"123"}}}}
@@ -162,14 +198,14 @@ impl GraphQLClient {
             return Err(anyhow::anyhow!("Server error: {}", resp.status()));
         }
 
-        //*
+        /*
         let v = resp
                             .body_mut()
                             .read_to_string()? 
                             ;
         println!("{}", v) ; // {"data":{"login":{"id":10,"name":"123"}}}
         // {"data":{"login":{"user":{"id":10,"name":"123"}}}}
-        //*/
+        */
 
         //*
         // получение ответа от сервера
@@ -187,14 +223,12 @@ impl GraphQLClient {
 
         match log_resp.data {
             Some(data) => {
-
-                Ok(data.user)
+                self.set_token(&data.login.token) ;
+                Ok(data.login.user)
             },
             None => {
                 Err(anyhow::anyhow!("Not found log_resp.data"))
             }
         }
-        // */
-        //Err(anyhow::anyhow!("Not found log_resp.data"))
     }
 }

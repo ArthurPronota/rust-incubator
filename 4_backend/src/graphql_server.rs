@@ -25,6 +25,8 @@ use axum::{Extension} ;
 
 use crate::db ;
 
+use crate::jwt ;
+
 //use crate::graphql_client ;
 /*
 // Корневой Query тип
@@ -111,6 +113,12 @@ impl Mutation {
             Err(err) => return Err(anyhow::anyhow!("{:?}", err)),
         } ;
 
+        // получить auth_serv для работы с JSON Web Token
+        let auth_serv = match ctx.data::<Arc<jwt::AuthService>>() {
+            Ok(auth) => auth,
+            Err(err) => return Err(anyhow::anyhow!("{:?}", err)),
+        } ;
+
         /* 
                 Возврат данных
 Формат: 
@@ -126,9 +134,15 @@ impl Mutation {
     }
 }
         */
+
+        match auth_serv.generate_token(10) {
+            Ok(v) => println!("token: {}", v),
+            Err(err) => println!("Err: {}", err),
+        }
+
         Ok(
             LoginResult {
-                token:  "aaasdasdsfsdgdrghdfgdgh".to_string(),
+                token:  auth_serv.generate_token(10)?,     //"aaasdasdsfsdgdrghdfgdgh".to_string(),
                 user:   UserShortInfo { id: 10, name: input.name }
             }
         )
@@ -142,6 +156,7 @@ type MySchema = Schema<
                     EmptySubscription
                 >;
 
+                // Обработчик запросов от клиента
 pub async fn graph_handler(
                 schema:     Extension<MySchema>,
                 req:        GraphQLRequest
