@@ -140,17 +140,6 @@ impl GraphQLClient {
             }
         "#
          */
-        /*
-        r#"
-            mutation Login($name: String!, $password: String!) {
-                login(input: { name: $name, password: $password }) {
-                        id
-                        name
-                }
-            }
-        "#
-         */
-
         ;
 
         let mut resp = 
