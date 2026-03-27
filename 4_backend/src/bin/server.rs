@@ -61,6 +61,8 @@ async fn main() ->Result<()> {
                         graphql_server::Mutation,    // mutation, 
                         EmptySubscription,    // subscription
                     )
+                    // добавить пул соединений с базой
+                    .data(db_res.clone())
                     .finish() ;
 
     let route: Router<()> = Router::new()

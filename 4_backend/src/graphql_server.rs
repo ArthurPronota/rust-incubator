@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use anyhow::Result ;
 
 use async_graphql::{
@@ -11,6 +13,7 @@ use async_graphql::{
             EmptySubscription,
             OutputType,
             //Result as GraphQLResult,
+            Error,
 };
 
 use async_graphql_axum::{
@@ -20,7 +23,9 @@ use async_graphql_axum::{
 
 use axum::{Extension} ;
 
-use crate::graphql_client ;
+use crate::db ;
+
+//use crate::graphql_client ;
 /*
 // Корневой Query тип
 struct Query ;
@@ -47,12 +52,26 @@ struct User {
     email: String,
 }
 
-/*
-pub struct UserInfo {
+// Краткая информация о пользователе
+#[derive(
+    SimpleObject
+  )
+]
+pub struct UserShortInfo {
     pub id:     u32,
     pub name:   String,
 }
- */
+
+
+// Возвразаемая информация о процессе Login
+#[derive(
+    SimpleObject
+  )
+]
+pub struct LoginResult {
+    token:  String,
+    user:   UserShortInfo,
+}
 
 // 2. Определяем корневой запрос (Query).
 pub struct Query;
@@ -79,29 +98,39 @@ pub struct Mutation ;
 
 #[Object]
 impl Mutation {
-   async fn login(
+    // Выполнение login
+    async fn login(
         &self, 
         ctx: &Context<'_>, 
         input: LoginInputObject,
-      ) ->
-        //Result<User>
-            //Result<graphql_client::UserInfo>
-        //GraphQLRequest<graphql_client::UserInfo>
-        Result<graphql_client::UserTop>
+      ) ->Result<LoginResult>
     {
-        println!("Inside !!!!") ;
+        // получить пул соединений с DB
+        let db_res = match ctx.data::<Arc<db::Database>>() {
+            Ok(db) => db,
+            Err(err) => return Err(anyhow::anyhow!("{:?}", err)),
+        } ;
 
-        Ok(
-            //User { name: input.name, email: "2".to_string() }
-            /*
-            graphql_client::UserInfo{
-                id: 10,
-                name:   "123".to_string()
+        /* 
+        Возврат данных
+        Формат: 
+            {
+                "data": {   <- добавлен автоматически
+                    "login": {  <- добавлен автоматически, название метода
+                        "token":"aaasdasdsfsdgdrghdfgdgh",
+                        "user": {
+                            "id": 10,
+                            "name": "123"
+                        }
+                    }
+                }
             }
-             */
-            graphql_client::UserTop {
+
+        */
+        Ok(
+            LoginResult {
                 token:  "aaasdasdsfsdgdrghdfgdgh".to_string(),
-                user:   graphql_client::UserInfo {id: 10, name:   "123".to_string()}
+                user:   UserShortInfo { id: 10, name: input.name }
             }
         )
     }
