@@ -129,9 +129,10 @@ impl GraphQLClient {
         // строка запроса в формате GraphQL
         let query = 
         // 1) формат: {"data":{"login":{"token":"aaasdasdsfsdgdrghdfgdgh","user":{"id":10,"name":"123"}}}}
+        // inp - название аргемента у метода graphql_server::Mutation::login(.., inp: LoginInputObject,)
         r#"
             mutation Login($name: String!, $password: String!) {
-                login(input: { name: $name, password: $password }) {
+                login(inp: { name: $name, password: $password }) {
                     token
                     user {
                         id
@@ -142,9 +143,10 @@ impl GraphQLClient {
         "#
         /*
         // 2) формат: {"data":{"login":{"user":{"id":10,"name":"123"}}}}
+        // inp - название аргемента у метода graphql_server::Mutation::login(.., inp: LoginInputObject,)
         r#"
             mutation Login($name: String!, $password: String!) {
-                login(input: { name: $name, password: $password }) {
+                login(inp: { name: $name, password: $password }) {
                     user {
                         id
                         name
@@ -155,9 +157,10 @@ impl GraphQLClient {
          */
         /*
         // 3) формат: {"data":{"login":{"token":"aaasdasdsfsdgdrghdfgdgh","user":{"id":10}}}}
+        // inp - название аргемента у метода graphql_server::Mutation::login(.., inp: LoginInputObject,)
         r#"
             mutation Login($name: String!, $password: String!) {
-                login(input: { name: $name, password: $password }) {
+                login(inp: { name: $name, password: $password }) {
                     token
                     user {
                         id
@@ -168,6 +171,7 @@ impl GraphQLClient {
          */
         /*
         // 4) формат: {"data":{"login":{"token":"aaasdasdsfsdgdrghdfgdgh"}}}
+        // inp - название аргемента у метода graphql_server::Mutation::login(.., inp: LoginInputObject,)
         r#"
             mutation Login($name: String!, $password: String!) {
                 login(input: { name: $name, password: $password }) {
@@ -205,6 +209,7 @@ impl GraphQLClient {
                             ;
         println!("{}", v) ; // {"data":{"login":{"id":10,"name":"123"}}}
         // {"data":{"login":{"user":{"id":10,"name":"123"}}}}
+        // {"data":null,"errors":[{"message":"Invalid password !!!!!!!!!!!","locations":[{"line":3,"column":17}],"path":["login"]}]}
         */
 
         //*
@@ -218,12 +223,12 @@ impl GraphQLClient {
 
         // проверка ошибки в ответе сервера
         if let Some(err) = log_resp.errors {
-            return Err(anyhow::anyhow!("{:?}", err));
+            return Err(anyhow::anyhow!("{:?}", err[0].message));
         }
 
         match log_resp.data {
             Some(data) => {
-                self.set_token(&data.login.token) ;
+                self.set_token(&data.login.token)? ;
                 common::print_jw_token(&self.token);
                 Ok(data.login.user)
             },

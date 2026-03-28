@@ -26,6 +26,7 @@ use axum::{Extension} ;
 use crate::db ;
 
 use crate::jwt ;
+use crate::passw;
 
 //use crate::graphql_client ;
 /*
@@ -45,6 +46,10 @@ impl Mutation {
 }
 
  */
+
+/// Неверный пароль
+const INVALID_PASSWORD: &str = "Invalid password" ;
+
 
 // 1. Определяем нашу структуру данных. 
 // SimpleObject позволяет async-graphql автоматически превратить её в тип GraphQL.
@@ -104,23 +109,54 @@ impl Mutation {
     async fn login(
         &self, 
         ctx: &Context<'_>, 
-        input: LoginInputObject,
+        inp: LoginInputObject,
       ) ->Result<LoginResult>
     {
         // получить пул соединений с DB
+        /*
         let db_res = match ctx.data::<Arc<db::Database>>() {
             Ok(db) => db,
             Err(err) => return Err(anyhow::anyhow!("{:?}", err)),
         } ;
+          */
+        let db_res = 
+                ctx.data::<Arc<db::Database>>()
+                    .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
+
+                    
 
         // получить auth_serv для работы с JSON Web Token
+        /*
         let auth_serv = match ctx.data::<Arc<jwt::AuthService>>() {
             Ok(auth) => auth,
             Err(err) => return Err(anyhow::anyhow!("{:?}", err)),
         } ;
+          */
+        let auth_serv = 
+                ctx.data::<Arc<jwt::AuthService>>()
+                    .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
+
+        if inp.name.is_empty() {
+            return Err(anyhow::anyhow!("Username is empty"));
+        } else if inp.password.is_empty() {
+            return Err(anyhow::anyhow!("Password is empty"));
+        }
+
+        /*
+        // hash верного пароля для проверки
+        let real_pass_hash = passw::hash_password("bbbb")? ;
+
+        if passw::check_password(&inp.password, &real_pass_hash)? {
+            println!("Valid password.")
+        } else {
+            //println!("Invalid password !!!!!!!!!!!") ;
+            return Err(anyhow::anyhow!("Invalid password !!!!!!!!!!!")) ;
+        }
+         */
 
         /* 
-                Возврат данных
+            Возврат данных полного формата, клиент может запросить часть
+            (всё что ниже login:)
 Формат: 
 {
     "data": {   <- добавлен автоматически
@@ -133,21 +169,24 @@ impl Mutation {
         }
     }
 }
-        */
 
-        /*
-        match auth_serv.generate_token(10) {
-            Ok(v) => {
-                println!("token: {}", v) ;
-            },
-            Err(err) => println!("Err: {}", err),
+или вариант с ошибкой:
+{   
+    "data":null,
+    "errors":[
+        {
+            "message":"Invalid password !!!!!!!!!!!",
+            "locations":[{"line":3,"column":17}],
+            "path":["login"]
         }
-         */
+    ]
+}    
+        */
 
         Ok(
             LoginResult {
                 token:  auth_serv.generate_token(10)?,
-                user:   UserShortInfo { id: 10, name: input.name }
+                user:   UserShortInfo { id: 10, name: inp.name }
             }
         )
     }

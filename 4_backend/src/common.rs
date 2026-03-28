@@ -33,6 +33,9 @@ pub const CONTENT_TYPE_HEADER: &str = "Content-Type" ;
 /// Json тип данных
 pub const JSON_TYPE_VAL: &str = "application/json" ;
 
+/// Неверный пароль
+pub const INVALID_PASSWORD: &str = "Invalid password" ;
+
 /// Получить все необходимые переменные окружения
 pub fn get_all_env_vars() ->Result<(
                               u32,      // http_port,

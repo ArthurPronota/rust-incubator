@@ -14,22 +14,37 @@ use argon2::{
 /// получение хеша пароля
 pub fn hash_password(password: &str) ->Result<String> {
 
-    //let salt = SaltString::generate(&mut OsRng) ;
-
-    //let arg = Argon2::default() ;
-
     if password.is_empty() {
         return Err(anyhow::anyhow!("password is empty"));
     }
 
-    match // arg
-            Argon2::default()
-                .hash_password(
-                    password.as_bytes(), 
-                    &SaltString::generate(&mut OsRng)        // &salt
-                ) 
-    {
-        Ok(v) => Ok(v.to_string()),
-        Err(err) => Err(anyhow::anyhow!("{}", err))
+    Ok(
+        Argon2::default()
+            .hash_password(
+                password.as_bytes(), 
+                &SaltString::generate(&mut OsRng)
+            )
+            .map_err(|err| anyhow::anyhow!("{}", err))?
+            .to_string()
+    )
+}
+
+/// проверка пароля
+pub fn check_password(password: &str, hash_password: &str) ->Result<bool> {
+
+    if password.is_empty() {
+        return Err(anyhow::anyhow!("password is empty"));
+    } else if hash_password.is_empty() {
+        return Err(anyhow::anyhow!("hash_password is empty"));
     }
+
+    Ok(
+        Argon2::default()
+            .verify_password(
+                password.as_bytes(),
+                &PasswordHash::new(hash_password) 
+                        .map_err(|err| anyhow::anyhow!("{}", err))?
+            )
+            .is_ok()
+    )
 }
