@@ -124,3 +124,8 @@ pub fn get_all_env_vars() ->Result<(
 pub fn get_graphql_url(host: &str, port: u32) ->String {
     format!("http://{}:{}{}", host, port, GRAPHQL_URI)
 }
+
+/// Печать JSON Web Token
+pub fn print_jw_token(jw_token:  &str) {
+    println!("JWT: {}", jw_token) ;
+}

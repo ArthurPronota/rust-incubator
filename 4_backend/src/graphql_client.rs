@@ -224,6 +224,7 @@ impl GraphQLClient {
         match log_resp.data {
             Some(data) => {
                 self.set_token(&data.login.token) ;
+                common::print_jw_token(&self.token);
                 Ok(data.login.user)
             },
             None => {

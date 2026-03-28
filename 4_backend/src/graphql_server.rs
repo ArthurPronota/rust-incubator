@@ -135,14 +135,18 @@ impl Mutation {
 }
         */
 
+        /*
         match auth_serv.generate_token(10) {
-            Ok(v) => println!("token: {}", v),
+            Ok(v) => {
+                println!("token: {}", v) ;
+            },
             Err(err) => println!("Err: {}", err),
         }
+         */
 
         Ok(
             LoginResult {
-                token:  auth_serv.generate_token(10)?,     //"aaasdasdsfsdgdrghdfgdgh".to_string(),
+                token:  auth_serv.generate_token(10)?,
                 user:   UserShortInfo { id: 10, name: input.name }
             }
         )

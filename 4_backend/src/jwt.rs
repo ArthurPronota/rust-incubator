@@ -17,29 +17,36 @@ use jsonwebtoken::{
         Header, 
         Validation
 };
-use serde::Serialize;
+use serde::{
+        Serialize,
+        Deserialize
+    };
 
 
-// cookie для подтверждения сессии
+/// cookie для подтверждения сессии
 #[derive(
     Serialize,
+    Deserialize,
     Debug,
 )]
 struct JwtCookieStr {
-    sub:    String,     // субъект, user_id
-    exp:    usize,      // годен до
-    iat:    usize,      // момент создания
+    /// субъект, user_id
+    sub:    String,
+    /// годен до
+    exp:    usize,
+    /// момент создания
+    iat:    usize,
 }
 
-// Аутоидентификационный сервис
+/// Аутоидентификационный сервис
 pub struct AuthService {
-    // секретная фраза
+    /// секретная фраза
     secrent_phrase:   String,
-    // время жизни тикена в часах
+    /// время жизни тикена в часах
     expiration:       u32,
 }
 
-
+// Реализация методов для AuthService
 impl AuthService {
     // Создать новый объект 
     pub fn new(
@@ -76,17 +83,40 @@ impl AuthService {
                 iat:    Utc::now().timestamp() as usize
         } ;
 
-        println!("{:?}", cookie) ;
+        //println!("{:?}", cookie) ;
 
         Ok(
             encode(
-                    &Header::default(), 
-                    &cookie, 
-                    &EncodingKey::from_secret(
-                            self.secrent_phrase.as_bytes()
-                            //self.secrent_phrase.as_ref()
-                        )
+                &Header::default(), 
+                &cookie, 
+                &EncodingKey::from_secret(
+                        self.secrent_phrase.as_bytes()
+                    )
             )?
         )
+    }
+
+    /// Проверка токена
+    pub fn validate_token(&self, token: &str) ->Result<JwtCookieStr> {
+
+        if token.is_empty() {
+            return Err(anyhow::anyhow!("token is empty"));
+        }
+
+        let token_data = 
+                decode::<JwtCookieStr>(
+                    token,
+                    &DecodingKey::from_secret(
+                            self.secrent_phrase.as_bytes()
+                    ),
+                    &Validation::default()
+                )?
+                .claims ;
+
+        if token_data.exp < Utc::now().timestamp() as usize {
+            return Err(anyhow::anyhow!("JSON Web Token expired."));
+        }
+
+        Ok(token_data)
     }
 }
