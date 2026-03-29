@@ -1,0 +1,270 @@
+use anyhow::Result ;
+
+//use axum::routing::any;
+
+use validator::{
+        Validate,
+        ValidateRange,
+        ValidationError,
+} ;
+
+use sqlx::{
+        FromRow,
+        Row,
+        mysql::MySql
+} ;
+
+use crate::common;
+
+use crate::db ;
+use crate::users::Users;
+
+/// Друзья
+#[derive(
+    FromRow,
+    Validate,
+    Default,
+ )
+]
+#[validate(
+    schema(function = "Friends::validate_record")
+ )
+]
+pub struct Friends {
+    /// Код пользователя
+    #[validate(
+        range(
+            min = 1,
+            message = "id_user must be greater than zero",
+        ),
+    )]
+    user_id:    u32,
+
+    /// Код друга
+    #[validate(
+        range(
+            min = 1,
+            message = "friend_id must be greater than zero",
+        )
+    )]
+    friend_id:  u32,
+}
+
+impl Friends {
+
+    // проверка полей Friends на совместимость
+    fn validate_record(fr: &Friends) ->core::result::Result<(), ValidationError> {
+
+        if fr.user_id == fr.friend_id {
+            let mut err = ValidationError::new("user_id__eq__friend") ;
+            err.message = Some("user_id must not equal friend_id".into()) ;
+            return Err(err);
+        }
+
+        Ok(())
+    }
+
+    /// Установить user_id
+    pub fn set_user_id(&mut self, user_id: u32) ->Result<()> {
+
+        match user_id.validate_range(
+                            Some(1),
+                            None,
+                            None,
+                            None
+                        ) 
+        {
+            v if v => {
+                self.user_id = user_id ;
+                Ok(())
+            },
+            _ => Err(anyhow::anyhow!("Invalid id_user: {}", user_id)),
+        }
+    }
+
+    /// Получи user_id
+    pub fn user_id(&self) ->u32 {
+        self.user_id
+    }
+
+    /// Установить friend_id
+    pub fn set_friend_id(&mut self, friend_id: u32) ->Result<()> {
+        match friend_id.validate_range(
+                Some(1), 
+                None, 
+                None, 
+                None,
+            ) {
+            v if v => {
+                self.friend_id = friend_id ;
+                Ok(())
+            },
+            _ => Err(anyhow::anyhow!("Invalid friend_id: {}", friend_id)),
+        }
+    }
+
+    /// Получить friend_id
+    pub fn friend_id(&self) ->u32 {
+        self.friend_id
+    }
+
+    /// поиск друга
+    pub async fn find(
+                    trans:      &mut sqlx::MySqlConnection,
+                    user_id:    u32, 
+                    friend_id:  u32,
+                    is_lock:    bool,
+                 ) ->Result<Option<Friends>> {
+
+        let mut tmp_friend = Friends::default() ;
+
+        tmp_friend.set_user_id(user_id)? ;
+
+        tmp_friend.set_friend_id(friend_id)? ;
+
+        tmp_friend.validate()? ;
+
+        match sqlx::query_as::<_, Friends>(
+            format!(
+            r#"
+            select * 
+            from friends
+            where user_id = ? and friend_id = ?
+            {}
+            "#,
+            is_lock
+                .then_some(db::FOR_UPDATE)
+                .unwrap_or("")
+            )
+            .as_str()
+        )
+        .bind(tmp_friend.user_id)
+        .bind(tmp_friend.friend_id())
+        .fetch_one(&mut *trans)
+        .await 
+        {
+            Ok(fr) => {
+                fr.validate()? ;   
+                Ok(Some(fr))
+            },
+            Err(sqlx::Error::RowNotFound) => Ok(None),
+            Err(err) => Err(anyhow::anyhow!("{}", err)),
+        }
+    }
+
+
+    /// Обязательный поиск друга
+    pub async fn find_raise(
+                    trans:      &mut sqlx::MySqlConnection,
+                    user_id:    u32, 
+                    friend_id:  u32,
+                    is_lock:    bool,
+                 ) ->Result<Friends> {
+
+        match Self::find(
+                trans, 
+                user_id, 
+                friend_id, 
+                is_lock
+            ).await? {
+            Some(fr) => Ok(fr),
+            None => Err(anyhow::anyhow!("Not found friend for user_id: {}, friend_id: {}", user_id, friend_id)),
+        }
+    }
+
+    /// Создание нового пользователя
+    pub async fn insert(
+                    trans:      &mut sqlx::MySqlConnection,
+                    user_id:    u32, 
+                    friend_id:  u32,
+                 ) ->Result<Friends> {
+
+        // поиск пользователя user_id
+        let mut tmp_user = 
+                Users::find_for_id_user_raise(
+                    trans,
+                    user_id,
+                    false
+                )
+                .await? ;
+
+        // поиск пользователя friend_id
+        tmp_user = Users::find_for_id_user_raise(
+                        trans, 
+                        friend_id, 
+                        false
+                    )
+                    .await
+                    ?;
+
+        if let Some(fr) = 
+                Self::find(
+                    trans,
+                    user_id,
+                    friend_id,
+                    true
+                )
+                .await? {
+            return Err(anyhow::anyhow!("I can't add a friend_id: {} for user: {}, he already exists.", friend_id, user_id));
+        }
+
+        sqlx::query(
+            r#"
+            insert into friends (user_id, friend_id)
+            values (?, ?)
+            "#
+        )
+        .bind(user_id)
+        .bind(friend_id)
+        .execute(&mut *trans)
+        .await? ;
+
+        Self::find_raise(
+            trans,
+            user_id,
+            friend_id,
+            false
+        )
+        .await
+    }
+
+    /// Удаление друга
+    pub async fn delete(
+                    trans:      &mut sqlx::MySqlConnection,
+                    user_id:    u32,
+                    friend_id:  u32,
+                 ) ->Result<()> {
+
+        Self::find_raise(
+                trans,
+                user_id,
+                friend_id,
+                true
+            )
+            .await? ;
+        
+        sqlx::query(
+            r#"
+            delete from friends
+            where user_id = ? and  friend_id = ?
+            "#
+        )
+        .bind(friend_id)
+        .bind(user_id)
+        .execute(&mut *trans)
+        .await? ;
+
+        match Self::find(
+                trans,
+                user_id,
+                friend_id,
+                false
+            )
+            .await?
+        {
+            Some(fr) => Err(anyhow::anyhow!("friend_id: {} for user_id: {} has not been deleted.", fr.friend_id(), fr.user_id())),
+            None => Ok(()),
+        }
+    }
+
+}

@@ -60,6 +60,9 @@ mod jwt ;
 #[path = "../passw.rs"]
 mod passw ;
 
+#[path = "../friends.rs"]
+mod friends ;
+
 #[tokio::main]
 async fn main() ->Result<()> {
     /*

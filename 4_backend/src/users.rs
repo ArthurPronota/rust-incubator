@@ -12,7 +12,8 @@ use sqlx::{
 use tokio::task::id;
 use validator::{
         Validate,
-        ValidateLength, ValidateRange,
+        ValidateLength, 
+        ValidateRange,
 } ;
 
 use crate::{
@@ -218,7 +219,10 @@ impl Users {
         .bind(tmp_user.name())
         .fetch_one(&mut *trans)
         .await {
-            Ok(u) => Ok(Some(u)),
+            Ok(u) => {
+                u.validate()? ;
+                Ok(Some(u))
+            },
             Err(sqlx::Error::RowNotFound) => Ok(None),
             Err(err) => Err(err.into())
         }
@@ -266,7 +270,7 @@ impl Users {
             None => {
                 sqlx::query(
                     r#"
-                    insert into users (name,password)
+                    insert into users (name, password)
                     values (?, ?)
                     "#
                     )
