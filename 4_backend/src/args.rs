@@ -22,13 +22,15 @@ pub enum Commands {
         about = "Register a new user",
     )]
     UserRegister {
-        /// Тмя нового пользователя
+        /// Имя нового пользователя
         #[arg(
             name = "user name",
             help = "Username",
          )
         ]
         name:       String,
+
+        /// Пароль пользователя        
         #[arg(
             name = "User password",
             help = "User password",
@@ -36,6 +38,29 @@ pub enum Commands {
         ]
         password:   String,
     },
+
+    /// Залогироваться как пользователь
+    #[clap(
+        name = "login",
+        about = "Log in as a user",
+    )]
+    Login {
+        /// Имя пользователя
+        #[arg(
+            name = "user name",
+            help = "Username",
+         )
+        ]
+        name:       String,
+
+        /// Пароль пользователя        
+        #[arg(
+            name = "User password",
+            help = "User password",
+         )
+        ]
+        password:   String,
+    }
 }
 
 /// Агрументы командной строки

@@ -23,6 +23,7 @@ use async_graphql_axum::{
 
 use axum::{Extension} ;
 
+use crate::common;
 use crate::db ;
 
 use crate::jwt ;
@@ -149,17 +150,28 @@ impl Mutation {
                                             .await
                                             ?;
         // контроль наличия вставляемого пользователя
-        if Users::find_for_name(
+        let found_user = match Users::find_for_name(
                 &mut *trans,
                 tmp_user.name(),
-                true
+                false
             )
-            .await?
-            .is_some() 
-            {
-                return Err(anyhow::anyhow!("A user named: {} already exists.", tmp_user.name()));
-            }
+            .await? {
+           Some(u) => u,
+           None => return Err(anyhow::anyhow!(common::INVALID_USERNAME_PASSWORD)),
+        } ;
 
+        if ! passw::check_password(tmp_user.password(), found_user.password())? {
+            return Err(anyhow::anyhow!(common::INVALID_USERNAME_PASSWORD)) ;
+        }
+
+        /*
+            .is_none()
+            {
+                return Err(anyhow::anyhow!("Invalid username or password"));
+            }
+         */
+
+        /*
         // вставить нового пользователя
         tmp_user = Users::int_user(
             &mut *trans,
@@ -172,6 +184,7 @@ impl Mutation {
         trans
             .commit()
             .await? ;
+         */
 
         /*
         // hash верного пароля для проверки
@@ -216,8 +229,8 @@ impl Mutation {
 
         Ok(
             LoginResult {
-                token:  auth_serv.generate_token(tmp_user.id_user())?,
-                user:   UserShortInfo { id: tmp_user.id_user(), name: tmp_user.name().to_owned() }
+                token:  auth_serv.generate_token(found_user.id_user())?,
+                user:   UserShortInfo { id: found_user.id_user(), name: found_user.name().to_owned() }
             }
         )
     }

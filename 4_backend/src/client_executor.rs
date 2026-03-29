@@ -32,7 +32,10 @@ pub fn any_command(
             //println!("{}", gr_client.login(name, password)?) ;
             println!("{}", gr_client.register(name, password)?) ;
         },
-
+        // Логирование пользоватлем
+        Commands::Login { name, password } => {
+            println!("{}", gr_client.login(name, password)?) ;
+        },
     }
 
     Ok(())
