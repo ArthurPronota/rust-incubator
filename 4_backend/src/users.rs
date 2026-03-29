@@ -284,4 +284,44 @@ impl Users {
             }
         }
     }
+
+    /// Удалить пользователя по id_user
+    pub async fn del_user_by_id(
+                trans:    &mut sqlx::MySqlConnection,
+                id_user:  u32
+            ) ->Result<()> {
+        let mut tmp_user = Users::default() ;
+
+        tmp_user.set_id_user(id_user)? ;
+
+        // заблокировать пользователя
+        Self::find_for_id_user_raise(
+                trans,
+                id_user,
+                true
+            )
+            .await? ;
+        
+        sqlx::query(
+            r#"
+                delete from user
+                where id_user = ?            
+            "#
+        )
+        .bind(tmp_user.id_user())
+        .execute(&mut *trans)
+        .await? ;
+
+        // контроль удаления пользователя
+        Self::find_for_id_user(
+                trans,
+                tmp_user.id_user(),
+                false
+            )
+            .await?
+            .map_or(
+                Ok(()),
+                |_| Err(anyhow::anyhow!("The user id_user: {} has not been deleted", tmp_user.id_user()))
+            )
+    }
 }

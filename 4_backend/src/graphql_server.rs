@@ -28,6 +28,11 @@ use crate::db ;
 use crate::jwt ;
 use crate::passw;
 
+use crate::users::{
+        self,
+        Users
+    } ;
+
 //use crate::graphql_client ;
 /*
 // Корневой Query тип
@@ -46,9 +51,6 @@ impl Mutation {
 }
 
  */
-
-/// Неверный пароль
-const INVALID_PASSWORD: &str = "Invalid password" ;
 
 
 // 1. Определяем нашу структуру данных. 
@@ -123,8 +125,6 @@ impl Mutation {
                 ctx.data::<Arc<db::Database>>()
                     .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
 
-                    
-
         // получить auth_serv для работы с JSON Web Token
         /*
         let auth_serv = match ctx.data::<Arc<jwt::AuthService>>() {
@@ -136,11 +136,42 @@ impl Mutation {
                 ctx.data::<Arc<jwt::AuthService>>()
                     .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
 
-        if inp.name.is_empty() {
-            return Err(anyhow::anyhow!("Username is empty"));
-        } else if inp.password.is_empty() {
-            return Err(anyhow::anyhow!("Password is empty"));
-        }
+        let mut tmp_user = Users::default() ;
+
+        tmp_user.set_name(&inp.name)? ;
+
+        tmp_user.set_password(&inp.password)? ;
+
+        // Сформировать новую транзакцию
+        let mut trans = db_res
+                                            .pool
+                                            .begin()
+                                            .await
+                                            ?;
+        // контроль наличия вставляемого пользователя
+        if Users::find_for_name(
+                &mut *trans,
+                tmp_user.name(),
+                true
+            )
+            .await?
+            .is_some() 
+            {
+                return Err(anyhow::anyhow!("A user named: {} already exists.", tmp_user.name()));
+            }
+
+        // вставить нового пользователя
+        tmp_user = Users::int_user(
+            &mut *trans,
+            tmp_user.name(),
+            &passw::hash_password(tmp_user.password())?,    // сгенерировать hash of password
+        )
+        .await? ;
+
+        // выполнить commit
+        trans
+            .commit()
+            .await? ;
 
         /*
         // hash верного пароля для проверки
@@ -185,21 +216,113 @@ impl Mutation {
 
         Ok(
             LoginResult {
-                token:  auth_serv.generate_token(10)?,
-                user:   UserShortInfo { id: 10, name: inp.name }
+                token:  auth_serv.generate_token(tmp_user.id_user())?,
+                user:   UserShortInfo { id: tmp_user.id_user(), name: tmp_user.name().to_owned() }
             }
         )
     }
+
+
+    // регистрация нового пользователя
+    async fn register(
+        &self, 
+        ctx: &Context<'_>, 
+        inp: LoginInputObject,
+      ) ->Result<LoginResult>
+    {
+        // получить пул соединений с DB
+        let db_res = 
+                ctx.data::<Arc<db::Database>>()
+                    .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
+
+        // получить auth_serv для работы с JSON Web Token
+        let auth_serv = 
+                ctx.data::<Arc<jwt::AuthService>>()
+                    .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
+
+        let mut tmp_user = Users::default() ;
+
+        tmp_user.set_name(&inp.name)? ;
+
+        tmp_user.set_password(&inp.password)? ;
+
+        // Сформировать новую транзакцию
+        let mut trans = db_res
+                                            .pool
+                                            .begin()
+                                            .await
+                                            ?;
+        // контроль наличия вставляемого пользователя
+        if Users::find_for_name(
+                &mut *trans,
+                tmp_user.name(),
+                true
+            )
+            .await?
+            .is_some() 
+            {
+                return Err(anyhow::anyhow!("A user named: {} already exists.", tmp_user.name()));
+            }
+
+        // вставить нового пользователя
+        tmp_user = Users::int_user(
+            &mut *trans,
+            tmp_user.name(),
+            &passw::hash_password(tmp_user.password())?,    // сгенерировать hash of password
+        )
+        .await? ;
+
+        // выполнить commit
+        trans
+            .commit()
+            .await? ;
+
+        /* 
+            Возврат данных полного формата, клиент может запросить часть
+            (всё что ниже login:)
+Формат: 
+{
+    "data": {   <- добавлен автоматически
+        "register": {  <- добавлен автоматически, название метода
+            "token":"aaasdasdsfsdgdrghdfgdgh",
+            "user": {
+                "id": 10,
+                "name": "123"
+            }
+        }
+    }
 }
 
-// Создание типа данных MySchema
+или вариант с ошибкой:
+{   
+    "data":null,
+    "errors":[
+        {
+            "message":"Invalid password !!!!!!!!!!!",
+            "locations":[{"line":3,"column":17}],
+            "path":["login"]
+        }
+    ]
+}    
+        */
+
+        Ok(
+            LoginResult {
+                token:  auth_serv.generate_token(tmp_user.id_user())?,
+                user:   UserShortInfo { id: tmp_user.id_user(), name: tmp_user.name().to_owned() }
+            }
+        )
+    }    
+}
+
+// Создание типа данных GraphQL схема
 type MySchema = Schema<
                     Query, 
                     Mutation,    // Mutation,
                     EmptySubscription
                 >;
 
-                // Обработчик запросов от клиента
+// Обработчик запросов от клиента
 pub async fn graph_handler(
                 schema:     Extension<MySchema>,
                 req:        GraphQLRequest

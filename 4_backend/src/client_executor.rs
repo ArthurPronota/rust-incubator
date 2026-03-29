@@ -29,7 +29,8 @@ pub fn any_command(
     match &arg.commands {
         // Регистрация нового пользователя
         Commands::UserRegister { name, password } => {
-            println!("{}", gr_client.login(name, password)?) ;
+            //println!("{}", gr_client.login(name, password)?) ;
+            println!("{}", gr_client.register(name, password)?) ;
         },
 
     }

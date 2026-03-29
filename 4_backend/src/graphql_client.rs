@@ -73,6 +73,14 @@ pub struct LoginRawResponce {
     login:  TokenAndShortUser,
 }
 
+// Сырой ответ регистрации нового пользователя
+#[derive(
+    Deserialize
+  )
+]
+pub struct RegisterRawResponce {
+    register:  TokenAndShortUser,
+}
 
 // Ответ сервера на попытку логирования
 #[derive(
@@ -83,6 +91,17 @@ struct LoginResponce {
     data:    Option<LoginRawResponce>,  //Option<UserInfo>,
     errors:  Option<Vec<GraphQLError>>,
 }
+
+// Ответ сервера на попытку регистрации нового пользователя
+#[derive(
+    Deserialize
+  )
+]
+struct RegisterResponce {
+    data:   Option<RegisterRawResponce>,
+    errors: Option<Vec<GraphQLError>>
+}
+
 
 // GraphQL Client
 #[derive(Deserialize, Debug)]
@@ -237,4 +256,80 @@ impl GraphQLClient {
             }
         }
     }
+
+    // Выполнить регистацию нового пользователя
+    pub fn register(&mut self, name: &String, password: &str) ->Result<UserShortInfo> {
+        // строка запроса в формате GraphQL
+        let query = 
+        // 1) формат: {"data":{"register":{"token":"aaasdasdsfsdgdrghdfgdgh","user":{"id":10,"name":"123"}}}}
+        // inp - название аргемента у метода graphql_server::Mutation::register(.., inp: LoginInputObject,)
+        r#"
+            mutation Register($name: String!, $password: String!) {
+                register(inp: { name: $name, password: $password }) {
+                    token
+                    user {
+                        id
+                        name
+                    }
+                }
+            }
+        "#
+        ;
+
+        let mut resp = 
+                ureq::post(&self.url)
+                    .header(common::CONTENT_TYPE_HEADER, common::JSON_TYPE_VAL)
+                    .send_json(
+                        // Создайте объект serde_json::Value из JSON-литерала.
+                        &json!({
+                            "query": query, // запрос в формате GraphQL
+                            "variables": {  // Переменные участвующие в формировании запроса
+                                "name": name,
+                                "password": password,
+                            }
+                         }
+                        )
+                    )? ;
+
+        // проверка кода возврата ответа сервера
+        if resp.status() != StatusCode::OK {
+            return Err(anyhow::anyhow!("Server error: {}", resp.status()));
+        }
+
+        /*
+        let v = resp
+                            .body_mut()
+                            .read_to_string()? 
+                            ;
+        println!("{}", v) ; // {"data":{"login":{"id":10,"name":"123"}}}
+        // {"data":{"login":{"user":{"id":10,"name":"123"}}}}
+        // {"data":null,"errors":[{"message":"Invalid password !!!!!!!!!!!","locations":[{"line":3,"column":17}],"path":["login"]}]}
+        */
+
+        //*
+        // получение ответа от сервера
+        let reg_resp = resp
+                        .body_mut()
+                        .read_json::<RegisterResponce>()
+                        .map_err(|err| 
+                            anyhow::anyhow!("read_json to RegisterResponce error: {}", err)
+                        )? ;
+
+        // проверка ошибки в ответе сервера
+        if let Some(err) = reg_resp.errors {
+            return Err(anyhow::anyhow!("{:?}", err[0].message));
+        }
+
+        match reg_resp.data {
+            Some(data) => {
+                self.set_token(&data.register.token)? ;
+                common::print_jw_token(&self.token);
+                Ok(data.register.user)
+            },
+            None => {
+                Err(anyhow::anyhow!("Not found reg_resp.data"))
+            }
+        }
+    }
+
 }
