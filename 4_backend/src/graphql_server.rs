@@ -488,7 +488,7 @@ impl Mutation {
             tmp_friend.friend_id(),
         )
         .await? ;
-
+        
         // получить данные по другу
         let tmp_user = Users::find_for_id_user_raise(
                         &mut *trans, 
@@ -496,7 +496,12 @@ impl Mutation {
                         false,
                     )
                     .await? ;
-        
+
+        // выполнить commit
+        trans
+            .commit()
+            .await? ;
+                            
         Ok(
             DelFriendResult { 
                 friend: FriendShortInfo { 

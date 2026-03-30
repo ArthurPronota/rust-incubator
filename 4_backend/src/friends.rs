@@ -246,7 +246,7 @@ impl Friends {
         sqlx::query(
             r#"
             delete from friends
-            where user_id = ? and  friend_id = ?
+            where user_id = ? and friend_id = ?
             "#
         )
         .bind(user_id)        
