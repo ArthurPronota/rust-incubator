@@ -109,6 +109,16 @@ pub struct AddFriendRawResponce {
     addfriend:     ShortFriendData,
 }
 
+
+// Сырой ответ удаления друга
+#[derive(
+    Deserialize
+ )
+]
+pub struct DelFriendRawResponce {
+    delfriend:     ShortFriendData,
+}
+
 // Сырой ответ регистрации нового пользователя
 #[derive(
     Deserialize
@@ -145,6 +155,17 @@ struct RegisterResponce {
 ]
 struct AddFriendResponce {
     data:   Option<AddFriendRawResponce>,
+    errors: Option<Vec<GraphQLError>>
+}
+
+
+// Ответ сервера на попытку удаления друга
+#[derive(
+    Deserialize
+  )
+]
+struct DelFriendResponce {
+    data:   Option<DelFriendRawResponce>,
     errors: Option<Vec<GraphQLError>>
 }
 
@@ -194,6 +215,7 @@ impl GraphQLClient {
         let query = 
         // 1) формат: {"data":{"login":{"token":"aaasdasdsfsdgdrghdfgdgh","user":{"id":10,"name":"123"}}}}
         // inp - название аргемента у метода graphql_server::Mutation::login(.., inp: LoginInputObject,)
+        // названия методов, ключи и имена переменных не должны содержать '_'
         r#"
             mutation Login($name: String!, $password: String!) {
                 login(inp: { name: $name, password: $password }) {
@@ -208,6 +230,7 @@ impl GraphQLClient {
         /*
         // 2) формат: {"data":{"login":{"user":{"id":10,"name":"123"}}}}
         // inp - название аргемента у метода graphql_server::Mutation::login(.., inp: LoginInputObject,)
+        // названия методов, ключи и имена переменных не должны содержать '_'
         r#"
             mutation Login($name: String!, $password: String!) {
                 login(inp: { name: $name, password: $password }) {
@@ -222,6 +245,7 @@ impl GraphQLClient {
         /*
         // 3) формат: {"data":{"login":{"token":"aaasdasdsfsdgdrghdfgdgh","user":{"id":10}}}}
         // inp - название аргемента у метода graphql_server::Mutation::login(.., inp: LoginInputObject,)
+        // названия методов, ключи и имена переменных не должны содержать '_'
         r#"
             mutation Login($name: String!, $password: String!) {
                 login(inp: { name: $name, password: $password }) {
@@ -236,6 +260,7 @@ impl GraphQLClient {
         /*
         // 4) формат: {"data":{"login":{"token":"aaasdasdsfsdgdrghdfgdgh"}}}
         // inp - название аргемента у метода graphql_server::Mutation::login(.., inp: LoginInputObject,)
+        // названия методов, ключи и имена переменных не должны содержать '_'
         r#"
             mutation Login($name: String!, $password: String!) {
                 login(input: { name: $name, password: $password }) {
@@ -308,6 +333,7 @@ impl GraphQLClient {
         let query = 
         // 1) формат: {"data":{"register":{"token":"aaasdasdsfsdgdrghdfgdgh","user":{"id":10,"name":"123"}}}}
         // inp - название аргемента у метода graphql_server::Mutation::register(.., inp: LoginInputObject,)
+        // названия методов, ключи и имена переменных не должны содержать '_'
         r#"
             mutation Register($name: String!, $password: String!) {
                 register(inp: { name: $name, password: $password }) {
@@ -377,15 +403,14 @@ impl GraphQLClient {
         }
     }
 
-    // Выполнить регистацию нового пользователя
+    // Добавить друга
     pub fn add_friend(&mut self, friend_id: u32, jwt: &str) ->Result<FriendShortInfo> {
-
-        println!("Begin add_friend") ;
 
         // строка запроса в формате GraphQL
         let query = 
-        // 1) формат: {"data":{"add_friend":{"user":{"id":10,"name":"123"}}}}
-        // inp - название аргемента у метода graphql_server::Mutation::add_friend(.., inp: LoginInputObject,)
+        // 1) формат: {"data":{"addfriend":{"user":{"id":10,"name":"123"}}}}
+        // inp - название аргемента у метода graphql_server::Mutation::addfriend(.., inp: AddFriendObject,)
+        // названия методов, ключи и имена переменных не должны содержать '_'
         r#"
             mutation Addfriend($friendid: Int!, $jwt: String!) {
                 addfriend(inp: { friendid: $friendid, jwt: $jwt }) {
@@ -397,22 +422,6 @@ impl GraphQLClient {
             }
         "#
         ;
-
-        println!("1) add_friend") ;
-
-        /*
-        println!("{}",
-    &json!({
-                            "query": query, // запрос в формате GraphQL
-                            "variables": {  // Переменные участвующие в формировании запроса
-                                "friendid": friend_id,
-                                "jwt":  jwt,
-                            }
-                         }
-                        )
-    
-        ) ;
-         */
 
         let mut resp = 
                 ureq::post(&self.url)
@@ -428,8 +437,6 @@ impl GraphQLClient {
                          }
                         )
                     )? ;
-
-        println!("2) add_friend") ;
 
         // проверка кода возврата ответа сервера
         if resp.status() != StatusCode::OK {
@@ -462,16 +469,84 @@ impl GraphQLClient {
 
         match add_friend_resp.data {
             Some(data) => {
-                /*
-                self.set_token(&data.register.token)? ;
-                common::print_jw_token(&self.token);
-                */
                 Ok(data.addfriend.friend)
             },
             None => {
-                Err(anyhow::anyhow!("Not found reg_resp.data"))
+                Err(anyhow::anyhow!("Not found add_friend_resp.data"))
             }
-        }        
+        }
     }
 
+    // Удалить пользователя из друзей
+    pub fn del_friend(&mut self, friend_id: u32, jwt: &str) ->Result<FriendShortInfo> {
+
+        // строка запроса в формате GraphQL
+        let query = 
+        // 1) формат: {"data":{"delfriend":{"user":{"id":10,"name":"123"}}}}
+        // inp - название аргемента у метода graphql_server::Mutation::delfriend(.., inp: AddFriendObject,)
+        // названия методов, ключи и имена переменных не должны содержать '_'
+        r#"
+            mutation Delfriend($friendid: Int!, $jwt: String!) {
+                delfriend(inp: { friendid: $friendid, jwt: $jwt }) {
+                    friend {
+                        id
+                        name
+                    }
+                }
+            }
+        "#
+        ;
+
+        let mut resp = 
+                ureq::post(&self.url)
+                    .header(common::CONTENT_TYPE_HEADER, common::JSON_TYPE_VAL)
+                    .send_json(
+                        // Создайте объект serde_json::Value из JSON-литерала.
+                        &json!({
+                            "query": query, // запрос в формате GraphQL
+                            "variables": {  // Переменные участвующие в формировании запроса
+                                "friendid": friend_id,
+                                "jwt":  jwt,
+                            }
+                         }
+                        )
+                    )? ;
+
+        // проверка кода возврата ответа сервера
+        if resp.status() != StatusCode::OK {
+            return Err(anyhow::anyhow!("Server error: {}", resp.status()));
+        }
+
+        /*
+        let v = resp
+                            .body_mut()
+                            .read_to_string()? 
+                            ;
+        println!("{}", v) ; 
+        //{"data":{"addfriend":{"friend":{"id":3,"name":"Tom"}}}}
+        //{"data":null,"errors":[{"message":"I can't add a friend_id: 3 for user: 2, he already exists.","locations":[{"line":3,"column":17}],"path":["addfriend"]}]}
+        */
+
+        // получение ответа от сервера
+        let del_friend_resp = resp
+                        .body_mut()
+                        .read_json::<DelFriendResponce>()
+                        .map_err(|err| 
+                            anyhow::anyhow!("read_json to DelFriendResponce error: {}", err)
+                        )? ;
+
+        // проверка ошибки в ответе сервера
+        if let Some(err) = del_friend_resp.errors {
+            return Err(anyhow::anyhow!("{:?}", err[0].message));
+        }
+
+        match del_friend_resp.data {
+            Some(data) => {
+                Ok(data.delfriend.friend)
+            },
+            None => {
+                Err(anyhow::anyhow!("Not found del_friend_resp.data"))
+            }
+        }
+    }    
 }

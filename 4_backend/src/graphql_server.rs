@@ -107,6 +107,16 @@ pub struct AddFriendResult {
     friend: FriendShortInfo,
 }
 
+/// Возврашаемая информация об удалённом друге
+#[derive(
+    SimpleObject,
+  )
+]
+pub struct DelFriendResult {
+    friend: FriendShortInfo,
+}
+
+
 // 2. Определяем корневой запрос (Query).
 pub struct Query;
 
@@ -134,11 +144,12 @@ struct AddFriendObject {
     jwt:        String,
 }
 
+// Входные данные для удаления друга (тип inp аргумента)
 #[derive(InputObject)]
-struct AddFriendObject2 {
+struct DelFriendObject {
+    friendid:   u32,
     jwt:        String,
 }
-
 
 // Корневой Mutation тип
 pub struct Mutation ;
@@ -364,20 +375,6 @@ impl Mutation {
         )
     }    
 
-    /*
-    // добавление друга
-    async fn addfriend_(
-        &self, 
-        ctx: &Context<'_>, 
-        inp: AddFriendObject2,
-      ) ->Result<AddFriendResult>
-    {
-        println!("0) ----------------------") ;
-
-        Err(anyhow::anyhow!("Error !!!!!!!!!!!"))
-    } 
-     */   
-
     // добавление друга
     async fn addfriend(
         &self, 
@@ -385,7 +382,6 @@ impl Mutation {
         inp: AddFriendObject,
       ) ->Result<AddFriendResult>
     {
-        println!("0) ----------------------") ;
         // получить пул соединений с DB
         let db_res = 
                 ctx.data::<Arc<db::Database>>()
@@ -396,11 +392,9 @@ impl Mutation {
                 ctx.data::<Arc<jwt::AuthService>>()
                     .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
 
-        println!("1) ----------------------") ;
         // Проверить jwt и получить данные по нему - это ваша сессия
         let jwt_data = 
                 auth_serv.validate_token(&inp.jwt)? ;
-        println!("2) ----------------------") ;
 
         let mut tmp_friend = Friends::default() ;
 
@@ -414,13 +408,6 @@ impl Mutation {
 
         // проверить полученные данные
         tmp_friend.validate()? ;
-
-        /*
-        // Проверка полученного JSON Web Token
-        if let Err(err) = auth_serv.validate_token(&inp.jwt) {
-            return Err(err.into());
-        }
-         */
 
         // Создать новую транзацию
         let mut trans = db_res
@@ -453,7 +440,72 @@ impl Mutation {
                 friend: FriendShortInfo { id: tmp_user.id_user(), name: tmp_user.name().to_owned() }
             }
         )
-    }    
+    }  
+
+    // удаление друга
+    async fn delfriend(
+        &self, 
+        ctx: &Context<'_>, 
+        inp: DelFriendObject,
+      ) ->Result<DelFriendResult>
+    {
+        // получить пул соединений с DB
+        let db_res = 
+                ctx.data::<Arc<db::Database>>()
+                    .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
+
+        // получить auth_serv для работы с JSON Web Token
+        let auth_serv = 
+                ctx.data::<Arc<jwt::AuthService>>()
+                    .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
+
+        // Проверить jwt и получить данные по нему - это ваша сессия
+        let jwt_data = 
+                auth_serv.validate_token(&inp.jwt)? ;
+
+        let mut tmp_friend = Friends::default() ;
+
+        // установить код текущего пользователя
+        tmp_friend.set_user_id(
+                    jwt_data.get_sub()  // код текущего пользователя
+                )? ;
+
+        // установить код друга
+        tmp_friend.set_friend_id(inp.friendid)? ;
+
+        // проверить полученные данные
+        tmp_friend.validate()? ;
+
+        // Создать новую транзацию
+        let mut trans = db_res
+                                        .pool
+                                        .begin()
+                                        .await? ;
+
+        Friends::delete(
+            &mut *trans,
+            tmp_friend.user_id(),
+            tmp_friend.friend_id(),
+        )
+        .await? ;
+
+        // получить данные по другу
+        let tmp_user = Users::find_for_id_user_raise(
+                        &mut *trans, 
+                        tmp_friend.friend_id(), 
+                        false,
+                    )
+                    .await? ;
+        
+        Ok(
+            DelFriendResult { 
+                friend: FriendShortInfo { 
+                            id: tmp_user.id_user(),
+                            name: tmp_user.name().to_owned()
+                        } 
+            }
+        )
+    }
 }
 
 // Создание типа данных GraphQL схема

@@ -249,8 +249,8 @@ impl Friends {
             where user_id = ? and  friend_id = ?
             "#
         )
+        .bind(user_id)        
         .bind(friend_id)
-        .bind(user_id)
         .execute(&mut *trans)
         .await? ;
 

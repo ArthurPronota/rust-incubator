@@ -44,6 +44,13 @@ pub fn any_command(
                       gr_client.add_friend( *friend_id, jwt)?
             ) ;
         },
+        // Удалить друга
+        Commands::DelFriend { friend_id, jwt } => {
+            println!(
+                "Deleted friend: {}",
+                gr_client.del_friend(*friend_id, jwt)?
+            ) ;
+        },
     }
 
     Ok(())

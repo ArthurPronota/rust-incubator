@@ -13,6 +13,14 @@ $ cargo run --bin client -- login Arthur Pass10
 JWT: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDg0NTIwNCwiaWF0IjoxNzc0ODQxNjA0fQ.WU7VQdxy4l0WyIf7kQSnkotI91uItcn3xOviwdxlPdU
 Registered user: UserId: 2, UserName: Arthur
 
+            3. Добавить друга
+$ cargo run --bin client -- add-friend 3 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDg0OTk4MiwiaWF0IjoxNzc0ODQ2MzgyfQ.Rx_NBrq5oqcnvzZ6i_QI9tdVpMfhKOD1p07GZKicVs0
+Added friend: FriendId: 3, FriendName: Tom
+
+            4. Удалить друга
+$ cargo run --bin client -- del-friend 3 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDg1ODc2MiwiaWF0IjoxNzc0ODU1MTYyfQ.jw624nSVrSA3HjbdrqC4S8uWwfJAY1DU8uAKC838LK4
+Deleted friend: FriendId: 3, FriendName: Tom
+
 */
 
 //use std::path;
