@@ -34,7 +34,15 @@ pub fn any_command(
         },
         // Логирование пользоватлем
         Commands::Login { name, password } => {
-            println!("{}", gr_client.login(name, password)?) ;
+            println!("Registered user: {}", 
+                     gr_client.login(name, password)?
+            ) ;
+        },
+        // Добавить друга
+        Commands::AddFriend { friend_id, jwt } => {
+            println!("Added friend: {}", 
+                      gr_client.add_friend( *friend_id, jwt)?
+            ) ;
         },
     }
 

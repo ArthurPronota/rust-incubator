@@ -54,6 +54,24 @@ impl std::fmt::Display for UserShortInfo {
 }
 
 
+// Краткая информация о друге
+#[derive(
+    Serialize,
+    Deserialize,
+ )
+]
+pub struct FriendShortInfo {
+    pub id:     u32,
+    pub name:   String,
+}
+
+/// Реализация Display для FriendShortInfo
+impl std::fmt::Display for FriendShortInfo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "FriendId: {}, FriendName: {}", self.id, self.name)
+    }
+}
+
 // Данные по токену и короткие данные по пользователю
 #[derive(
     Deserialize,
@@ -64,6 +82,15 @@ pub struct TokenAndShortUser {
     pub user:   UserShortInfo,
 }
 
+// Данные по другу
+#[derive(
+    Deserialize,
+  )
+]
+pub struct ShortFriendData {
+    pub friend: FriendShortInfo
+}
+
 // Сырой ответ логирования
 #[derive(
     Deserialize
@@ -71,6 +98,15 @@ pub struct TokenAndShortUser {
  ]
 pub struct LoginRawResponce {
     login:  TokenAndShortUser,
+}
+
+// Сырой ответ добавления друга
+#[derive(
+    Deserialize
+ )
+]
+pub struct AddFriendRawResponce {
+    addfriend:     ShortFriendData,
 }
 
 // Сырой ответ регистрации нового пользователя
@@ -102,6 +138,15 @@ struct RegisterResponce {
     errors: Option<Vec<GraphQLError>>
 }
 
+// Ответ сервера на попытку добавления друга
+#[derive(
+    Deserialize
+  )
+]
+struct AddFriendResponce {
+    data:   Option<AddFriendRawResponce>,
+    errors: Option<Vec<GraphQLError>>
+}
 
 // GraphQL Client
 #[derive(Deserialize, Debug)]
@@ -330,6 +375,103 @@ impl GraphQLClient {
                 Err(anyhow::anyhow!("Not found reg_resp.data"))
             }
         }
+    }
+
+    // Выполнить регистацию нового пользователя
+    pub fn add_friend(&mut self, friend_id: u32, jwt: &str) ->Result<FriendShortInfo> {
+
+        println!("Begin add_friend") ;
+
+        // строка запроса в формате GraphQL
+        let query = 
+        // 1) формат: {"data":{"add_friend":{"user":{"id":10,"name":"123"}}}}
+        // inp - название аргемента у метода graphql_server::Mutation::add_friend(.., inp: LoginInputObject,)
+        r#"
+            mutation Addfriend($friendid: Int!, $jwt: String!) {
+                addfriend(inp: { friendid: $friendid, jwt: $jwt }) {
+                    friend {
+                        id
+                        name
+                    }
+                }
+            }
+        "#
+        ;
+
+        println!("1) add_friend") ;
+
+        /*
+        println!("{}",
+    &json!({
+                            "query": query, // запрос в формате GraphQL
+                            "variables": {  // Переменные участвующие в формировании запроса
+                                "friendid": friend_id,
+                                "jwt":  jwt,
+                            }
+                         }
+                        )
+    
+        ) ;
+         */
+
+        let mut resp = 
+                ureq::post(&self.url)
+                    .header(common::CONTENT_TYPE_HEADER, common::JSON_TYPE_VAL)
+                    .send_json(
+                        // Создайте объект serde_json::Value из JSON-литерала.
+                        &json!({
+                            "query": query, // запрос в формате GraphQL
+                            "variables": {  // Переменные участвующие в формировании запроса
+                                "friendid": friend_id,
+                                "jwt":  jwt,
+                            }
+                         }
+                        )
+                    )? ;
+
+        println!("2) add_friend") ;
+
+        // проверка кода возврата ответа сервера
+        if resp.status() != StatusCode::OK {
+            return Err(anyhow::anyhow!("Server error: {}", resp.status()));
+        }
+
+        /*
+        let v = resp
+                            .body_mut()
+                            .read_to_string()? 
+                            ;
+        println!("{}", v) ; 
+        //{"data":{"addfriend":{"friend":{"id":3,"name":"Tom"}}}}
+        //{"data":null,"errors":[{"message":"I can't add a friend_id: 3 for user: 2, he already exists.","locations":[{"line":3,"column":17}],"path":["addfriend"]}]}
+        */
+
+        //*
+        // получение ответа от сервера
+        let add_friend_resp = resp
+                        .body_mut()
+                        .read_json::<AddFriendResponce>()
+                        .map_err(|err| 
+                            anyhow::anyhow!("read_json to AddFriendResponce error: {}", err)
+                        )? ;
+
+        // проверка ошибки в ответе сервера
+        if let Some(err) = add_friend_resp.errors {
+            return Err(anyhow::anyhow!("{:?}", err[0].message));
+        }
+
+        match add_friend_resp.data {
+            Some(data) => {
+                /*
+                self.set_token(&data.register.token)? ;
+                common::print_jw_token(&self.token);
+                */
+                Ok(data.addfriend.friend)
+            },
+            None => {
+                Err(anyhow::anyhow!("Not found reg_resp.data"))
+            }
+        }        
     }
 
 }

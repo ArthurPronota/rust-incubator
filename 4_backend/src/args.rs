@@ -60,7 +60,28 @@ pub enum Commands {
          )
         ]
         password:   String,
-    }
+    },
+
+    #[clap(
+        name = "add-friend",
+        about = "Add a friend",
+    )]
+    /// Добавить друга
+    AddFriend   {
+        /// Код друга
+        #[arg(
+            name = "friend_id",
+            help = "Friend code",
+        )]
+        friend_id:  u32,
+
+        /// Json Web Token
+        #[arg(
+            name = "jwt",
+            help = "JSON Web Token",
+        )]
+        jwt:        String,
+    },
 }
 
 /// Агрументы командной строки

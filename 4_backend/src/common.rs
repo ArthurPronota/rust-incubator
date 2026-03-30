@@ -38,6 +38,7 @@ pub const INVALID_PASSWORD: &str = "Invalid password" ;
 
 pub const INVALID_USERNAME_PASSWORD: &str = "Invalid username or password" ;
 
+
 /// Получить все необходимые переменные окружения
 pub fn get_all_env_vars() ->Result<(
                               u32,      // http_port,

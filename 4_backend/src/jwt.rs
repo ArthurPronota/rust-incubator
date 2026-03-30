@@ -29,13 +29,21 @@ use serde::{
     Deserialize,
     Debug,
 )]
-struct JwtCookieStr {
+pub struct JwtCookieStr {
     /// субъект, user_id
-    sub:    String,
+    sub:    u32,
     /// годен до
     exp:    usize,
     /// момент создания
     iat:    usize,
+}
+
+/// Реализация методов для JwtCookieStr
+impl JwtCookieStr {
+    /// Полдучить sub
+    pub fn get_sub(&self) ->u32 {
+        self.sub
+    }
 }
 
 /// Аутоидентификационный сервис
@@ -78,7 +86,7 @@ impl AuthService {
 
         // создание содержимого Jwt Cookie
         let cookie = JwtCookieStr {
-                sub:    user_id.to_string(),
+                sub:    user_id,
                 exp:    expir,
                 iat:    Utc::now().timestamp() as usize
         } ;

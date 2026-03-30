@@ -22,6 +22,7 @@ use async_graphql_axum::{
 };
 
 use axum::{Extension} ;
+use validator::Validate;
 
 use crate::common;
 use crate::db ;
@@ -33,6 +34,11 @@ use crate::users::{
         self,
         Users
     } ;
+
+use crate::friends::{
+        self,
+        Friends,
+} ;
 
 //use crate::graphql_client ;
 /*
@@ -72,7 +78,6 @@ pub struct UserShortInfo {
     pub name:   String,
 }
 
-
 // Возвразаемая информация о процессе Login
 #[derive(
     SimpleObject
@@ -81,6 +86,25 @@ pub struct UserShortInfo {
 pub struct LoginResult {
     token:  String,
     user:   UserShortInfo,
+}
+
+/// Краткая информация о друге
+#[derive(
+    SimpleObject
+  )
+]
+pub struct FriendShortInfo {
+    pub id:     u32,
+    pub name:   String,
+}
+
+/// Возврашаемая информация о добавленном друге
+#[derive(
+    SimpleObject,
+  )
+]
+pub struct AddFriendResult {
+    friend: FriendShortInfo,
 }
 
 // 2. Определяем корневой запрос (Query).
@@ -102,6 +126,19 @@ struct LoginInputObject {
     name:       String,
     password:   String,
 }
+
+// Входные данные для добавления друга (тип inp аргумента)
+#[derive(InputObject)]
+struct AddFriendObject {
+    friendid:   u32,
+    jwt:        String,
+}
+
+#[derive(InputObject)]
+struct AddFriendObject2 {
+    jwt:        String,
+}
+
 
 // Корневой Mutation тип
 pub struct Mutation ;
@@ -323,6 +360,97 @@ impl Mutation {
             LoginResult {
                 token:  auth_serv.generate_token(tmp_user.id_user())?,
                 user:   UserShortInfo { id: tmp_user.id_user(), name: tmp_user.name().to_owned() }
+            }
+        )
+    }    
+
+    /*
+    // добавление друга
+    async fn addfriend_(
+        &self, 
+        ctx: &Context<'_>, 
+        inp: AddFriendObject2,
+      ) ->Result<AddFriendResult>
+    {
+        println!("0) ----------------------") ;
+
+        Err(anyhow::anyhow!("Error !!!!!!!!!!!"))
+    } 
+     */   
+
+    // добавление друга
+    async fn addfriend(
+        &self, 
+        ctx: &Context<'_>, 
+        inp: AddFriendObject,
+      ) ->Result<AddFriendResult>
+    {
+        println!("0) ----------------------") ;
+        // получить пул соединений с DB
+        let db_res = 
+                ctx.data::<Arc<db::Database>>()
+                    .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
+
+        // получить auth_serv для работы с JSON Web Token
+        let auth_serv = 
+                ctx.data::<Arc<jwt::AuthService>>()
+                    .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
+
+        println!("1) ----------------------") ;
+        // Проверить jwt и получить данные по нему - это ваша сессия
+        let jwt_data = 
+                auth_serv.validate_token(&inp.jwt)? ;
+        println!("2) ----------------------") ;
+
+        let mut tmp_friend = Friends::default() ;
+
+        // установить код текущего пользователя
+        tmp_friend.set_user_id(
+                    jwt_data.get_sub()  // код текущего пользователя
+                )? ;
+
+        // установить код друга
+        tmp_friend.set_friend_id(inp.friendid)? ;
+
+        // проверить полученные данные
+        tmp_friend.validate()? ;
+
+        /*
+        // Проверка полученного JSON Web Token
+        if let Err(err) = auth_serv.validate_token(&inp.jwt) {
+            return Err(err.into());
+        }
+         */
+
+        // Создать новую транзацию
+        let mut trans = db_res
+                                        .pool
+                                        .begin()
+                                        .await? ;
+        // вставить друга
+        tmp_friend = Friends::insert(
+            &mut *trans,
+            tmp_friend.user_id(),
+            tmp_friend.friend_id(),
+        )
+        .await? ;
+
+        // получить данные по другу
+        let tmp_user = Users::find_for_id_user_raise(
+                        &mut *trans, 
+                        tmp_friend.friend_id(), 
+                        false,
+                    )
+                    .await? ;
+
+        // выполнить commit
+        trans
+            .commit()
+            .await? ;
+
+        Ok(
+            AddFriendResult {
+                friend: FriendShortInfo { id: tmp_user.id_user(), name: tmp_user.name().to_owned() }
             }
         )
     }    

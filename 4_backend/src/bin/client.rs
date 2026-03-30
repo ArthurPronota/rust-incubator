@@ -1,3 +1,20 @@
+/*
+            1. Зарегистрировать нового пользователя
+$ cargo run --bin client -- user-register Arthur Pass10
+JWT: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDg0NTA5OSwiaWF0IjoxNzc0ODQxNDk5fQ.6x6eY79uL8D6sYvud7Rry4vrubM_1tpJM96Dl056DIE
+UserId: 2, UserName: Arthur
+
+$ cargo run --bin client -- user-register Tom Pass20
+JWT: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjMsImV4cCI6MTc3NDg0NTQ1OCwiaWF0IjoxNzc0ODQxODU4fQ.IemC6q7S82YK7R1n1jNCcbhZ7bIFAZa_ugDj7R8XTcw
+UserId: 3, UserName: Tom
+
+            2. Выполнить login
+$ cargo run --bin client -- login Arthur Pass10
+JWT: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDg0NTIwNCwiaWF0IjoxNzc0ODQxNjA0fQ.WU7VQdxy4l0WyIf7kQSnkotI91uItcn3xOviwdxlPdU
+Registered user: UserId: 2, UserName: Arthur
+
+*/
+
 //use std::path;
 
 use anyhow::Result ;
