@@ -64,42 +64,36 @@ If you have enough time after implementing base requirements, consider to add th
 sequenceDiagram
     participant C as Клиент (GraphQL)
     participant E as GraphQL Engine
-    participant D as DataLoader<br/>(FriendLoader)
-    participant DB as База данных<br/>(MySQL)
+    participant D as DataLoader
+    participant DB as База данных (MySQL)
 
     Note over C,DB: Запрос: user(id:1) { friends { friends { id name } } }
 
-    C->>E: POST /graphql<br/>{ user(id:1) { friends { friends } } }
+    C->>E: POST /graphql { user(id:1) { friends { friends } } }
     
-    rect rgb(240, 240, 240)
-        Note right of E: 📍 УРОВЕНЬ 1<br/>Запрос пользователя
-        E->>DB: SELECT * FROM users WHERE id = 1
-        DB-->>E: User(id:1, name:"Alice")
-    end
+    Note over E,DB: УРОВЕНЬ 1: Запрос пользователя
+    E->>DB: SELECT * FROM users WHERE id = 1
+    DB-->>E: User(id:1, name:"Alice")
 
-    rect rgb(200, 230, 255)
-        Note right of E: 📍 УРОВЕНЬ 2<br/>Запрос друзей Alice
-        E->>D: load_one(1) - запрос друзей Alice
-        D->>D: ⏱️ Ожидание накопления<br/>ключей (batching window)
-        D->>DB: SELECT * FROM friends<br/>WHERE user_id IN (1)
-        DB-->>D: [Friend(id:2,"Bob"),<br/>Friend(id:3,"Charlie")]
-        D-->>E: ✅ Возвращает друзей Alice
-    end
+    Note over E,D: УРОВЕНЬ 2: Запрос друзей Alice
+    E->>D: load_one(1) - запрос друзей Alice
+    D->>D: Ожидание накопления ключей (batching window)
+    D->>DB: SELECT * FROM friends WHERE user_id IN (1)
+    DB-->>D: [Friend(id:2,"Bob"), Friend(id:3,"Charlie")]
+    D-->>E: Возвращает друзей Alice
 
-    rect rgb(200, 255, 200)
-        Note right of E: 📍 УРОВЕНЬ 3<br/>Параллельные запросы друзей друзей
-        E->>D: load_one(2) - для Bob
-        E->>D: load_one(3) - для Charlie
-        
-        Note over D: ⏱️ DataLoader накапливает ID [2,3]<br/>в течение микросекундной задержки
-        
-        D->>DB: SELECT * FROM friends<br/>WHERE user_id IN (2, 3)
-        DB-->>D: [Friends of Bob,<br/>Friends of Charlie]
-        
-        D-->>E: ✅ Распределяет данные<br/>по соответствующим резолверам
-    end
+    Note over E,D: УРОВЕНЬ 3: Параллельные запросы друзей друзей
+    E->>D: load_one(2) - для Bob
+    E->>D: load_one(3) - для Charlie
+    
+    Note over D: DataLoader накапливает ID [2,3] в течение микросекундной задержки
+    
+    D->>DB: SELECT * FROM friends WHERE user_id IN (2, 3)
+    DB-->>D: [Friends of Bob, Friends of Charlie]
+    
+    D-->>E: Распределяет данные по соответствующим резолверам
 
-    E-->>C: 🎯 JSON ответ<br/>Alice → [Bob, Charlie] → их друзья
+    E-->>C: JSON ответ: Alice -> [Bob, Charlie] -> их друзья
 ```
 
 <hr>
