@@ -59,6 +59,49 @@ If you have enough time after implementing base requirements, consider to add th
 - Реализовать [GraphQL] запрос [depth limiting][21].
 - Используйте [dataloading][22] (загрузку данных паттернами группировки), чтобы оптимизировать взаимодействие с базой данных в [GraphQL] - резолверах (В контексте GraphQL, резолвер (resolver) — это обычная функция на бэкенде, которая отвечает за получение данных для конкретного поля в вашем запросе.).
 
+
+```mermaid
+sequenceDiagram
+    participant C as Клиент (GraphQL)
+    participant E as GraphQL Engine
+    participant D as DataLoader<br/>(FriendLoader)
+    participant DB as База данных<br/>(MySQL)
+
+    Note over C,DB: Запрос: user(id:1) { friends { friends { id name } } }
+
+    C->>E: POST /graphql<br/>{ user(id:1) { friends { friends } } }
+    
+    rect rgb(240, 240, 240)
+        Note right of E: 📍 УРОВЕНЬ 1<br/>Запрос пользователя
+        E->>DB: SELECT * FROM users WHERE id = 1
+        DB-->>E: User(id:1, name:"Alice")
+    end
+
+    rect rgb(200, 230, 255)
+        Note right of E: 📍 УРОВЕНЬ 2<br/>Запрос друзей Alice
+        E->>D: load_one(1) - запрос друзей Alice
+        D->>D: ⏱️ Ожидание накопления<br/>ключей (batching window)
+        D->>DB: SELECT * FROM friends<br/>WHERE user_id IN (1)
+        DB-->>D: [Friend(id:2,"Bob"),<br/>Friend(id:3,"Charlie")]
+        D-->>E: ✅ Возвращает друзей Alice
+    end
+
+    rect rgb(200, 255, 200)
+        Note right of E: 📍 УРОВЕНЬ 3<br/>Параллельные запросы друзей друзей
+        E->>D: load_one(2) - для Bob
+        E->>D: load_one(3) - для Charlie
+        
+        Note over D: ⏱️ DataLoader накапливает ID [2,3]<br/>в течение микросекундной задержки
+        
+        D->>DB: SELECT * FROM friends<br/>WHERE user_id IN (2, 3)
+        DB-->>D: [Friends of Bob,<br/>Friends of Charlie]
+        
+        D-->>E: ✅ Распределяет данные<br/>по соответствующим резолверам
+    end
+
+    E-->>C: 🎯 JSON ответ<br/>Alice → [Bob, Charlie] → их друзья
+```
+
 <hr>
 
 <a name="q-0401"><h3>Как и зачем мне взаимодействовать с базами данных в приложении на Rust? Как организовать миграции для моего проекта?</h3></a>
