@@ -501,7 +501,7 @@ impl Mutation {
         trans
             .commit()
             .await? ;
-                            
+
         Ok(
             DelFriendResult { 
                 friend: FriendShortInfo { 

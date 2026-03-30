@@ -27,7 +27,7 @@ use async_graphql::{
             EmptySubscription,
             Object,
             Schema,
-            SimpleObject
+            SimpleObject,
 };
 
 use async_graphql_axum::{
@@ -75,7 +75,8 @@ async fn main() ->Result<()> {
          host_http, 
          db_path, 
          jwt_expir, 
-         jwt_secret
+         jwt_secret,
+         graphql_deep_limit
         ) = common::get_all_env_vars()? ;
 
     
@@ -104,6 +105,8 @@ async fn main() ->Result<()> {
                     // добавить пул соединений с базой
                     .data(db_res.clone())
                     .data(auth_serv.clone())
+                    // Установить максимальную глубину запроса.
+                    .limit_depth(graphql_deep_limit)
                     .finish() ;
 
     let route: Router<()> = Router::new()

@@ -22,7 +22,10 @@ const DB_PATH_CONNECT: &str = "DB_PATH_CONNECT" ;
 const JWT_EXPIRATION: &str = "JWT_EXPIRATION" ;
 
 /// Секретная часть Json Web Token
-const JWT_SECRET:&str = "JWT_SECRET" ;
+const JWT_SECRET: &str = "JWT_SECRET" ;
+
+/// Максимальная глубина GRAPHQL DEEP LIMIT
+const GRAPHQL_DEEP_LIMIT: &str = "GRAPHQL_DEEPLIM" ;
 
 /// Uri передачи сообщений для graphql
 pub const GRAPHQL_URI: &str = "/graphql" ;
@@ -46,6 +49,7 @@ pub fn get_all_env_vars() ->Result<(
                               String,   // db_path,
                               u32,      // jwt_expir,
                               String,   // jwt_secret,
+                              usize,    // graphql_deep_limit
                             )>{
     // Считывание содержимого из .env файла с установкой переменных 
     // окружения если таковые не определены
@@ -116,12 +120,21 @@ pub fn get_all_env_vars() ->Result<(
         secret=> secret.to_string(),
     } ;
 
+
+    let graphql_deep_limit = std::env::var(GRAPHQL_DEEP_LIMIT)
+                            .map_err(|err| anyhow::anyhow!("The environment variable: {} does not exist, error: {}", GRAPHQL_DEEP_LIMIT, err))?
+                            .trim()
+                            .parse::<usize>()
+                            .map_err(|err| anyhow::anyhow!("Error converting JWT_EXPIRATION to u32: {}", err))?
+                            ;
+
     Ok((
         http_port,
         http_host,
         db_path,
         jwt_expir,
         jwt_secret,
+        graphql_deep_limit,
        )
     )
 }
