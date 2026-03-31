@@ -21,6 +21,10 @@ Added friend: FriendId: 3, FriendName: Tom
 $ cargo run --bin client -- del-friend 3 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDg1ODc2MiwiaWF0IjoxNzc0ODU1MTYyfQ.jw624nSVrSA3HjbdrqC4S8uWwfJAY1DU8uAKC838LK4
 Deleted friend: FriendId: 3, FriendName: Tom
 
+            5. Показать друзей и их друзей
+$ cargo run --bin client -- show-friends eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDk1ODYyMiwiaWF0IjoxNzc0OTU1MDIyfQ.Zaycu1yIejd1V4jCFmw1Rf7Co2ITNMr4KDdBN5Roy2M
+{"data":{"userplus":{"id":2,"name":"aaa","friends":[{"id":3,"name":"Tom","friends":[{"id":2,"name":"Arthur"}]},{"id":4,"name":"Sem","friends":[{"id":3,"name":"Tom"}]}]}}}
+
 */
 
 //use std::path;
