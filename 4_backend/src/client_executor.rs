@@ -34,7 +34,7 @@ pub fn any_command(
         },
         // Логирование пользоватлем
         Commands::Login { name, password } => {
-            println!("Registered user: {}", 
+            println!("Logged in user: {}", 
                      gr_client.login(name, password)?
             ) ;
         },
@@ -50,6 +50,10 @@ pub fn any_command(
                 "Deleted friend: {}",
                 gr_client.del_friend(*friend_id, jwt)?
             ) ;
+        },
+        // Показать друзей
+        Commands::ShowFriends { jwt } => {
+            gr_client.show_friend(jwt)? ;
         },
     }
 

@@ -38,6 +38,8 @@ use async_graphql_axum::{
 //use jsonwebtoken::crypto ;
 //use jsonwebtoken::crypto::CryptoProvider;
 
+use async_graphql::dataloader::DataLoader;
+
 
 #[path = "../common.rs"]
 mod common ;
@@ -92,6 +94,16 @@ async fn main() ->Result<()> {
             )? 
         ) ;
 
+    let friend_loader = 
+            DataLoader::new(
+                graphql_server::FriendDataLoader{
+                            pool: Arc::new(
+                                db::Database::new(&db_path).await?
+                            )
+                }, 
+                tokio::spawn
+            );
+
     // Создать таблицы в DB      
     db_res.create_tables()
         .await? ;
@@ -105,6 +117,7 @@ async fn main() ->Result<()> {
                     // добавить пул соединений с базой
                     .data(db_res.clone())
                     .data(auth_serv.clone())
+                    .data(friend_loader)
                     // Установить максимальную глубину запроса.
                     .limit_depth(graphql_deep_limit)
                     .finish() ;

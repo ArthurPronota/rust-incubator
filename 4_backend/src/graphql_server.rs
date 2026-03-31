@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use anyhow::Result ;
 
+use async_graphql::dataloader::{DataLoader, Loader};
 use async_graphql::{
             Context,
             InputObject,
@@ -14,6 +15,7 @@ use async_graphql::{
             OutputType,
             //Result as GraphQLResult,
             Error,
+            ComplexObject,
 };
 
 use async_graphql_axum::{
@@ -23,6 +25,10 @@ use async_graphql_axum::{
 
 use axum::{Extension} ;
 use validator::Validate;
+
+use sqlx::{self, FromRow} ;
+
+//use async_graphql::dataloader::DataLoader;
 
 use crate::common;
 use crate::db ;
@@ -62,10 +68,179 @@ impl Mutation {
 
 // 1. Определяем нашу структуру данных. 
 // SimpleObject позволяет async-graphql автоматически превратить её в тип GraphQL.
-#[derive(SimpleObject, Clone)]
-struct User {
+#[derive(
+    SimpleObject,
+    Clone,
+    //FromRow,
+    Debug,
+    //ComplexObject
+  )
+]
+#[graphql(complex)]
+//#[ComplexObject]
+pub struct User {
+    id:   u32,
     name: String,
-    email: String,
+}
+
+#[ComplexObject]
+impl User {
+    // Этот метод будет вызываться КАЖДЫЙ РАЗ, когда в запросе встречается поле "friends"
+    async fn friends(&self, ctx: &Context<'_>) -> Result<Vec<User>> {
+
+        let loader = match ctx.data::<DataLoader<FriendDataLoader>>() {
+            Ok(ld) => ld,
+            Err(err) => return Err(anyhow::anyhow!("{:?}", err)),
+        } ;
+
+        // получить auth_serv для работы с JSON Web Token
+        let auth_serv = 
+                ctx.data::<Arc<jwt::AuthService>>()
+                    .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
+        /*
+        // Проверить jwt и получить данные по нему - это ваша сессия
+        let jwt_data = 
+                auth_serv.validate_token(&jwt)? ;
+        */
+
+        /*
+        Ok(
+            User {
+                id: 10, 
+                name,
+                //email
+            }
+        )
+         */
+        /*
+        match loader.load_one(jwt_data.get_sub()).await? {
+            Some(f) => {
+                println!("f: {:?}", f) ;
+                Ok(f)
+            },
+            None => {
+                println!("Empty") ;
+                Ok(vec![])
+            },
+        }
+        */
+        let friends = 
+                loader.load_one(self.id).await?;
+        Ok(friends.unwrap_or_default())
+
+    }    
+}
+
+/// DataLoader для загрузки друзей пользователей
+#[derive(
+    Clone
+  )
+]
+pub struct FriendDataLoader {
+    pub pool:   Arc<db::Database>,
+}
+
+impl Loader<u32> for FriendDataLoader {
+    //type Key = u32 ;
+    type Value = Vec<User>;
+    type Error = Arc<sqlx::Error>;
+
+    async fn load(
+            &self,
+            keys: &[u32],
+        ) -> std::result::Result<std::collections::HashMap<
+                                            u32,
+                                            Self::Value
+                                            //Vec<User>
+                                        >,
+                                        Self::Error> {
+        /*
+        let mut trans = self.pool
+                                            .pool
+                                            .begin()
+                                            .await
+                                            ?;            
+         */
+
+        /*
+        let v = keys
+                    .iter()
+                    .map(|x| x.to_string())
+                    //.map(|x| *x)
+                    .collect::<Vec<_>>()
+                    .join(",") ;
+         */
+
+        println!("keys: {:?}", keys) ;
+
+        let rows = 
+            sqlx::query_as::<_, 
+                //User
+                (u32, u32, String)
+                >(
+                format!(
+                //*
+                r#"
+                SELECT user_id, friend_id, name 
+                FROM friends JOIN users ON friends.friend_id = users.id_user
+                WHERE user_id in ({})
+                "#,
+                keys
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+                )
+                .as_str()
+                //*/
+                //"SELECT id, name FROM users WHERE id = ANY($1)"
+            )
+            //.bind(keys) 
+            .fetch_all(
+                &self.pool.pool
+                //&mut *trans
+            )
+            .await?;  
+
+        let mut results = std::collections::HashMap::new();
+        for row in rows {
+            let user_id = row.0 ; //    row.get("user_id");
+            let friend = User { 
+                id: row.1,        // row.get("friend_id"), 
+                name: row.2,      //row.get("name") 
+            };
+
+            println!("Friend: {:?}", friend) ;
+            /*
+            results
+                .entry(user_id)
+
+                    //.or_insert_with(|| friend)
+                    //.or_insert_with_key(friend)
+                .or_insert_vec()
+                .push(friend)
+                ;
+             */
+            results
+                .entry(user_id)
+                .and_modify(|users: &mut Vec<User>| {
+                    if ! users
+                          .iter()
+                          .any(|u| u.id == friend.id)
+                    {
+                       users.push(friend.clone());
+                    }
+                  }
+                )
+                .or_insert_with(|| vec![friend])
+                ;
+
+        }
+
+        println!("results: {:?}", results) ;
+
+        Ok(results)              
+    }
 }
 
 // Краткая информация о пользователе
@@ -121,14 +296,56 @@ pub struct DelFriendResult {
 pub struct Query;
 
 #[Object]
+#[ComplexObject]
 impl Query {
     // Наш резолвер. Он принимает name и email и возвращает структуру User.
-    async fn get_user(&self, name: String, email: String) -> Result<User> {
+    async fn userplus(&self, ctx: &Context<'_>, jwt: String) ->Result<User> {
+
+        let loader = match ctx.data::<DataLoader<FriendDataLoader>>() {
+            Ok(ld) => ld,
+            Err(err) => return Err(anyhow::anyhow!("{:?}", err)),
+        } ;
+
+        // получить auth_serv для работы с JSON Web Token
+        let auth_serv = 
+                ctx.data::<Arc<jwt::AuthService>>()
+                    .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
+
+        // Проверить jwt и получить данные по нему - это ваша сессия
+        let jwt_data = 
+                auth_serv.validate_token(&jwt)? ;
+
+        /*
         Ok(
-            User {name, email}
+            User {
+                id: 10, 
+                name,
+                //email
+            }
         )
+         */
+        /*
+        match loader.load_one(jwt_data.get_sub()).await? {
+            Some(f) => {
+                println!("f: {:?}", f) ;
+                Ok(f)
+            },
+            None => {
+                println!("Empty") ;
+                Ok(vec![])
+            },
+        }
+        */
+        /*
+        let friends = 
+                loader.load_one(jwt_data.get_sub()).await?;
+        Ok(friends.unwrap_or_default())     
+         */
+        Ok(User { id: 2, name: "aaa".to_string() })
     }
+
 }
+
 
 // Входные данные для логирования
 #[derive(InputObject)]

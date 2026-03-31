@@ -549,4 +549,81 @@ impl GraphQLClient {
             }
         }
     }    
+
+    // Показать друзей
+    pub fn show_friend(&mut self, jwt: &str) ->Result<FriendShortInfo> {
+
+        // строка запроса в формате GraphQL
+        let query = 
+        // 1) формат: {"data":{"delfriend":{"user":{"id":10,"name":"123"}}}}
+        // inp - название аргемента у метода graphql_server::Mutation::delfriend(.., inp: AddFriendObject,)
+        // названия методов, ключи и имена переменных не должны содержать '_'
+        r#"
+            query Friends($jwt: String!) {
+                userplus(jwt: $jwt) {
+                    id
+                    name
+                    friends {
+                        id
+                        name
+                        friends {
+                            id
+                            name
+                        }
+                    }
+                }
+            }
+        "#
+        /*
+        r#"
+query Friends($jwt: String!) {
+ friends(jwt: $jwt) {    
+    name
+    friends {
+      name
+      friends {
+        name
+        friends {
+          name # Это "друзья друзей друзей"
+        }
+      }
+    }
+  }
+}
+    "#
+         */
+        ;
+
+        let mut resp = 
+                ureq::post(&self.url)
+                    .header(common::CONTENT_TYPE_HEADER, common::JSON_TYPE_VAL)
+                    .send_json(
+                        // Создайте объект serde_json::Value из JSON-литерала.
+                        &json!({
+                            "query": query, // запрос в формате GraphQL
+                            "variables": {  // Переменные участвующие в формировании запроса
+                                "jwt":  jwt,
+                            }
+                         }
+                        )
+                    )? ;
+
+        // проверка кода возврата ответа сервера
+        if resp.status() != StatusCode::OK {
+            return Err(anyhow::anyhow!("Server error: {}", resp.status()));
+        }
+
+        //*
+        let v = resp
+                            .body_mut()
+                            .read_to_string()? 
+                            ;
+        println!("{}", v) ; 
+        //{"data":{"addfriend":{"friend":{"id":3,"name":"Tom"}}}}
+        //{"data":null,"errors":[{"message":"I can't add a friend_id: 3 for user: 2, he already exists.","locations":[{"line":3,"column":17}],"path":["addfriend"]}]}
+        //*/
+
+        Err(anyhow::anyhow!(""))
+    }
+
 }

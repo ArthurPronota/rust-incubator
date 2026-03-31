@@ -102,7 +102,21 @@ pub enum Commands {
             help = "JSON Web Token",
         )]
         jwt:        String,
-    },    
+    },
+
+    /// Показать друзей
+    #[clap(
+        name = "show-friends",
+        about = "Show friends",
+    )]
+    ShowFriends {
+        /// Json Web Token
+        #[arg(
+            name = "jwt",
+            help = "JSON Web Token",
+        )]
+        jwt:        String,
+    }
 }
 
 /// Агрументы командной строки

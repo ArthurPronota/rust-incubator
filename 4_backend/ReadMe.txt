@@ -3388,5 +3388,546 @@ Use code with caution.
 Хотите увидеть, как правильно импортировать и инициализировать его в файле со схемой?
 
 
+====================================================
+====================================================
+====================================================
+====================================================
+====================================================
+
+Чтобы преобразовать данные из плоского ответа базы данных в такую глубокую вложенную структуру, в Rust (с библиотекой async-graphql) не нужно писать код ручной сборки дерева.
+GraphQL делает это автоматически благодаря рекурсивному вызову резолверов. Ваша задача — правильно реализовать связь в коде.
+1. Как это работает (Магия GraphQL)
+Когда клиент отправляет вложенный запрос, движок GraphQL проходит по нему как по дереву:
+Вызывает резолвер user(id: 1). Получает объект User.
+Видит, что внутри запрошены friends. Вызывает метод friends у полученного объекта.
+Для каждого друга из списка он снова вызывает метод friends этого друга.
+И так далее, пока не достигнет указанной глубины.
+2. Реализация структур и резолверов
+Вам нужно определить структуру User и реализовать для неё блок ComplexObject.
+rust
+use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::DataLoader};
+
+#[derive(SimpleObject, Clone)]
+#[graphql(complex)] // Указываем, что у структуры есть дополнительные резолверы
+pub struct User {
+    pub id: u64,
+    pub name: String,
+}
+
+#[ComplexObject]
+impl User {
+    // Этот метод будет вызываться КАЖДЫЙ РАЗ, когда в запросе встречается поле "friends"
+    async fn friends(&self, ctx: &Context<'_>) -> Result<Vec<User>> {
+        // 1. Берем DataLoader из контекста
+        let loader = ctx.data::<DataLoader<FriendLoader>>()?;
+        
+        // 2. Запрашиваем данные. 
+        // Если это друзья 2-го уровня, DataLoader соберет ID всех друзей 1-го уровня 
+        // и сделает ОДИН запрос к БД.
+        let friends = loader.load_one(self.id).await?;
+        
+        // 3. Возвращаем список. GraphQL сам "разложит" их по нужным веткам дерева.
+        Ok(friends.unwrap_or_default())
+    }
+}
+Use code with caution.
+
+3. Как данные преобразуются в JSON
+После того как все резолверы отработали, async-graphql собирает результаты в итоговый JSON, который в точности повторяет форму вашего запроса:
+Шаг	Что делает Rust	Результат (упрощенно)
+Корень	Вызов Query::user(1)	{ "id": 1, "name": "Alice" }
+Уровень 1	Вызов Alice.friends()	Добавляет friends: [...] к Alice
+Уровень 2	Вызов .friends() для каждого друга	Добавляет вложенные списки к каждому другу
+Почему это лучше ручной сборки?
+Гибкость: Клиент может запросить только name, или name + friends, или friends на 5 уровней вглубь. Вам не нужно писать разные функции под каждый случай.
+Производительность: Благодаря DataLoader, каждый уровень вложенности — это всего 1 эффективный SQL-запрос WHERE id IN (...).
+Хотите разобрать, как ограничить глубину (Depth Limiting), чтобы клиент не смог запросить друзей на 100 уровней вглубь и не перегрузил сервер?
+
+
+
+
+Какова структура данных в friends:
+
+Как преобразовать полученные данные в выходную структуру:
+
+{
+  user(id: 1) {
+    name
+    friends {
+      name
+      friends {
+        name
+        friends {
+          name # Это "друзья друзей друзей"
+        }
+      }
+    }
+  }
+}
+В GraphQL структура данных в поле friends — это рекурсивный список объектов. Чтобы это работало в Rust, вам не нужно вручную собирать «дерево» (вложенные JSON-объекты). Вы определяете только связь «один уровень к следующему», а GraphQL-движок сам строит итоговую вложенность.
+Вот как выглядит структура данных на разных этапах:
+1. В Rust (Модель данных)
+Поле friends — это вектор структур User. Благодаря макросу #[ComplexObject], это поле становится вычисляемым (динамическим).
+rust
+#[derive(SimpleObject, Clone)]
+pub struct User {
+    pub id: u64,
+    pub name: String,
+    // В самой структуре поля friends НЕТ, оно вычисляется в резолвере
+}
+Use code with caution.
+
+2. В базе данных (Таблица связей)
+Данные хранятся в плоском виде в таблице friends. Именно отсюда DataLoader забирает их пачками.
+user_id	friend_id
+1	2 (Bob)
+1	3 (Charlie)
+2	4 (Dave)
+3. Как происходит преобразование (Алгоритм)
+Когда клиент запрашивает «друзей друзей», происходит каскадное заполнение структуры:
+Запрос корня: Находим User(id: 1, name: "Alice").
+Первый уровень friends:
+Резолвер вызывает loader.load_one(1).
+DataLoader возвращает Vec<User> (Bob и Charlie).
+Структура в памяти (временно): Alice { friends: [Bob, Charlie] }.
+Второй уровень friends:
+Двигатель видит, что у Bob и Charlie тоже запрошены друзья.
+Вызывает loader.load_one(2) и loader.load_one(3).
+DataLoader делает один запрос WHERE user_id IN (2, 3) и возвращает списки их друзей.
+Структура дополняется: Bob { friends: [Dave] }, Charlie { friends: [] }.
+4. Итоговый JSON (Выходная структура)
+Библиотека async-graphql берет все эти объекты и сериализует их в JSON, который в точности повторяет форму запроса:
+json
+{
+  "data": {
+    "user": {
+      "name": "Alice",
+      "friends": [
+        {
+          "name": "Bob",
+          "friends": [
+            { "name": "Dave", "friends": [] }
+          ]
+        },
+        {
+          "name": "Charlie",
+          "friends": []
+        }
+      ]
+    }
+  }
+}
+Use code with caution.
+
+Резюме: Структура данных в friends — это динамический список, который наполняется рекурсивно. Вам достаточно описать, как получить друзей для одного конкретного id_user, а всё остальное сделает магия резолверов и DataLoader.
+Хотите посмотреть, как реализовать Mutation для добавления нового друга в эту структуру?
+
+
+
+
+Этот код возвразает значение:
+
+impl Loader<u32> for FriendDataLoader {
+    //type Key = u32 ;
+    type Value = Vec<User>;
+    type Error = Arc<sqlx::Error>;
+
+    async fn load(
+            &self,
+            keys: &[u32],
+        ) -> std::result::Result<std::collections::HashMap<
+                                            u32,
+                                            Self::Value
+                                            //Vec<User>
+                                        >,
+                                        Self::Error> {
+        /*
+        let mut trans = self.pool
+                                            .pool
+                                            .begin()
+                                            .await
+                                            ?;            
+         */
+
+        /*
+        let v = keys
+                    .iter()
+                    .map(|x| x.to_string())
+                    //.map(|x| *x)
+                    .collect::<Vec<_>>()
+                    .join(",") ;
+         */
+
+        let rows = 
+            sqlx::query_as::<_, 
+                //User
+                (u32, u32, String)
+                >(
+                format!(
+                //*
+                r#"
+                SELECT id_user, friend_id, name 
+                FROM friends JOIN users ON friends.friend_id = users.id_user
+                WHERE user_id in ({})
+                "#,
+                keys
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+                )
+                .as_str()
+                //*/
+                //"SELECT id, name FROM users WHERE id = ANY($1)"
+            )
+            //.bind(keys) 
+            .fetch_all(
+                &self.pool.pool
+                //&mut *trans
+            )
+            .await?;  
+
+        let mut results = std::collections::HashMap::new();
+        for row in rows {
+            let user_id = row.0 ; //    row.get("user_id");
+            let friend = User { 
+                id: row.1,        // row.get("friend_id"), 
+                name: row.2,      //row.get("name") 
+            };
+
+            println!("Friend: {:?}", friend) ;
+            /*
+            results
+                .entry(user_id)
+
+                    //.or_insert_with(|| friend)
+                    //.or_insert_with_key(friend)
+                .or_insert_vec()
+                .push(friend)
+                ;
+             */
+            results
+                .entry(user_id)
+                .and_modify(|users: &mut Vec<User>| {
+                    if ! users
+                          .iter()
+                          .any(|u| u.id == friend.id)
+                    {
+                       users.push(friend.clone());
+                    }
+                  }
+                )
+                .or_insert_with(|| vec![friend])
+                ;
+
+        }
+
+        println!("results: {:?}", results) ;
+
+        Ok(results)              
+    }
+
+
+А код из резолвера нет:
+
+        let friends = 
+                loader.load_one(jwt_data.get_sub()).await?;
+        Ok(friends.unwrap_or_default())  
+
+В чём причина?
+Причина, скорее всего, кроется в типе данных ключа или в том, как DataLoader сопоставляет результаты из HashMap с запрошенным ключом.
+Вот основные моменты, которые нужно проверить:
+1. Несоответствие типов (самая частая причина)
+В резолвере вы вызываете loader.load_one(jwt_data.get_sub()).
+Какой тип возвращает get_sub()?
+Если это String или u64, а ваш Loader ожидает u32, то DataLoader просто не найдет совпадения.
+Убедитесь, что тип аргумента в load_one идентичен типу Key в реализации impl Loader<u32>.
+2. Ключи в HashMap должны совпадать с запрошенными
+DataLoader работает так:
+Он берет ключ из load_one (например, 1).
+Передает его в функцию load.
+После получения HashMap он пытается достать из неё значение по тому же ключу: map.get(&1).
+Если в вашем SQL-запросе SELECT id_user... возвращается friend_id вместо user_id (того, кто запрашивал), то в HashMap ключом станет ID друга, а не того, кто его запрашивал. В итоге loader.get(&1) вернет None.
+Проверьте SQL:
+У вас в запросе: SELECT id_user, friend_id, name ... WHERE user_id in (...).
+В коде: let user_id = row.0;
+Убедитесь, что row.0 — это именно тот ID, который пришел в метод keys (владелец списка друзей), а не ID самого друга.
+3. Ошибка в именовании полей (MySQL)
+В запросе вы выбираете id_user, а в условии WHERE используете user_id. Если в таблице friends колонка называется user_id, а вы кладете её в row.0, убедитесь, что значения там соответствуют переданным в keys.
+4. Жизненный цикл DataLoader
+Если вы создаете DataLoader внутри резолвера — он будет пустой и ничего не вернет. DataLoader должен быть создан один раз на весь HTTP-запрос и храниться в ctx.data.
+Как отладить:
+Добавьте логи в начало метода load, чтобы увидеть, какие ключи реально приходят:
+rust
+async fn load(&self, keys: &[u32]) -> ... {
+    println!("DataLoader запрашивает ключи: {:?}", keys);
+    // ... ваш код
+}
+Use code with caution.
+
+Если в логе results данные есть, а в резолвере friends пусто — значит, ключ, по которому вы сохранили данные в HashMap, не совпадает с тем, который вы передали в load_one.
+Рекомендация: Проверьте, что jwt_data.get_sub() возвращает именно u32. Если это строка, приведите её: jwt_data.get_sub().parse::<u32>().unwrap().
+Какой тип возвращает jwt_data.get_sub()?
+AI can make mistakes, so double-check responses
+
+
+
+
+Как данный код связан со схемой
+// 2. Определяем корневой запрос (Query).
+pub struct Query;
+
+
+use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::DataLoader};
+
+#[derive(SimpleObject, Clone)]
+#[graphql(complex)] // Позволяет добавлять кастомные резолверы через ComplexObject
+pub struct User {
+    pub id: u64,
+    pub name: String,
+    // Поле email обычно скрываем от друзей по соображениям безопасности
+}
+
+#[ComplexObject]
+impl User {
+    /// Резолвер для получения списка друзей
+    async fn friends(&self, ctx: &Context<'_>) -> Result<Vec<User>> {
+        // Достаем наш загрузчик из контекста
+        let loader = ctx.data::<DataLoader<FriendLoader>>()?;
+        
+        // Запрашиваем друзей для текущего пользователя. 
+        // DataLoader подождет коллег по уровню вложенности и сделает 1 запрос к БД.
+        let friends = loader.load_one(self.id).await?;
+        
+        Ok(friends.unwrap_or_default())
+    }
+}
+Этот код определяет структуру (форму) графа и логику получения данных для его узлов. В GraphQL схема — это не просто текст, это дерево типов. Ваш код связывается со схемой через три ключевых механизма:
+1. Объявление типа в схеме (SimpleObject)
+Когда вы помечаете struct User макросом #[derive(SimpleObject)], библиотека async-graphql автоматически генерирует часть схемы на языке SDL:
+graphql
+type User {
+  id: Int!
+  name: String!
+}
+Use code with caution.
+
+Без этого макроса GraphQL не знал бы, что в вашей системе вообще существует объект «Пользователь».
+2. Расширение схемы динамическим полем (ComplexObject)
+Макрос #[graphql(complex)] и блок #[ComplexObject] говорят серверу: «У объекта User есть поле friends, но его нельзя просто взять из памяти (как id или name), его нужно вычислить асинхронно».
+В схему добавляется связь:
+graphql
+type User {
+  id: Int!
+  name: String!
+  friends: [User!]!  # Это поле появилось благодаря ComplexObject
+}
+Use code with caution.
+
+Связь: Каждый раз, когда клиент пишет в запросе слово friends внутри объекта User, движок GraphQL «смотрит» в ваш код и запускает функцию async fn friends(...).
+3. Корневая точка входа (Query)
+Структура pub struct Query — это «входная дверь» в вашу схему. Чтобы User стал доступен, он должен быть возвращен из резолвера внутри Query.
+Например:
+rust
+#[Object]
+impl Query {
+    async fn me(&self) -> User {
+        User { id: 1, name: "Alice".into() }
+    }
+}
+Use code with caution.
+
+Это создает финальную связь в схеме: Query -> User -> [User] (friends).
+Итог: как это работает вместе
+Схема (SDL): Описывает что можно спросить (типы и поля).
+Ваш код: Описывает как эти данные получить (резолверы).
+DataLoader: Оптимизирует процесс, если в схеме запрошена большая вложенность.
+Проверить: У вас в main.rs при создании схемы используется Schema::build(Query, ...)? Это критически важно для регистрации всех этих связей.
+Хотите увидеть, как правильно зарегистрировать этот Query в методе Schema::build, чтобы всё заработало?
+
+
+
+
+да
+Чтобы схема «увидела» ваш User и его friends, нужно правильно собрать объект схемы и передать в него DataLoader. Без этого резолверы не смогут найти данные в контексте (ctx.data).
+Вот как это выглядит в main.rs:
+1. Регистрация Query и Schema
+Вам нужно создать экземпляр Query и передать его в билдер схемы.
+rust
+use async_graphql::{Schema, EmptyMutation, EmptySubscription, dataloader::DataLoader};
+
+// ... ваши структуры User и FriendLoader ...
+
+#[tokio::main]
+async fn main() {
+    // 1. Создаем пул соединений с БД
+    let pool = MySqlPool::connect("mysql://...").await.unwrap();
+
+    // 2. Инициализируем DataLoader. 
+    // Это ВАЖНО: он должен быть создан один раз и проброшен в схему.
+    let friend_loader = DataLoader::new(
+        FriendLoader { pool: pool.clone() },
+        tokio::spawn,
+    );
+
+    // 3. Собираем схему. 
+    // Сюда мы передаем корень (Query) и все глобальные данные (.data)
+    let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
+        .data(pool)           // Прокидываем БД (если нужно в Query)
+        .data(friend_loader)  // Прокидываем наш DataLoader для User::friends
+        .finish();
+
+    // 4. Передаем схему в Axum (как мы обсуждали в начале)
+    let app = Router::new()
+        .route("/graphql", post(graphql_handler))
+        .layer(Extension(schema));
+    
+    // ... запуск сервера ...
+}
+Use code with caution.
+
+Как это связывается воедино (Путь данных):
+Запрос: Клиент пишет { me { friends { name } } }.
+Entry Point: async-graphql идет в Query (который вы передали в Schema::build).
+Context: Когда вызывается резолвер friends, он берет ctx.data::<DataLoader<FriendLoader>>().
+Связь: Движок находит именно тот экземпляр friend_loader, который вы добавили через .data() в main.rs.
+Типы: Поскольку Query возвращает тип User, а у User есть ComplexObject, движок автоматически «цепляет» метод friends к схеме.
+Почему это могло не работать (Чек-лист):
+Забыли .data(friend_loader): Если в main не вызвать этот метод, то ctx.data().unwrap() в резолвере вызовет панику (или вернет ошибку).
+Разные типы: Если в main вы положили DataLoader<OtherLoader>, а в резолвере просите FriendLoader, он его не найдет. Типы должны совпадать до буквы.
+Хотите пример того, как должен выглядеть сам Query, чтобы он возвращал объект User для начала всей цепочки? [1, 2]
+Сформулировать пример метода в Query, который извлекает текущего пользователя из базы, чтобы запустить цепочку вызовов?
+
+
+
+
+Как вызывать User::friends из объекта Query?
+Вам не нужно вызывать User::friends вручную. В этом и заключается главная прелесть GraphQL: вы возвращаете объект User из корневого запроса Query, а движок GraphQL сам вызовет метод friends, если клиент указал его в своем запросе.
+Вот как выглядит эта связка в коде:
+1. Реализация Query
+В Query вы просто находите нужного пользователя и возвращаете его структуру.
+rust
+#[Object]
+impl Query {
+    /// Точка входа: получить пользователя по ID
+    async fn user(&self, ctx: &Context<'_>, id: u64) -> Result<User> {
+        // Здесь мы просто получаем данные из БД (плоский объект User)
+        let db = ctx.data::<MySqlPool>()?;
+        let user = sqlx::query_as!(User, "SELECT id, name FROM users WHERE id = ?", id)
+            .fetch_one(db)
+            .await?;
+            
+        Ok(user) // Мы возвращаем User, и GraphQL видит, что у него есть поле friends
+    }
+}
+Use code with caution.
+
+2. Цепочка вызовов (Что происходит внутри)
+Когда клиент отправляет запрос:
+graphql
+{
+  user(id: 1) {
+    name
+    friends { # <--- GraphQL сам вызовет User::friends здесь
+      name
+    }
+  }
+}
+Use code with caution.
+
+Сначала вызывается Query::user(id: 1). Он возвращает структуру User { id: 1, name: "Alice" }.
+Затем движок видит, что запрошено поле friends. Он «смотрит» в реализацию ComplexObject для типа User.
+Автоматически вызывается User::friends(&self, ctx), где self — это та самая "Alice", которую вы только что вернули.
+Если вам всё же нужно вызвать его программно (внутри Rust)
+Если вы хотите вызвать этот метод вручную в коде (например, для тестов или внутри другой функции), вам придется передать ему Context. Но обычно это плохая практика для резолверов. Если логика получения друзей нужна вам в разных местах, лучше вынести её в отдельный сервисный слой:
+rust
+// Правильный подход: вынести логику
+impl User {
+    async fn get_my_friends(&self, pool: &MySqlPool) -> Vec<User> {
+        // SQL логика здесь
+    }
+}
+
+// Тогда в резолвере:
+async fn friends(&self, ctx: &Context<'_>) -> Result<Vec<User>> {
+    let pool = ctx.data::<MySqlPool>()?;
+    Ok(self.get_my_friends(pool).await)
+}
+Use code with caution.
+
+Итог: В GraphQL вы строите связи между типами. Как только Query вернул объект User, все его «сложные» поля (резолверы из ComplexObject) становятся доступны для автоматического вызова движком.
+Вы уже реализовали метод авторизации, чтобы в Query возвращать «себя» (me) через JWT, а не просто по ID?
+Предложить код для получения текущего пользователя из JWT-токена внутри Query?
+
+
+
+
+Что будет если  запрос будет таким:
+
+graphql
+{
+  user(id: 1) {
+    name
+    friends { # <--- GraphQL сам вызовет User::friends здесь
+      name
+       friends {
+          name
+       }
+    }
+  }
+}
+В этом случае произойдет рекурсивный обход дерева, где каждый уровень будет обрабатываться движком GraphQL по цепочке. Благодаря DataLoader, это будет сделано максимально эффективно.
+Вот пошаговый процесс того, что произойдет «под капотом»:
+1. Уровень 0: Корень (Query)
+Движок вызывает ваш основной резолвер в Query:
+Действие: Query::user(id: 1).
+Результат: Объект User { id: 1, name: "Alice" }.
+2. Уровень 1: Друзья Алисы
+Движок видит поле friends внутри user и идет в ComplexObject типа User:
+Действие: Вызывается User::friends для Алисы (ID: 1).
+DataLoader: Выполняет loader.load_one(1).
+БД: Делает запрос SELECT ... WHERE user_id = 1.
+Результат: Допустим, возвращаются Bob (ID: 2) и Charlie (ID: 3).
+3. Уровень 2: Друзья Боба и Чарли
+Теперь самое интересное. Движок видит, что внутри списка друзей снова запрошено поле friends.
+Действие: Он вызывает User::friends одновременно для Боба (ID: 2) и для Чарли (ID: 3).
+DataLoader (Магия):
+Резолвер Боба вызывает loader.load_one(2).
+Резолвер Чарли вызывает loader.load_one(3).
+DataLoader приостанавливает выполнение на несколько микросекунд, собирает оба ID в массив [2, 3].
+БД: Выполняется всего один SQL-запрос: SELECT ... WHERE user_id IN (2, 3).
+Результат: Боб получает своих друзей, Чарли — своих.
+4. Сборка финального JSON
+Движок упаковывает все полученные данные в структуру, которую запросил клиент:
+json
+{
+  "data": {
+    "user": {
+      "name": "Alice",
+      "friends": [
+        {
+          "name": "Bob",
+          "friends": [
+             { "name": "Dave" }
+          ]
+        },
+        {
+          "name": "Charlie",
+          "friends": [] 
+        }
+      ]
+    }
+  }
+}
+Use code with caution.
+
+Что важно понимать:
+Количество запросов в БД: Если бы не было DataLoader, на этом этапе было бы 3 запроса к таблице друзей (1 для Алисы, 1 для Боба, 1 для Чарли). С DataLoader их будет всего 2 (один на каждый уровень вложенности).
+Бесконечный цикл: Если Алиса в друзьях у Боба, а Боб у Алисы, GraphQL будет ходить по кругу, пока не достигнет лимита сложности или глубины (Depth Limit), который мы обсуждали ранее. Без лимита сервер может упасть.
+Хотите настроить Depth Limit, чтобы ограничить такую вложенность, например, тремя уровнями?
+
+
+
+
 
 
