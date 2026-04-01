@@ -174,7 +174,7 @@ struct DelFriendResponce {
 // Узел с данными о пользователе и его друзьях
 #[derive(
     Deserialize,
-    Debug,
+    //Debug,
 )]
 pub struct UserPlusNode {
     id:         u32,
@@ -182,6 +182,34 @@ pub struct UserPlusNode {
     // Option позволяет прочитать данные, даже если в запросе
     // не было вложенного поля friends
     friends:    Option<Vec<UserPlusNode>>,
+}
+
+impl UserPlusNode {
+    fn fmt_node(&self, f: &mut std::fmt::Formatter<'_>, indent: usize) ->std::fmt::Result {
+        let padd = " ".repeat(indent * 2) ;
+
+        writeln!(f, "{}- Id: {}, Name: {}", padd, self.id, &self.name)? ;
+
+        //let v = self.friends ;
+
+        if let Some(frds) = &self.friends {
+            if ! frds.is_empty() {
+                writeln!(f, "{} Friends:", padd)? ;
+                for friend in frds {
+                    friend.fmt_node(f, indent + 1)? ;
+                }
+            }
+        }
+
+        Ok(())
+    }
+}
+
+impl std::fmt::Display for UserPlusNode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        //writeln!(f, "")
+        self.fmt_node(f, 0)
+    }
 }
 
 // корневой узел с данные о себе и своих друзьях

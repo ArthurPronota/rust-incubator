@@ -62,21 +62,43 @@ $ cargo run --bin client -- show-friends eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ey
 }
 
 $ cargo run --bin client -- show-friends eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjQsImV4cCI6MTc3NTAwNTQ0MiwiaWF0IjoxNzc1MDAxODQyfQ.1uSc3PMeSjRUSA-TftvyQcbD5iUkLApjsDoNNXLabIw
-{
-    "data": {
-        "userplus": {
-            "id": 4,
-            "name": "Sem",
-            "friends": [
-                {
-                    "id": 3,
-                    "name": "Tom",
-                    "friends": []
-                }
-            ]
-        }
-    }
+Структура данных:
+UserPlusNode {
+    id: 2,
+    name: "Arthur",
+    friends: Some(
+        [
+            UserPlusNode {
+                id: 3,
+                name: "Tom",
+                friends: Some(
+                    [],
+                ),
+            },
+            UserPlusNode {
+                id: 4,
+                name: "Sem",
+                friends: Some(
+                    [
+                        UserPlusNode {
+                            id: 3,
+                            name: "Tom",
+                            friends: None,
+                        },
+                    ],
+                ),
+            },
+        ],
+    ),
 }
+
+Реальный вывод данных:
+- Id: 2, Name: Arthur
+ Friends:
+  - Id: 3, Name: Tom
+  - Id: 4, Name: Sem
+   Friends:
+    - Id: 3, Name: Tom
 
 */
 

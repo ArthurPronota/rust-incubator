@@ -53,7 +53,8 @@ pub fn any_command(
         },
         // Показать друзей
         Commands::ShowFriends { jwt } => {
-            println!("{:#?}", gr_client.show_friend(jwt)?) ;
+            //println!("{:#?}", gr_client.show_friend(jwt)?) ;
+            println!("{}", gr_client.show_friend(jwt)?) ;
         },
     }
 
