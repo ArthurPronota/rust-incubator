@@ -181,9 +181,9 @@ impl Loader<u32> for FriendDataLoader {
                 format!(
                 //*
                 r#"
-                SELECT user_id, friend_id, name 
+                SELECT friends.user_id, friends.friend_id, users.name 
                 FROM friends JOIN users ON friends.friend_id = users.id_user
-                WHERE user_id in ({})
+                WHERE friends.user_id in ({})
                 "#,
                 keys
                     .iter()
