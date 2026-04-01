@@ -37,7 +37,7 @@ pub const CONTENT_TYPE_HEADER: &str = "Content-Type" ;
 pub const JSON_TYPE_VAL: &str = "application/json" ;
 
 /// Неверный пароль
-pub const INVALID_PASSWORD: &str = "Invalid password" ;
+//pub const INVALID_PASSWORD: &str = "Invalid password" ;
 
 pub const INVALID_USERNAME_PASSWORD: &str = "Invalid username or password" ;
 
