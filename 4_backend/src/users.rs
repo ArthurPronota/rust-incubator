@@ -24,7 +24,6 @@ pub const MIN_LENGTH_NAME: u64 = 1 ;
 /// Максимальная длина наименование пользователя
 pub const MAX_LENGTH_NAME: u64 = 255 ;
 
-
 /// Минимальная длина пароля пользователя
 pub const MIN_LENGTH_PASSWORD: u64 = 1 ;
 
@@ -78,8 +77,8 @@ impl Users {
                 None,   // исключая max, Если true, то id_user < max
            ) 
         {
-            v if true => id_user,
-            _ => return Err(anyhow::anyhow!("Invalid id_user: {}", id_user))
+            v if v => id_user,
+            _ => return Err(anyhow::anyhow!("Invalid id_user: {}", id_user)),
         } ;
 
         Ok(())
@@ -372,4 +371,71 @@ impl Users {
                 |_| Err(anyhow::anyhow!("The user id_user: {} has not been deleted", tmp_user.id_user()))
             )
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::* ;
+
+    #[test]
+    fn valid_id_user_check() {
+        let mut tmp_user = Users::default() ;
+
+        assert!(tmp_user.set_id_user(1).is_ok()) ;
+    }
+
+    #[test]
+    fn invalid_id_user_check() {
+        let mut tmp_user = Users::default() ;
+
+        assert!(tmp_user.set_id_user(0).is_err()) ;
+    }
+
+    #[test]
+    fn chack_empty_name() {
+        let mut tmp_user = Users::default() ;
+
+        assert!(tmp_user.set_name("").is_err()) ;
+    }
+
+    #[test]
+    fn check_normal_nane() {
+        let mut tmp_user = Users::default() ;
+
+        assert!(tmp_user.set_name("abc").is_ok()) ;
+    }
+
+    #[test]
+    fn  chack_long_name() {
+        let mut tmp_user = Users::default() ;
+
+        assert!(tmp_user.set_name(
+                             &"a".repeat((MAX_LENGTH_NAME + 1) as usize)
+                        ).is_err()) ;
+    }
+
+    #[test]
+    fn  check_empty_password() {
+        let mut tmp_user = Users::default() ;
+
+        assert!(tmp_user.set_password("").is_err()) ;
+    }
+
+    #[test]
+    fn  check_normal_password() {
+        let mut tmp_user = Users::default() ;
+
+        assert!(tmp_user.set_password("abc").is_ok()) ;
+    }
+
+    #[test]
+    fn  chack_long_password() {
+        let mut tmp_user = Users::default() ;
+
+        assert!(tmp_user.set_password(
+                             &"a".repeat((MAX_LENGTH_PASSWORD + 1) as usize)
+                        ).is_err()
+        ) ;
+    }
+
 }

@@ -48,3 +48,43 @@ pub fn check_password(password: &str, hash_password: &str) ->Result<bool> {
             .is_ok()
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::* ;
+
+    #[test]
+    fn valid_hash_password() {
+        assert!(hash_password("abc").is_ok()) ;
+    }
+
+    #[test]
+    fn invalid_hash_password() {
+        assert!(hash_password("").is_err()) ;
+    }
+
+    #[test]
+    fn valid_check_password() {
+        let password = "abc" ;
+
+        let hash_passw = hash_password(password).unwrap() ;
+
+        match check_password(password, &hash_passw) {
+            Ok(res) => assert!(res),
+            Err(err) => panic!("{}", err),
+        }
+    }
+
+    #[test]
+    fn invalid_check_password() {
+        let password = "abc" ;
+        let password2 = "abcd" ;
+
+        let hash_passw = hash_password(password).unwrap() ;
+
+        match check_password(password2, &hash_passw) {
+            Ok(res) => assert!(!res),
+            Err(err) => panic!("{}", err),
+        }
+    }    
+}

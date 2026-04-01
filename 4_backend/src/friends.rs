@@ -268,3 +268,63 @@ impl Friends {
     }
 
 }
+
+#[cfg(test)]
+mod tests {
+    use super::* ;
+
+    #[test]
+    fn valid_user_id_check() {
+        let mut tmp_friend = Friends::default() ;
+
+        assert!(
+            tmp_friend.set_user_id(1).is_ok()
+        ) ;
+    }
+
+    #[test]
+    fn invalid_user_id_check() {
+        let mut tmp_friend = Friends::default() ;
+
+        assert!(
+            tmp_friend.set_user_id(0).is_err()
+        ) ;
+    }
+
+    #[test]
+    fn valid_friend_id_check() {
+        let mut tmp_friend = Friends::default() ;
+
+        assert!(tmp_friend.set_friend_id(1).is_ok()) ;
+    }
+
+    #[test]
+    fn invalid_friend_id_check() {
+        let mut tmp_friend = Friends::default() ;
+
+        assert!(tmp_friend.set_friend_id(0).is_err()) ;
+    }
+
+    #[test]
+    fn valid_mix_ids_check() {
+        let mut tmp_friend = Friends::default() ;
+
+        tmp_friend.set_user_id(1).unwrap() ;
+
+        tmp_friend.set_friend_id(2).unwrap() ;
+
+        assert!(tmp_friend.validate().is_ok()) ;
+    }
+
+    #[test]
+    fn invalid_mix_ids_check() {
+        let mut tmp_friend = Friends::default() ;
+
+        tmp_friend.set_user_id(1).unwrap() ;
+
+        tmp_friend.set_friend_id(1).unwrap() ;
+
+        assert!(tmp_friend.validate().is_err()) ;
+    }
+
+}

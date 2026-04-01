@@ -128,3 +128,47 @@ impl AuthService {
         Ok(token_data)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::* ;
+
+    #[test]
+    fn check_new_authservice() {
+        
+        assert!(AuthService::new("abcdasdasfdqwedff", 1).is_ok()) ;
+    }
+
+    #[test]
+    fn check_generate_token() {
+        
+        let auth_serice = 
+                AuthService::new("abcdasdasfdqwedff", 1).unwrap() ;
+
+        assert!(auth_serice.generate_token(10).is_ok()) ;
+    }
+
+    #[test]
+    fn valid_check_validate_token() {
+        let auth_serice = 
+                AuthService::new("abcdasdasfdqwedff", 1).unwrap() ;
+
+        let jwt_token = 
+                auth_serice.generate_token(10).unwrap() ;
+
+        assert!(auth_serice.validate_token(&jwt_token).is_ok()) ;
+    }
+
+    #[test]
+    fn invalid_check_validate_token() {
+        let auth_serice = 
+                AuthService::new("abcdasdasfdqwedff", 1).unwrap() ;
+
+        let mut jwt_token = 
+                auth_serice.generate_token(10).unwrap() ;
+
+        jwt_token.push_str("abc");
+
+        assert!(auth_serice.validate_token(&jwt_token).is_err()) ;
+    }    
+}

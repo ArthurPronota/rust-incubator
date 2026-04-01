@@ -1,4 +1,16 @@
 /*
+            0. Запуск тестов
+$ cargo test
+running 6 tests
+test friends::tests::invalid_friend_id_check ... ok
+test friends::tests::valid_mix_ids_check ... ok
+test friends::tests::invalid_user_id_check ... ok
+test friends::tests::invalid_mix_ids_check ... ok
+test friends::tests::valid_friend_id_check ... ok
+test friends::tests::valid_user_id_check ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
             1. Зарегистрировать нового пользователя
 $ cargo run --bin client -- user-register Arthur Pass10
 JWT: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDg0NTA5OSwiaWF0IjoxNzc0ODQxNDk5fQ.6x6eY79uL8D6sYvud7Rry4vrubM_1tpJM96Dl056DIE
