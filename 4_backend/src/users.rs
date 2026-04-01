@@ -4,9 +4,7 @@ use anyhow::Result ;
 
 use chrono::format;
 use sqlx::{
-        FromRow,
-        Row,
-        mysql::MySql
+        FromRow, Pool, Row, mysql::MySql
 } ;
 
 use tokio::task::id;
@@ -135,6 +133,52 @@ impl Users {
     /// Получить password
     pub fn password(&self) ->&str {
         &self.password
+    }
+
+    // Поиск по id_user без блокировок
+    pub async fn find_no_trans(
+                    db_res:   &Pool<MySql>,
+                    id_user:  u32,
+                 ) ->Result<Option<Self>>
+    {
+        let mut tmp_user = Users::default() ;
+
+        tmp_user.set_id_user(id_user)? ;
+
+        match sqlx::query_as::<_, Self>(
+            r#"
+            select *
+            from users
+            where id_user = ?
+            "#
+        )
+        .bind(tmp_user.id_user())
+        .fetch_one(db_res)
+        .await {
+            Ok(u) => {
+                u.validate()? ;
+                Ok(Some(u))
+            },
+            Err(sqlx::Error::RowNotFound) => Ok(None),
+            Err(err) => Err(err.into()),
+        }
+    }
+
+    // Обязательный поиск по id_user без блокировок
+    pub async fn find_no_trans_raise(
+                    db_res:   &Pool<MySql>,
+                    id_user:  u32,
+                 ) ->Result<Self>
+    {
+        match Self::find_no_trans(
+                db_res, 
+                id_user
+            )
+            .await?
+        {
+            Some(u) => Ok(u),
+            None => Err(anyhow::anyhow!("Not found user for id_user: {}", id_user)),
+        }
     }
 
     /// Поиск по id_user

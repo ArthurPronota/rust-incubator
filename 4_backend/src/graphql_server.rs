@@ -300,12 +300,12 @@ pub struct Query;
 impl Query {
     // Наш резолвер. Он принимает name и email и возвращает структуру User.
     async fn userplus(&self, ctx: &Context<'_>, jwt: String) ->Result<User> {
-
+        /*
         let loader = match ctx.data::<DataLoader<FriendDataLoader>>() {
             Ok(ld) => ld,
             Err(err) => return Err(anyhow::anyhow!("{:?}", err)),
         } ;
-
+         */
         // получить auth_serv для работы с JSON Web Token
         let auth_serv = 
                 ctx.data::<Arc<jwt::AuthService>>()
@@ -314,6 +314,11 @@ impl Query {
         // Проверить jwt и получить данные по нему - это ваша сессия
         let jwt_data = 
                 auth_serv.validate_token(&jwt)? ;
+
+        // Получить данные по DB
+        let db_res = 
+                ctx.data::<Arc<db::Database>>()
+                    .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
 
         /*
         Ok(
@@ -341,7 +346,19 @@ impl Query {
                 loader.load_one(jwt_data.get_sub()).await?;
         Ok(friends.unwrap_or_default())     
          */
-        Ok(User { id: 2, name: "aaa".to_string() })
+
+        // Поиск пользователя из JWT
+        let user_found = 
+                users::Users::find_no_trans_raise(
+                    &db_res.pool, 
+                    jwt_data.get_sub()
+                )
+                .await? ;
+
+        Ok(User { 
+            id:     user_found.id_user(),// jwt_data.get_sub(),       // 2, 
+            name:   user_found.name().to_string(),     // "aaa".to_string() 
+        })
     }
 
 }

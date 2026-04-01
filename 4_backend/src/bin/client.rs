@@ -22,8 +22,61 @@ $ cargo run --bin client -- del-friend 3 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ey
 Deleted friend: FriendId: 3, FriendName: Tom
 
             5. Показать друзей и их друзей
-$ cargo run --bin client -- show-friends eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDk1ODYyMiwiaWF0IjoxNzc0OTU1MDIyfQ.Zaycu1yIejd1V4jCFmw1Rf7Co2ITNMr4KDdBN5Roy2M
-{"data":{"userplus":{"id":2,"name":"aaa","friends":[{"id":3,"name":"Tom","friends":[{"id":2,"name":"Arthur"}]},{"id":4,"name":"Sem","friends":[{"id":3,"name":"Tom"}]}]}}}
+
+$ cargo run --bin client -- show-friends eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NTAwNTU2MywiaWF0IjoxNzc1MDAxOTYzfQ.0r-s1Fw8F0j2GdwqQ-_-dozTjwdOl9Ul-v3YuMwt4L8
+{
+    "data": {
+        "userplus": {
+            "id": 2,
+            "name": "Arthur",
+            "friends": [
+                {
+                    "id": 3,
+                    "name": "Tom",
+                    "friends": []
+                },
+                {
+                    "id": 4,
+                    "name": "Sem",
+                    "friends": [
+                        {
+                            "id": 3,
+                            "name": "Tom"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+
+$ cargo run --bin client -- show-friends eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjMsImV4cCI6MTc3NTAwMjQ2OCwiaWF0IjoxNzc0OTk4ODY4fQ.X6dgMdCyFQtUa8SItpP07-GRIF0Ou7H5cDPPargAtuE
+{
+    "data": {
+        "userplus": {
+            "id": 3,
+            "name": "Tom",
+            "friends": []
+        }
+    }
+}
+
+$ cargo run --bin client -- show-friends eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjQsImV4cCI6MTc3NTAwNTQ0MiwiaWF0IjoxNzc1MDAxODQyfQ.1uSc3PMeSjRUSA-TftvyQcbD5iUkLApjsDoNNXLabIw
+{
+    "data": {
+        "userplus": {
+            "id": 4,
+            "name": "Sem",
+            "friends": [
+                {
+                    "id": 3,
+                    "name": "Tom",
+                    "friends": []
+                }
+            ]
+        }
+    }
+}
 
 */
 

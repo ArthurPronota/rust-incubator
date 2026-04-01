@@ -169,6 +169,38 @@ struct DelFriendResponce {
     errors: Option<Vec<GraphQLError>>
 }
 
+// -------------------------
+
+// Узел с данными о пользователе и его друзьях
+#[derive(
+    Deserialize,
+    Debug,
+)]
+pub struct UserPlusNode {
+    id:         u32,
+    name:       String,
+    // Option позволяет прочитать данные, даже если в запросе
+    // не было вложенного поля friends
+    friends:    Option<Vec<UserPlusNode>>,
+}
+
+// корневой узел с данные о себе и своих друзьях
+#[derive(
+    Deserialize
+)]
+pub struct UserPlusRawResponce {
+    userplus:     UserPlusNode,
+}
+
+// Ответ сервера на попытку показа своих данных, своих друзей и их друзей
+#[derive(
+    Deserialize
+)]
+struct FriendPlusResponce {
+    data:   Option<UserPlusRawResponce>,
+    errors: Option<Vec<GraphQLError>>
+}
+
 // GraphQL Client
 #[derive(Deserialize, Debug)]
 pub struct GraphQLClient {
@@ -550,13 +582,13 @@ impl GraphQLClient {
         }
     }    
 
-    // Показать друзей
-    pub fn show_friend(&mut self, jwt: &str) ->Result<FriendShortInfo> {
+    // Показать пользователя его друзей и их друзей
+    pub fn show_friend(&mut self, jwt: &str) ->Result<UserPlusNode> {
 
         // строка запроса в формате GraphQL
         let query = 
         // 1) формат: {"data":{"delfriend":{"user":{"id":10,"name":"123"}}}}
-        // inp - название аргемента у метода graphql_server::Mutation::delfriend(.., inp: AddFriendObject,)
+        // jwt - название аргемента у метода graphql_server::Query::userplus(.., inp: String)
         // названия методов, ключи и имена переменных не должны содержать '_'
         r#"
             query Friends($jwt: String!) {
@@ -613,7 +645,7 @@ query Friends($jwt: String!) {
             return Err(anyhow::anyhow!("Server error: {}", resp.status()));
         }
 
-        //*
+        /*
         let v = resp
                             .body_mut()
                             .read_to_string()? 
@@ -621,9 +653,29 @@ query Friends($jwt: String!) {
         println!("{}", v) ; 
         //{"data":{"addfriend":{"friend":{"id":3,"name":"Tom"}}}}
         //{"data":null,"errors":[{"message":"I can't add a friend_id: 3 for user: 2, he already exists.","locations":[{"line":3,"column":17}],"path":["addfriend"]}]}
-        //*/
+        */
 
-        Err(anyhow::anyhow!(""))
+        // получение ответа от сервера
+        let friend_plus_resp = resp
+                        .body_mut()
+                        .read_json::<FriendPlusResponce>()
+                        .map_err(|err| 
+                            anyhow::anyhow!("read_json to FriendPlusResponce error: {}", err)
+                        )? ;
+
+        // проверка ошибки в ответе сервера
+        if let Some(err) = friend_plus_resp.errors {
+            return Err(anyhow::anyhow!("{:?}", err[0].message));
+        }
+
+        match friend_plus_resp.data {
+            Some(data) => {
+                Ok(data.userplus)
+            },
+            None => {
+                Err(anyhow::anyhow!("Not found data.userplus"))
+            }
+        }
     }
 
 }
