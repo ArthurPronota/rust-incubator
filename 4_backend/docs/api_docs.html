@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraphQL Friends API Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .graphql-playground {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .endpoint {
+            background: #f0f0f0;
+            padding: 10px;
+            border-left: 4px solid #007acc;
+            margin: 10px 0;
+        }
+        .query-example {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .badge-mutation {
+            background: #e67e22;
+            color: white;
+        }
+        .badge-query {
+            background: #2980b9;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GraphQL Friends API Documentation</h1>
+        <p>API for managing users and their friends with authentication support.</p>
+        
+        <h2>Быстрый старт</h2>
+        <div class="endpoint">
+            <strong>GraphQL Endpoint:</strong> <code>POST http://127.0.0.1:8080/graphql</code><br>
+            <strong>Playground:</strong> <code>GET http://localhost:3000/graphql</code>
+        </div>
+        
+        <h2>Authentication</h2>
+        <p>For secure requests, you must add a JWT token to the POST request.</p>
+        <code>Authorization: Bearer &lt;your-token&gt;</code>
+        
+        <h2>Available operations</h2>
+        
+        <h3><span class="badge badge-mutation">Mutation</span> User registration</h3>
+        <div class="query-example">
+            <pre><code>
+mutation {
+  register(inp: { name: "Arthur", password: "Pass10" }) {
+    token
+    user {
+      id
+      name
+    }
+  }
+}
+            </code></pre>
+        </div>
+        
+        <h3><span class="badge badge-mutation">Mutation</span> Authentication</h3>
+        <div class="query-example">
+            <pre><code>
+mutation {
+  login(inp: { name: "Arthur", password: "Pass10" }) {
+    token
+    user {
+      id
+      name
+    }
+  }
+}
+            </code></pre>
+        </div>
+        
+        <h3><span class="badge badge-query">Query</span> Getting information about a user with friends</h3>
+        <div class="query-example">
+            <pre><code>
+query {
+  userplus(jwt: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz ... 6x6eY79uL8D6sYvud7Rry4vrubM_1tpJM96Dl056DIE") {
+    id
+    name
+    friends {
+      id
+      name
+      friends {
+        id
+        name
+      }
+    }
+  }
+}
+            </code></pre>
+        </div>
+        
+        <h3><span class="badge badge-mutation">Mutation</span> Adding a friend</h3>
+        <div class="query-example">
+            <pre><code>
+mutation {
+  addfriend(inp: { friendid: 1, jwt: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz ... 6x6eY79uL8D6sYvud7Rry4vrubM_1tpJM96Dl056DIE" }) {
+    friend {
+      id
+      name
+    }
+  }
+}
+            </code></pre>
+        </div>
+        
+        <h3><span class="badge badge-mutation">Mutation</span> Removing a friend</h3>
+        <div class="query-example">
+            <pre><code>
+mutation {
+  delfriend(inp: { friendid: 2, jwt: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz ... 6x6eY79uL8D6sYvud7Rry4vrubM_1tpJM96Dl056DIE" }) {
+    friend {
+      id
+      name
+    }
+  }
+}
+            </code></pre>
+        </div>
+        
+        <h2>Data models</h2>
+        <h3>User</h3>
+        <pre><code>
+{
+  id: Int!         # ID User
+  name: String!    # Unique username
+  friends: [User]! # Список друзей
+}
+        </code></pre>
+        
+        <h2>Query optimization</h2>
+        <p>The API uses DataLoader to optimize database queries.
+Nested friend queries are grouped and executed by a single SQL query.</p>
+        
+        <h2>Limiting the depth of queries</h2>
+        <p>The maximum depth of a GraphQL query is limited to 10 levels to prevent DoS attacks.</p>
+        
+        <h2>Safety</h2>
+        <ul>
+            <li>Passwords are hashed using Argon2id</li>
+            <li>JWT tokens have a 24-hour expiration date.</li>
+            <li>All requests for friends' data require authentication.</li>
+            <li>SQL injection protection via parameterized sqlx queries</li>
+        </ul>
+        
+        <h2>Starting the server</h2>
+        <pre>
+          <code>
+# Setting environment variables
+# Edit the .env file
+
+# Starting the server
+cargo run --bin server
+
+# Запуск тестов
+cargo test
+        </code>
+      </pre>
+
+      <h2>Launching the client</h2>
+      <pre>
+        <code>      
+# Register a new user
+cargo run --bin client -- user-register Arthur Pass10
+
+# Login
+cargo run --bin client -- login Arthur Pass10
+
+# Add a friend
+cargo run --bin client -- add-friend 3 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz ... 6x6eY79uL8D6sYvud7Rry4vrubM_1tpJM96Dl056DIE
+
+# Remove friend
+cargo run --bin client -- del-friend 3 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz ... 6x6eY79uL8D6sYvud7Rry4vrubM_1tpJM96Dl056DIE
+
+# Show friends and their friends
+cargo run --bin client -- show-friends eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz ... 6x6eY79uL8D6sYvud7Rry4vrubM_1tpJM96Dl056DIE
+
+        </code>
+      </pre>
+
+    </div>
+</body>
+</html>
