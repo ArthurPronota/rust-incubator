@@ -351,7 +351,7 @@ impl Users {
         
         sqlx::query(
             r#"
-                delete from user
+                delete from users
                 where id_user = ?            
             "#
         )

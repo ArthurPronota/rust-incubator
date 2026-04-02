@@ -270,7 +270,7 @@ impl GraphQLClient {
     }
 
     // Выполнить login
-    pub fn login(&mut self, name: &String, password: &str) ->Result<UserShortInfo> {
+    pub fn login(&mut self, name: &str, password: &str) ->Result<(UserShortInfo, &str)> {
         // строка запроса в формате GraphQL
         let query = 
         // 1) формат: {"data":{"login":{"token":"aaasdasdsfsdgdrghdfgdgh","user":{"id":10,"name":"123"}}}}
@@ -378,8 +378,8 @@ impl GraphQLClient {
         match log_resp.data {
             Some(data) => {
                 self.set_token(&data.login.token)? ;
-                common::print_jw_token(&self.token);
-                Ok(data.login.user)
+                //common::print_jw_token(&self.token);
+                Ok((data.login.user, &self.token))
             },
             None => {
                 Err(anyhow::anyhow!("Not found log_resp.data"))
@@ -388,7 +388,7 @@ impl GraphQLClient {
     }
 
     // Выполнить регистацию нового пользователя
-    pub fn register(&mut self, name: &String, password: &str) ->Result<UserShortInfo> {
+    pub fn register(&mut self, name: &str, password: &str) ->Result<(UserShortInfo, &str)> {
         // строка запроса в формате GraphQL
         let query = 
         // 1) формат: {"data":{"register":{"token":"aaasdasdsfsdgdrghdfgdgh","user":{"id":10,"name":"123"}}}}
@@ -455,7 +455,12 @@ impl GraphQLClient {
             Some(data) => {
                 self.set_token(&data.register.token)? ;
                 common::print_jw_token(&self.token);
-                Ok(data.register.user)
+                Ok(
+                    (
+                        data.register.user,
+                        &self.token
+                    )
+                )
             },
             None => {
                 Err(anyhow::anyhow!("Not found reg_resp.data"))

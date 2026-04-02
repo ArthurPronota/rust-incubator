@@ -1,6 +1,6 @@
 /*
             0. Запуск тестов
-$ cargo test
+$ cargo test -- --test-threads=1
 running 6 tests
 test friends::tests::invalid_friend_id_check ... ok
 test friends::tests::valid_mix_ids_check ... ok

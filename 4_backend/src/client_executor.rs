@@ -30,13 +30,21 @@ pub fn any_command(
         // Регистрация нового пользователя
         Commands::UserRegister { name, password } => {
             //println!("{}", gr_client.login(name, password)?) ;
-            println!("{}", gr_client.register(name, password)?) ;
+            //println!("{}", gr_client.register(name, password)?) ;
+            let (user_info, jwt) = gr_client.register(name, password)? ;
+            common::print_jw_token(jwt);
+            println!("Registered user: {}", user_info) ;
         },
         // Логирование пользоватлем
         Commands::Login { name, password } => {
+            /*
             println!("Logged in user: {}", 
                      gr_client.login(name, password)?
             ) ;
+             */
+            let (user_info, jwt) = gr_client.login(name, password)? ;
+            common::print_jw_token(jwt);
+            println!("Logged in user: {}", user_info) ;
         },
         // Добавить друга
         Commands::AddFriend { friend_id, jwt } => {
