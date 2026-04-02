@@ -1,15 +1,54 @@
 /*
             0. Запуск тестов
-$ cargo test -- --test-threads=1
-running 6 tests
-test friends::tests::invalid_friend_id_check ... ok
-test friends::tests::valid_mix_ids_check ... ok
-test friends::tests::invalid_user_id_check ... ok
-test friends::tests::invalid_mix_ids_check ... ok
-test friends::tests::valid_friend_id_check ... ok
-test friends::tests::valid_user_id_check ... ok
+$ cargo test
+     Running unittests src\bin\client.rs (C:\Users\user\work\MyWorks\Rust\rust-incubator\target\debug\deps\client-3f2ef1d0803a829e.exe)
 
-test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\server.rs (C:\Users\user\work\MyWorks\Rust\rust-incubator\target\debug\deps\server-130ccf3e27a6e493.exe)
+
+running 22 tests
+test friends::tests::invalid_user_id_check ... ok
+test friends::tests::invalid_friend_id_check ... ok
+test friends::tests::valid_friend_id_check ... ok
+test friends::tests::invalid_mix_ids_check ... ok
+test friends::tests::valid_user_id_check ... ok
+test passw::tests::invalid_hash_password ... ok
+test friends::tests::valid_mix_ids_check ... ok
+test jwt::tests::check_new_authservice ... ok
+test jwt::tests::check_generate_token ... ok
+test users::tests::chack_empty_name ... ok
+test users::tests::chack_long_name ... ok
+test jwt::tests::valid_check_validate_token ... ok
+test jwt::tests::invalid_check_validate_token ... ok
+test users::tests::chack_long_password ... ok
+test users::tests::check_empty_password ... ok
+test users::tests::check_normal_nane ... ok
+test users::tests::check_normal_password ... ok
+test users::tests::invalid_id_user_check ... ok
+test users::tests::valid_id_user_check ... ok
+test passw::tests::valid_hash_password ... ok
+test passw::tests::invalid_check_password ... ok
+test passw::tests::valid_check_password ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+
+     Running tests\e2e_tests.rs (C:\Users\user\work\MyWorks\Rust\rust-incubator\target\debug\deps\e2e_tests-37d9979f5b98a21e.exe)
+
+running 9 tests
+test users::tests::chack_empty_name ... ok
+test users::tests::chack_long_name ... ok
+test users::tests::check_empty_password ... ok
+test users::tests::chack_long_password ... ok
+test users::tests::check_normal_nane ... ok
+test users::tests::check_normal_password ... ok
+test users::tests::invalid_id_user_check ... ok
+test users::tests::valid_id_user_check ... ok
+test test_e2e ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.47s
 
             1. Зарегистрировать нового пользователя
 $ cargo run --bin client -- user-register Arthur Pass10

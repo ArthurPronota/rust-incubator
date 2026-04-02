@@ -1,10 +1,14 @@
 /*
+    1. Запуск сервера
+$ cargo run --bin server
 
+    2. Просмотрт документации
+Загрузить в браузере http://127.0.0.1:8080/api_docs.html
 
-    8. Пример соединение с mysqlsh (опционально)
+    3. Пример соединение с mysqlsh (опционально)
 \connect arthur@localhost:3306
 
-    9. Пример создания базы данных 4_db
+    4. Пример создания базы данных 4_db
 CREATE DATABASE `4_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
 
 */
@@ -41,6 +45,7 @@ use async_graphql_axum::{
 
 use async_graphql::dataloader::DataLoader;
 
+use tower_http::services::ServeFile;
 
 #[path = "../common.rs"]
 mod common ;
@@ -182,6 +187,10 @@ execution_time: 19653300
                                     post(graphql_server::graph_handler),  // method_router
                                 )
                                 //.with_state(db_res)
+                                .route_service(
+                                    "/api_docs.html",
+                                    ServeFile::new("docs/api_docs.html")
+                                )
                                 .layer(Extension(schema))
                                 ;
 
