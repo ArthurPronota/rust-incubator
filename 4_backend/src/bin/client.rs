@@ -1,5 +1,9 @@
 /*
-            0. Запуск тестов
+        Contact: https://artaudiochats.t.me/
+
+        ***************** HTTP клиент. *****************
+
+            1. Запуск тестов
 $ cargo test
      Running unittests src\bin\client.rs (C:\Users\user\work\MyWorks\Rust\rust-incubator\target\debug\deps\client-3f2ef1d0803a829e.exe)
 
@@ -50,7 +54,7 @@ test test_e2e ... ok
 
 test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.47s
 
-            1. Зарегистрировать нового пользователя
+            2. Зарегистрировать нового пользователя
 $ cargo run --bin client -- user-register Arthur Pass10
 JWT: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDg0NTA5OSwiaWF0IjoxNzc0ODQxNDk5fQ.6x6eY79uL8D6sYvud7Rry4vrubM_1tpJM96Dl056DIE
 UserId: 2, UserName: Arthur
@@ -59,22 +63,23 @@ $ cargo run --bin client -- user-register Tom Pass20
 JWT: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjMsImV4cCI6MTc3NDg0NTQ1OCwiaWF0IjoxNzc0ODQxODU4fQ.IemC6q7S82YK7R1n1jNCcbhZ7bIFAZa_ugDj7R8XTcw
 UserId: 3, UserName: Tom
 
-            2. Выполнить login
+            3. Выполнить login
 $ cargo run --bin client -- login Arthur Pass10
 JWT: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDg0NTIwNCwiaWF0IjoxNzc0ODQxNjA0fQ.WU7VQdxy4l0WyIf7kQSnkotI91uItcn3xOviwdxlPdU
 Registered user: UserId: 2, UserName: Arthur
 
-            3. Добавить друга
+            4. Добавить друга
 $ cargo run --bin client -- add-friend 3 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDg0OTk4MiwiaWF0IjoxNzc0ODQ2MzgyfQ.Rx_NBrq5oqcnvzZ6i_QI9tdVpMfhKOD1p07GZKicVs0
 Added friend: FriendId: 3, FriendName: Tom
 
-            4. Удалить друга
+            5. Удалить друга
 $ cargo run --bin client -- del-friend 3 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NDg1ODc2MiwiaWF0IjoxNzc0ODU1MTYyfQ.jw624nSVrSA3HjbdrqC4S8uWwfJAY1DU8uAKC838LK4
 Deleted friend: FriendId: 3, FriendName: Tom
 
-            5. Показать друзей и их друзей
+            6. Показать друзей и их друзей
 
 $ cargo run --bin client -- show-friends eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc3NTAwNTU2MywiaWF0IjoxNzc1MDAxOTYzfQ.0r-s1Fw8F0j2GdwqQ-_-dozTjwdOl9Ul-v3YuMwt4L8
+Структура данных:
 {
     "data": {
         "userplus": {
@@ -102,6 +107,7 @@ $ cargo run --bin client -- show-friends eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ey
 }
 
 $ cargo run --bin client -- show-friends eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjMsImV4cCI6MTc3NTAwMjQ2OCwiaWF0IjoxNzc0OTk4ODY4fQ.X6dgMdCyFQtUa8SItpP07-GRIF0Ou7H5cDPPargAtuE
+Структура данных:
 {
     "data": {
         "userplus": {
@@ -152,8 +158,6 @@ UserPlusNode {
     - Id: 3, Name: Tom
 
 */
-
-//use std::path;
 
 use anyhow::Result ;
 use clap::Parser;
