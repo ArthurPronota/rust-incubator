@@ -57,7 +57,6 @@ CREATE DATABASE `4_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
 
 */
 use anyhow::Result ;
-//use sqlx::migrate;
 
 use std::sync::Arc ;
 
@@ -66,31 +65,16 @@ use tokio::net::TcpListener ;
 use axum::{
         Extension, 
         Router, 
-        //extract::path, 
         routing::{
-            //self,
             post
         }
 } ;
 
 use async_graphql::{
-            //Context,
-            //EmptyMutation,
             EmptySubscription,
-            //Object,
             Schema,
-            //SimpleObject,
 };
 
-/*
-use async_graphql_axum::{
-            GraphQLRequest,
-            GraphQLResponse,
-};
- */
-
-//use jsonwebtoken::crypto ;
-//use jsonwebtoken::crypto::CryptoProvider;
 
 use async_graphql::dataloader::DataLoader;
 

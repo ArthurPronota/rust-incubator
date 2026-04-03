@@ -9,12 +9,7 @@ use async_graphql::{
             Object,
             Schema, 
             SimpleObject,
-            ID,
-            EmptyMutation,
             EmptySubscription,
-            OutputType,
-            //Result as GraphQLResult,
-            Error,
             ComplexObject,
 };
 
@@ -26,9 +21,7 @@ use async_graphql_axum::{
 use axum::{Extension} ;
 use validator::Validate;
 
-use sqlx::{self, FromRow} ;
-
-//use async_graphql::dataloader::DataLoader;
+use sqlx ;
 
 use crate::common;
 use crate::db ;
@@ -41,43 +34,17 @@ use crate::users::{
         Users
     } ;
 
-use crate::friends::{
-        self,
-        Friends,
-} ;
-
-//use crate::graphql_client ;
-/*
-// Корневой Query тип
-struct Query ;
-
-impl Query {
-    
-}
-
-// Корневой Mutation тип
-struct Mutation ;
-
-#[Object]
-impl Mutation {
-    
-}
-
- */
-
+use crate::friends::Friends ;
 
 // 1. Определяем нашу структуру данных. 
 // SimpleObject позволяет async-graphql автоматически превратить её в тип GraphQL.
 #[derive(
     SimpleObject,
     Clone,
-    //FromRow,
     Debug,
-    //ComplexObject
   )
 ]
 #[graphql(complex)]
-//#[ComplexObject]
 pub struct User {
     id:   u32,
     name: String,
@@ -93,10 +60,13 @@ impl User {
             Err(err) => return Err(anyhow::anyhow!("{:?}", err)),
         } ;
 
+        /*
         // получить auth_serv для работы с JSON Web Token
         let auth_serv = 
                 ctx.data::<Arc<jwt::AuthService>>()
                     .map_err(|err| anyhow::anyhow!("{:?}", err))? ;
+         */
+        
         /*
         // Проверить jwt и получить данные по нему - это ваша сессия
         let jwt_data = 

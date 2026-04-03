@@ -1,10 +1,5 @@
 use anyhow::Result ;
 
-use ureq::{
-        self,
-        http::StatusCode
-    } ;
-
 use crate::{
         args::{
             self, 

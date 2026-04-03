@@ -1,4 +1,4 @@
-use std::path::{self, Path} ;
+use std::path::Path ;
 
 use dotenv ;
 
@@ -31,14 +31,15 @@ const GRAPHQL_DEEP_LIMIT: &str = "GRAPHQL_DEEPLIM" ;
 pub const GRAPHQL_URI: &str = "/graphql" ;
 
 /// Заголовок Content-Type
+#[allow(dead_code)]
 pub const CONTENT_TYPE_HEADER: &str = "Content-Type" ;
 
 /// Json тип данных
+#[allow(dead_code)]
 pub const JSON_TYPE_VAL: &str = "application/json" ;
 
 /// Неверный пароль
-//pub const INVALID_PASSWORD: &str = "Invalid password" ;
-
+#[allow(dead_code)]
 pub const INVALID_USERNAME_PASSWORD: &str = "Invalid username or password" ;
 
 
@@ -140,11 +141,13 @@ pub fn get_all_env_vars() ->Result<(
 }
 
 /// Получить graphql url
+#[allow(dead_code)]
 pub fn get_graphql_url(host: &str, port: u32) ->String {
     format!("http://{}:{}{}", host, port, GRAPHQL_URI)
 }
 
 /// Печать JSON Web Token
+#[allow(dead_code)]
 pub fn print_jw_token(jw_token:  &str) {
     println!("JWT: {}", jw_token) ;
 }

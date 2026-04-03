@@ -1,5 +1,4 @@
 // Позволяет создавать сериализованные тесты Rust.
-use serial_test::serial;
 
 #[path = "../src/common.rs"]
 mod common;
@@ -23,13 +22,11 @@ const PASSWORD_2: &str = "password_2" ;
 
 // Удаление тестовых пользователей перед началом тестов
 async fn test_before_del_test_users() {
-        
-    let (port_http, 
-         host_http, 
-         db_path, 
-         jwt_expir, 
-         jwt_secret,
-         graphql_deep_limit
+
+    let (_, // port_http, 
+         _, // host_http, 
+         db_path,
+         ..
     ) = common::get_all_env_vars().unwrap() ;
 
     // Создание нового пула соединений с базой
@@ -118,7 +115,10 @@ async fn add_friend() {
     let mut gr_client = 
                 graphql_client::GraphQLClient::new(&host_http, port_http).unwrap() ;
 
-    let (user_info_1, jwt_raw) = gr_client.login(USERNAME_1, PASSWORD_1).unwrap() ;
+    let (
+            _, // user_info_1, 
+            jwt_raw
+        ) = gr_client.login(USERNAME_1, PASSWORD_1).unwrap() ;
 
     let jwt = jwt_raw.to_string() ;
 
@@ -140,7 +140,10 @@ async fn show_friends() {
     let mut gr_client = 
                 graphql_client::GraphQLClient::new(&host_http, port_http).unwrap() ;
 
-    let (user_info_1, jwt_raw) = gr_client.login(USERNAME_1, PASSWORD_1).unwrap() ;
+    let (
+            _,  // user_info_1, 
+            jwt_raw
+        ) = gr_client.login(USERNAME_1, PASSWORD_1).unwrap() ;
 
     let jwt = jwt_raw.to_owned() ;
 

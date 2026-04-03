@@ -1,22 +1,15 @@
 use anyhow::Result ;
 
-//use axum::routing::any;
-
 use validator::{
         Validate,
         ValidateRange,
         ValidationError,
 } ;
 
-use sqlx::{
-        FromRow,
-        Row,
-        mysql::MySql
-} ;
-
-use crate::common;
+use sqlx::FromRow ;
 
 use crate::db ;
+
 use crate::users::Users;
 
 /// Друзья
@@ -180,8 +173,7 @@ impl Friends {
                  ) ->Result<Friends> {
 
         // поиск пользователя user_id
-        let mut tmp_user = 
-                Users::find_for_id_user_raise(
+        Users::find_for_id_user_raise(
                     trans,
                     user_id,
                     false
@@ -189,25 +181,25 @@ impl Friends {
                 .await? ;
 
         // поиск пользователя friend_id
-        tmp_user = Users::find_for_id_user_raise(
+        Users::find_for_id_user_raise(
                         trans, 
                         friend_id, 
                         false
                     )
-                    .await
-                    ?;
+                    .await ?;
 
-        if let Some(fr) = 
-                Self::find(
+        // поиск существующей дружбы
+        if Self::find(
                     trans,
                     user_id,
                     friend_id,
                     true
                 )
-                .await? {
+                .await?
+                .is_some() {
             return Err(anyhow::anyhow!("I can't add a friend_id: {} for user: {}, he already exists.", friend_id, user_id));
         }
-
+         
         sqlx::query(
             r#"
             insert into friends (user_id, friend_id)

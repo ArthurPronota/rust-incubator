@@ -59,6 +59,7 @@ If you have enough time after implementing base requirements, consider to add th
 - Реализовать [GraphQL] запрос [depth limiting][21].
 - Используйте [dataloading][22] (загрузку данных паттернами группировки), чтобы оптимизировать взаимодействие с базой данных в [GraphQL] - резолверах (В контексте GraphQL, резолвер (resolver) — это обычная функция на бэкенде, которая отвечает за получение данных для конкретного поля в вашем запросе.).
 
+#### Блок сзема работы [dataloading][22]
 
 ```mermaid
 sequenceDiagram

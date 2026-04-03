@@ -2,21 +2,19 @@ use std::u32;
 
 use anyhow::Result ;
 
-use chrono::format;
 use sqlx::{
-        FromRow, Pool, Row, mysql::MySql
+        FromRow,
+        Pool,
+        mysql::MySql,
 } ;
 
-use tokio::task::id;
 use validator::{
         Validate,
         ValidateLength, 
         ValidateRange,
 } ;
 
-use crate::{
-        db, users,
-} ;
+use crate::db ;
 
 /// Минимальная длина наименование пользователя
 pub const MIN_LENGTH_NAME: u64 = 1 ;
@@ -130,11 +128,13 @@ impl Users {
     }
 
     /// Получить password
+    #[allow(dead_code)]
     pub fn password(&self) ->&str {
         &self.password
     }
 
     // Поиск по id_user без блокировок
+    #[allow(dead_code)]
     pub async fn find_no_trans(
                     db_res:   &Pool<MySql>,
                     id_user:  u32,
@@ -164,6 +164,7 @@ impl Users {
     }
 
     // Обязательный поиск по id_user без блокировок
+    #[allow(dead_code)]
     pub async fn find_no_trans_raise(
                     db_res:   &Pool<MySql>,
                     id_user:  u32,
@@ -272,6 +273,7 @@ impl Users {
     }
 
     /// Обязательный поиск по Username
+    #[allow(dead_code)]
     pub async fn find_for_name_raise(
                     trans:   &mut sqlx::MySqlConnection,
                     name:    &str,
@@ -289,7 +291,8 @@ impl Users {
         }
     }
 
-    // Вставить нового пользователя
+    /// Вставить нового пользователя
+    #[allow(dead_code)]
     pub async fn int_user(
                     trans:    &mut sqlx::MySqlConnection,
                     name:     &str,
@@ -333,6 +336,7 @@ impl Users {
     }
 
     /// Удалить пользователя по id_user
+    #[allow(dead_code)]
     pub async fn del_user_by_id(
                 trans:    &mut sqlx::MySqlConnection,
                 id_user:  u32

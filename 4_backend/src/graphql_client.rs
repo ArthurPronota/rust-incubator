@@ -1,7 +1,5 @@
-use std::path::Display;
-
 // GraphQL клиент
- 
+
 use ureq::{
         self,
         http::StatusCode,
@@ -18,11 +16,6 @@ use serde_json::json ;
 
 use crate::common ;
 
-use async_graphql::{
-        //OutputType
-        //SimpleObject,
-    } ;
-
 // Ошибка в GraphQL
 #[derive(
     Debug,
@@ -36,11 +29,9 @@ struct GraphQLError {
 #[derive(
     Serialize,
     Deserialize,
-    //OutputType,
-    //SimpleObject,   // Чтобы этот тип мог быть вызвразаемым в graphql_server::Mutation::login
-    //Debug,
  )
 ]
+#[allow(dead_code)]
 pub struct UserShortInfo {
     pub id:     u32,
     pub name:   String,
@@ -60,6 +51,7 @@ impl std::fmt::Display for UserShortInfo {
     Deserialize,
  )
 ]
+#[allow(dead_code)]
 pub struct FriendShortInfo {
     pub id:     u32,
     pub name:   String,
@@ -73,10 +65,8 @@ impl std::fmt::Display for FriendShortInfo {
 }
 
 // Данные по токену и короткие данные по пользователю
-#[derive(
-    Deserialize,
-    //SimpleObject,
-)]
+#[derive(Deserialize)]
+#[allow(dead_code)]
 pub struct TokenAndShortUser {
     pub token:  String,
     pub user:   UserShortInfo,
@@ -87,6 +77,7 @@ pub struct TokenAndShortUser {
     Deserialize,
   )
 ]
+#[allow(dead_code)]
 pub struct ShortFriendData {
     pub friend: FriendShortInfo
 }
@@ -96,6 +87,7 @@ pub struct ShortFriendData {
     Deserialize
   )
  ]
+#[allow(dead_code)]
 pub struct LoginRawResponce {
     login:  TokenAndShortUser,
 }
@@ -105,6 +97,7 @@ pub struct LoginRawResponce {
     Deserialize
  )
 ]
+#[allow(dead_code)]
 pub struct AddFriendRawResponce {
     addfriend:     ShortFriendData,
 }
@@ -115,6 +108,7 @@ pub struct AddFriendRawResponce {
     Deserialize
  )
 ]
+#[allow(dead_code)]
 pub struct DelFriendRawResponce {
     delfriend:     ShortFriendData,
 }
@@ -124,6 +118,7 @@ pub struct DelFriendRawResponce {
     Deserialize
   )
 ]
+#[allow(dead_code)]
 pub struct RegisterRawResponce {
     register:  TokenAndShortUser,
 }
@@ -133,6 +128,7 @@ pub struct RegisterRawResponce {
     Deserialize
   )
 ]
+#[allow(dead_code)]
 struct LoginResponce {
     data:    Option<LoginRawResponce>,  //Option<UserInfo>,
     errors:  Option<Vec<GraphQLError>>,
@@ -143,6 +139,7 @@ struct LoginResponce {
     Deserialize
   )
 ]
+#[allow(dead_code)]
 struct RegisterResponce {
     data:   Option<RegisterRawResponce>,
     errors: Option<Vec<GraphQLError>>
@@ -153,6 +150,7 @@ struct RegisterResponce {
     Deserialize
   )
 ]
+#[allow(dead_code)]
 struct AddFriendResponce {
     data:   Option<AddFriendRawResponce>,
     errors: Option<Vec<GraphQLError>>
@@ -164,6 +162,7 @@ struct AddFriendResponce {
     Deserialize
   )
 ]
+#[allow(dead_code)]
 struct DelFriendResponce {
     data:   Option<DelFriendRawResponce>,
     errors: Option<Vec<GraphQLError>>
@@ -176,6 +175,7 @@ struct DelFriendResponce {
     Deserialize,
     //Debug,
 )]
+#[allow(dead_code)]
 pub struct UserPlusNode {
     id:         u32,
     name:       String,
@@ -216,6 +216,7 @@ impl std::fmt::Display for UserPlusNode {
 #[derive(
     Deserialize
 )]
+#[allow(dead_code)]
 pub struct UserPlusRawResponce {
     userplus:     UserPlusNode,
 }
@@ -224,6 +225,7 @@ pub struct UserPlusRawResponce {
 #[derive(
     Deserialize
 )]
+#[allow(dead_code)]
 struct FriendPlusResponce {
     data:   Option<UserPlusRawResponce>,
     errors: Option<Vec<GraphQLError>>
@@ -231,6 +233,7 @@ struct FriendPlusResponce {
 
 // GraphQL Client
 #[derive(Deserialize, Debug)]
+#[allow(dead_code)]
 pub struct GraphQLClient {
     http_host:   String,
     http_port:   u32,
@@ -242,6 +245,7 @@ pub struct GraphQLClient {
 impl GraphQLClient {
 
     // создать экземпляр GraphQLClient
+    #[allow(dead_code)]
     pub fn new(http_host: &str, http_port: u32) ->Result<GraphQLClient> {
         Ok(
             Self {
@@ -254,6 +258,7 @@ impl GraphQLClient {
     }
 
     // Установить токен
+    #[allow(dead_code)]
     pub fn set_token(&mut self, token: &str) ->Result<()> {
         match token {
             t if t.is_empty() => Err(anyhow::anyhow!("token is empty")),
@@ -264,12 +269,15 @@ impl GraphQLClient {
         }
     }
 
+    /*
     // получить token
-    pub fn token(&self) ->&str {
+    pub fn _token(&self) ->&str {
         &self.token
     }
+     */
 
     // Выполнить login
+    #[allow(dead_code)]
     pub fn login(&mut self, name: &str, password: &str) ->Result<(UserShortInfo, &str)> {
         // строка запроса в формате GraphQL
         let query = 
@@ -388,6 +396,7 @@ impl GraphQLClient {
     }
 
     // Выполнить регистацию нового пользователя
+    #[allow(dead_code)]
     pub fn register(&mut self, name: &str, password: &str) ->Result<(UserShortInfo, &str)> {
         // строка запроса в формате GraphQL
         let query = 
@@ -469,6 +478,7 @@ impl GraphQLClient {
     }
 
     // Добавить друга
+    #[allow(dead_code)]
     pub fn add_friend(&mut self, friend_id: u32, jwt: &str) ->Result<FriendShortInfo> {
 
         // строка запроса в формате GraphQL
@@ -543,6 +553,7 @@ impl GraphQLClient {
     }
 
     // Удалить пользователя из друзей
+    #[allow(dead_code)]
     pub fn del_friend(&mut self, friend_id: u32, jwt: &str) ->Result<FriendShortInfo> {
 
         // строка запроса в формате GraphQL
@@ -616,6 +627,7 @@ impl GraphQLClient {
     }    
 
     // Показать пользователя его друзей и их друзей
+    #[allow(dead_code)]
     pub fn show_friend(&mut self, jwt: &str) ->Result<UserPlusNode> {
 
         // строка запроса в формате GraphQL
