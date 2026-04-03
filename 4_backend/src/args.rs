@@ -11,7 +11,6 @@ use serde::{
 // Перечень команд
 #[derive(
     Subcommand,
-    //Debug,
     Serialize,
     Deserialize,
  )

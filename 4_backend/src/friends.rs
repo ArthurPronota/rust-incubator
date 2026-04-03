@@ -1,46 +1,46 @@
-use anyhow::Result ;
+use anyhow::Result ;    // Импорт типа Result из библиотеки anyhow для упрощенной обработки ошибок
 
-use validator::{
-        Validate,
-        ValidateRange,
-        ValidationError,
+use validator::{         // Импорт типов и трейтов из крейта validator для валидации данных
+        Validate,        // Импорт трейта Validate, добавляющего метод validate() для структур
+        ValidateRange,   // Импорт трейта ValidateRange для проверки диапазонов значений
+        ValidationError, // Импорт типа ValidationError для создания и обработки ошибок валидации
 } ;
 
-use sqlx::FromRow ;
+use sqlx::FromRow ;      // Импорт трейта FromRow из SQLx для десериализации строк БД в структуры
 
-use crate::db ;
+use crate::db ;          // Импорт модуля db из текущего крейта для работы с базой данных
 
-use crate::users::Users;
+use crate::users::Users; // Импорт структуры Users из модуля users текущего крейта
 
 /// Друзья
-#[derive(
-    FromRow,
-    Validate,
-    Default,
+#[derive(   // Атрибут для автоматической реализации трейтов для структуры
+    FromRow,    // Автоматически реализует трейт FromRow для десериализации из строки SQL-запроса
+    Validate,   // Автоматически реализует трейт Validate для проверки правил валидации полей
+    Default,    // Автоматически реализует трейт Default для создания экземпляра со значениями по умолчанию
  )
 ]
-#[validate(
-    schema(function = "Friends::validate_record")
+#[validate( // Атрибут для настройки правил валидации на уровне всей структуры
+    schema(function = "Friends::validate_record")   // Указывает кастомную функцию для валидации всей структуры
  )
 ]
 pub struct Friends {
     /// Код пользователя
-    #[validate(
-        range(
-            min = 1,
-            message = "id_user must be greater than zero",
+    #[validate( // Атрибут для правил валидации поля
+        range(  // Проверка вхождения значения в диапазон
+            min = 1,    // Минимальное допустимое значение
+            message = "id_user must be greater than zero",  // Сообщение об ошибке при нарушении
         ),
     )]
-    user_id:    u32,
+    user_id:    u32,    // Поле для хранения ID пользователя
 
     /// Код друга
-    #[validate(
-        range(
-            min = 1,
-            message = "friend_id must be greater than zero",
+    #[validate(    // Атрибут для правил валидации поля
+        range(     // Проверка вхождения значения в диапазон
+            min = 1,    // Минимальное допустимое значение
+            message = "friend_id must be greater than zero",    // Сообщение об ошибке при нарушении
         )
     )]
-    friend_id:  u32,
+    friend_id:  u32,    // Поле для хранения ID друга
 }
 
 impl Friends {
@@ -199,7 +199,8 @@ impl Friends {
                 .is_some() {
             return Err(anyhow::anyhow!("I can't add a friend_id: {} for user: {}, he already exists.", friend_id, user_id));
         }
-         
+        
+        // вставка друга
         sqlx::query(
             r#"
             insert into friends (user_id, friend_id)
@@ -211,6 +212,7 @@ impl Friends {
         .execute(&mut *trans)
         .await? ;
 
+        // обязательный поиск друга
         Self::find_raise(
             trans,
             user_id,
@@ -227,6 +229,7 @@ impl Friends {
                     friend_id:  u32,
                  ) ->Result<()> {
 
+        // поиск друга с блокировкой
         Self::find_raise(
                 trans,
                 user_id,
@@ -235,6 +238,7 @@ impl Friends {
             )
             .await? ;
         
+        // удаление друга
         sqlx::query(
             r#"
             delete from friends
@@ -246,6 +250,7 @@ impl Friends {
         .execute(&mut *trans)
         .await? ;
 
+        // поиск друга
         match Self::find(
                 trans,
                 user_id,
@@ -261,10 +266,12 @@ impl Friends {
 
 }
 
+// unit тесты
 #[cfg(test)]
 mod tests {
     use super::* ;
 
+    // тест проверки валидного user_id
     #[test]
     fn valid_user_id_check() {
         let mut tmp_friend = Friends::default() ;
@@ -274,6 +281,7 @@ mod tests {
         ) ;
     }
 
+    // тест проверки инвалидного user_id
     #[test]
     fn invalid_user_id_check() {
         let mut tmp_friend = Friends::default() ;
@@ -283,6 +291,7 @@ mod tests {
         ) ;
     }
 
+    // тест проверки валидного friend_id
     #[test]
     fn valid_friend_id_check() {
         let mut tmp_friend = Friends::default() ;
@@ -290,6 +299,7 @@ mod tests {
         assert!(tmp_friend.set_friend_id(1).is_ok()) ;
     }
 
+    // тест проверки инвалидного friend_id
     #[test]
     fn invalid_friend_id_check() {
         let mut tmp_friend = Friends::default() ;
@@ -297,6 +307,7 @@ mod tests {
         assert!(tmp_friend.set_friend_id(0).is_err()) ;
     }
 
+    // валидный тест проверки совместимости user_id и friend_id
     #[test]
     fn valid_mix_ids_check() {
         let mut tmp_friend = Friends::default() ;
@@ -308,6 +319,7 @@ mod tests {
         assert!(tmp_friend.validate().is_ok()) ;
     }
 
+    // инвалидный тест проверки совместимости user_id и friend_id
     #[test]
     fn invalid_mix_ids_check() {
         let mut tmp_friend = Friends::default() ;

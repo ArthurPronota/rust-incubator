@@ -1,10 +1,10 @@
-use std::path::Path ;
+use std::path::Path ;   // Импорт типа Path из стандартной библиотеки для работы с путями к файлам и директориям
 
-use dotenv ;
+use dotenv ;  // Импорт крейта dotenv для загрузки переменных окружения из файла .env
 
-use anyhow::Result ;
+use anyhow::Result ;    // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
 
-use std::net::IpAddr ;
+use std::net::IpAddr ;  // Импорт типа IpAddr из стандартной библиотеки для работы с IP-адресами
 
 /// Переменная окружения порт http сервера
 const HTTP_PORT: &str = "HTTP_PORT" ;

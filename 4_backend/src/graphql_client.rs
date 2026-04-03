@@ -1,40 +1,39 @@
 // GraphQL клиент
 
-use ureq::{
-        self,
-        http::StatusCode,
+use ureq::{     // Импорт модулей из крейта ureq (HTTP клиент)
+        self,   // Импорт самого крейта ureq 
+        http::StatusCode,   // Импорт перечисления StatusCode из модуля http для работы с HTTP статусами
 } ;
 
-use anyhow::Result ;
+use anyhow::Result ;    // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
 
-use serde::{
-        Serialize,
-        Deserialize,
+use serde::{    // Импорт трейтов из крейта serde для сериализации/десериализации данных
+        Serialize,      // Импорт трейта Serialize для преобразования структур в JSON/другие форматы
+        Deserialize,    // Импорт трейта Deserialize для преобразования JSON/данных в структуры
 } ;
 
-use serde_json::json ;
+use serde_json::json ;  // Импорт макроса json из serde_json для удобного создания JSON значений
 
-use crate::common ;
+use crate::common ;     // Импорт модуля common из текущего крейта для доступа к общим утилитам и константам
 
 // Ошибка в GraphQL
 #[derive(
-    Debug,
-    Deserialize
+    Deserialize     // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
 )]
 struct GraphQLError {
-    message: String,
+    message: String,    // Сообщение об ошибке
 }
 
 // Информация о пользователе
 #[derive(
-    Serialize,
-    Deserialize,
+    Serialize,      // Автоматически реализует трейт Serialize для преобразования экземпляра структуры в формат JSON
+    Deserialize,    // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
  )
 ]
 #[allow(dead_code)]
 pub struct UserShortInfo {
-    pub id:     u32,
-    pub name:   String,
+    pub id:     u32,        // код пользователя
+    pub name:   String,     // наименование пользователя
 }
 
 // реализация Display для UserShortInfo
@@ -47,14 +46,14 @@ impl std::fmt::Display for UserShortInfo {
 
 // Краткая информация о друге
 #[derive(
-    Serialize,
-    Deserialize,
+    Serialize,      // Автоматически реализует трейт Serialize для преобразования экземпляра структуры в формат JSON
+    Deserialize,    // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
  )
 ]
 #[allow(dead_code)]
 pub struct FriendShortInfo {
-    pub id:     u32,
-    pub name:   String,
+    pub id:     u32,        // код друга
+    pub name:   String,     // наименование друга
 }
 
 /// Реализация Display для FriendShortInfo
@@ -68,112 +67,111 @@ impl std::fmt::Display for FriendShortInfo {
 #[derive(Deserialize)]
 #[allow(dead_code)]
 pub struct TokenAndShortUser {
-    pub token:  String,
-    pub user:   UserShortInfo,
+    pub token:  String,         // JSON Web Token
+    pub user:   UserShortInfo,  // краткие данные о пользователе
 }
 
-// Данные по другу
+// Краткие данные по другу
 #[derive(
-    Deserialize,
+    Deserialize,    // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
   )
 ]
 #[allow(dead_code)]
 pub struct ShortFriendData {
-    pub friend: FriendShortInfo
+    pub friend: FriendShortInfo // Краткие данные по другу
 }
 
 // Сырой ответ логирования
 #[derive(
-    Deserialize
+    Deserialize // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
   )
  ]
 #[allow(dead_code)]
 pub struct LoginRawResponce {
-    login:  TokenAndShortUser,
+    login:  TokenAndShortUser,  // Информацмя о JWT и краткая информацмя о пользователе
 }
 
 // Сырой ответ добавления друга
 #[derive(
-    Deserialize
+    Deserialize     // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
  )
 ]
 #[allow(dead_code)]
 pub struct AddFriendRawResponce {
-    addfriend:     ShortFriendData,
+    addfriend:     ShortFriendData, // краткая информацмя о друге
 }
 
 
 // Сырой ответ удаления друга
 #[derive(
-    Deserialize
+    Deserialize     // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
  )
 ]
 #[allow(dead_code)]
 pub struct DelFriendRawResponce {
-    delfriend:     ShortFriendData,
+    delfriend:     ShortFriendData,     // Краткая информация о друге
 }
 
 // Сырой ответ регистрации нового пользователя
 #[derive(
-    Deserialize
+    Deserialize     // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
   )
 ]
 #[allow(dead_code)]
 pub struct RegisterRawResponce {
-    register:  TokenAndShortUser,
+    register:  TokenAndShortUser,   // Информацмя о JWT и краткая информацмя о пользователе
 }
 
 // Ответ сервера на попытку логирования
 #[derive(
-    Deserialize
+    Deserialize     // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
   )
 ]
 #[allow(dead_code)]
 struct LoginResponce {
-    data:    Option<LoginRawResponce>,  //Option<UserInfo>,
-    errors:  Option<Vec<GraphQLError>>,
+    data:    Option<LoginRawResponce>,  // Сырые данные о логировании
+    errors:  Option<Vec<GraphQLError>>, // Ошибка при логировании
 }
 
 // Ответ сервера на попытку регистрации нового пользователя
 #[derive(
-    Deserialize
+    Deserialize     // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
   )
 ]
 #[allow(dead_code)]
 struct RegisterResponce {
-    data:   Option<RegisterRawResponce>,
-    errors: Option<Vec<GraphQLError>>
+    data:   Option<RegisterRawResponce>,    // данные о регистрации пользователя
+    errors: Option<Vec<GraphQLError>>,      // Ошибка при логировании
 }
 
 // Ответ сервера на попытку добавления друга
 #[derive(
-    Deserialize
+    Deserialize         // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
   )
 ]
 #[allow(dead_code)]
 struct AddFriendResponce {
-    data:   Option<AddFriendRawResponce>,
-    errors: Option<Vec<GraphQLError>>
+    data:   Option<AddFriendRawResponce>,       // Ответ на добавление друга
+    errors: Option<Vec<GraphQLError>>,          // Ошибка при логировании
 }
 
 
 // Ответ сервера на попытку удаления друга
 #[derive(
-    Deserialize
+    Deserialize         // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
   )
 ]
 #[allow(dead_code)]
 struct DelFriendResponce {
-    data:   Option<DelFriendRawResponce>,
-    errors: Option<Vec<GraphQLError>>
+    data:   Option<DelFriendRawResponce>,   // Ответ на удаление друга
+    errors: Option<Vec<GraphQLError>>,      // Ошибка при логировании
 }
 
 // -------------------------
 
 // Узел с данными о пользователе и его друзьях
 #[derive(
-    Deserialize,
-    //Debug,
+    Deserialize,    // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
 )]
 #[allow(dead_code)]
 pub struct UserPlusNode {
@@ -181,16 +179,15 @@ pub struct UserPlusNode {
     name:       String,
     // Option позволяет прочитать данные, даже если в запросе
     // не было вложенного поля friends
-    friends:    Option<Vec<UserPlusNode>>,
+    friends:    Option<Vec<UserPlusNode>>,  // друзья пользователя
 }
 
 impl UserPlusNode {
+    // форматирование для узла друга
     fn fmt_node(&self, f: &mut std::fmt::Formatter<'_>, indent: usize) ->std::fmt::Result {
         let padd = " ".repeat(indent * 2) ;
 
         writeln!(f, "{}- Id: {}, Name: {}", padd, self.id, &self.name)? ;
-
-        //let v = self.friends ;
 
         if let Some(frds) = &self.friends {
             if ! frds.is_empty() {
@@ -205,6 +202,7 @@ impl UserPlusNode {
     }
 }
 
+// реализация display для пользователя и его друзей
 impl std::fmt::Display for UserPlusNode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         //writeln!(f, "")
@@ -214,31 +212,31 @@ impl std::fmt::Display for UserPlusNode {
 
 // корневой узел с данные о себе и своих друзьях
 #[derive(
-    Deserialize
+    Deserialize,     // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
 )]
 #[allow(dead_code)]
 pub struct UserPlusRawResponce {
-    userplus:     UserPlusNode,
+    userplus:     UserPlusNode,     // пользователь и его друзья
 }
 
 // Ответ сервера на попытку показа своих данных, своих друзей и их друзей
 #[derive(
-    Deserialize
+    Deserialize,    // Автоматически реализует трейт Deserialize для преобразования данных из формата JSON в экземпляр структуры
 )]
 #[allow(dead_code)]
 struct FriendPlusResponce {
-    data:   Option<UserPlusRawResponce>,
-    errors: Option<Vec<GraphQLError>>
+    data:   Option<UserPlusRawResponce>,    // данные о пользователе и его друзьях
+    errors: Option<Vec<GraphQLError>>       // Ошибка при получении пользователя и его друзей
 }
 
 // GraphQL Client
 #[derive(Deserialize, Debug)]
 #[allow(dead_code)]
 pub struct GraphQLClient {
-    http_host:   String,
-    http_port:   u32,
-    url:         String,
-    token:       String,
+    http_host:   String,        // хост http сервера
+    http_port:   u32,           // порт http сервера
+    url:         String,        // url для POST запросов
+    token:       String,        // JWT
 }
 
 // реализация методов для GraphQLClient
@@ -268,13 +266,6 @@ impl GraphQLClient {
             }
         }
     }
-
-    /*
-    // получить token
-    pub fn _token(&self) ->&str {
-        &self.token
-    }
-     */
 
     // Выполнить login
     #[allow(dead_code)]
@@ -339,6 +330,7 @@ impl GraphQLClient {
          */
         ;
 
+        // выполнить POST запрос
         let mut resp = 
                 ureq::post(&self.url)
                     .header(common::CONTENT_TYPE_HEADER, common::JSON_TYPE_VAL)
@@ -359,7 +351,7 @@ impl GraphQLClient {
             return Err(anyhow::anyhow!("Server error: {}", resp.status()));
         }
 
-        /*
+        /* Пример получения сырого ответа сервера
         let v = resp
                             .body_mut()
                             .read_to_string()? 
@@ -369,7 +361,6 @@ impl GraphQLClient {
         // {"data":null,"errors":[{"message":"Invalid password !!!!!!!!!!!","locations":[{"line":3,"column":17}],"path":["login"]}]}
         */
 
-        //*
         // получение ответа от сервера
         let log_resp = resp
                         .body_mut()
@@ -386,7 +377,6 @@ impl GraphQLClient {
         match log_resp.data {
             Some(data) => {
                 self.set_token(&data.login.token)? ;
-                //common::print_jw_token(&self.token);
                 Ok((data.login.user, &self.token))
             },
             None => {
@@ -436,17 +426,6 @@ impl GraphQLClient {
             return Err(anyhow::anyhow!("Server error: {}", resp.status()));
         }
 
-        /*
-        let v = resp
-                            .body_mut()
-                            .read_to_string()? 
-                            ;
-        println!("{}", v) ; // {"data":{"login":{"id":10,"name":"123"}}}
-        // {"data":{"login":{"user":{"id":10,"name":"123"}}}}
-        // {"data":null,"errors":[{"message":"Invalid password !!!!!!!!!!!","locations":[{"line":3,"column":17}],"path":["login"]}]}
-        */
-
-        //*
         // получение ответа от сервера
         let reg_resp = resp
                         .body_mut()
@@ -518,17 +497,6 @@ impl GraphQLClient {
             return Err(anyhow::anyhow!("Server error: {}", resp.status()));
         }
 
-        /*
-        let v = resp
-                            .body_mut()
-                            .read_to_string()? 
-                            ;
-        println!("{}", v) ; 
-        //{"data":{"addfriend":{"friend":{"id":3,"name":"Tom"}}}}
-        //{"data":null,"errors":[{"message":"I can't add a friend_id: 3 for user: 2, he already exists.","locations":[{"line":3,"column":17}],"path":["addfriend"]}]}
-        */
-
-        //*
         // получение ответа от сервера
         let add_friend_resp = resp
                         .body_mut()
@@ -592,16 +560,6 @@ impl GraphQLClient {
         if resp.status() != StatusCode::OK {
             return Err(anyhow::anyhow!("Server error: {}", resp.status()));
         }
-
-        /*
-        let v = resp
-                            .body_mut()
-                            .read_to_string()? 
-                            ;
-        println!("{}", v) ; 
-        //{"data":{"addfriend":{"friend":{"id":3,"name":"Tom"}}}}
-        //{"data":null,"errors":[{"message":"I can't add a friend_id: 3 for user: 2, he already exists.","locations":[{"line":3,"column":17}],"path":["addfriend"]}]}
-        */
 
         // получение ответа от сервера
         let del_friend_resp = resp
@@ -689,16 +647,6 @@ query Friends($jwt: String!) {
         if resp.status() != StatusCode::OK {
             return Err(anyhow::anyhow!("Server error: {}", resp.status()));
         }
-
-        /*
-        let v = resp
-                            .body_mut()
-                            .read_to_string()? 
-                            ;
-        println!("{}", v) ; 
-        //{"data":{"addfriend":{"friend":{"id":3,"name":"Tom"}}}}
-        //{"data":null,"errors":[{"message":"I can't add a friend_id: 3 for user: 2, he already exists.","locations":[{"line":3,"column":17}],"path":["addfriend"]}]}
-        */
 
         // получение ответа от сервера
         let friend_plus_resp = resp

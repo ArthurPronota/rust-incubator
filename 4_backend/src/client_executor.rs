@@ -1,12 +1,12 @@
-use anyhow::Result ;
+use anyhow::Result ;    // Импорт типа Result из библиотеки anyhow для упрощенной обработки ошибок
 
-use crate::{
-        args::{
-            self, 
-            Commands
+use crate::{    // Импорт модулей из текущего крейта
+        args::{ // Импорт модуля args, содержащего парсинг аргументов командной строки
+            self,       // Импорт самого модуля args
+            Commands,   // Импорт перечисления Commands из модуля args для обработки различных команд CLI
         }, 
-        common,
-        graphql_client,
+        common,         // Импорт модуля common для доступа к общим утилитам и константам
+        graphql_client, // Импорт модуля graphql_client для работы с GraphQL-запросами
     } ;
 
 /// Выполнить действие из аргументов командной строки    
@@ -24,19 +24,12 @@ pub fn any_command(
     match &arg.commands {
         // Регистрация нового пользователя
         Commands::UserRegister { name, password } => {
-            //println!("{}", gr_client.login(name, password)?) ;
-            //println!("{}", gr_client.register(name, password)?) ;
             let (user_info, jwt) = gr_client.register(name, password)? ;
             common::print_jw_token(jwt);
             println!("Registered user: {}", user_info) ;
         },
         // Логирование пользоватлем
         Commands::Login { name, password } => {
-            /*
-            println!("Logged in user: {}", 
-                     gr_client.login(name, password)?
-            ) ;
-             */
             let (user_info, jwt) = gr_client.login(name, password)? ;
             common::print_jw_token(jwt);
             println!("Logged in user: {}", user_info) ;
@@ -56,7 +49,6 @@ pub fn any_command(
         },
         // Показать друзей
         Commands::ShowFriends { jwt } => {
-            //println!("{:#?}", gr_client.show_friend(jwt)?) ;
             println!("{}", gr_client.show_friend(jwt)?) ;
         },
     }
