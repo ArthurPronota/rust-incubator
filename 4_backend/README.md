@@ -17,28 +17,6 @@ __Estimated time__: 3 days
 
 ## Task
 
-Write a simple [GraphQL] API server with the following data model:
-- `User` has `id` (unique), `name` (unique) and `friends` (list of other `User`s) fields.
-- `User` is able to authenticate with its `password`.
-
-API requirements:
-- Ability to register users.
-- Ability to authenticate users.
-- Ability to retrieve a single user and all its friends (with their friends) (should require authorization).
-- Ability to add some user to friends list and remove from there (should require authorization).
-
-Web frameworks, tools and database choices are up to you. Keep things simple to fit into the dedicated time.
-
-If you have enough time after implementing base requirements, consider to add the following to your solution:
-- Provide migrations for database schema (if possible).
-- Add comprehensive documentation to your code and [API], and generate it in [HTML] form.
-- Cover your implementation with unit and E2E tests.
-- Implement [GraphQL] query [depth limiting][21].
-- Use [dataloading][22] to optimize interaction with database in [GraphQL] resolvers. 
-
-
-----------------------------------------
-
 Напишите простой API-сервер на основе [GraphQL] со следующей моделью данных:
 - Объект `User` имеет поля `id` (уникальный), `name` (уникальный) и `friends` (список других пользователей `User`).
 - `User` может пройти аутентификацию, используя свой `password`.
