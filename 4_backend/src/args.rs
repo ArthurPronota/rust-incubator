@@ -8,7 +8,7 @@ use serde::{
         Deserialize
 } ;
 
-/// Перечень команд
+// Перечень команд
 #[derive(
     Subcommand,
     //Debug,
@@ -119,7 +119,7 @@ pub enum Commands {
     }
 }
 
-/// Агрументы командной строки
+// Агрументы командной строки
 #[derive(
     Parser,
     //Debug,
