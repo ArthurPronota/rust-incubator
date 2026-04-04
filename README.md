@@ -342,3 +342,6 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [030404]: 3_ecosystem/3_4_regex_parsing/README.md#q-030404
 [030405]: 3_ecosystem/3_4_regex_parsing/README.md#q-030405
 [030406]: 3_ecosystem/3_4_regex_parsing/README.md#q-030406
+
+[030501]: 3_ecosystem/3_5_collections/README.md#q-030501
+[030502]: 3_ecosystem/3_5_collections/README.md#q-030502
