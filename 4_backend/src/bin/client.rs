@@ -217,19 +217,19 @@ UserPlusNode {
 use anyhow::Result ;    // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
 use clap::Parser;       // Импорт трейта Parser из крейта clap для автоматического парсинга аргументов командной строки
 
-// Подклбчение модуля common из родительского дирректория
+// Подключение модуля common из родительского дирректория
 #[path = "../common.rs"]
 mod common ;
 
-// Подклбчение модуля args из родительского дирректория
+// Подключение модуля args из родительского дирректория
 #[path = "../args.rs"]
 mod args ;
 
-// Подклбчение модуля client_executor из родительского дирректория
+// Подключение модуля client_executor из родительского дирректория
 #[path = "../client_executor.rs"]
 mod client_executor ;
 
-// Подклбчение модуля graphql_client из родительского дирректория
+// Подключение модуля graphql_client из родительского дирректория
 #[path = "../graphql_client.rs"]
 mod graphql_client ;
 
@@ -239,8 +239,6 @@ fn main() ->Result<()>{
     let (http_port, http_host, ..) = common::get_all_env_vars()? ;
 
     let args = args::Args::parse() ;
-
-    //println!("args: {:?}", args) ;
 
     // Выполнить действие из аргументов командной строки
     client_executor::any_command(&args, &http_host, http_port)? ;
