@@ -1,20 +1,18 @@
-use std::u32;
+use anyhow::Result ;    // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
 
-use anyhow::Result ;
-
-use sqlx::{
-        FromRow,
-        Pool,
-        mysql::MySql,
+use sqlx::{         // Импорт компонентов из крейта sqlx для работы с БД
+        FromRow,    // Импорт трейта FromRow для десериализации строк таблицы в структуры
+        Pool,       // Импорт типа Pool для пула соединений с базой данных
+        mysql::MySql,   // Импорт типа MySql для указания драйвера MySQL
 } ;
 
-use validator::{
-        Validate,
-        ValidateLength, 
-        ValidateRange,
+use validator::{    // Импорт компонентов из крейта validator для валидации данных
+        Validate,          // Импорт трейта Validate для валидации структур
+        ValidateLength,    // Импорт трейта ValidateLength для проверки длины строк/коллекций
+        ValidateRange,     // Импорт трейта ValidateRange для проверки диапазонов числовых значений
 } ;
 
-use crate::db ;
+use crate::db ;     // Импорт модуля db из текущего крейта для работы с базой данных
 
 /// Минимальная длина наименование пользователя
 pub const MIN_LENGTH_NAME: u64 = 1 ;
@@ -39,7 +37,6 @@ pub struct Users {
     #[validate(
         range(
             min = 1,
-            //max = u32::MAX,
             message = "id_user must be greater than zero",
         )
     )]
