@@ -56,62 +56,67 @@ $ cargo run --bin server
 CREATE DATABASE `4_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
 
 */
-use anyhow::Result ;
+use anyhow::Result ;    // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
 
-use std::sync::Arc ;
+use std::sync::Arc ;    // Импорт Arc (Atomic Reference Counting) для потокобезопасного разделяемого владения
 
-use tokio::net::TcpListener ;
+use tokio::net::TcpListener ;   // Импорт TcpListener из Tokio для асинхронного прослушивания TCP портов
 
-use axum::{
-        Extension, 
-        Router, 
-        routing::{
-            post
+use axum::{     // Импорт компонентов из веб-фреймворка Axum
+        Extension,  // Импорт типа Extension для внедрения зависимостей в обработчики
+        Router,     // Импорт Router для объединения маршрутов в одно приложение
+        routing::{  // Импорт модуля routing для определения HTTP методов
+            post    // Импорт функции post для создания маршрутов обрабатывающих POST запросы
         }
 } ;
 
-use async_graphql::{
-            EmptySubscription,
-            Schema,
+use async_graphql::{    // Импорт компонентов из крейта async-graphql
+            EmptySubscription,  // Импорт EmptySubscription - пустой тип для подписок (без real-time)
+            Schema,     // Импорт Schema для объединения Query, Mutation и Subscription
 };
 
 
-use async_graphql::dataloader::DataLoader;
+use async_graphql::dataloader::DataLoader;  // Импорт DataLoader для пакетной загрузки данных и решения N+1 проблемы
 
-use tower_http::services::ServeFile;
+use tower_http::services::ServeFile;    // Импорт ServeFile из tower_http для обслуживания статических файлов
 
+// Подклбчение модуля common из родительского дирректория
 #[path = "../common.rs"]
 mod common ;
 
+// Подклбчение модуля db из родительского дирректория
 #[path = "../db.rs"]
 mod db ;
 
+// Подклбчение модуля graphql_server из родительского дирректория
 #[path = "../graphql_server.rs"]
 mod graphql_server ;
 
+// Подклбчение модуля graphql_client из родительского дирректория
 #[path = "../graphql_client.rs"]
 mod graphql_client ;
 
+// Подклбчение модуля users из родительского дирректория
 #[path = "../users.rs"]
 mod users ;
 
+// Подклбчение модуля jwt из родительского дирректория
 #[path = "../jwt.rs"]
 mod jwt ;
 
+// Подклбчение модуля passw из родительского дирректория
 #[path = "../passw.rs"]
 mod passw ;
 
+// Подклбчение модуля friends из родительского дирректория
 #[path = "../friends.rs"]
 mod friends ;
 
+// Атрибут, преобразующий асинхронную функцию main в синхронную точку входа с запуском токио рантайма
 #[tokio::main]
 async fn main() ->Result<()> {
-    /*
-    CryptoProvider::set_default_provider(CryptoProvider::ring())
-        .expect("Failed to set default crypto provider");
-     */
-    //CryptoProvider::install_default()?;
 
+    // Получить все необходимые переменные окружения
     let (port_http, 
          host_http, 
          db_path, 
@@ -120,12 +125,13 @@ async fn main() ->Result<()> {
          graphql_deep_limit
         ) = common::get_all_env_vars()? ;
 
-    
+
+    // Оборачивание пула соединений с DB в Arc
     let db_res = Arc::new(
-                    // Оборачивание пула соединений с DB в Arc
                     db::Database::new(&db_path).await?
                 ) ;
 
+    // Обернуть в Arc структуру AuthService
     let auth_serv = Arc::new(
             jwt::AuthService::new(
                     &jwt_secret,
@@ -134,13 +140,13 @@ async fn main() ->Result<()> {
         ) ;
 
     let friend_loader = 
-            DataLoader::new(
-                graphql_server::FriendDataLoader{
-                            pool: Arc::new(
-                                db::Database::new(&db_path).await?
+            DataLoader::new(    // Создание нового экземпляра DataLoader для пакетной загрузки данных
+                graphql_server::FriendDataLoader{   // Создание экземпляра кастомного загрузчика друзей
+                            pool: Arc::new( // Оборачиваем пул соединений в Arc для потокобезопасного разделения
+                                db::Database::new(&db_path).await?  // Создаем новое подключение к базе данных по указанному пути
                             )
                 }, 
-                tokio::spawn
+                tokio::spawn    // Указываем исполнитель (токио спаун) для асинхронных операций загрузчика
             );
 
     // Создать таблицы в DB      
@@ -197,44 +203,51 @@ execution_time: 19653300
     4. Создает и обновляет таблицу _sqlx_migrations для отслеживания состояния
 
      */
-
     sqlx::migrate!().run(&db_res.pool).await?;
 
     let schema = 
-                    Schema::build(
-                        graphql_server::Query,    //query, 
-                        graphql_server::Mutation,    // mutation, 
-                        EmptySubscription,    // subscription
+                    Schema::build(  // Начинаем построение схемы с помощью билдера
+                        graphql_server::Query,       // Первый параметр: тип Query (корневой тип для операций чтения)
+                        graphql_server::Mutation,    // Второй параметр: тип Mutation (корневой тип для операций изменения)
+                        EmptySubscription,  // Третий параметр: тип Subscription (корневой тип для подписок, здесь пустой)
                     )
-                    // добавить пул соединений с базой
-                    .data(db_res.clone())
-                    .data(auth_serv.clone())
-                    .data(friend_loader)
-                    // Установить максимальную глубину запроса.
+                    // Добавляем клонированный пул подключений к БД в контекст схемы
+                    .data(db_res.clone())   
+                    // Добавляем клонированный сервис аутентификации в контекст схемы
+                    .data(auth_serv.clone())    
+                    // Добавляем DataLoader для загрузки друзей в контекст схемы
+                    .data(friend_loader)   
+                    // Устанавливаем лимит глубины вложенности GraphQL запроса
                     .limit_depth(graphql_deep_limit)
-                    .finish() ;
+                    // Завершаем построение схемы и получаем готовый экземпляр Schema
+                    .finish()
+                    ;
 
-    let route: Router<()> = Router::new()
-                                .route(
-                                    common::GRAPHQL_URI, 
-                                    post(graphql_server::graph_handler),  // method_router
+    let route: Router<()> = Router::new()   // Создаем новый маршрутизатор Axum с типом состояния ()
+                                .route(     // Добавляем маршрут для обработки HTTP запросов
+                                    common::GRAPHQL_URI,    // Путь из константы
+                                    post(graphql_server::graph_handler),    // Указываем обработчик для POST запросов (функция graph_handler)
                                 )
-                                //.with_state(db_res)
-                                .route_service(
-                                    "/api_docs.html",
-                                    ServeFile::new("docs/api_docs.html")
+                                .route_service( // Добавляем маршрут для обслуживания статического файла
+                                    "/api_docs.html",   // Путь, по которому будет доступна документация API
+                                    ServeFile::new("docs/api_docs.html")    // Обслуживаем статический HTML файл из директории docs
                                 )
-                                .layer(Extension(schema))
+                                .layer(Extension(schema))   // Добавляем слой middleware, внедряющий GraphQL схему в расширения запроса
                                 ;
 
     let listener = 
-            TcpListener::bind(
-                format!("{}:{}", host_http, port_http)
+            TcpListener::bind(  // Привязываемся к указанному сетевому адресу
+                format!("{}:{}", host_http, port_http)  // Формируем строку адреса из хоста и порта 
             )
-            .await? ;
+            .await     // Асинхронно ожидаем привязки
+            ?;      // оператор ? распространяет ошибку при неудаче
 
-    axum::serve(listener, route)
-            .await? ;
+    axum::serve(    // Вызываем функцию serve из крейта axum для запуска HTTP сервера
+            listener,   // Передаем TcpListener, который слушает входящие соединения
+            route,  // Передаем настроенный Router с маршрутами и обработчиками
+        )
+        .await  // Асинхронно ожидаем завершения работы сервера (бесконечно)
+        ?;  // Оператор ? распространяет ошибку, если сервер завершился с ошибкой
 
     Ok(())
 }

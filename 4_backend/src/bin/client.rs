@@ -214,18 +214,22 @@ UserPlusNode {
 
 */
 
-use anyhow::Result ;
-use clap::Parser;
+use anyhow::Result ;    // Импорт типа Result из крейта anyhow для упрощенной обработки ошибок
+use clap::Parser;       // Импорт трейта Parser из крейта clap для автоматического парсинга аргументов командной строки
 
+// Подклбчение модуля common из родительского дирректория
 #[path = "../common.rs"]
 mod common ;
 
+// Подклбчение модуля args из родительского дирректория
 #[path = "../args.rs"]
 mod args ;
 
+// Подклбчение модуля client_executor из родительского дирректория
 #[path = "../client_executor.rs"]
 mod client_executor ;
 
+// Подклбчение модуля graphql_client из родительского дирректория
 #[path = "../graphql_client.rs"]
 mod graphql_client ;
 

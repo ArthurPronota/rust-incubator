@@ -27,38 +27,38 @@ pub const MIN_LENGTH_PASSWORD: u64 = 1 ;
 pub const MAX_LENGTH_PASSWORD: u64 = 255 ;
 
 /// Структура пользователей
-#[derive(
-    FromRow,
-    Validate,
-    Default,
+#[derive(       // Атрибут для автоматической реализации трейтов
+    FromRow,    // Автоматически реализует трейт FromRow для преобразования строки БД в структуру
+    Validate,   // Автоматически реализует трейт Validate для проверки правил валидации полей
+    Default,    // Автоматически реализует трейт Default для создания экземпляра со значениями по умолчанию
 )]
 pub struct Users {
     /// код пользователя
-    #[validate(
-        range(
-            min = 1,
-            message = "id_user must be greater than zero",
+    #[validate(     // Атрибут для правил валидации поля
+        range(      // Проверка вхождения значения в числовой диапазон
+            min = 1,    // Минимальное допустимое значение
+            message = "id_user must be greater than zero",  // Сообщение об ошибке при нарушении
         )
     )]
-    id_user:    u32,
+    id_user:    u32,    // Поле для хранения уникального идентификатора пользователя 
 
     // имя пользователя
-    #[validate(
-        length(
-            min = MIN_LENGTH_NAME,
-            max = MAX_LENGTH_NAME,
+    #[validate(     // Атрибут для правил валидации поля
+        length(     // Проверка длины строки
+            min = MIN_LENGTH_NAME,  // Минимальная допустимая длина имени
+            max = MAX_LENGTH_NAME,  // Максимальная допустимая длина имени
         )
     )]
-    name:       String,
+    name:       String,     // Поле для хранения имени пользователя
 
     // хеш пароля пользователя
-    #[validate(
-        length(
-            min = MIN_LENGTH_PASSWORD,
-            max = MAX_LENGTH_PASSWORD,
+    #[validate(     // Атрибут для правил валидации поля
+        length(     // Проверка длины строки
+            min = MIN_LENGTH_PASSWORD,  // Минимальная допустимая длина хэша пароля
+            max = MAX_LENGTH_PASSWORD,  // Максимальная допустимая длина хэша пароля
         )
     )]
-    password:   String,
+    password:   String,     // Поле для хранения хэшированного пароля пользователя
 }
 
 impl Users {
@@ -91,7 +91,7 @@ impl Users {
                             .trim()
         {
             n if n.is_empty() => return Err(anyhow::anyhow!("Username os empty")),
-            n if n.validate_length(
+            n if n.validate_length( // проверка длины хеша пароля
                             Some(MIN_LENGTH_NAME),
                             Some(MAX_LENGTH_NAME),
                             None
@@ -113,7 +113,7 @@ impl Users {
         self.password = match password
                                 .trim() {
             p if p.is_empty() => return Err(anyhow::anyhow!("password is empty")),
-            p if p.validate_length(
+            p if p.validate_length(     // проверка длины хеша пароля
                             Some(MIN_LENGTH_PASSWORD),
                             Some(MAX_LENGTH_PASSWORD),
                             None
@@ -133,7 +133,7 @@ impl Users {
     // Поиск по id_user без блокировок
     #[allow(dead_code)]
     pub async fn find_no_trans(
-                    db_res:   &Pool<MySql>,
+                    db_res:   &Pool<MySql>, // Асинхронный пул подключений к базе данных SQLx.
                     id_user:  u32,
                  ) ->Result<Option<Self>>
     {
@@ -163,7 +163,7 @@ impl Users {
     // Обязательный поиск по id_user без блокировок
     #[allow(dead_code)]
     pub async fn find_no_trans_raise(
-                    db_res:   &Pool<MySql>,
+                    db_res:   &Pool<MySql>, // Асинхронный пул подключений к базе данных SQLx.
                     id_user:  u32,
                  ) ->Result<Self>
     {
@@ -180,9 +180,9 @@ impl Users {
 
     /// Поиск по id_user
     pub async fn find_for_id_user(
-                trans:   &mut sqlx::MySqlConnection, 
+                trans:   &mut sqlx::MySqlConnection, // транзакция
                 id_user: u32,
-                is_lock: bool,
+                is_lock: bool,  // признак блокировки при поиске
             ) ->Result<Option<Self>> {
 
         let mut tmp_user = Users::default() ;
@@ -217,9 +217,9 @@ impl Users {
 
     /// Обязательный поиск пользователя по id_user
     pub async fn find_for_id_user_raise(
-                    trans:   &mut sqlx::MySqlConnection,
+                    trans:   &mut sqlx::MySqlConnection,    // транзакция
                     id_user: u32,
-                    is_lock: bool,
+                    is_lock: bool,  // признак блокировки при поиске
                  ) ->Result<Self> {
         match Self::find_for_id_user(
                 trans, 
@@ -235,9 +235,9 @@ impl Users {
 
     /// Поиск по Username
     pub async fn find_for_name(
-                    trans:   &mut sqlx::MySqlConnection,
+                    trans:   &mut sqlx::MySqlConnection, // транзакция
                     name:    &str,
-                    is_lock: bool,
+                    is_lock: bool,  // признак блокировки при поиске
                  ) ->Result<Option<Self>> {
         let mut tmp_user = Self::default() ;
 
@@ -272,9 +272,9 @@ impl Users {
     /// Обязательный поиск по Username
     #[allow(dead_code)]
     pub async fn find_for_name_raise(
-                    trans:   &mut sqlx::MySqlConnection,
+                    trans:   &mut sqlx::MySqlConnection,    // транзакция
                     name:    &str,
-                    is_lock: bool,
+                    is_lock: bool,  // признак блокировки при поиске
                  ) ->Result<Self> {
         match Self::find_for_name(
                 trans, 
@@ -291,7 +291,7 @@ impl Users {
     /// Вставить нового пользователя
     #[allow(dead_code)]
     pub async fn int_user(
-                    trans:    &mut sqlx::MySqlConnection,
+                    trans:    &mut sqlx::MySqlConnection,   // транзакция
                     name:     &str,
                     password: &str,
                  ) ->Result<Self> {
@@ -335,7 +335,7 @@ impl Users {
     /// Удалить пользователя по id_user
     #[allow(dead_code)]
     pub async fn del_user_by_id(
-                trans:    &mut sqlx::MySqlConnection,
+                trans:    &mut sqlx::MySqlConnection,   // транзакция
                 id_user:  u32
             ) ->Result<()> {
         let mut tmp_user = Users::default() ;
@@ -374,39 +374,50 @@ impl Users {
     }
 }
 
+// Условная компиляция - этот модуль включается только при запуске тестов (cargo test)
 #[cfg(test)]
-mod tests {
-    use super::* ;
+mod tests {         // Определение модуля для Unit тестов
+    use super::* ;  // Импортируем все элементы из родительского модуля (выше mod tests)
 
+    // Атрибут, указывающий что следующая функция является тестом
     #[test]
+    // Проверка валидного id_user
     fn valid_id_user_check() {
         let mut tmp_user = Users::default() ;
 
         assert!(tmp_user.set_id_user(1).is_ok()) ;
     }
 
+    // Атрибут, указывающий что следующая функция является тестом
     #[test]
+    // Проверка инвалидного id_user
     fn invalid_id_user_check() {
         let mut tmp_user = Users::default() ;
 
         assert!(tmp_user.set_id_user(0).is_err()) ;
     }
 
+    // Атрибут, указывающий что следующая функция является тестом
     #[test]
+    // Проверка пустого имени пользователя
     fn chack_empty_name() {
         let mut tmp_user = Users::default() ;
 
         assert!(tmp_user.set_name("").is_err()) ;
     }
 
+    // Атрибут, указывающий что следующая функция является тестом
     #[test]
+    // Проверка нормального имени пользователя
     fn check_normal_nane() {
         let mut tmp_user = Users::default() ;
 
         assert!(tmp_user.set_name("abc").is_ok()) ;
     }
 
+    // Атрибут, указывающий что следующая функция является тестом
     #[test]
+    // Проверка длинного имени пользователя
     fn  chack_long_name() {
         let mut tmp_user = Users::default() ;
 
@@ -415,21 +426,27 @@ mod tests {
                         ).is_err()) ;
     }
 
+    // Атрибут, указывающий что следующая функция является тестом
     #[test]
+    // Проверка пустого пароля
     fn  check_empty_password() {
         let mut tmp_user = Users::default() ;
 
         assert!(tmp_user.set_password("").is_err()) ;
     }
 
+    // Атрибут, указывающий что следующая функция является тестом
     #[test]
+    // Проверка валидного пароля
     fn  check_normal_password() {
         let mut tmp_user = Users::default() ;
 
         assert!(tmp_user.set_password("abc").is_ok()) ;
     }
 
+    // Атрибут, указывающий что следующая функция является тестом
     #[test]
+    // Проверка длинного пароля
     fn  chack_long_password() {
         let mut tmp_user = Users::default() ;
 
