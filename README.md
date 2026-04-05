@@ -282,20 +282,21 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 [11]: https://help.github.com/en/articles/creating-a-repository-from-a-template
 [13]: https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html
 
-[14]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#какие-возможности-тестирования-предлагает-rust-и-когда-их-следует-использовать-почему-следует-придерживаться-стиля-bdd
-[15]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-такое-макросы-чем-они-отличаются-какие-преимущества-дает-их-использование-когда-следует-писать-макрос
-[16]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-работать-с-датой-и-временем-в-rust-как-хранить-время-как-передавать-его-другим-приложениям
-[17]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-используются-регулярные-выражения-в-rust-когда-их-недостаточно-как-написать-собственный-парсер-в-rust
-[18]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#в-чём-заключаются-различия-между-итераторами-и-коллекциями-в-rust-каково-назначение-неизменяемых-коллекций-почему-важно-использовать-параллельные-коллекции
-[19]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-следует-использовать-для-сериализации-в-rust-почему-это-хорошо-или-плохо
-[20]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-генерировать-случайные-числа-в-rust-какие-гарантии-генератора-случайных-чисел-следует-выбирать-и-когда
-[21]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-следует-использовать-для-хеширования-паролей-в-rust-как-зашифровать-сообщение-с-помощью-rust-как-следует-сравнивать-секретные-значения-и-почему
-[22]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#как-организовано-логирование-в-экосистеме-rust-почему-мне-следует-интересоваться-структурированным-логированием
-[23]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-следует-использовать-для-создания-интерфейса-командной-строки-cli-на-rust-как-организовать-конфигурацию-для-моего-приложения-и-зачем
-[24]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#почему-многопоточность-необходима-для-программ-на-rust-и-какие-проблемы-она-решает-чем-отличается-многопоточность-от-параллельной-обработки-как-можно-распараллелить-код-на-rust
-[25]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-такое-асинхронность-и-какие-проблемы-она-решает-чем-она-отличается-от-параллельного-выполнения-потоков-какое-решение-для-асинхронности-предлагает-rust-и-почему-он-имеет-именно-такую-архитектуру
-[26]: https://github.com/ArthurPronota/rust-incubator/tree/main/3_ecosystem#что-такое-акторы-когда-они-полезны
+C:\Users\user\work\MyWorks\Rust\rust-incubator\3_ecosystem\README.md
 
+[14]: 3_ecosystem/README.md#q-030001
+[15]: 3_ecosystem/README.md#q-030002
+[16]: 3_ecosystem/README.md#q-030003
+[17]: 3_ecosystem/README.md#q-030004
+[18]: 3_ecosystem/README.md#q-030005
+[19]: 3_ecosystem/README.md#q-030006
+[20]: 3_ecosystem/README.md#q-030007
+[21]: 3_ecosystem/README.md#q-030008
+[22]: 3_ecosystem/README.md#q-030009
+[23]: 3_ecosystem/README.md#q-030010
+[24]: 3_ecosystem/README.md#q-030011
+[25]: 3_ecosystem/README.md#q-030012
+[26]: 3_ecosystem/README.md#q-030013
 
 [4101]: 4_backend/4_1_db/README.md#q-301
 [4102]: 4_backend/4_1_db/README.md#q-302
