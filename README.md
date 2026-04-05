@@ -391,5 +391,5 @@ C:\Users\user\work\MyWorks\Rust\rust-incubator\3_ecosystem\README.md
 [020603]: 2_idioms/2_6_sealing/README.md#q-020603
 [020604]: 2_idioms/2_6_sealing/README.md#q-020604
 
-[020501]: 2_idioms/2_6_sealing/README.md#q-020501
-[020502]: 2_idioms/2_6_sealing/README.md#q-020502
+[020501]: 2_idioms/2_5_exhaustivity/README.md#q-020501
+[020502]: 2_idioms/2_5_exhaustivity/README.md#q-020502
