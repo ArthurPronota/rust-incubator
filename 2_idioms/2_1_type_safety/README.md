@@ -3,12 +3,10 @@
 
 __Estimated time__: 1 day
 
-[Rust] has a rich type system which allows to express our program primitives, entities, notions, logic and semantics mostly in types, rather than in data/values, which is known as a "programming with types" concept. The benefits of this are obvious: the more compiler knows about our problem - the more false programs it will decline. Or, rephrased: __the more we describe about the program in types - the more we reduce the probability for the program to be incorrect__.
-
-"Programming with types" inevitably implies its own idioms and patterns. The most common are described below.
+В [Rust] существует богатая система типов, которая позволяет выражать примитивы, сущности, понятия, логику и семантику программы преимущественно в типах, а не в данных/значениях, что известно как концепция «программирования с использованием типов». Преимущества этого очевидны: чем больше компилятор знает о нашей задаче, тем больше некорректных программ он отклонит. Или, перефразируя: __чем больше мы описываем программу в типах, тем меньше вероятность того, что программа будет некорректной__.
 
 
-
+«Программирование с использованием типов» неизбежно подразумевает свои собственные идиомы и шаблоны. Наиболее распространенные из них описаны ниже.
 
 ## Newtype
 
@@ -74,11 +72,12 @@ error[E0308]: mismatched types
               found type `user::Id`
 ```
 
-This is what is called ["newtype pattern"][1]. [Newtypes][1] are a zero-cost abstraction - __there is no runtime overhead__. Additionally, you may __enforce desired invariants on values of the type__ (for example, `Email` type may allow only valid email address strings to be its values, and another good example is [`uom`] crate). Also, [newtype pattern][1] __makes code more understandable for developers__, as domain knowledge is reflected in types, so is described and documented more explicitly.
+Это называется ["newtype pattern"][1]. [Newtypes][1] — это абстракция с нулевыми затратами — __нет накладных расходов во время выполнения__. Кроме того, вы можете _обеспечить желаемые инварианты для значений типа__ (например, тип `Email` может допускать в качестве значений только допустимые строки адресов электронной почты, а другой хороший пример — крейт [`uom`]). Также [newtype pattern][1] __делает код более понятным для разработчиков__, поскольку знания предметной области отражаются в типах, поэтому они описываются и документируются более явно.
 
-The downside of using [newtype pattern][1] is a necessity of writing _more boilerplate code_, because you should provide common traits implementations by yourself (like `Clone`, `Copy`, `From`/`Into`/`AsRef`/`AsMut`), as without them the type won't be ergonomic in use. However, most of them can be _derived automatically_ with `std` capabilities or third-party derive-crates (like [`derive_more`]), so the cost is acceptable in most cases. Furthermore, the excellent [`nutype`] crate pushes this idea even further, aiming to provide the best ergonomics for [newtype pattern][1] without compromising any guarantees it gives.
 
-To better understand [newtype pattern][1], read through:
+Недостатком использования [newtype pattern][1] является необходимость написания _большего количества шаблонного кода_, поскольку вам придется самостоятельно предоставлять реализации общих трейтов (таких как `Clone`, `Copy`, `From`/`Into`/`AsRef`/`AsMut`), так как без них тип не будет эргономичным в использовании. Однако большинство из них могут быть _derived automatically_ с помощью возможностей `std` или сторонних крейтов derive (например, [`derive_more`]), поэтому в большинстве случаев затраты приемлемы. Более того, превосходный крейт [`nutype`] развивает эту идею еще дальше, стремясь обеспечить наилучшую эргономику для [newtype pattern][1] без ущерба для каких-либо предоставляемых им гарантий.
+
+Чтобы лучше понять [newtype pattern][1], прочтите следующее:
 - [Rust Design Patterns: Newtype][1]
 - [Rust By Example: 14.7. New Type Idiom][2]
 - [Alexis King: Parse, don’t validate][7] ([ru][7_ru])
@@ -91,13 +90,14 @@ To better understand [newtype pattern][1], read through:
 
 ## Typestates
 
-[Newtype pattern][1] prevents us from invalid use of data. But what about behavior? Can we _enforce some behavioral invariants at compile time_, so compiler is able to _cut off incorrect behavior totally_?
+[Newtype pattern][1] предотвращает некорректное использование данных. Но как насчет поведения? Можем ли мы _обеспечить некоторые инварианты поведения во время компиляции_, чтобы компилятор мог _полностью исключить некорректное поведение_?
 
-Not always, but _yes_ in some cases. One possible way is to use [typestates][3] to represent (in types) a _sequence of states_ our type is able to be in, and to declare transitions (via functions) between these states. Doing so will allow compiler to __cut off incorrect state transitions at compile time__.
+Не всегда, но _да_ в некоторых случаях. Один из возможных способов — использовать [typestates][3] для представления (в типах) _последовательности состояний_, в которых может находиться наш тип, и объявлять переходы (через функции) между этими состояниями. Это позволит компилятору _отсечь некорректные переходы состояний во время компиляции_.
 
-A real-world example of applying this idiom in [Rust] would be the awesome [`state_machine_future`] crate.
+Реальным примером применения этого приема в [Rust] может служить замечательный крейт [`state_machine_future`].
 
-To better understand [typestates][3], read through:
+
+Чтобы лучше понять [typestates][3], прочтите следующее:
 - [David Teller: Typestates in Rust][3]
 - [Cliff L. Biffle: The Typestate Pattern in Rust][5]
 - [Ana Hobden: Pretty State Machine Patterns in Rust][4]
@@ -105,8 +105,6 @@ To better understand [typestates][3], read through:
 - [Sergey Potapov: Builder with typestate in Rust][8]
 - [Azriel Hoh: Compile Time Correctness: Type State][9]
 - [Oleksandr Prokhorenko: From 'It Might Work' to 'It Will Work': Typestate in Rust][12]
-
-
 
 
 ## Task
@@ -134,15 +132,13 @@ Implement this behavior using [typestates idiom][3], so that calling `delete()` 
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 
-- [`Почему выражение семантики в типах — это хорошо? Каковы преимущества и недостатки?`](#почему-выражение-семантики-в-типах--это-хорошо-каковы-преимущества-и-недостатки)
-
-- [`Что такое шаблон NewType? Как он работает? Какие гарантии он предоставляет?`](#что-такое-шаблон-newtype-как-он-работает-какие-гарантии-он-предоставляет)
-
-- [`Что такое шаблон проектирования "типов состояний"? Как он работает? Какие гарантии он предоставляет?`](#что-такое-шаблон-проектирования-типов-состояний-как-он-работает-какие-гарантии-он-предоставляет)
+- [Почему выражение семантики в типах — это хорошо? Каковы преимущества и недостатки?][020101]
+- [Что такое шаблон NewType? Как он работает? Какие гарантии он предоставляет?][020102]
+- [Что такое шаблон проектирования "типов состояний"? Как он работает? Какие гарантии он предоставляет?][020103]
 
 <hr>
 
-<h3>Почему выражение семантики в типах — это хорошо? Каковы преимущества и недостатки?</h3>
+<a name="q-020101"><h3>Почему выражение семантики в типах — это хорошо? Каковы преимущества и недостатки?</h3></a>
 
 Выражение семантики через систему типов (часто называемое `Type-Driven Design` или `Strong Typing`) в Rust года является золотым стандартом разработки. Это подход, при котором бизнес-логика и правила безопасности кодируются непосредственно в типах данных, а не в комментариях или проверках во время выполнения.
 
@@ -201,7 +197,7 @@ Implement this behavior using [typestates idiom][3], so that calling `delete()` 
 
 <hr>
 
-<h3>Что такое шаблон NewType? Как он работает? Какие гарантии он предоставляет?</h3>
+<a name="q-020102"><h3>Что такое шаблон NewType? Как он работает? Какие гарантии он предоставляет?</h3></a>
 
 Шаблон `NewType` в Rust — это идиома проектирования, при которой вы создаете новую структуру с единственным полем, чтобы «обернуть» существующий тип. Это позволяет создать новый именованный тип, который для компилятора будет полностью отличаться от исходного, хотя в памяти они выглядят идентично.
 
@@ -269,7 +265,7 @@ struct UserId(u32);
 
 <hr>
 
-<h3>Что такое шаблон проектирования "типов состояний"? Как он работает? Какие гарантии он предоставляет?</h3>
+<a name="q-020103"><h3>Что такое шаблон проектирования "типов состояний"? Как он работает? Какие гарантии он предоставляет?</h3></a>
 
 Шаблон проектирования `Typestate` (состояния, выраженные в типах) в Rust — это подход, при котором текущее состояние объекта кодируется в его типе. Это позволяет перенести проверку логики переходов между состояниями со времени выполнения (`runtime`) на этап компиляции.
 
@@ -377,3 +373,7 @@ fn main() {
 [10]: https://fettblog.eu/refactoring-rust-abstraction-newtype
 [11]: https://www.howtocodeit.com/articles/ultimate-guide-rust-newtypes#write-ergonomic-newtype-constructors-with-from-and-tryfrom
 [12]: https://minikin.me/blog/typestate-in-rust
+
+[020101]: #q-020101
+[020102]: #q-020102
+[020103]: #q-020103
