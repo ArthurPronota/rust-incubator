@@ -410,5 +410,5 @@ C:\Users\user\work\MyWorks\Rust\rust-incubator\3_ecosystem\README.md
 [020303]: 2_idioms/2_3_bound_impl/README.md#q-020303
 [020304]: 2_idioms/2_3_bound_impl/README.md#q-020304
 
-[020201]: 2_idioms/2_2_mem_replace/README.md#q-020301
-[020202]: 2_idioms/2_2_mem_replace/README.md#q-020302
+[020201]: 2_idioms/2_2_mem_replace/README.md#q-020201
+[020202]: 2_idioms/2_2_mem_replace/README.md#q-020202

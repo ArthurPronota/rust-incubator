@@ -348,5 +348,5 @@ impl Buffer {
 [5]: https://doc.rust-lang.org/edition-guide/rust-2021/disjoint-capture-in-closures.html
 [6]: https://ferrous-systems.com/blog/rustls-borrow-checker-p1
 
-[020201]: #q-020301
-[020202]: #q-020302
+[020201]: #q-020201
+[020202]: #q-020202
