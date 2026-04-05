@@ -288,7 +288,7 @@ pub trait MyIteratorExt:
     ///     format!("{:.2}", data.iter().format(", ")),
     ///            "1.10, 2.72, -3.00");
     /// ```
-    fn format(self, sep: &str) -> Format<Self>
+    fn format(self, sep: &str) -> Format<'_, Self>
     where
         Self: Sized,
     {
@@ -328,7 +328,7 @@ pub trait MyIteratorExt:
     /// });
     /// assert_eq!(matrix_formatter.to_string(), "1, 2, 3\n4, 5, 6");
     /// ```
-    fn format_with<F>(self, sep: &str, format: F) -> FormatWith<Self, F>
+    fn format_with<F>(self, sep: &str, format: F) -> FormatWith<'_, Self, F>
     where
         Self: Sized,
         F: FnMut(Self::Item, &mut dyn FnMut(&dyn fmt::Display) -> fmt::Result) -> fmt::Result,

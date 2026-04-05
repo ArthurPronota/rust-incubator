@@ -1,9 +1,9 @@
 // варианты тестов которые проходят
-use step_2_6::MyIteratorExt;
+//use step_2_6::MyIteratorExt;
 
  fn main() {
     {
-        use std::{any::Any, fmt};
+        use std::fmt;
 
         use step_2_6::MyError;
         //use step_2_6::private ;
