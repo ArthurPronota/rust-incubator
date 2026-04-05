@@ -83,6 +83,8 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 - [ ] [Шаг 2: Идиомы][Step 2] (2 days, after all sub-steps)
     - [ ] [Шаг 2.1: Расширенные типы обеспечивают корректность][Step 2.1] (1 day)
     - [ ] [Шаг 2.2: Обмен значений с помощью `mem::replace`][Step 2.2] (1 day)
+        - [В чём причина существования `mem::replace` в Rust? Что он нам даёт? Почему мы не можем решить те же проблемы без него?][020201]
+        - [Приведите несколько наглядных примеров использования `mem::replace` в Rust.][020202]
     - [ ] [Шаг 2.3: Ограничение поведения, а не данных.][Step 2.3] (1 day)
         - [Какие проблемы создают ограничения трейтов в Rust при их размещении на определении типа?][020301]
         - [Почему размещение ограничений на трейты в блоках impl предпочтительнее?][020302]
@@ -407,3 +409,6 @@ C:\Users\user\work\MyWorks\Rust\rust-incubator\3_ecosystem\README.md
 [020302]: 2_idioms/2_3_bound_impl/README.md#q-020302
 [020303]: 2_idioms/2_3_bound_impl/README.md#q-020303
 [020304]: 2_idioms/2_3_bound_impl/README.md#q-020304
+
+[020201]: 2_idioms/2_2_mem_replace/README.md#q-020301
+[020202]: 2_idioms/2_2_mem_replace/README.md#q-020302
