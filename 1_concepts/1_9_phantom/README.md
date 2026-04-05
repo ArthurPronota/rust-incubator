@@ -3,13 +3,14 @@
 
 __Estimated time__: 1 day
 
-Because [Rust] has a rich type system, a programming logic and semantics are mostly expressed in types rather than in data/values, which is known as a "programming with types" concept. Often, this leads to situations where you need to express some type relations without having any values of those types. Here is where [phantom types][5] come in: they carry some semantics on type level, which invariants are checked by compiler, and are totally compiled out in runtime.
+Поскольку [Rust] обладает богатой системой типов, логика и семантика программирования в основном выражаются в типах, а не в данных/значениях, что известно как концепция «программирования с типами». Часто это приводит к ситуациям, когда необходимо выразить некоторые отношения типов, не имея при этом никаких значений этих типов. Вот здесь и вступают в игру [фантомные типы][5]: они несут некоторую семантику на уровне типов, инварианты которой проверяются компилятором и полностью компилируются во время выполнения.
 
-> A phantom type parameter is simply a type parameter which is never used.
 
-However, in [Rust], this often causes the compiler to complain, and the solution is to add a "dummy" use by way of [`PhantomData`].
+> Параметр фантомного типа — это просто параметр типа, который никогда не используется.
 
-This is a quite common practice when you're writing a highly abstracted generics code. A real-world example (and somewhat scary) would be:
+Однако в [Rust] это часто приводит к ошибкам компилятора, и решение состоит в добавлении "фиктивного" использования с помощью [`PhantomData`].
+
+Это довольно распространённая практика при написании кода с высокой степенью абстракции и использованием обобщенных типов. Реальный (и несколько пугающий) пример:
 ```rust
 trait CommandGateway<C: Command> {
     type Result;
@@ -85,7 +86,8 @@ where
 }
 ```
 
-To better understand [`PhantomData`]'s purpose, design, limitations and use cases, read through:
+
+Чтобы лучше понять назначение, дизайн, ограничения и варианты использования [`PhantomData`], ознакомьтесь со следующими материалами:
 - [Official `PhantomData` docs][`PhantomData`]
 - [Rust By Example: 14.9. Phantom type parameters][1]
 - [Rustonomicon: 3.10. PhantomData][2]
@@ -99,11 +101,11 @@ To better understand [`PhantomData`]'s purpose, design, limitations and use case
 
 ## Transparency
 
-[`PhantomData`] is transparent for [auto traits][7], which means, for example, that `PhantomData<usize>` is `Send` and `Sized`, while `PhantomData<dyn Any>` is neither `Send` nor `Sized`.
+[`PhantomData`] прозрачен для [auto traits][7], что означает, например, что `PhantomData<usize>` является `Send` и `Sized`, в то время как `PhantomData<dyn Any>` не является ни `Send`, ни `Sized`.
 
-In some situations this allows us to provide the exact semantics we need for a type (like [invariance][8] for [a lifetime][9], for example). 
+В некоторых ситуациях это позволяет нам обеспечить именно ту семантику, которая нам нужна для типа (например, [инвариантность][8] для [время жизни][9]).
 
-In other situations we don't actually care about semantics of the phantom type parameter at all. Moreover, we don't want the substituted type to change [auto traits][7] implementations of the whole type in any way, preserving only the semantics of the actual contained data, as this may impose ergonomic problems to us:
+В других ситуациях нас вообще не волнует семантика параметра фантомного типа. Более того, мы не хотим, чтобы заменяемый тип каким-либо образом изменял [авто-чертежи][7] реализации всего типа, сохраняя только семантику фактически содержащихся данных, поскольку это может создать для нас эргономические проблемы:
 ```rust
 struct Nonce<Of>(PhantomData<Of>, usize);
 
@@ -123,7 +125,7 @@ thread::spawn(move || {
 let nonce: Nonce<dyn Any> = Nonce(PhantomData, 3);
 ```
 
-To omit such problems, let's just form the correct type inside [`PhantomData`], so we always have the desired [auto traits][7] implementations despite the substituted type:
+Чтобы избежать подобных проблем, давайте просто сформируем правильный тип внутри [`PhantomData`], чтобы у нас всегда были желаемые реализации [auto traits][7] независимо от подставленного типа:
 ```rust
 struct Nonce<Of: ?Sized>(PhantomData<AtomicPtr<Box<Of>>>, usize);
 
@@ -142,8 +144,7 @@ let nonce: Nonce<dyn Any> = Nonce(PhantomData, 3);
 
 ## Custom phantom type
 
-Interesting enough, despite the [`PhantomData`] being a [lang item][10], it's still possible to define a custom type without using the original [`PhantomData`], but behaving like the one. This is demonstrated quite fairly by the [`ghost`] crate.
-
+Интересно, что, несмотря на то, что [`PhantomData`] является [языковым элементом][10], все же можно определить пользовательский тип, не используя исходный [`PhantomData`], но при этом ведя себя как он. Это довольно наглядно демонстрируется библиотекой [`ghost`].
 ```rust
 use ghost::phantom;
 
@@ -160,11 +161,8 @@ fn main() {
 }
 ```
 
-For more detailed explanation, read through:
+Для более подробного объяснения ознакомьтесь с информацией по ссылке:
 - [Official `ghost` crate docs][`ghost`]
-
-
-
 
 ## Task
 
@@ -185,17 +183,14 @@ Fact about Vec: Vec may re-allocate on growing.
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 
-- [Ковариантность, Контравариантность, Инвариантность в Rust](#ковариантность-контравариантность-инвариантность-в-rust)
-
-- [`Зачем в Rust существует PhantomData? Какие проблемы он решает?`](#зачем-в-rust-существует-phantomdata-какие-проблемы-он-решает)
-
-- [Как на практике работает прозрачность PhantomData?](#как-на-практике-работает-прозрачность-phantomdata)
-
-- [`Какие существуют альтернативы PhantomData? Когда их целесообразно использовать?`](#какие-существуют-альтернативы-phantomdata-когда-их-целесообразно-использовать)
+- [Ковариантность, Контравариантность, Инвариантность в Rust][010901]
+- [Зачем в Rust существует PhantomData? Какие проблемы он решает?][010902]
+- [Как на практике работает прозрачность PhantomData?][010903]
+- [Какие существуют альтернативы PhantomData? Когда их целесообразно использовать?][010904]
 
 <hr>
 
-<h3>Ковариантность, Контравариантность, Инвариантность в Rust<h3>
+<a name="q-010901"><h3>Ковариантность, Контравариантность, Инвариантность в Rust<h3></a>
 
 <h5>Вариантность для времён жизни:</h5>
 
@@ -285,7 +280,7 @@ Apple Orange (производные)
 
 <hr>
 
-<h3>Зачем в Rust существует PhantomData? Какие проблемы он решает?</h3>
+<a name="q-010902"><h3>Зачем в Rust существует PhantomData? Какие проблемы он решает?</h3></a>
 
 В Rust `PhantomData<T>` — это «нулевой» тип (маркер), который не занимает места в памяти во время выполнения, но сообщает компилятору важную информацию о типах и временах жизни на этапе проверки кода.
 
@@ -357,7 +352,7 @@ PhantomData нужен, чтобы «объяснить» компилятору
 
 <hr>
 
-<h3>Как на практике работает прозрачность PhantomData?</h3>
+<a name="q-010903"><h3>Как на практике работает прозрачность PhantomData?</h3></a>
 
 На практике «прозрачность» PhantomData означает, что этот тип существует только в <b>воображении компилятора</b>. В рантайме его нет: он не занимает места, не влияет на выравнивание данных и не генерирует никакого машинного кода.
 
@@ -459,7 +454,7 @@ impl Door<Open> {
 
 <hr>
 
-<h3>Какие существуют альтернативы PhantomData? Когда их целесообразно использовать?</h3>
+<a name="q-010904"><h3>Какие существуют альтернативы PhantomData? Когда их целесообразно использовать?</h3></a>
 
 Прямого функционального эквивалента PhantomData не существует, так как это специальное указание для компилятора. Однако, в зависимости от того, какую именно задачу вы решаете, есть альтернативные архитектурные подходы.
 
@@ -537,3 +532,8 @@ impl Door<Closed> {
 [9]: https://docs.rs/variance/0.1.3/src/variance/lib.rs.html#92
 [10]: https://manishearth.github.io/blog/2017/01/11/rust-tidbits-what-is-a-lang-item
 [11]: https://aayushyavajpayee.substack.com/p/coming-soon
+
+[010901]: #q-010901
+[010902]: #q-010902
+[010903]: #q-010903
+[010904]: #q-010904
