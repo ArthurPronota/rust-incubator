@@ -79,6 +79,8 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
     - [ ] [Шаг 1.6: Статическая и динамическая диспетчеризация][Step 1.6] (1 day)
     - [ ] [Шаг 1.7: `Sized` и `?Sized` типы][Step 1.7] (1 day)
     - [ ] [Шаг 1.8: Потоковая безопасность][Step 1.8] (1 day)
+        - [Что означает "безбоязненная конкурентность" в Rust? С помощью каких механизмов Rust точно выполняет эту гарантию?][010801]
+        - [Зачем вообще существуют Send и Sync? Как это связано с внутренней изменчивостью?][010802]
     - [ ] [Шаг 1.9: Фантомные типы, Ковариантность, Контравариантность, Инвариантность][Step 1.9] (1 day)
         - [Ковариантность, Контравариантность, Инвариантность в Rust][010901]
         - [Зачем в Rust существует PhantomData? Какие проблемы он решает?][010902]
@@ -439,3 +441,6 @@ C:\Users\user\work\MyWorks\Rust\rust-incubator\3_ecosystem\README.md
 [010902]: 1_concepts/1_9_phantom/README.md#q-010902
 [010903]: 1_concepts/1_9_phantom/README.md#q-010903
 [010904]: 1_concepts/1_9_phantom/README.md#q-010904
+
+[010801]: 1_concepts/1_8_thread_safety/README.md#q-010801
+[010802]: 1_concepts/1_8_thread_safety/README.md#q-010802

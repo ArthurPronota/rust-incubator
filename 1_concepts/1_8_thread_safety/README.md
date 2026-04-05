@@ -3,9 +3,10 @@
 
 __Estimated time__: 1 day
 
-[Rust] has [`Send`] and [`Sync`] marker traits which are fundamental for concurrency and thread safety story in [Rust] and represent one of [fearless concurrency][2] corner stones (which allow to [avoid data races][1] at compile time).
+В [Rust] есть маркерные трейты [`Send`] и [`Sync`], которые являются основополагающими для параллельного выполнения и потокобезопасности в [Rust] и представляют собой один из краеугольных камней [бесстрашного параллельного выполнения][2] (который позволяет [избегать состояний гонки данных][1] во время компиляции).
 
-To better understand [`Send`]/[`Sync`]'s purpose, design, limitations and use cases, read through:
+
+Чтобы лучше понять назначение, конструкцию, ограничения и варианты использования функций [`Send`]/[`Sync`], ознакомьтесь со следующей информацией:
 - [Official `Send` docs][`Send`]
 - [Official `Sync` docs][`Sync`]
 - [Rust Book: 16.4. Extensible Concurrency with the Sync and Send Traits][3]
@@ -23,17 +24,6 @@ To better understand [`Send`]/[`Sync`]'s purpose, design, limitations and use ca
 
 ## Task
 
-Implement the following types, which meet conditions:
-1. `OnlySync` is `Sync`, but `!Send`.
-2. `OnlySend` is `Send`, but `!Sync`.
-3. `SyncAndSend` is both `Sync` and `Send`.
-4. `NotSyncNotSend` is both `!Sync` and `!Send`.
-
-All inner details of implementation are on your choice.
-
-Play with these types from multiple threads to see how compile time [fearless concurrency][2] works in practice.
-
-
 Реализуйте следующие типы, удовлетворяющие условиям:
 1. `OnlySync` is `Sync`, but `!Send`.
 2. `OnlySend` is `Send`, but `!Sync`.
@@ -46,16 +36,13 @@ Play with these types from multiple threads to see how compile time [fearless co
 
 ## Questions
 
-After completing everything above, you should be able to answer (and understand why) the following questions:
+- [Что означает "безбоязненная конкурентность" в Rust? С помощью каких механизмов Rust точно выполняет эту гарантию?][010801]
 
-- [`Что означает "безбоязненная конкурентность" в Rust? С помощью каких механизмов Rust точно выполняет эту гарантию?`](#что-означает-безбоязненная-конкурентность-в-rust-с-помощью-каких-механизмов-rust-точно-выполняет-эту-гарантию)
-
-
-- [`Зачем вообще существуют Send и Sync? Как это связано с внутренней изменчивостью?`](#зачем-вообще-существуют-send-и-sync-как-это-связано-с-внутренней-изменчивостью)
+- [Зачем вообще существуют Send и Sync? Как это связано с внутренней изменчивостью?][010802]
 
 <hr>
 
-<h3>Что означает "безбоязненная конкурентность" в Rust? С помощью каких механизмов Rust точно выполняет эту гарантию?</h3>
+<a name="q-010801"><h3>Что означает "безбоязненная конкурентность" в Rust? С помощью каких механизмов Rust точно выполняет эту гарантию?</h3></a>
 
 «Безбоязненная конкурентность» (Fearless Concurrency) — это концепция Rust, которая означает, что компилятор гарантирует отсутствие типичных ошибок многопоточности (таких как состояния гонки — `data races`) на этапе компиляции. Программист может писать многопоточный код, будучи уверенным, что он не приведет к непредсказуемому поведению памяти.
 Rust достигает этого не через «сборщик мусора» или сложные проверки в рантайме, а через систему типов и владения.
@@ -214,7 +201,7 @@ Rust остается лидером в системном программир�
 
 <hr>
 
-<h3>Зачем вообще существуют Send и Sync? Как это связано с внутренней изменчивостью?</h3>
+<a name="q-010802"><h3>Зачем вообще существуют Send и Sync? Как это связано с внутренней изменчивостью?</h3></a>
 
 Send и Sync остаются фундаментальными инструментами, которые превращают «ручную» проверку безопасности потоков в автоматическую проверку компилятором. Они нужны для того, чтобы Rust мог гарантировать fearless concurrency (безбоязненную конкурентность).
 
@@ -311,3 +298,6 @@ fn main() {
 [9]: https://web.archive.org/web/20220929143451/https://itsallaboutthebit.com/arc-mutex
 [10]: https://blog.dureuill.net/articles/too-dangerous-cpp
 [11]: https://blog.cuongle.dev/p/this-sendsync-secret-separates-professional-and-amateur
+
+[010801]: #q-010801
+[010802]: #q-010802
