@@ -3,11 +3,13 @@
 
 __Estimated time__: 1 day
 
-Most types in [Rust] have a particular size, in bytes, that is knowable at compile time. For example, an `i32` is 32 bits big, or 4 bytes. However, there are some types which are useful to express, but do not have a defined size (called "unsized" or "dynamically sized" types). One example is `[T]`: it represents a certain number of `T` in a sequence, but we don’t know how many there are, so the size is not known.
+В [Rust] большинство типов имеют определенный размер в байтах, который известен во время компиляции. Например, `i32` имеет размер 32 бита, или 4 байта. Однако существуют некоторые типы, которые полезно выражать, но которые не имеют определенного размера (так называемые «неразмерные» или «динамически размерные» типы). Один из примеров — `[T]`: он представляет определенное количество `T` в последовательности, но мы не знаем, сколько их, поэтому размер неизвестен.
 
-All types with a constant size known at compile time in [Rust] implement [`Sized`] marker trait. And all type parameters (except `Self` in traits) have always an implicit bound of [`Sized`]. So, you should not bother about specifying [`Sized`] marker trait in code, usually.
 
-To better understand [`Sized`]'s and `?Sized`'s purpose, design, limitations and use cases, read through:
+В [Rust] все типы с постоянным размером, известным во время компиляции, реализуют трейт-маркер [`Sized`]. И все параметры типов (кроме `Self` в трейтах) всегда имеют неявное ограничение в [`Sized`]. Поэтому обычно не стоит беспокоиться о указании трейта-маркера [`Sized`] в коде.
+
+
+Чтобы лучше понять назначение, дизайн, ограничения и варианты использования [`Sized`] и `?Sized`, ознакомьтесь со следующими материалами:
 - [Official `Sized` docs][`Sized`]
 - [Old Rust Book: 3.31. Unsized Types][4]
 - [Rust Forum: Trait Objects and the Sized Trait][5]
@@ -17,9 +19,11 @@ To better understand [`Sized`]'s and `?Sized`'s purpose, design, limitations and
 
 
 
-## Using `?Sized` to accept more types
+## Использование `?Sized` позволяет принимать больше типов.
 
 The more important concept to understand for day-to-day routine is a `?Sized` trait bound, which __lifts the implicit [`Sized`] bound allowing to use more types__ in generic code (so provide better API and ergonomics).
+
+Наиболее важная концепция для понимания в повседневной работе — это ограничение типа `?Sized`, __которое снимает неявное ограничение [`Sized`], позволяя использовать больше типов__ в обобщенном коде (тем самым обеспечивая лучший API и эргономику).
 
 A real-world example would be:
 ```rust
@@ -48,10 +52,6 @@ impl CommandHandler<CreateUser> for User {
 
 ## Task
 
-Given the [`User` and `UserRepository` implementations from the previous task](../1_6_dispatch#task), write the actual code for `CommandHandler<CreateUser>` implementation described above.
-
-Provide tests for `CommandHandler<CreateUser>` implementation where `dyn UserRepository` is mocked with another hand-written type for testing purposes (you will need to transform the `UserRepository` type into a trait).
-
 [Используя реализации User и UserRepository из предыдущего задания](../1_6_dispatch#task), напишите фактический код для реализации CommandHandler<CreateUser>, описанной выше.
 
 Предоставьте тесты для реализации `CommandHandler<CreateUser>`, где `dyn UserRepository` будет имитирован другим типом, написанным вручную, для целей тестирования (вам потребуется преобразовать тип UserRepository в трейт).
@@ -63,13 +63,12 @@ Provide tests for `CommandHandler<CreateUser>` implementation where `dyn UserRep
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 
-- [`Что означает свойство Sized? Когда Rust его подразумевает? А когда нет?`](#что-означает-свойство-sized-когда-rust-его-подразумевает-а-когда-нет)
-
-- [`Почему важна привязка признака `?Sized`? Когда и почему её следует использовать?`](#почему-важна-привязка-признака-sized-когда-и-почему-её-следует-использовать)
+- [Что означает свойство Sized? Когда Rust его подразумевает? А когда нет?][010701]
+- [Почему важна привязка признака `?Sized`? Когда и почему её следует использовать?][010702]
 
 <hr>
 
-<h3>Что означает свойство Sized? Когда Rust его подразумевает? А когда нет?</h3>
+<a name="q-010701"><h3>Что означает свойство Sized? Когда Rust его подразумевает? А когда нет?</h3></a>
 
 Свойство Sized является фундаментальным маркером того, как данные располагаются в памяти.
 
@@ -147,7 +146,7 @@ struct HeaderWithData {
 
 <hr>
 
-<h3>Почему важна привязка признака `?Sized`? Когда и почему её следует использовать?</h3>
+<a name="q-010702"><h3>Почему важна привязка признака `?Sized`? Когда и почему её следует использовать?</h3></a>
 
 Ограничение `?Sized` (читается как «возможно, не имеет фиксированного размера») критически важно для создания гибкого и производительного кода. Чтобы понять его важность, нужно помнить, что в Rust почти все обобщенные типы (`<T>`) по умолчанию имеют неявное ограничение `T: Sized`.
 
@@ -225,3 +224,6 @@ struct MyBox<T: ?Sized> {
 [5]: https://users.rust-lang.org/t/trait-objects-and-the-sized-trait/14410
 [6]: https://github.com/pretzelhammer/rust-blog/blob/master/posts/sizedness-in-rust.md
 [7]: https://blog.veeso.dev/blog/en/dont-you-dare-to-sort-your-struct-fields-when-using-sized
+
+[010701]: #q-010701
+[010702]: #q-010702
