@@ -56,11 +56,12 @@ let x = Foo { bar: baz, ..Default::default() };
 
 [Official `Copy` docs][`Copy`] достаточно подробно объясняет, какие типы _должны_ быть [`Copy`], а какие типы _не могут_ быть:
 
-> Some types can't be copied safely. For example, copying `&mut T` would create an aliased mutable reference. Copying `String` would duplicate responsibility for managing the `String`'s buffer, leading to a double free.
-> 
 
+> Некоторые типы данных нельзя безопасно скопировать. Например, копирование `&mut T` создаст псевдонимную изменяемую ссылку. Копирование `String` приведет к дублированию ответственности за управление буфером `String`, что вызовет двойное освобождение памяти.
 > 
 > Generalizing the latter case, any type implementing `Drop` can't be `Copy`, because it's managing some resource besides its own `size_of::<T>` bytes.
+> 
+
 
 > Generally speaking, if your type can implement `Copy`, it should. Keep in mind, though, that implementing `Copy` is part of the public API of your type. If the type might become non-`Copy` in the future, it could be prudent to omit the `Copy` implementation now, to avoid a breaking API change.
 
