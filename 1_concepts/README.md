@@ -556,7 +556,7 @@ impl Door<Open> {
 
 <hr>
 
-<a name="q-010001"><h3>Операции с AtomicPtr, AtomicUsize, ptr::read, std::mem::forget</h3></a>
+<a name="q-010010"><h3>Операции с AtomicPtr, AtomicUsize, ptr::read, std::mem::forget</h3></a>
 
 <h4>1. Метод AtomicPtr::load</h4>
 
