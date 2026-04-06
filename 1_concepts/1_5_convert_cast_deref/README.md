@@ -3,16 +3,14 @@
 
 __Estimated time__: 1 day
 
-As [Rust] is a [strongly typed][1] language, all type conversions must be performed explicitly in the code. As [Rust] has a rich type system (programming logic and semantics are mostly expressed in types rather than in values), type conversions are inevitable in almost every single line of code. Fortunately, [Rust] offers [well-designed type conversion capabilities][`std::convert`], which are quite ergonomic, intuitive and are pleasant to use.
-
-
+Поскольку [Rust] — это [строго типизированный][1] язык, все преобразования типов должны выполняться явно в коде. Так как [Rust] обладает богатой системой типов (логика и семантика программирования в основном выражаются в типах, а не в значениях), преобразования типов неизбежны почти в каждой строке кода. К счастью, [Rust] предлагает [хорошо продуманные возможности преобразования типов][`std::convert`], которые достаточно эргономичны, интуитивно понятны и приятны в использовании.
 
 
 ## Value-to-value conversion
 
-Value-to-value conversion in [Rust] is done with [`From`] and [`Into`] mirrored traits (implementing the first one automatically implements another one). These traits provide __non-fallible conversion__.
+Преобразование значений в значения в [Rust] осуществляется с помощью зеркальных трейтов [`From`] и [`Into`] (реализация первого автоматически реализует и второй). Эти трейты обеспечивают __безошибочное преобразование__.
 
-If your conversion may fail, then you should use [`TryFrom`]/[`TryInto`] analogues, which __allow failing in a controlled way__.
+Если преобразование может завершиться неудачей, следует использовать аналоги [`TryFrom`]/[`TryInto`], которые __позволяют контролируемым образом предотвратить неудачу__.
 
 ```rust
 let num: u32 = 5;
@@ -20,9 +18,10 @@ let big_num: u64 = num.into();
 let small_num: u16 = big_num.try_into().expect("Value is too big");
 ```
 
-Note, that __all these traits consume ownership__ of a passed value. However, they [can be implemented for references too][2] if you're treating a reference as a value.
 
-To better understand [`From`]/[`Into`]'s and [`TryFrom`]/[`TryInto`]'s purpose, design, limitations and use cases, read through:
+Обратите внимание, что __все эти свойства потребляют владение__ переданным значением. Однако их [можно реализовать и для ссылок][2], если вы рассматриваете ссылку как значение.
+
+Чтобы лучше понять назначение, структуру, ограничения и варианты использования функций [`From`]/[`Into`] и [`TryFrom`]/[`TryInto`], ознакомьтесь со следующими материалами:
 - [Rust By Example: 6.1. From and Into][8]
 - [Official `From` docs][`From`]
 - [Official `Into` docs][`Into`]
@@ -34,51 +33,52 @@ To better understand [`From`]/[`Into`]'s and [`TryFrom`]/[`TryInto`]'s purpose, 
 
 ## Reference-to-reference conversion
 
-Quite often you don't want to consume ownership of a value for conversion, but rather to refer it as another type. In such case [`AsRef`]/[`AsMut`] should be used. They allow to do a __cheap non-fallible reference-to-reference conversion__.
+Довольно часто вам не нужно использовать владение значением для преобразования, а скорее ссылаться на него как на другой тип. В таком случае следует использовать [`AsRef`]/[`AsMut`]. Они позволяют выполнить __недорогое и безошибочное преобразование ссылки в ссылку__.
 
 ```rust
 let string: String = "some text".into();
 let bytes: &[u8] = string.as_ref();
 ```
 
-[`AsRef`]/[`AsMut`] are commonly implemented for smart pointers to allow referring a data behind it via regular [Rust] references.
+[`AsRef`]/[`AsMut`] обычно используются для интеллектуальных указателей, позволяющих ссылаться на данные, находящиеся за ними, с помощью обычных ссылок [Rust].
 
-To better understand [`AsRef`]/[`AsMut`]'s purpose, design, limitations and use cases, read through:
+
+Чтобы лучше понять назначение, структуру, ограничения и варианты использования [`AsRef`]/[`AsMut`], ознакомьтесь со следующими материалами:
 - [Official `AsRef` docs][`AsRef`]
 - [Official `AsMut` docs][`AsMut`]
 - [Ricardo Martins: Convenient and idiomatic conversions in Rust][10]
 
 
-### Difference from [`Borrow`]
+### Отличие от [`Borrow`]
 
-Novices in [Rust] are often confused with the fact that [`AsRef`]/[`AsMut`] and [`Borrow`]/[`BorrowMut`] traits have the same signatures, because it may not be clear which trait to use or implement for their needs.
+Новички в Rust часто путаются в том, что трейты [`AsRef`]/[`AsMut`] и [`Borrow`]/[`BorrowMut`] имеют одинаковые сигнатуры, поскольку им может быть неясно, какой трейт использовать или реализовать в соответствии со своими потребностями.
 
-See [explanation in `Borrow` trait docs][`Borrow`]:
+См. [пояснение в документации по трейту `Borrow`][`Borrow`]:
 
-> Further, when providing implementations for additional traits, it needs to be considered whether they should behave identical to those of the underlying type as a consequence of acting as a representation of that underlying type. Generic code typically uses `Borrow<T>` when it relies on the identical behavior of these additional trait implementations. These traits will likely appear as additional trait bounds.
+> Кроме того, при предоставлении реализаций для дополнительных трейтов необходимо учитывать, должны ли они вести себя идентично трейтам базового типа, поскольку представляют собой отображение этого базового типа. В обобщенном коде обычно используется `Borrow<T>`, когда он полагается на идентичное поведение этих дополнительных реализаций трейтов. Эти трейты, скорее всего, будут отображаться как дополнительные ограничения трейтов.
 > 
-> In particular `Eq`, `Ord` and `Hash` must be equivalent for borrowed and owned values: `x.borrow() == y.borrow()` should give the same result as `x == y`.
+> В частности, `Eq`, `Ord` и `Hash` должны быть эквивалентны для заимствованных и принадлежащих значений: `x.borrow() == y.borrow()` должен давать тот же результат, что и `x == y`.
 > 
-> If generic code merely needs to work for all types that can provide a reference to related type `T`, it is often better to use `AsRef<T>` as more types can safely implement it.
+> Если обобщенный код должен работать только для всех типов, которые могут предоставить ссылку на связанный тип `T`, часто лучше использовать `AsRef<T>`, поскольку больше типов могут безопасно его реализовать.
 
-And [another one in `AsRef` trait docs][`AsRef`]:
+И [ещё один в документации по трейту `AsRef`][`AsRef`]:
 
-> - Unlike `AsRef`, `Borrow` has a blanket impl for any `T`, and can be used to accept either a reference or a value.
-> - `Borrow` also requires that `Hash`, `Eq` and `Ord` for a borrowed value are equivalent to those of the owned value. For this reason, if you want to borrow only a single field of a struct you can implement `AsRef`, but not `Borrow`.
+> - В отличие от `AsRef`, `Borrow` имеет общую реализацию для любого `T` и может использоваться как для приема ссылки, так и значения.
+> - Для использования `Borrow` также требуется, чтобы `Hash`, `Eq` и `Ord` для заимствованного значения были эквивалентны соответствующим параметрам принадлежащего значения. По этой причине, если вы хотите заимствовать только одно поле структуры, вы можете реализовать `AsRef`, но не `Borrow`.
 
-So, as a conclusion:
-- [`AsRef`]/[`AsMut`] means that the implementor type may be represented as a reference to the implemented type. More like one type contains another one, or is just generally reference-convertible to the one.
-- [`Borrow`]/[`BorrowMut`] means that the implementor type is equivalent to the implemented type in its semantics, differing only in how its data is stored. More like one type is just a pointer to another one.
+Итак, в заключение:
+- [`AsRef`]/[`AsMut`] означает, что тип, реализующий данный объект, может быть представлен как ссылка на реализованный тип. Скорее, один тип содержит другой, или же он просто может быть преобразован по ссылке в этот тип.
+- [`Borrow`]/[`BorrowMut`] означает, что тип, реализующий функцию, эквивалентен типу, реализуемому функцией, по своей семантике, отличаясь только способом хранения данных. Скорее, один тип — это просто указатель на другой.
 
-For example, it's natural for an `UserEmail` type to implement `Borrow<str>`, so it may be easily consumed in the code accepting `&str` (converted to `&str`), as they're semantically equivalent regarding `Hash`, `Eq` and `Ord`. And it's good for some execution `Context` to implement `AsRef<dyn Repository>`, so it can be extracted and used where needed, without using the whole `Context`.
+Например, для типа `UserEmail` естественно реализовывать интерфейс `Borrow<str>`, поэтому его можно легко использовать в коде, принимающем `&str` (преобразованный в `&str`), поскольку они семантически эквивалентны в отношении `Hash`, `Eq` и `Ord`. И хорошо, если некоторый `Context` реализации реализует интерфейс `AsRef<dyn Repository>`, чтобы его можно было извлечь и использовать там, где это необходимо, без использования всего `Context`.
 
-To better understand [`AsRef`]/[`Borrow`]'s difference, read through:
+Чтобы лучше понять разницу между [`AsRef`] и [`Borrow`], прочтите следующее:
 - [Anup Jadhav: AsRef vs Borrow trait (ft. ChatGPT)][12]
 
 
-### Inner-to-outer conversion
+### Inner-to-outer преобразование
 
-[`AsRef`]/[`AsMut`] are able to do only outer-to-inner reference conversion, but obviously not the opposite.
+[`AsRef`]/[`AsMut`] способны выполнять только преобразование внешних ссылок во внутренние, но, очевидно, не обратное.
 
 ```rust
 struct Id(u8);
@@ -106,7 +106,7 @@ error[E0515]: cannot return reference to temporary value
    |         returns a reference to data owned by the current function
 ```
 
-However, there is nothing wrong with such conversion as long as memory layout of the inner type is the same for the outer type.
+Однако в таком преобразовании нет ничего плохого, если структура памяти внутреннего типа совпадает со структурой памяти внешнего типа.
 
 ```rust
 #[repr(transparent)]
@@ -119,14 +119,12 @@ impl AsRef<Id> for u8 {
 }
 ```
 
-That's exactly what [`ref-cast`] crate checks and does, without necessity of writing `unsafe` explicitly. See [crate's documentation][`ref-cast`] for more explanations.
+Именно это и проверяет и делает крейт [`ref-cast`], без необходимости явно указывать `unsafe`. Дополнительные пояснения см. в [документации крейта][`ref-cast`].
 
 
+## Разыменование (Dereferencing)
 
-
-## Dereferencing
-
-[`Deref`]/[`DerefMut`] standard library trait __allows to implicitly coerce from a custom type to a reference__ when dereferencing (operator `*v`) is used. The most common example of this is using [`Box<T>`][`Box`] where `&T` is expected.
+Трейт стандартной библиотеки [`Deref`]/[`DerefMut`] __позволяет неявно преобразовывать пользовательский тип в ссылку__ при разыменовке (оператор `*v`). Наиболее распространенный пример — использование [`Box<T>`][`Box`], где ожидается `&T`.
 
 ```rust
 fn hello(name: &str) {
@@ -137,7 +135,7 @@ let m = Box::new(String::from("Rust"));
 hello(&m);
 ```
 
-To better understand [`Deref`]'s purpose, design, limitations and use cases, read through:
+Чтобы лучше понять назначение, конструкцию, ограничения и варианты использования [`Deref`], ознакомьтесь со следующими материалами:
 - [Rust Book: 15.2. Treating Smart Pointers Like Regular References with the Deref Trait][3]
 - [Official `Deref` docs][`Deref`]
 - [Tim McNamara: Explaining Rust’s Deref trait][13]
@@ -145,20 +143,17 @@ To better understand [`Deref`]'s purpose, design, limitations and use cases, rea
 
 ### Incorrect usage
 
-The implicit coercion that [Rust] implements for [`Deref`] is a sweet honey pot which may lead you to misuse of this feature.
+Неявное принуждение, которое [Rust] реализует для [`Deref`], — это приятная уловка, которая может привести к неправильному использованию этой функции.
 
-The common temptation is to use [`Deref`] in a combination with [newtype pattern][4], so you can use your inner type via outer type without any explicit requirements. However, this is considered to be a bad practice, and [official `Deref` docs][`Deref`] clearly states:
+Распространенное искушение состоит в том, чтобы использовать [`Deref`] в сочетании с [шаблоном нового типа][4], чтобы можно было использовать внутренний тип через внешний тип без каких-либо явных требований. Однако это считается плохой практикой, и [официальная документация по `Deref`][`Deref`] четко указывает:
 
-> __`Deref` should only be implemented for smart pointers.__
+> __`Deref` должна быть реализована только для умных указателей.__
 
-The wider explanation of this bad practice is given in [this SO answer][5] and [`Deref` polymorphism anti-pattern][6] description.
-
-
-
+Более подробное объяснение этой неправильной практики приведено в [this SO answer][5] и в описании [`Deref` polymorphism anti-pattern][6].
 
 ## Casting
 
-For casting between types the [`as` keyword][`as`] is used in [Rust].
+Для приведения типов в [Rust] используется [`as` keyword][`as`].
 
 ```rust
 fn average(values: &[f64]) -> f64 {
@@ -168,9 +163,9 @@ fn average(values: &[f64]) -> f64 {
 }
 ```
 
-However, it supports only a [small, fixed set of transformations][7], and __is [not idiomatic][11] to use when other conversion possibilities are available__ (like [`From`], [`TryFrom`], [`AsRef`]).
+Однако он поддерживает лишь [небольшой, фиксированный набор преобразований][7] и __не является [идиоматичным][11] для использования, когда доступны другие возможности преобразования__ (например, [`From`], [`TryFrom`], [`AsRef`]).
 
-See also:
+См. также:
 - [Rust By Example: 5.1. Casting][9]
 - [Rust Reference: 8.2.4. Type cast expressions][7]
 
@@ -192,20 +187,15 @@ See also:
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 
-- [`Как в Rust представлено преобразование значений? Какова связь между ошибочным и безошибочным преобразованием?`](#как-в-rust-представлено-преобразование-значений-какова-связь-между-ошибочным-и-безошибочным-преобразованием)
-
-- [`Как в Rust представлено преобразование ссылок? Чем отличаются его трейты? Когда и какой из них следует использовать?`](#как-в-rust-представлено-преобразование-ссылок-чем-отличаются-его-трейты-когда-и-какой-из-них-следует-использовать)
-
-
-- [`Как в Rust можно осуществить преобразование внутренних ссылок во внешние? Какие для этого необходимы условия?`](#как-в-rust-можно-осуществить-преобразование-внутренних-ссылок-во-внешние-какие-для-этого-необходимы-условия)
-
-- [`Что такое разыменование в Rust? Как его можно использовать не по назначению? Почему его не следует использовать не по назначению?`](#что-такое-разыменование-в-rust-как-его-можно-использовать-не-по-назначению-почему-его-не-следует-использовать-не-по-назначению)
-
-- [`Почему использование ключевого слова `as` не является хорошей практикой в ​​Rust? Почему мы всё ещё его используем?`](#почему-использование-ключевого-слова-as-не-является-хорошей-практикой-в-rust-почему-мы-всё-ещё-его-используем)
+- [Как в Rust представлено преобразование значений? Какова связь между ошибочным и безошибочным преобразованием?][010501]
+- [Как в Rust представлено преобразование ссылок? Чем отличаются его трейты? Когда и какой из них следует использовать?][010502]
+- [Как в Rust можно осуществить преобразование внутренних ссылок во внешние? Какие для этого необходимы условия?][010503]
+- [Что такое разыменование в Rust? Как его можно использовать не по назначению? Почему его не следует использовать не по назначению?][010504]
+- [Почему использование ключевого слова `as` не является хорошей практикой в ​​Rust? Почему мы всё ещё его используем?][010505]
 
 <hr>
 
-<h3>Как в Rust представлено преобразование значений? Какова связь между ошибочным и безошибочным преобразованием?</h3>
+<a name="q-010501"><h3>Как в Rust представлено преобразование значений? Какова связь между ошибочным и безошибочным преобразованием?</h3></a>
 
 В Rust преобразование значений реализовано через систему типажных соглашений (trait-based conventions), находящихся в модуле std::convert. Это делает код предсказуемым и идиоматичным.
 
@@ -293,7 +283,7 @@ match u8::try_from(x) {
 
 <hr>
 
-<h3>Как в Rust представлено преобразование ссылок? Чем отличаются его трейты? Когда и какой из них следует использовать?</h3>
+<a name="q-010502"><h3>Как в Rust представлено преобразование ссылок? Чем отличаются его трейты? Когда и какой из них следует использовать?</h3></a>
 
 Преобразование ссылок в Rust представлено трейтами, которые позволяют получить доступ к данным под другим «углом» (типом), не потребляя (не перемещая) исходное значение. В отличие от From/Into, эти преобразования дешевы, так как работают только с указателями.
 
@@ -360,7 +350,7 @@ Borrow требует, чтобы реализации Eq, Ord и Hash для з
 
 <hr>
 
-<h3>Как в Rust можно осуществить преобразование внутренних ссылок во внешние? Какие для этого необходимы условия?</h3>
+<a name="q-010503"><h3>Как в Rust можно осуществить преобразование внутренних ссылок во внешние? Какие для этого необходимы условия?</h3></a>
 
 Преобразование «внутренних» ссылок (тех, что указывают на данные внутри структуры) во «внешние» (те, что живут независимо) в Rust напрямую связано с концепцией владения (ownership) и временем жизни (lifetimes).
 
@@ -440,7 +430,7 @@ Rust по умолчанию запрещает создавать структ�
 
 <hr>
 
-<h3>Что такое разыменование в Rust? Как его можно использовать не по назначению? Почему его не следует использовать не по назначению?</h3>
+<a name="q-010504"><h3>Что такое разыменование в Rust? Как его можно использовать не по назначению? Почему его не следует использовать не по назначению?</h3></a>
 
 <h4>В Rust разыменование (`dereferencing`) — это операция доступа к данным, на которые указывает ссылка или умный указатель.</h4>
 
@@ -567,7 +557,7 @@ Rust славится своей явностью. Deref работает авт
 
 <hr>
 
-<h3>Почему использование ключевого слова `as` не является хорошей практикой в ​​Rust? Почему мы всё ещё его используем?</h3>
+<a name="q-010505"><h3>Почему использование ключевого слова `as` не является хорошей практикой в ​​Rust? Почему мы всё ещё его используем?</h3></a>
 
 Использование ключевого слова as для приведения типов в Rust часто считается «запахом кода» (code smell) и не рекомендуется как практика по умолчанию. Основная причина — небезопасность (с точки зрения логики, а не памяти) и грубость этого инструмента.
 
@@ -662,3 +652,9 @@ let y: u8 = x.try_into().expect("Число слишком большое!");
 [11]: https://rust-lang.github.io/rust-clippy/master/index.html#as_conversions
 [12]: https://web.archive.org/web/20240220233335/https://rusty-ferris.pages.dev/blog/asref-vs-borrow-trait
 [13]: https://timclicks.dev/article/explaining-rusts-deref-trait
+
+[010501]: #q-010501
+[010502]: #q-010502
+[010503]: #q-010503
+[010504]: #q-010504
+[010505]: #q-010505
