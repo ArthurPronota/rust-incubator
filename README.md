@@ -72,6 +72,10 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
 - [ ] [Шаг 0: Ознакомьтесь с основами Rust.][Step 0] (3 days)
 - [ ] [1. Концепции][Step 1] (2 days, after all sub-steps)
     - [ ] [Шаг 1.1: Значения по умолчанию, клонирование и копирование][Step 1.1] (1 day)
+        - [Какова функция трейта `Default` в Rust?][010101]
+        - [На что способна директива #[derive(Default)] из стандартной библиотеки? В чём её ошибка? Какие есть альтернативы?][010102]
+        - [Что означает слово `Clone` в семантическом смысле?][010103]
+        - [Что означает Copy в семантическом смысле? Как оно связано со словом Clone? Какие у него ограничения и почему?][010104]    
     - [ ] [Шаг 1.2: Boxing и pinning][Step 1.2] (1 day)
         - [Что означает "boxing" в Rust? В чём её польза? Когда и зачем она необходима?][010201]
         - [Что такое Pin и зачем он нужен? Какие гарантии он предоставляет? Как он их обеспечивает?][010202]
@@ -505,3 +509,8 @@ C:\Users\user\work\MyWorks\Rust\rust-incubator\3_ecosystem\README.md
 [010205]: 1_concepts/1_2_box_pin/README.md#q-010205
 [010206]: 1_concepts/1_2_box_pin/README.md#q-010206
 
+
+[010101]: 1_concepts/1_1_default_clone_copy/README.md#q-010101
+[010102]: 1_concepts/1_1_default_clone_copy/README.md#q-010102
+[010103]: 1_concepts/1_1_default_clone_copy/README.md#q-010103
+[010104]: 1_concepts/1_1_default_clone_copy/README.md#q-010104
