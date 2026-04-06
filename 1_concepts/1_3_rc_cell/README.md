@@ -6,13 +6,14 @@ __Estimated time__: 1 day
 
 
 
-## Shared ownership
+## Совместное владение
 
-[Rust] ownership model allows _only one owner of a value_. However, there are situations when multiple ownership is required, and it's important to understand how this can be accomplished.
 
-The key piece is to put a value behind a smart pointer, so the pointer itself can be __cloned many times__ (thus allowing multiple owners), but is __pointing always to the same value__ (thus sharing a value). In [Rust] there is a [`Rc`] (["reference counted"][`std::rc`]) smart pointer for this purpose, and [`Arc`] ("atomic reference counted") for use in multiple threads. Both automatically destroy a value once there are no references left.
+В [Rust] модель владения допускает _только одного владельца_ значения. Однако бывают ситуации, когда требуется множественное владение, и важно понимать, как этого можно добиться.
 
-The code below won't compile as `a` is owned by `x` and moved to a heap before is passed to `y`:
+Ключевой момент — это размещение значения за «умным» указателем, чтобы сам указатель можно было клонировать много раз (что позволяет использовать несколько владельцев), но при этом он всегда указывал бы на одно и то же значение (таким образом, значение использовалось бы совместно). В Rust для этой цели существует «умный» указатель [`Rc`] (["reference counted"][`std::rc`]) и [`Arc`] ("atomic reference counted") для использования в многопоточности. Оба автоматически уничтожают значение, как только не остается ссылок.
+
+Приведённый ниже код не скомпилируется, поскольку переменная `a` принадлежит переменной `x` и перемещается в кучу до того, как передаётся переменной `y`:
 ```rust
 struct Val(u8);
 
@@ -32,16 +33,17 @@ error[E0382]: use of moved value: `a`
   = note: move occurs because `a` has type `Val`, which does not implement the `Copy` trait
 ```
 
-However, [`Rc`] allows that:
+Однако [`Rc`] допускает следующее:
 ```rust
 let a = Rc::new(Val(5));
 let x = Rc::clone(&a);  // does not clone original value,
 let y = Rc::clone(&a);  // but rather produces new reference to it
 ```
 
-The [`Rc`], however, __should be used wisely__ as __won't deallocate memory on references cycle__ which is exactly what a __memory leak__ is. [Rust] is unable to prevent memory leaks at compile time (though makes hard to produce them). If it's still required to have a references cycle, you should use a [`Weak`] smart pointer ("weak reference") in combination with [`Rc`]. [`Weak`] allows to break a references cycle as can refer to a value that has been dropped already (returns `None` in such case). 
+Однако [`Rc`] __следует использовать с умом__, __поскольку он не освобождает память в цикле ссылок__, что и является утечкой памяти. [Rust] не может предотвратить утечки памяти во время компиляции (хотя и затрудняет их возникновение). Если цикл ссылок все же необходим, следует использовать [`Weak`] — умный указатель («слабая ссылка») в сочетании с [`Rc`]. [`Weak`] позволяет разорвать цикл ссылок, поскольку может ссылаться на значение, которое уже было удалено (в таком случае возвращает `None`).
 
-To better understand [`Rc`]/[`Weak`]'s purpose, design, limitations and use cases, read through:
+
+Чтобы лучше понять назначение, структуру, ограничения и варианты использования [`Rc`]/[`Weak`], ознакомьтесь со следующими материалами:
 - [Rust Book: 15.4. Rc, the Reference Counted Smart Pointer][1]
 - [Rust Book: 15.6. Reference Cycles Can Leak Memory][2]
 - [Official `std::rc` docs][`std::rc`]
@@ -49,55 +51,53 @@ To better understand [`Rc`]/[`Weak`]'s purpose, design, limitations and use case
 
 
 
-## Interior mutability
+## Внутренняя изменчивость (Interior mutability)
 
-[Rust] memory safety is based on the following rules (known as "borrowing rules"):
 
-> Given an object `T`, it is only possible to have one of the following:
-> - Having several immutable references (`&T`) to the object (also known as __aliasing__).
-> - Having one mutable reference (`&mut T`) to the object (also known as __mutability__).
+В [Rust] безопасность памяти основана на следующих правилах (известных как «правила заимствования»):
 
-However, quite often there are situations where these rules are not flexible enough and it's required to have multiple references to a value and yet mutate it. [`Cell`] and [`RefCell`] __encapsulate mutability inside__ (thus called "interior mutability") and __provide interface which can be used through common shared references__ (`&T`). [`Mutex`] and [`RwLock`] serve the same purpose, but in a multi-threaded context.
+> Для заданного объекта `T` возможно наличие только одного из следующих состояний:
+> - Наличие нескольких неизменяемых ссылок (`&T`) на объект (также известное как __aliasing__).
+> - Наличие одной изменяемой ссылки (`&mut T`) на объект (также известной как __mutabilityь__).
 
-These containers __allow to overcome [Rust] borrowing rules and track borrows at runtime__ (so called "dynamic borrowing"), which, obviously, leads to less safe code as compile-time errors become runtime panics. That's why one should __use [`Cell`]/[`RefCell`] wisely and only as a last resort__.
+Однако довольно часто возникают ситуации, когда эти правила недостаточно гибкие, и требуется иметь несколько ссылок на значение, но при этом изменять его. [`Cell`] и [`RefCell`] __инкапсулируют изменяемость внутри__ (поэтому это называется «внутренней изменяемостью») и __предоставляют интерфейс, который можно использовать через общие разделяемые ссылки__ (`&T`). [`Mutex`] и [`RwLock`] служат той же цели, но в многопоточном контексте.
 
-To better understand [`Cell`]/[`RefCell`]'s purpose, design, limitations and use cases, read through:
+Эти контейнеры __позволяют обойти правила заимствования в [Rust] и отслеживать заимствования во время выполнения__ (так называемое «динамическое заимствование»), что, очевидно, приводит к менее безопасному коду, поскольку ошибки компиляции превращаются в панику во время выполнения. Вот почему следует __использовать [`Cell`]/[`RefCell`] с умом и только в крайнем случае__.
+
+Чтобы лучше понять назначение, конструкцию, ограничения и варианты использования [`Cell`]/[`RefCell`], ознакомьтесь со следующими материалами:
 - [Rust Book: 15.5. RefCell and the Interior Mutability Pattern][3]
 - [Official `std::cell` docs][`std::cell`]
 - [Paul Dicker: Interior mutability patterns][6]
 - [David Tolnay: Accurate mental model for Rust’s reference types][8]
 
 
-### Advanced borrowing patterns
+### Расширенные схемы заимствования
 
-Notably, if the ownership over the value can be expressed separately from its data, the __interior mutability is possible while preserving compile-time borrowing checks and eliminating run-time overhead__, as proven by the [`qcell`] and [`ghost-cell`] crates.
+Примечательно, что если право собственности на значение может быть выражено отдельно от его данных, __то внутренняя изменяемость становится возможной при сохранении проверок заимствования на этапе компиляции и устранении накладных расходов во время выполнения__, как это доказано крейтами [`qcell`] и [`ghost-cell`].
 
-To better understand their design, limitations and use cases, read through:
+Чтобы лучше понять их конструкцию, ограничения и варианты использования, ознакомьтесь со следующей информацией:
 - [Official `qcell` crate docs][`qcell`]
 - [Official `ghost-cell` crate docs][`ghost-cell`]
 - [RustBelt: GhostCell: Separating Permissions from Data in Rust][9]
 
 
+## Разделяемая изменчивость (Shared mutability)
 
+Наиболее распространенный случай — это комбинация двух предыдущих: `Rc<RefCell<T>>` (или `Arc<Mutex<T>>`). Это позволяет изменять значение несколькими владельцами.
 
-## Shared mutability
+В качестве примера из реальной жизни можно привести объект клиента базы данных: он _обязательно должен быть изменяемым_, поскольку изменяет свое состояние внутри системы (открывает сетевые соединения, управляет сессиями базы данных и т. д.), однако _нам необходимо владеть им в нескольких местах_ нашего кода, а не в одном.
 
-The most spread case is a combination of two previous: `Rc<RefCell<T>>` (or `Arc<Mutex<T>>`). This allows to mutate a value by multiple owners.
-
-A real-world example would be a database client object: it _must be mutable_, as mutates its state under-the-hood (opens network connections, manages database sessions, etc), yet _we need to own it in multiple places_ of our code, not a single one.
-
-The following articles may explain you this concept better:
+Следующие статьи помогут вам лучше понять эту концепцию:
 - [Manish Goregaokar: Wrapper Types in Rust: Choosing Your Guarantees][4]
 - [Alexandre Beslic: Rust, Builder Pattern, Trait Objects, `Box<T>` and `Rc<T>`][5]
 
 
+## Как избежать паники и тупиковых ситуаций
+
+Существует простое правило для предотвращения взаимоблокировок с типами [`Mutex`]/[`RwLock`] (применимо и для panics с типами [`Cell`]/[`RefCell`]):
 
 
-## Avoiding panics and deadlocks
-
-There is a simple rule for omitting deadlocks with [`Mutex`]/[`RwLock`] (applicable for panics with [`Cell`]/[`RefCell`] types too):
-
-> Locking scopes must not intersect in any way.
+> Блокирующие области ни в коем случае не должны пересекаться.
 
 The following example explains why deadlocks happen:
 ```rust
@@ -123,7 +123,7 @@ let owner2 = owner1.clone();
 }
 ```
 
-That's why, usually, you should __omit to expose `Rc<RefCell<T>>`__ (or `Arc<Mutex<T>>`) __in API__'s, but rather __make them an inner implementation detail__. Doing this way you have full control over all locking scopes inside your methods (no scope can expand to outside), so __ensure that no intersection will happen__, and __expose a totally safe API__.
+Поэтому обычно следует __избегать предоставления доступа к__ `Rc<RefCell<T>>` (или `Arc<Mutex<T>>`) __в API__, а вместо этого __сделать это деталью внутренней реализации__. Таким образом, вы получаете полный контроль над всеми блокирующими областями видимости внутри ваших методов (ни одна область видимости не может выйти за их пределы), поэтому __гарантируйте отсутствие пересечений__ и __предоставьте абсолютно безопасный API__.
 
 ```rust
 #[derive(Clone)]
@@ -147,10 +147,8 @@ owner1.mutate_somehow();
 owner2.mutate_somehow();
 ```
 
-And even when there is no possibility to hide lock guards behind API boundary, it may be feasible to try encoding the described property via type system, using zero-sized wrapper types on guards. See the following articles for examples and design insights:
+Даже если нет возможности скрыть механизмы блокировки за пределами API, может быть целесообразно попытаться закодировать описываемое свойство с помощью системы типов, используя типы-обертки нулевого размера для механизмов блокировки. Примеры и рекомендации по проектированию см. в следующих статьях:
 - [Adrian Taylor: Can the Rust type system prevent deadlocks?][7]
-
-
 
 
 ## Task
@@ -165,24 +163,16 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 ## Questions
 
 После выполнения всех вышеперечисленных действий вы должны быть в состоянии ответить (и понять, почему) на следующие вопросы.:
-- [`Что такое разделяемое? Какую проблему она решает? Какие у неё недостатки?`](#что-такое-разделяемое-какую-проблему-она-решает-какие-у-неё-недостатки)
-
-- [`Что такое внутренняя изменяемость? Зачем она нужна в Rust? Какова её цена?`](#что-такое-внутренняя-изменяемость-зачем-она-нужна-в-rust-какова-её-цена)
-
-
-- [`Можно ли написать собственный тип с возможностью внутренней изменчивости без использования std? Почему?`](#можно-ли-написать-собственный-тип-с-возможностью-внутренней-изменчивости-без-использования-std-почему)
-
-
-- [`Что такое разделяемая изменяемость? В каких случаях она наиболее распространена?`](#что-такое-разделяемая-изменяемость-в-каких-случаях-она-наиболее-распространена)
-
-
-- [`Как обеспечить пользователям доступ к API без возникновения паники/взаимной блокировки при использовании внутренней изменяемости?`](#как-обеспечить-пользователям-доступ-к-api-без-возникновения-паникивзаимной-блокировки-при-использовании-внутренней-изменяемости)
-
-- [`Atomic Types in Rust`](#atomic-types-in-rust)
+- [Что такое разделяемое? Какую проблему она решает? Какие у неё недостатки?][010301]
+- [Что такое внутренняя изменяемость? Зачем она нужна в Rust? Какова её цена?][010302]
+- [Можно ли написать собственный тип с возможностью внутренней изменчивости без использования std? Почему?][010303]
+- [Что такое разделяемая изменяемость? В каких случаях она наиболее распространена?][010304]
+- [Как обеспечить пользователям доступ к API без возникновения паники/взаимной блокировки при использовании внутренней изменяемости?][010305]
+- [Atomic Types in Rust][010306]
 
 <hr>
 
-<h3>Что такое разделяемое? Какую проблему она решает? Какие у неё недостатки?</h3>
+<a name="q-010301"><h3>Что такое разделяемое? Какую проблему она решает? Какие у неё недостатки?</h3></a>
 
 Совместное владение — это шаблон управления памятью, при котором несколько переменных (владельцев) несут равную ответственность за время жизни одного фрагмента данных. Данные остаются активными до тех пор, пока существует хотя бы один владелец.
 
@@ -217,7 +207,7 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 
 <hr>
 
-<h3>Что такое внутренняя изменяемость? Зачем она нужна в Rust? Какова её цена?</h3>
+<a name="q-010302"><h3>Что такое внутренняя изменяемость? Зачем она нужна в Rust? Какова её цена?</h3></a>
 
 Внутренняя изменяемость — это шаблон проектирования в Rust, который позволяет изменять данные, даже если у вас есть только неизменяемая ссылка (&T) на них. Он фактически переносит обеспечение соблюдения правил заимствования Rust со времени компиляции на время выполнения.
 
@@ -271,7 +261,7 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 
 <hr>
 
-<h3>Можно ли написать собственный тип с возможностью внутренней изменчивости без использования std? Почему?</h3>
+<a name="q-010303"><h3>Можно ли написать собственный тип с возможностью внутренней изменчивости без использования std? Почему?</h3></a>
 
 Да, вполне возможно написать собственный тип с внутренней изменяемостью без использования std. Фактически, основные строительные блоки для внутренней изменяемости находятся в основной библиотеке, которая доступна в средах `#![no_std]`.
 
@@ -303,7 +293,7 @@ And even when there is no possibility to hide lock guards behind API boundary, i
 
 <hr>
 
-<h3>Что такое разделяемая изменяемость? В каких случаях она наиболее распространена?</h3>
+<a name="q-010304"><h3>Что такое разделяемая изменяемость? В каких случаях она наиболее распространена?</h3></a>
 
 В Rust разделяемая изменяемость — это шаблон, позволяющий нескольким указателям или владельцам одновременно изменять один и тот же фрагмент данных.
 
@@ -336,7 +326,7 @@ Rust предоставляет специальные типы «ячеек» �
 
 <hr>
 
-<h3>Как обеспечить пользователям доступ к API без возникновения паники/взаимной блокировки при использовании внутренней изменяемости?</h3>
+<a name="q-010305"><h3>Как обеспечить пользователям доступ к API без возникновения паники/взаимной блокировки при использовании внутренней изменяемости?</h3></a>
 
 Чтобы обеспечить свободные от паники и отсутствие взаимоблокировок при использовании внутренней изменяемости в Rust, необходимо отказаться от «оптимистичных» методов, таких как `borrow()` или lock(), и вместо этого использовать уязвимые шаблоны, ограниченный доступ или атомарное состояние.
 Вот лучшие стратегии для обеспечения надежного API:
@@ -404,7 +394,7 @@ where F: FnOnce(&mut T) -> R
 
 <hr>
 
-<h3>Atomic Types in Rust</h3>
+<a name="q-010306"><h3>Atomic Types in Rust</h3></a>
 
 В Rust атомарные типы обеспечивают низкоуровневый, потокобезопасный доступ к общей памяти без накладных расходов, связанных с тяжелыми механизмами блокировки, такими как мьютекс. Они находятся в модуле `std::sync::atomic` и гарантируют «неделимость» операций — либо значение полностью обновляется, либо остается неизменным.
 
@@ -514,3 +504,10 @@ fn main() {
 [7]: https://medium.com/@adetaylor/can-the-rust-type-system-prevent-deadlocks-9ae6e4123037
 [8]: https://docs.rs/dtolnay/latest/dtolnay/macro._02__reference_types.html
 [9]: https://plv.mpi-sws.org/rustbelt/ghostcell
+
+[010301]: #q-010301
+[010302]: #q-010302
+[010303]: #q-010303
+[010304]: #q-010304
+[010305]: #q-010305
+[010306]: #q-010305
