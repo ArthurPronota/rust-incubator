@@ -3,15 +3,21 @@
 
 __Estimated time__: 1 day
 
-[Static][1] and [dynamic][2] dispatches are important concepts to understand how your code is compiled and works in runtime, and how you can solve certain day-to-day coding problems (related to polymorphism).
+[Static][1] и [dynamic][2] диспетчеризация — важные понятия для понимания того, как компилируется и работает ваш код во время выполнения, а также для решения некоторых повседневных задач программирования (связанных с полиморфизмом).
 
-__[Static dispatch][1]__ (also called "early binding") __happens only at compile time__. The compiler generates separate code for each concrete type that is used. In [Rust] static dispatch is a __default way for polymorphism__ and is introduced simply by generics (parametric polymorphism): `MyType<T, S, F>`.
+
+__[Static dispatch][1]__ (также называемая «ранним связыванием») __происходит только во время компиляции__. Компилятор генерирует отдельный код для каждого конкретного используемого типа. В [Rust] статическая диспетчеризация является __способом по умолчанию для полиморфизма__ и вводится просто с помощью обобщений (параметрического полиморфизма): `MyType<T, S, F>`.
+
 
 __[Dynamic dispatch][2]__ (sometimes called "late binding") __happens at runtime__. The concrete used __[type is erased][4] at compile time__, so compiler doesn't know it, therefore generates `vtable` which dispatches call at runtime and __comes with a performance penalty__. In [Rust] dynamic dispatch is introduced via [trait objects][3]: `&dyn MyTrait`, `Box<dyn MyTrait>`.
 
-You _have to_ use [dynamic dispatch][2] in situations where [type erasure][4] is required. If the problem can be solved with a [static dispatch][1] then you'd better to do so to avoid performance penalties. The most common example when you cannot use [static dispatch][1] and have to go with [dynamic dispatch][2] are _heterogeneous_ collections (where each item is potentially a different concrete type, but each one implements `MyTrait`).
+__[Dynamic dispatch][2]__ (иногда называемая «поздним связыванием») __происходит во время выполнения__. Конкретный используемый __[type is erased][4] во время компиляции__, поэтому компилятор его не знает, следовательно, генерируется `vtable`, которая диспетчеризует вызов во время выполнения и __приводит к снижению производительности__. В [Rust] динамическая диспетчеризация вводится через [trait objects][3]: `&dyn MyTrait`, `Box<dyn MyTrait>`.
 
-To better understand [static][1] and [dynamic][2] dispatches' purpose, design, limitations and use cases, read through:
+
+Вам _необходимо_ использовать [dynamic dispatch][2] в ситуациях, когда требуется [type erasure][4]. Если проблему можно решить с помощью [static dispatch][1], то лучше так и сделать, чтобы избежать снижения производительности. Наиболее распространенный пример, когда нельзя использовать [static dispatch][1] и приходится прибегать к [dynamic dispatch][2], — это _гетерогенные_ коллекции (где каждый элемент потенциально может быть разным конкретным типом, но каждый из них реализует `MyTrait`).
+
+
+Чтобы лучше понять назначение, дизайн, ограничения и варианты использования [static][1] и [dynamic][2] диспетчеров, прочтите следующее:
 - [Rust Blog: Abstraction without overhead: traits in Rust][11]
 - [Joshleeb: Traits and Trait Objects in Rust][12]
 - [Rust Book: 17.2. Using Trait Objects That Allow for Values of Different Types][3]
@@ -22,34 +28,34 @@ To better understand [static][1] and [dynamic][2] dispatches' purpose, design, l
 - [Armin Ronacher: Rust Any Part 2: As-Any Hack][19]
 
 
+## Безопасность объекта
 
 
-## Object safety
+Другая причина использовать [static dispatch][1] заключается в том, что, помимо снижения производительности, [trait objects][3] имеют еще один существенный недостаток: не все трейты можно использовать для создания [trait objects][3]. Трейт должен соответствовать особым [object safety requirements][6]:
 
-The other reason to go with [static dispatch][1] is that except performance penalties, [trait objects][3] have the other major downside: not all traits can be used for creating [trait objects][3]. A trait needs to meet special [object safety requirements][6]:
 
-> - The trait cannot require `Self: Sized`.
-> - Method references the `Self` type in its arguments or return type.
-> - Method has generic type parameters.
-> - Method has no receiver.
-> - The trait cannot contain associated constants.
-> - The trait cannot use `Self` as a type parameter in the supertrait listing.
+> - Данный признак не может требовать `Self: Sized`.
+> - Метод ссылается на тип `Self` в своих аргументах или возвращаемом типе.
+> - Метод имеет параметры общего типа.
+> - Метод не имеет приемника.
+> - Данный признак не может содержать связанные с ним константы.
+> - В описании супертрейта свойство не может использовать `Self` в качестве параметра типа.
 
-This can lead to quite tricky and non-obvious situations when writing code.
+Это может привести к довольно сложным и неочевидным ситуациям при написании кода.
 
-To better understand [object safety][5] purpose, design and limitations, read through:
+Чтобы лучше понять назначение, конструкцию и ограничения [object safety][5], ознакомьтесь со следующими материалами:
 - [Rust Book: 17.2. Object Safety Is Required for Trait Objects][5]
 - [Rust Reference: 6.1. Traits: Object Safety][6]
 - [Nicholas Matsakis: Dyn async traits, part 2][17]
 
 
 
+## Dynamic-to-static оптимизация для закрытых типовых множеств (closed set)
 
-## Dynamic-to-static optimization for closed types set
+В ситуациях, когда вам нужно работать с разными типами, но все возможные типы образуют [closed set][14] (вы знаете _все_ используемые типы), [dynamic dispatch][2] можно заменить [static dispatch][1] ценой некоторого шаблонного кода на основе перечислений.
 
-In situations where you need to deal with different types, but all possible types form a [closed set][14] (you know _all_ the used types), [dynamic dispatch][2] can be replaced with a [static dispatch][1] in a price of some `enum`-based boilerplate.
 
-For example the following [dynamically dispatched][2] code:
+Например, следующий [dynamically dispatched][2] код:
 ```rust
 trait SayHello {
     fn say_hello(&self);
@@ -113,23 +119,22 @@ impl SayHello for Language {
 let greetings: Vec<Language> = vec![English, Spanish];
 ```
 
-There is also a handy [enum_dispatch] crate, which generates this boilerplate automatically in some cases. It has [illustrative benchmarks][15] about performance gains of using `enum` for dispatching.
+Существует также удобный крейт [enum_dispatch], который в некоторых случаях автоматически генерирует этот шаблон. В нем есть [illustrative benchmarks][15] о повышении производительности при использовании `enum` для диспетчеризации.
 
 
+## Оптимизация для уменьшения раздувания кода
+
+[Static dispatch][1] с параметрами типов имеет недостаток в виде генерации довольно большого количества кода (для каждого типа), увеличения размера исполняемого файла и потенциального ухудшения использования кэша выполнения. Однако зачастую обобщения нужны не столько для скорости, сколько для эргономики.
 
 
-## Reducing code bloat optimization
-
-[Static dispatch][1] with type parameters has a downside of generating rather a lot of code (for each type), bloating binary size and potentially pessimizing execution cache usage. However, often generics aren’t really needed for speed, but for ergonomics.
-
-The canonical solution of this problem is to factor out an inner method that contains all of the code minus the generic conversions, and leave the outer method as a shell. For example:
+Каноническое решение этой проблемы заключается в выделении внутреннего метода, содержащего весь код, за исключением преобразований в обобщенные типы, а внешний метод оставить в качестве оболочки. Например:
 ```rust
 pub fn this<I: Into<String>>(i: I) -> usize {
     // do something really complicated with `i.into()`
     // potentially spanning multiple pages of code
 }
 ```
-becomes
+становится:
 ```rust
 #[inline]
 pub fn this<I: Into<String>>(i: I) -> usize {
@@ -139,15 +144,13 @@ fn _this_inner(i: String) -> usize {
     // same code as above without the conversion
 }
 ```
-This ensures only the conversion gets monomorphized, leading to leaner code and compile-time performance wins.
+Это гарантирует, что мономорфизации подвергается только преобразование, что приводит к более компактному коду и повышению производительности на этапе компиляции.
 
-There is a handy [momo] crate, which generates this boilerplate automatically in some cases. Read through its explanation article:
+Существует удобный крейт [momo], который в некоторых случаях автоматически генерирует этот шаблон. Прочитайте статью с его описанием:
 - [Llogiq: Momo · Get Back Some Compile Time From Monomorphization][16]
 
 
-
-
-## More reading
+## Больше материалов для чтения
 
 - [Guillem L. Jara: Designing an efficient memory layout in Rust with unsafe & unions, or, an overlong guide in avoiding dynamic dispatch][21]
 - [Armin Ronacher: Using Rust Macros for Custom VTables][22]
@@ -179,19 +182,15 @@ struct User {
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 
-- [`Что такое диспетчеризация? Когда вызов функции представляет собой диспетчеризацию, а когда нет?`](#что-такое-диспетчеризация-когда-вызов-функции-представляет-собой-диспетчеризацию-а-когда-нет)
-
-- [`Как работает статическая диспетчеризация?`](#как-работает-статическая-диспетчеризация)
-
-- [`Как работает динамическая диспетчеризация? Зачем она нужна? Какие ограничения она имеет в Rust? Почему она существует?`](#как-работает-динамическая-диспетчеризация-зачем-она-нужна-какие-ограничения-она-имеет-в-rust-почему-она-существует)
-
-- [`Когда динамическую диспетчеризацию можно заменить статической? Когда нет? Каковы компромиссы?`](#когда-динамическую-диспетчеризацию-можно-заменить-статической-когда-нет-каковы-компромиссы)
-
-- [Как уменьшить размер кода, сгенерированного компилятором, при использовании статической диспетчеризации?](#как-уменьшить-размер-кода-сгенерированного-компилятором-при-использовании-статической-диспетчеризации)
+- [Что такое диспетчеризация? Когда вызов функции представляет собой диспетчеризацию, а когда нет?][010601]
+- [Как работает статическая диспетчеризация?][010602]
+- [Как работает динамическая диспетчеризация? Зачем она нужна? Какие ограничения она имеет в Rust? Почему она существует?][010603]
+- [Когда динамическую диспетчеризацию можно заменить статической? Когда нет? Каковы компромиссы?][010604]
+- [Как уменьшить размер кода, сгенерированного компилятором, при использовании статической диспетчеризации?][010605]
 
 <hr>
 
-<h3>Что такое диспетчеризация? Когда вызов функции представляет собой диспетчеризацию, а когда нет?</h3>
+<a name="q-010601"><h3>Что такое диспетчеризация? Когда вызов функции представляет собой диспетчеризацию, а когда нет?</h3></a>
 
 В Rust диспетчеризация — это процесс выбора конкретной реализации функции или метода, которая будет выполнена при вызове.
 
@@ -249,7 +248,7 @@ say_hello(); // Прямой вызов по конкретному адресу
 
 <hr>
 
-<h3>Как работает статическая диспетчеризация?</h3>
+<a name="q-010602"><h3>Как работает статическая диспетчеризация?</h3></a>
 
 Статическая диспетчеризация в Rust — это механизм, при котором конкретная реализация функции выбирается на этапе компиляции. В Rust она реализуется через обобщения (`generics`) и процесс, называемый мономорфизацией.
 
@@ -308,7 +307,7 @@ fn print_it_str(item: &str) { ... }
 
 <hr>
 
-<h3>Как работает динамическая диспетчеризация? Зачем она нужна? Какие ограничения она имеет в Rust? Почему она существует?</h3>
+<a name="q-010603"><h3>Как работает динамическая диспетчеризация? Зачем она нужна? Какие ограничения она имеет в Rust? Почему она существует?</h3></a>
 
 Динамическая диспетчеризация в Rust — это механизм выбора реализации метода во время выполнения программы (runtime). В отличие от статической, компилятор не знает заранее, какой конкретный тип данных будет использован, поэтому он полагается на указатели и таблицы методов.
 
@@ -357,7 +356,7 @@ fn print_it_str(item: &str) { ... }
 
 <hr>
 
-<h3>Когда динамическую диспетчеризацию можно заменить статической? Когда нет? Каковы компромиссы?</h3>
+<a name="q-010604"><h3>Когда динамическую диспетчеризацию можно заменить статической? Когда нет? Каковы компромиссы?</h3></a>
 
 <h4>Когда динамическую диспетчеризацию МОЖНО заменить статической?<h4>
 
@@ -398,7 +397,7 @@ fn print_it_str(item: &str) { ... }
 
 <hr>
 
-<h3>Как уменьшить размер кода, сгенерированного компилятором, при использовании статической диспетчеризации?</h3>
+<a name="q-010605"><h3>Как уменьшить размер кода, сгенерированного компилятором, при использовании статической диспетчеризации?</h3></a>
 
 Использование статической диспетчеризации (generics) в Rust может привести к «раздуванию» бинарного файла (code bloat) из-за мономорфизации, когда компилятор копирует код функции для каждого используемого типа.
 
@@ -489,3 +488,9 @@ fn process_dyn(item: &dyn MyTrait) {
 [20]: https://medium.com/digitalfrontiers/rust-dynamic-dispatching-deep-dive-236a5896e49b
 [21]: https://alonely0.github.io/blog/unions
 [22]: https://lucumr.pocoo.org/2024/5/16/macro-vtable-magic
+
+[010601]: #q-010601
+[010602]: #q-010602
+[010603]: #q-010603
+[010604]: #q-010604
+[010605]: #q-010605
