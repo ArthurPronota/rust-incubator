@@ -75,6 +75,8 @@ Each step must be performed as a separate [PR (pull request)][PR] with an approp
     - [ ] [Шаг 1.2: Boxing и pinning][Step 1.2] (1 day)
     - [ ] [Шаг 1.3: Разделяемое владение и внутренняя изменчивость + Atomic Types in Rust][Step 1.3] (1 day)
     - [ ] [Шаг 1.4: Клонирование при записи (Clone-on-write)][Step 1.4] (1 day)
+        - [Что такое Cow? Как это работает?][010401]
+        - [Когда Cow полезно и почему? Приведите несколько показательных примеров.][010402]    
     - [ ] [Шаг 1.5: Преобразования, приведение типов и разыменование][Step 1.5] (1 day)
         - [Как в Rust представлено преобразование значений? Какова связь между ошибочным и безошибочным преобразованием?][010501]
         - [Как в Rust представлено преобразование ссылок? Чем отличаются его трейты? Когда и какой из них следует использовать?][010502]
@@ -472,3 +474,7 @@ C:\Users\user\work\MyWorks\Rust\rust-incubator\3_ecosystem\README.md
 [010503]: 1_concepts/1_5_convert_cast_deref/README.md#q-010503
 [010504]: 1_concepts/1_5_convert_cast_deref/README.md#q-010504
 [010505]: 1_concepts/1_5_convert_cast_deref/README.md#q-010505
+
+
+[010401]: 1_concepts/1_4_cow/README.md#q-010401
+[010402]: 1_concepts/1_4_cow/README.md#q-010402

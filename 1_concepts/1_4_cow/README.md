@@ -8,11 +8,15 @@ __Estimated time__: 1 day
 
 ## Clone-on-write
 
-[Rust] has a [`Cow`] (clone-on-write) smart pointer in its standard library. Understanding how to use it is _essential to write idiomatic and ergonomic_ [Rust] code.
+В стандартной библиотеке [Rust] есть интеллектуальный указатель [`Cow`] (clone-on-write). Понимание того, как его использовать, _необходимо для написания идиоматического и эргономичного_ кода на [Rust].
 
-In a nutshell: 
-- it allows to combine usage of owned and borrowed data in a single abstraction, which __leads to better ergonomics and minimize performance penalties asap__ (as much as possible);
-- it encloses and provides immutable access to borrowed data, and __clones the data lazily when mutation or ownership is required__.
+
+Вкратце:
+
+
+- Это позволяет объединить использование собственных и заимствованных данных в единой абстракции, что приводит к улучшению эргономики и минимизации потерь производительности в максимально возможной степени;
+- Оно обеспечивает неизменяемый доступ к заимствованным данным и __клонирует данные лениво, когда требуется изменение или подтверждение права собственности__.
+
 
 ```rust
 use std::borrow::Cow;
@@ -28,7 +32,7 @@ fn describe(error: &Error) -> Cow<'static, str> {
 }
 ```
 
-To better understand [`Cow`]'s purpose, design, limitations and use cases, read through:
+Чтобы лучше понять назначение, конструкцию, ограничения и варианты использования [`Cow`], ознакомьтесь со следующими материалами:
 - [Official `Cow` docs][`Cow`]
 - [Pascal Hertleif: The Secret Life of Cows][1]
 - [Yashodhan Joshi: Using `Cow` in Rust for efficient memory utilization][3]
@@ -37,16 +41,17 @@ To better understand [`Cow`]'s purpose, design, limitations and use cases, read 
 
 
 
-## Alternative implementations
+## Альтернативные реализации
 
-[`beef`] crate provides alternative `Cow` types, being faster and leaner.
+в [`beef`] ящике можно найти альтернативные `Cow` типы, которые быстрее и компактнее.
 
-> There are two versions of `Cow` exposed by this crate:
+> В этом crate представлены две версии `Cow`:
 >
-> - `beef::Cow` is 3 words wide: pointer, length, and capacity. It stores the ownership tag in capacity.
-> - `beef::lean::Cow` is 2 words wide, storing length, capacity, and the ownership tag all in one word.
+> - `beef::Cow" состоит из трех слов: указатель, длина и емкость. В нем хранится тег владельца в capacity.
+
+> - `beef::lean::Cow` состоит из двух слов, а длина упаковки, вместимость и название владельца - из одного слова.
 > 
-> Both versions are leaner than the `std::borrow::Cow`:
+> Обе версии более компактны, чем `std::borrow::Cow`:
 > ```rust
 > use std::mem::size_of;
 > 
@@ -60,9 +65,7 @@ To better understand [`Cow`]'s purpose, design, limitations and use cases, read 
 > assert_eq!(size_of::<beef::lean::Cow<str>>(), 2 * WORD);
 > ```
 
-Read implementation details and design insights in [its README][4].
-
-
+Подробности реализации и идеи проектирования см. в [its README][4].
 
 
 ## Task
@@ -82,12 +85,12 @@ Read implementation details and design insights in [its README][4].
 
 После выполнения всех вышеперечисленных действий вы должны уметь ответить (и понять, почему) на следующие вопросы:
 
-- [`Что такое Cow? Как это работает?`](#что-такое-cow-как-это-работает)
-- [`Когда Cow полезно и почему? Приведите несколько показательных примеров.`](#когда-cow-полезно-и-почему-приведите-несколько-показательных-примеров)
+- [Что такое Cow? Как это работает?][010401]
+- [Когда Cow полезно и почему? Приведите несколько показательных примеров.][010402]
 
 <hr>
 
-<h3>Что такое Cow? Как это работает?</h3>
+<a name="q-010401"><h3>Что такое Cow? Как это работает?</h3></a>
 
 Cow (сокращение от Clone-on-Write — «клонирование при записи») — это смарт-указатель в Rust, реализованный как перечисление (enum), которое позволяет работать с данными либо как со ссылкой (заимствование), либо как с собственными данными (владение).
 Оно находится в модуле std::borrow::Cow.
@@ -162,7 +165,7 @@ Cow — это способ сказать компилятору: "Я хочу 
 
 <hr>
 
-<h3>Когда Cow полезно и почему? Приведите несколько показательных примеров.</h3>
+<a name="q-010402"><h3>Когда Cow полезно и почему? Приведите несколько показательных примеров.</h3></a>
 
 Cow (Clone-on-Write) наиболее полезен в ситуациях, когда вы хотите избежать лишнего выделения памяти (аллокаций) в «счастливом пути» (happy path), но при этом оставляете за собой возможность владеть данными или изменять их, если это необходимо.
 
@@ -264,3 +267,6 @@ fn main() {
 [2]: https://dev.to/kgrech/6-things-you-can-do-with-the-cow-in-rust-4l55
 [3]: https://blog.logrocket.com/using-cow-rust-efficient-memory-utilization
 [4]: https://github.com/maciejhirsz/beef#how-does-it-work
+
+[010401]: #q-010401
+[010402]: #q-010402
