@@ -1,3 +1,6 @@
+homepage = "https://artaudiochats.t.me/"
+authors = ["Arthur Pronota <yhgvnhjk.986ght.jhgt543@gmail.com>"]
+
 [workspace]
 members = [
     "1_concepts",

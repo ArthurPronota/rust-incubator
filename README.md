@@ -1,12 +1,10 @@
 Rust Инкубатор
 ==============
 
-> It wasn’t always so clear, but the Rust programming language is fundamentally about _empowerment_: no matter what kind of code you are writing now, Rust empowers you to reach farther, to program with confidence in a wider variety of domains than you did before.
-_<div align="right">Rust Book's Foreword</div>_
+> Раньше это было не так очевидно, но язык программирования Rust в своей основе _расширяет_ ваши возможности: независимо от того, какой код вы пишете сейчас, Rust даёт вам возможность выйти за рамки привычного, программировать с уверенностью в самых разных областях, чем раньше.
+_<div align="right">Предисловие к книге о Rust</div>_
 
-This project represents a hard-way step-by-step [Rust] learning course from language basics to a capability of web backend development.
-
-
+Этот проект представляет собой пошаговый курс обучения языку [Rust], начиная с основ и заканчивая возможностями разработки веб-бэкенда.
 
 
 ## Prerequisites
@@ -14,9 +12,8 @@ This project represents a hard-way step-by-step [Rust] learning course from lang
 
 ### Toolchain
 
-- [rustup] for installing the [Rust] toolchain and keeping it up-to-date.
-- [CLion]/[IntelliJ IDEA] + [IntelliJ Rust] + [Toml][IntelliJ Toml] plugins as the development environment (or any other of your choice).
-
+- [rustup] для установки набора инструментов [Rust] и его обновления.
+- В качестве среды разработки используйте плагины [CLion]/[IntelliJ IDEA] + [IntelliJ Rust] + [Toml][IntelliJ Toml] (или любую другую по вашему выбору).
 
 ### Bookshelf
 
@@ -47,27 +44,26 @@ This project represents a hard-way step-by-step [Rust] learning course from lang
 
 ### Before you start
 
-[Create][1] a new [GitHub repository] for yourself using this one [as a template][11].
+[Создайте][1] новый [репозиторий GitHub] для себя, используя этот [в качестве шаблона][11].
 
-> __NOTE__: __This learning course is constantly improving and evolving over time.__ 
+> __ПРИМЕЧАНИЕ__: __Этот учебный курс постоянно совершенствуется и развивается с течением времени.__
 >
-> To be up-to-date with the recent changes in your own copy of this repository, attach the upstream history with the following commands:
+> Чтобы быть в курсе последних изменений в вашей копии этого репозитория, подключите историю изменений из исходного репозитория с помощью следующих команд:
 > ```bash
 > git remote add upstream https://github.com/instrumentisto/rust-incubator.git
 > git fetch upstream main
 > git merge upstream/main --allow-unrelated-histories
 > ```
-> And then, whenever you want to grab some new changes, do the following:
+> А затем, когда вам понадобятся новые изменения, выполните следующие действия:
 > ```bash
 > git fetch upstream main
 > git merge upstream/main
 > ```
-> Additionally, to be aware about new changes, you may either [watch this repository on GitHub][2], or even track it via [RSS subscription].
-
+> Кроме того, чтобы быть в курсе новых изменений, вы можете либо [следить за этим репозиторием на GitHub][2], либо даже отслеживать его через [подписку на RSS].
 
 ### Schedule
 
-Each step must be performed as a separate [PR (pull request)][PR] with an appropriate name and check-marked here in the README's schedule after completion. Each step is a [Cargo workspace member][13], so you can run/test it from the project root (i.e. `cargo run -p step_1_8`). __Consider using [rustfmt] and [Clippy] when you're writing [Rust] code.__
+Каждый шаг должен быть выполнен как отдельный [PR (pull request)][PR] с соответствующим именем и отмечен галочкой здесь, в расписании README, после завершения. Каждый шаг является [участником рабочей области Cargo][13], поэтому вы можете запустить/протестировать его из корневой директории проекта (т.е. `cargo run -p step_1_8`). __Рекомендуется использовать [rustfmt] и [Clippy] при написании кода на [Rust].__
 
 - [ ] [Шаг 0: Ознакомьтесь с основами Rust.][Step 0] (3 days)
 - [ ] [1. Концепции][Step 1] (2 days, after all sub-steps)
